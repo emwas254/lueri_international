@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lueri International — Nairobi Delivery & Courier</title>
+<meta name="description" content="Lueri International — reliable last-mile delivery and courier dispatch across Nairobi. Book a pickup by call, WhatsApp, or the form below.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2620;
+    --paper:#F0EAD8;
+    --paper-dim:#e6dfc9;
+    --route:#C23B22;
+    --slate:#4A5A52;
+    --signal:#E8B93D;
+    --line: rgba(27,38,32,0.16);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+  body{
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
+  }
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .navbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem;
+    letter-spacing:0.03em;
+  }
+  .brand .mark{
+    width:34px; height:34px; border:2px solid var(--ink); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:0.7rem; font-weight:600;
+    transform:rotate(-8deg);
+  }
+  nav.links{ display:flex; gap:28px; font-size:0.85rem; letter-spacing:0.03em; text-transform:uppercase; }
+  nav.links a{ text-decoration:none; opacity:0.75; transition:opacity .2s; }
+  nav.links a:hover{ opacity:1; }
+  .nav-cta{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:var(--paper);
+    padding:9px 16px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;
+    text-decoration:none; border-radius:2px;
+  }
+  @media (max-width: 760px){ nav.links{ display:none; } }
+  .hero{ padding:64px 0 40px; }
+  .docket{
+    background:var(--paper);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:36px 32px 32px;
+  }
+  .docket::before, .docket::after{
+    content:""; position:absolute; width:10px; height:10px;
+    border:1.5px solid var(--ink); border-radius:50%;
+    background:var(--paper-dim); top:14px;
+  }
+  .docket::before{ left:14px; }
+  .docket::after{ right:14px; }
+  .docket-row{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:24px; flex-wrap:wrap;
+  }
+  .eyebrow-mono{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.08em;
+    color:var(--slate); text-transform:uppercase;
+  }
+  .waybill-no{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem;
+    border:1px dashed var(--ink); padding:6px 10px; white-space:nowrap;
+  }
+  h1.title{
+    font-size:clamp(2.4rem, 6vw, 4.2rem);
+    line-height:0.98; margin:18px 0 6px;
+  }
+  .subtitle{
+    max-width:520px; color:var(--slate); font-size:1.05rem; margin-top:10px;
+  }
+  .stamp{
+    display:inline-block; border:3px solid var(--route); color:var(--route);
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:0.85rem;
+    letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px;
+    transform:rotate(-6deg); border-radius:4px; margin-top:20px;
+  }
+  .route-track{
+    margin-top:36px; position:relative; height:64px;
+    border-top:1px dashed var(--ink); opacity:0.9;
+  }
+  .route-track .pin{
+    position:absolute; top:-9px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
+  }
+  .route-track .pin.start{ left:0; }
+  .route-track .pin.end{ right:0; text-align:right; }
+  .route-track .pin::before{
+    content:"●"; color:var(--route); margin-right:4px; font-size:0.6rem;
+  }
+  .route-track .pin.end::before{ content:""; }
+  .route-track .pin.end::after{
+    content:"●"; color:var(--ink); margin-left:4px; font-size:0.6rem;
+  }
+  .truck{
+    position:absolute; top:-14px; font-size:1.1rem;
+    animation: drive 5s linear infinite;
+  }
+  @keyframes drive{
+    0%{ left:0%; }
+    100%{ left:calc(100% - 20px); }
+  }
+  @media (prefers-reduced-motion: reduce){ .truck{ animation:none; left:40%; } }
+  .cta-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:28px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 20px; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.04em;
+    text-decoration:none; border-radius:2px; font-weight:600;
+    font-family:'IBM Plex Sans', sans-serif;
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); }
+  .btn-secondary{ background:transparent; border:1.5px solid var(--ink); color:var(--ink); }
+  .btn:hover{ filter:brightness(1.08); }
+  section{ padding:56px 0; }
+  .section-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:28px; }
+  .section-num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:0.85rem; }
+  .section-head h2{ font-size:1.9rem; }
+  hr.tear{ border:none; border-top:1px dashed var(--line); margin:0; }
+  .grid3{ display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .card{ background:var(--paper); padding:26px 22px; }
+  .card .idx{ font-family:'IBM Plex Mono', monospace; color:var(--slate); font-size:0.78rem; }
+  .card h3{ font-size:1.15rem; margin:10px 0 8px; text-transform:none; letter-spacing:0; }
+  .card p{ color:var(--slate); font-size:0.92rem; margin:0; }
+  @media (max-width:760px){ .grid3{ grid-template-columns:1fr; } }
+  .coverage-wrap{ display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start; }
+  .coverage-list{ columns:2; column-gap:32px; flex:1; min-width:260px; }
+  .coverage-list div{ break-inside:avoid; padding:7px 0; border-bottom:1px solid var(--line); font-size:0.95rem; }
+  .coverage-note{ flex:1; min-width:260px; background:var(--ink); color:var(--paper); padding:26px; border-radius:2px; }
+  .coverage-note .eyebrow-mono{ color:var(--signal); }
+  .coverage-note p{ margin-top:12px; color:rgba(240,234,216,0.85); }
+  .why-list{ list-style:none; margin:0; padding:0; }
+  .why-list li{
+    display:flex; gap:16px; padding:18px 0; border-bottom:1px solid var(--line);
+  }
+  .why-list .n{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-weight:500; width:32px; flex-shrink:0; }
+  .why-list h3{ font-size:1.02rem; text-transform:none; letter-spacing:0; margin-bottom:4px; }
+  .why-list p{ margin:0; color:var(--slate); font-size:0.92rem; }
+  .contact-shell{
+    background:var(--ink); color:var(--paper); padding:48px 36px; border-radius:2px;
+    position:relative; overflow:hidden;
+  }
+  .contact-shell h2{ color:var(--paper); }
+  .contact-shell .subtitle{ color:rgba(240,234,216,0.8); }
+  .contact-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:30px; max-width:500px; }
+  .contact-card{
+    border:1px solid rgba(240,234,216,0.25); padding:20px; border-radius:2px;
+    text-decoration:none; color:var(--paper); transition:border-color .2s, background .2s;
+  }
+  .contact-card:hover{ border-color:var(--signal); background:rgba(240,234,216,0.04); }
+  .contact-card .label{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--signal); text-transform:uppercase; letter-spacing:0.06em; }
+  .contact-card .value{ font-family:'Oswald', sans-serif; font-size:1.15rem; margin-top:8px; }
+  @media (max-width:760px){ .contact-grid{ grid-template-columns:1fr; } }
+  .form-label{ display:block; margin-bottom:6px; color:var(--signal); font-family:'IBM Plex Mono', monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; }
+  .form-input{ width:100%; padding:12px; border:1px solid rgba(240,234,216,0.4); background:transparent; color:var(--paper); border-radius:2px; font-family:'IBM Plex Sans', sans-serif; font-size:0.95rem; }
+  .form-input::placeholder{ color:rgba(240,234,216,0.45); }
+  .form-input:focus{ outline:none; border-color:var(--signal); }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:600px){ .form-row2{ grid-template-columns:1fr; } }
+  footer{ padding:32px 0 40px; border-top:1px solid var(--line); }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-size:0.82rem; color:var(--slate); }
+  .foot-stamp{
+    font-family:'IBM Plex Mono', monospace; border:1px dashed var(--ink); padding:4px 10px; font-size:0.72rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="navbar wrap">
+    <div class="brand">
+      <span class="mark">L</span>
+      <span>Lueri International</span>
+      <span class="mono" style="font-size:0.68rem; color:var(--slate); font-weight:400; text-transform:none; margin-left:2px;">Est. 2023</span>
+    </div>
+    <nav class="links">
+      <a href="#services">Services</a>
+      <a href="#coverage">Coverage</a>
+      <a href="#why">Why Lueri</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="nav-cta" href="#contact">Book a pickup</a>
+  </div>
+</header>
+<section class="hero">
+  <div class="wrap">
+    <div class="docket">
+      <div class="docket-row">
+        <div class="eyebrow-mono">Dispatch / Nairobi & environs</div>
+        <div class="waybill-no">WAYBILL NO. LI–2026</div>
+      </div>
+      <h1 class="title">We move it<br>across Nairobi<br>today.</h1>
+      <p class="subtitle">Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day.</p>
+      <span class="stamp">Same-day dispatch</span>
+      <div class="route-track">
+        <div class="pin start mono">PICKUP</div>
+        <div class="pin end mono">DROP-OFF</div>
+        <div class="truck">🛵</div>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://wa.me/254713261719" target="_blank" rel="noopener">WhatsApp us</a>
+        <a class="btn btn-secondary" href="tel:+254713261719">Call 0713 261 719</a>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="tear">
+<section id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2>Services</h2>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="idx">A</div>
+        <h3>Parcel &amp; document delivery</h3>
+        <p>Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands, picked up on request.</p>
+      </div>
+      <div class="card">
+        <div class="idx">B</div>
+        <h3>Business &amp; e-commerce dispatch</h3>
+        <p>Recurring pickup and delivery support for shops and online sellers who need reliable, repeat runs to their customers.</p>
+      </div>
+      <div class="card">
+        <div class="idx">C</div>
+        <h3>On-demand courier</h3>
+        <p>Need something moved right now? Call or WhatsApp for a same-day pickup — no account or booking system required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="coverage">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2>Coverage</h2>
+    </div>
+    <div class="coverage-wrap">
+      <div class="coverage-list">
+        <div>Nairobi CBD</div>
+        <div>Westlands</div>
+        <div>Kilimani</div>
+        <div>Kasarani</div>
+        <div>South B / South C</div>
+        <div>Embakasi</div>
+        <div>Ngong Road corridor</div>
+        <div>Thika Road corridor</div>
+      </div>
+      <div class="coverage-note">
+        <div class="eyebrow-mono">Not on this list?</div>
+        <p>Lueri runs delivery across Nairobi and its surrounding towns. If your pickup or drop-off point isn't listed, message us directly — most routes within and just outside the city are covered.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="tear">
+<section id="why">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2>Why Lueri</h2>
+    </div>
+    <ul class="why-list">
+      <li>
+        <span class="n">01</span>
+        <div>
+          <h3>Direct line to the dispatcher</h3>
+          <p>You speak to the person moving your parcel, not a call centre — every job is coordinated directly.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">02</span>
+        <div>
+          <h3>Same-day turnaround</h3>
+          <p>Most pickups within Nairobi are delivered the same day they're booked.</p>
+        </div>
+      </li>
+      <li>
+        <span class="n">03</span>
+        <div>
+          <h3>Built for repeat business</h3>
+          <p>Shops and sellers get a consistent, recurring dispatch arrangement rather than a one-off booking each time.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-shell">
+      <div class="section-head" style="margin-bottom:6px;">
+        <span class="section-num" style="color:var(--signal);">04</span>
+        <h2>Book a pickup</h2>
+      </div>
+      <p class="subtitle">Reach Lueri International directly — pick whichever works for you, or fill in the form and it'll go straight to WhatsApp.</p>
+      <div class="contact-grid">
+        <a class="contact-card" href="https://wa.me/254713261719" target="_blank" rel="noopener">
+          <div class="label">WhatsApp</div>
+          <div class="value">0713 261 719</div>
+        </a>
+        <a class="contact-card" href="tel:+254713261719">
+          <div class="label">Call</div>
+          <div class="value">0713 261 719</div>
+        </a>
+      </div>
+
+      <!-- Inline Booking Form: builds a pre-filled WhatsApp message on submit -->
+      <div style="margin-top: 40px;">
+        <form id="booking-form" style="max-width: 600px;">
+          <div class="form-row2" style="margin-bottom: 20px;">
+            <div>
+              <label class="form-label">Pickup Location</label>
+              <input type="text" id="pickup" name="pickup" required placeholder="e.g. Westlands, Nairobi" class="form-input">
+            </div>
+            <div>
+              <label class="form-label">Drop-off Location</label>
+              <input type="text" id="dropoff" name="dropoff" required placeholder="e.g. CBD, Nairobi" class="form-input">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label class="form-label">Parcel Details</label>
+            <textarea id="details" name="details" required placeholder="Describe the item(s), approx. size/weight..." class="form-input" style="min-height: 80px; resize: vertical;"></textarea>
+          </div>
+
+          <div class="form-row2" style="margin-bottom: 24px;">
+            <div>
+              <label class="form-label">Your Name</label>
+              <input type="text" id="name" name="name" required class="form-input">
+            </div>
+            <div>
+              <label class="form-label">Phone Number</label>
+              <input type="tel" id="phone" name="phone" required pattern="^254[0-9]{9}$|^0[0-9]{9}$" placeholder="0713 261 719 or 254713261719" class="form-input">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 28px;">
+            <label class="form-label">Preferred Pickup Time</label>
+            <select id="time" name="time" required class="form-input">
+              <option value="">Select time...</option>
+              <option value="asap">ASAP (Today)</option>
+              <option value="morning">This Morning</option>
+              <option value="afternoon">This Afternoon</option>
+              <option value="evening">This Evening</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; border: none; cursor: pointer;">Send Booking via WhatsApp</button>
+          <p id="form-message" style="margin-top: 16px; text-align: center; min-height: 1.5em; font-size: 0.9rem;"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="wrap footer-row">
+    <div>© <span id="year"></span> Lueri International — Nairobi, Kenya · Est. 13 Dec 2023</div>
+    <div class="foot-stamp">DISPATCH READY</div>
+  </div>
+</footer>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const form = document.getElementById('booking-form');
+  const messageEl = document.getElementById('form-message');
+  const WHATSAPP_NUMBER = '254713261719';
+
+  const TIME_LABELS = {
+    asap: 'ASAP (today)',
+    morning: 'This morning',
+    afternoon: 'This afternoon',
+    evening: 'This evening'
+  };
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const phoneInput = document.getElementById('phone');
+    if (!phoneInput.checkValidity()) {
+      messageEl.textContent = "Please enter a valid Kenyan phone number (07xx xxx xxx or 2547xx xxx xxx).";
+      messageEl.style.color = '#ff6b6b';
+      phoneInput.focus();
+      return;
+    }
+
+    const pickup = document.getElementById('pickup').value.trim();
+    const dropoff = document.getElementById('dropoff').value.trim();
+    const details = document.getElementById('details').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const phone = phoneInput.value.trim();
+    const timeVal = document.getElementById('time').value;
+    const timeLabel = TIME_LABELS[timeVal] || timeVal;
+
+    const message =
+      'New pickup booking - Lueri website\n' +
+      'Name: ' + name + '\n' +
+      'Phone: ' + phone + '\n' +
+      'Pickup: ' + pickup + '\n' +
+      'Drop-off: ' + dropoff + '\n' +
+      'Parcel details: ' + details + '\n' +
+      'Preferred time: ' + timeLabel;
+
+    const waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
+
+    messageEl.textContent = "Opening WhatsApp with your booking pre-filled — just hit send there to confirm.";
+    messageEl.style.color = 'var(--signal)';
+
+    window.open(waLink, '_blank');
+
+    setTimeout(() => {
+      form.reset();
+      messageEl.textContent = '';
+    }, 6000);
+  });
+
+  document.getElementById('phone').addEventListener('input', function() {
+    if (this.value.length > 0 && !/^254|^0/.test(this.value)) {
+      this.style.borderColor = '#ff6b6b';
+    } else {
+      this.style.borderColor = 'rgba(240,234,216,0.4)';
+    }
+  });
+</script>
+</body>
+</html>
