@@ -5,6 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lueri International — Nairobi Delivery & Courier</title>
 <meta name="description" content="Lueri International — reliable last-mile delivery and courier dispatch across Nairobi. Book a pickup by call, WhatsApp, or the form below.">
+
+<!-- Favicon: inline SVG matching the docket/waybill mark used in the hero -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23F0EAD8' stroke='%231B2620' stroke-width='6'/%3E%3Ctext x='50' y='63' font-family='IBM Plex Mono, monospace' font-size='34' font-weight='600' fill='%231B2620' text-anchor='middle' transform='rotate(-8 50 50)'%3EL%3C/text%3E%3C/svg%3E">
+
+<!-- Open Graph / social share preview -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lueri International">
+<meta property="og:title" content="Lueri International — Nairobi Delivery & Courier">
+<meta property="og:description" content="Reliable last-mile delivery and courier dispatch across Nairobi. Book a pickup by call, WhatsApp, email, or the form below.">
+<meta property="og:url" content="https://emwas254.github.io/lueri_international/">
+<meta property="og:image" content="https://emwas254.github.io/lueri_international/og-cover.png">
+<meta property="og:locale" content="en_KE">
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lueri International — Nairobi Delivery & Courier">
+<meta name="twitter:description" content="Reliable last-mile delivery and courier dispatch across Nairobi. Book a pickup by call, WhatsApp, email, or the form below.">
+<meta name="twitter:image" content="https://emwas254.github.io/lueri_international/og-cover.png">
+<meta name="twitter:site" content="@lueri_Int">
+
+<!-- schema.org structured data so Google can index this as a real local business -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Lueri International",
+  "description": "Last-mile delivery and courier dispatch service operating across Nairobi and surrounding towns.",
+  "url": "https://emwas254.github.io/lueri_international/",
+  "telephone": "+254713261719",
+  "email": "emwangi001@outlook.com",
+  "foundingDate": "2023-12-13",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Nairobi",
+    "addressCountry": "KE"
+  },
+  "areaServed": "Nairobi, Kenya",
+  "sameAs": [
+    "https://www.facebook.com/LueriInt/",
+    "https://www.instagram.com/lueri_international/",
+    "https://x.com/lueri_Int"
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -174,7 +219,7 @@
   }
   .contact-shell h2{ color:var(--paper); }
   .contact-shell .subtitle{ color:rgba(240,234,216,0.8); }
-  .contact-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:30px; max-width:500px; }
+  .contact-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:30px; max-width:720px; }
   .contact-card{
     border:1px solid rgba(240,234,216,0.25); padding:20px; border-radius:2px;
     text-decoration:none; color:var(--paper); transition:border-color .2s, background .2s;
@@ -325,6 +370,7 @@
         <h2>Book a pickup</h2>
       </div>
       <p class="subtitle">Reach Lueri International directly — pick whichever works for you, or fill in the form and it'll go straight to WhatsApp.</p>
+      <p class="subtitle" style="margin-top:6px; font-size:0.85rem;">Pricing depends on distance, parcel size, and pickup time — send the details above and get a quote back within minutes.</p>
       <div class="contact-grid">
         <a class="contact-card" href="https://wa.me/254713261719" target="_blank" rel="noopener">
           <div class="label">WhatsApp</div>
@@ -334,6 +380,18 @@
           <div class="label">Call</div>
           <div class="value">0713 261 719</div>
         </a>
+        <a class="contact-card" href="mailto:emwangi001@outlook.com">
+          <div class="label">Email</div>
+          <div class="value" style="font-size:0.95rem;">emwangi001@outlook.com</div>
+        </a>
+      </div>
+
+      <!-- Social links -->
+      <div class="social-row" style="display:flex; gap:20px; margin-top:24px; align-items:center; flex-wrap:wrap;">
+        <span class="eyebrow-mono" style="color:var(--slate);">Follow / DM us</span>
+        <a href="https://www.facebook.com/LueriInt/" target="_blank" rel="noopener" style="text-decoration:none; font-family:'IBM Plex Sans', sans-serif; font-size:0.85rem; font-weight:600; border-bottom:1px solid var(--ink); padding-bottom:2px;">Facebook</a>
+        <a href="https://www.instagram.com/lueri_international/" target="_blank" rel="noopener" style="text-decoration:none; font-family:'IBM Plex Sans', sans-serif; font-size:0.85rem; font-weight:600; border-bottom:1px solid var(--ink); padding-bottom:2px;">Instagram</a>
+        <a href="https://x.com/lueri_Int" target="_blank" rel="noopener" style="text-decoration:none; font-family:'IBM Plex Sans', sans-serif; font-size:0.85rem; font-weight:600; border-bottom:1px solid var(--ink); padding-bottom:2px;">X (Twitter)</a>
       </div>
 
       <!-- Inline Booking Form: builds a pre-filled WhatsApp message on submit -->
