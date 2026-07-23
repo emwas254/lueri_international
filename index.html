@@ -3,228 +3,647 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lueri International | Premium Nairobi Logistics & Dispatch</title>
-<meta name="description" content="Lueri International provides world-class last-mile delivery and premium courier services across Nairobi. Reliable, professional, and same-day.">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231B2620' stroke='%23F0EAD8' stroke-width='4'/%3E%3Ctext x='50' y='65' font-family='Oswald, sans-serif' font-size='40' font-weight='700' fill='%23F0EAD8' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
-
-<!-- Premium Typography -->
+<title>Lueri International — Nairobi Delivery & Courier</title>
+<meta name="description" content="Lueri International — reliable last-mile delivery and courier dispatch across Nairobi. Book a pickup by call, WhatsApp, or the form below.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23F0EAD8' stroke='%231B2620' stroke-width='6'/%3E%3Ctext x='50' y='63' font-family='IBM Plex Mono, monospace' font-size='34' font-weight='600' fill='%231B2620' text-anchor='middle' transform='rotate(-8 50 50)'%3EL%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Oswald:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --primary: #B8321F;
-    --primary-light: #d64a36;
-    --bg: #F8F7F2;
-    --surface: #FFFFFF;
-    --text: #1B2620;
-    --text-muted: #5A6A62;
-    --accent: #E8B93D;
-    --border: rgba(27, 38, 32, 0.08 );
-    --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --shadow: 0 10px 30px -10px rgba(27, 38, 32, 0.1);
-    --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  :root{
+    --ink:#1B2620;
+    --paper:#F0EAD8;
+    --paper-dim:#e6dfc9;
+    --route:#B8321F;
+    --slate:#4A5A52;
+    --signal:#E8B93D;
+    --line: rgba(27,38,32,0.16);
+    --success: #2e7d32;
+    --error: #c62828;
+    --card-bg: var(--paper);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  [data-theme="dark"] {
+    --ink:#F0EAD8;
+    --paper:#1B2620;
+    --paper-dim:#24312a;
+    --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16);
+    --card-bg: #24312a;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    overflow-x: hidden;
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
   }
-
-  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
-  .section-padding { padding: 120px 0; }
-  .mono { font-family: 'JetBrains Mono', monospace; }
-  .oswald { font-family: 'Oswald', sans-serif; }
   
-  nav {
-    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-    padding: 24px 0; transition: var(--transition);
-  }
-  nav.scrolled {
-    background: rgba(248, 247, 242, 0.8);
-    backdrop-filter: blur(20px);
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-content { display: flex; align-items: center; justify-content: space-between; }
-  .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; text-decoration: none; color: var(--text); }
-  .logo-mark { width: 40px; height: 40px; background: var(--text); color: var(--bg); display: flex; align-items: center; justify-content: center; border-radius: 12px; transform: rotate(-8deg); transition: var(--transition); }
-  .logo:hover .logo-mark { transform: rotate(0deg) scale(1.1); background: var(--primary); }
-  
-  .nav-links { display: flex; gap: 40px; }
-  .nav-links a { font-size: 0.9rem; font-weight: 600; text-decoration: none; color: var(--text-muted); transition: var(--transition); position: relative; }
-  .nav-links a:hover { color: var(--text); }
-  
-  .nav-actions { display: flex; align-items: center; gap: 24px; }
-  .btn-nav { padding: 12px 24px; background: var(--text); color: var(--bg); border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: var(--transition); }
-  .btn-nav:hover { background: var(--primary); transform: translateY(-2px); }
-
-  .hero { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; }
-  .hero-content { position: relative; z-index: 10; max-width: 800px; }
-  .hero-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--border); border-radius: 100px; font-size: 0.8rem; font-weight: 700; margin-bottom: 32px; color: var(--primary); }
-  .hero h1 { font-size: clamp(3.5rem, 10vw, 7rem); line-height: 0.9; margin-bottom: 32px; letter-spacing: -2px; }
-  .hero p { font-size: 1.25rem; color: var(--text-muted); max-width: 540px; margin-bottom: 48px; }
-  
-  .hero-visual { position: absolute; top: 50%; right: -10%; transform: translateY(-50%); width: 60%; opacity: 0.05; pointer-events: none; }
-
-  .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-  .bento-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; transition: var(--transition); }
-  .bento-item:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: var(--shadow); }
-  .bento-item h3 { font-size: 1.5rem; margin-bottom: 16px; }
-  
-  .bento-1 { grid-column: span 2; grid-row: span 2; background: var(--text); color: var(--bg); }
-  .bento-1 h3 { font-size: 2.5rem; }
-  .bento-2 { grid-column: span 2; }
-
-  .contact-section { background: var(--text); color: var(--bg); border-radius: var(--radius-lg); padding: 80px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
-  .input-group { margin-bottom: 32px; }
-  .input-group label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; color: var(--accent); }
-  .input-group input, .input-group textarea {
-    width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; color: var(--bg); font-family: inherit; font-size: 1rem; transition: var(--transition);
-  }
-  .input-group input:focus { outline: none; border-color: var(--accent); }
-  
-  .btn-submit {
-    width: 100%; padding: 24px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: var(--transition);
-  }
-
-  .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
+  /* Reveal Animation */
+  .reveal { opacity: 0; transform: translateY(30px); transition: var(--transition); }
   .reveal.active { opacity: 1; transform: translateY(0); }
 
-  @media (max-width: 1024px) {
-    .bento-grid { grid-template-columns: 1fr; }
-    .bento-1, .bento-2 { grid-column: span 1; }
-    .form-grid { grid-template-columns: 1fr; padding: 40px; }
-    .hero h1 { font-size: 4rem; }
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration: none; transition: var(--transition); }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+  
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--paper), 0.8);
+  }
+  .navbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem;
+    letter-spacing:0.03em;
+  }
+  .brand .mark{
+    width:34px; height:34px; border:2px solid var(--ink); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:0.7rem; font-weight:600;
+    transform:rotate(-8deg);
+  }
+  
+  .nav-controls { display: flex; align-items: center; gap: 20px; }
+  nav.links{ display:flex; gap:28px; font-size:0.85rem; letter-spacing:0.03em; text-transform:uppercase; }
+  nav.links a{ opacity:0.75; }
+  nav.links a:hover{ opacity:1; color: var(--route); }
+  
+  .theme-toggle {
+    background: none; border: 1px solid var(--line); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+  }
+  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
+
+  .nav-cta{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:var(--paper);
+    padding:9px 16px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;
+    border-radius:2px; font-weight: 600;
+  }
+  .nav-toggle{
+    display:none; background:none; border:1.5px solid var(--ink); border-radius:2px;
+    width:38px; height:34px; cursor:pointer; padding:0;
+    align-items:center; justify-content:center;
+  }
+  .nav-toggle .bars{ position:relative; width:18px; height:12px; }
+  .nav-toggle .bars span{
+    position:absolute; left:0; width:18px; height:2px; background:var(--ink);
+  }
+  .nav-toggle .bars span:nth-child(1){ top:0; }
+  .nav-toggle .bars span:nth-child(2){ top:5px; }
+  .nav-toggle .bars span:nth-child(3){ top:10px; }
+  
+  .mobile-panel{
+    display:none; flex-direction:column; gap:2px;
+    background:var(--paper); border-bottom:1px solid var(--line);
+    padding:8px 24px 16px;
+  }
+  .mobile-panel a{
+    padding:12px 4px; font-size:0.95rem;
+    border-bottom:1px solid var(--line); text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .mobile-panel.open{ display:flex; }
+  
+  @media (max-width: 860px){
+    nav.links { display:none; }
+    .nav-toggle { display:flex; }
+  }
+
+  .hero{ padding:80px 0 60px; }
+  .docket{
+    background:var(--paper);
+    border:1.5px solid var(--ink);
+    position:relative;
+    padding:48px 40px;
+    box-shadow: 12px 12px 0 rgba(27,38,32,0.08);
+    transition: var(--transition);
+  }
+  .docket:hover { transform: translate(-4px, -4px); box-shadow: 16px 16px 0 rgba(27,38,32,0.1); }
+  .docket::before, .docket::after{
+    content:""; position:absolute; width:12px; height:12px;
+    border:1.5px solid var(--ink); border-radius:50%;
+    background:var(--paper-dim); top:16px;
+  }
+  .docket::before{ left:16px; }
+  .docket::after{ right:16px; }
+  
+  .docket-row{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:24px; flex-wrap:wrap; margin-bottom: 24px;
+  }
+  .eyebrow-mono{
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em;
+    color:var(--slate); text-transform:uppercase;
+  }
+  .waybill-no{
+    font-family:'IBM Plex Mono', monospace; font-size:0.8rem;
+    border:1px dashed var(--ink); padding:8px 12px; white-space:nowrap;
+  }
+  h1.title{
+    font-size:clamp(2.8rem, 8vw, 4.8rem);
+    line-height:0.95; margin:0 0 12px;
+  }
+  .subtitle{
+    max-width:580px; color:var(--slate); font-size:1.15rem; margin:16px 0;
+    line-height: 1.6;
+  }
+  .stamp{
+    display:inline-block; border:3px solid var(--route); color:var(--route);
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:0.9rem;
+    letter-spacing:0.1em; text-transform:uppercase; padding:8px 18px;
+    transform:rotate(-4deg); border-radius:4px; margin:24px 0;
+  }
+  
+  .route-track{
+    margin:48px 0; position:relative; height:1px;
+    border-top:1px dashed var(--ink); opacity:0.6;
+  }
+  .route-track .pin{
+    position:absolute; top:-10px; font-family:'IBM Plex Mono', monospace; font-size:0.75rem; font-weight: 600;
+  }
+  .route-track .pin.start{ left:0; }
+  .route-track .pin.end{ right:0; text-align:right; }
+  .route-track .pin::before{ content:"●"; color:var(--route); margin-right:6px; }
+  .route-track .pin.end::before{ content:""; }
+  .route-track .pin.end::after{ content:"●"; color:var(--ink); margin-left:6px; }
+  
+  .truck{
+    position:absolute; top:-16px; width:28px; height:18px;
+    animation: drive 6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    color: var(--route);
+  }
+  @keyframes drive{
+    0%{ left:0%; opacity: 0; }
+    5%{ opacity: 1; }
+    95%{ opacity: 1; }
+    100%{ left:calc(100% - 28px); opacity: 0; }
+  }
+
+  .cta-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:32px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:16px 28px; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.06em;
+    border-radius:4px; font-weight:700;
+    font-family:'IBM Plex Sans', sans-serif;
+    cursor: pointer; transition: var(--transition);
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); border: none; }
+  .btn-secondary{ background:transparent; border:2px solid var(--ink); color:var(--ink); }
+  .btn:hover{ transform: translateY(-2px); filter:brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .btn:active{ transform: translateY(0); }
+
+  section{ padding:80px 0; }
+  .section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:48px; }
+  .section-num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:1rem; font-weight: 600; }
+  .section-head h2{ font-size:2.4rem; }
+  
+  .grid3{ display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; }
+  .card{ 
+    background:var(--card-bg); padding:32px; 
+    border: 1px solid var(--line); border-radius: 4px;
+    transition: var(--transition);
+  }
+  .card:hover { border-color: var(--route); transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); }
+  .card .icon-box { 
+    width: 48px; height: 48px; background: rgba(184, 50, 31, 0.1); 
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px; color: var(--route);
+  }
+  .card h3{ font-size:1.3rem; margin:0 0 12px; text-transform:none; letter-spacing:0; }
+  .card p{ color:var(--slate); font-size:1rem; margin:0; line-height: 1.6; }
+  @media (max-width:860px){ .grid3{ grid-template-columns:1fr; } }
+
+  .coverage-wrap{ display:flex; gap:60px; flex-wrap:wrap; align-items:center; }
+  .coverage-list{ columns:2; column-gap:40px; flex:1.2; min-width:300px; }
+  .coverage-list div{ 
+    break-inside:avoid; padding:12px 0; border-bottom:1px solid var(--line); 
+    font-size:1.05rem; display: flex; align-items: center; gap: 12px;
+  }
+  .coverage-list div::before { content: "→"; color: var(--route); font-weight: bold; }
+  .coverage-note{ 
+    flex:1; min-width:300px; background:var(--ink); color:var(--paper); 
+    padding:40px; border-radius:4px; position: relative;
+  }
+  .coverage-note::after {
+    content: ""; position: absolute; top: -10px; right: -10px; width: 40px; height: 40px;
+    background: var(--signal); border-radius: 50%; z-index: -1;
+  }
+
+  .testimonials { background: var(--paper-dim); }
+  .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px; margin-top: 48px; }
+  .testimonial-card { 
+    background: var(--paper); padding: 40px; border: 1px solid var(--line); 
+    border-radius: 4px; position: relative; transition: var(--transition);
+  }
+  .testimonial-card:hover { transform: scale(1.02); }
+  .testimonial-card::before { 
+    content: "“"; position: absolute; top: 10px; left: 20px; 
+    font-size: 5rem; color: var(--line); font-family: serif; opacity: 0.5;
+  }
+  .testimonial-text { font-size: 1.1rem; line-height: 1.7; font-style: italic; color: var(--slate); margin-bottom: 24px; position: relative; z-index: 1; }
+  .testimonial-author { font-weight: 700; font-size: 1rem; display: flex; align-items: center; gap: 12px; }
+  .testimonial-author::before { content: ""; width: 30px; height: 3px; background: var(--route); }
+
+  .contact-shell{
+    background:var(--ink); color:var(--paper); padding:64px 48px; border-radius:4px;
+    position:relative; overflow:hidden;
+  }
+  .contact-shell::before {
+    content: ""; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+    background: rgba(232, 185, 61, 0.05); border-radius: 50%;
+  }
+  
+  .contact-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin:40px 0; }
+  .contact-card{
+    border: 1px solid rgba(240,234,216,0.15); padding:24px; border-radius:4px;
+    color:var(--paper); transition: var(--transition); cursor: pointer;
+    position: relative;
+  }
+  .contact-card:hover{ border-color:var(--signal); background:rgba(240,234,216,0.05); transform: translateY(-4px); }
+  .contact-card .copy-hint { 
+    position: absolute; top: 10px; right: 10px; font-size: 0.6rem; 
+    text-transform: uppercase; color: var(--signal); opacity: 0; transition: var(--transition);
+  }
+  .contact-card:hover .copy-hint { opacity: 1; }
+  .contact-card .label{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--signal); text-transform:uppercase; letter-spacing:0.1em; }
+  .contact-card .value{ font-family:'Oswald', sans-serif; font-size:1.3rem; margin-top:10px; }
+  
+  .form-group { margin-bottom: 24px; }
+  .form-label{ display:block; margin-bottom:8px; color:var(--signal); font-family:'IBM Plex Mono', monospace; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; }
+  .form-input{ 
+    width:100%; padding:14px; border:1px solid rgba(240,234,216,0.2); 
+    background: rgba(255,255,255,0.03); color:var(--paper); border-radius:4px; 
+    font-family:'IBM Plex Sans', sans-serif; font-size:1rem; transition: var(--transition);
+  }
+  .form-input:focus{ outline:none; border-color:var(--signal); background: rgba(255,255,255,0.08); }
+  .form-input.invalid { border-color: var(--error); }
+  
+  .success-overlay {
+    position: fixed; inset: 0; background: rgba(27,38,32,0.95); z-index: 1000;
+    display: none; align-items: center; justify-content: center; text-align: center;
+    color: var(--paper); padding: 24px;
+  }
+  .success-overlay.active { display: flex; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  footer{ padding:60px 0; border-top:1px solid var(--line); }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:32px; }
+  .foot-stamp{
+    font-family:'IBM Plex Mono', monospace; border:1px dashed var(--ink); padding:6px 14px; font-size:0.8rem; font-weight: 600;
   }
 </style>
 </head>
 <body>
 
-<nav id="navbar">
-  <div class="container nav-content">
-    <a href="#" class="logo oswald">
-      <div class="logo-mark">L</div>
-      Lueri
-    </a>
-    <div class="nav-links">
-      <a href="#services">Services</a>
-      <a href="#contact">Contact</a>
+<div id="successOverlay" class="success-overlay">
+  <div>
+    <div style="font-size: 4rem; color: var(--signal); margin-bottom: 20px;">✓</div>
+    <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Booking Sent!</h2>
+    <p style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 30px;">Opening WhatsApp to confirm your dispatch...</p>
+    <button onclick="closeSuccess()" class="btn btn-primary">Close</button>
+  </div>
+</div>
+
+<header>
+  <div class="navbar wrap">
+    <div class="brand">
+      <span class="mark">L</span>
+      <span>Lueri International</span>
     </div>
-    <div class="nav-actions">
-      <a href="#contact" class="btn-nav">Dispatch Now</a>
+    <div class="nav-controls">
+      <nav class="links">
+        <a href="#services">Services</a>
+        <a href="#coverage">Coverage</a>
+        <a href="#why">Why Us</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <a class="nav-cta" href="#contact">Book Pickup</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+        <span class="bars"><span></span><span></span><span></span></span>
+      </button>
     </div>
   </div>
-</nav>
+  <nav class="mobile-panel" id="mobilePanel">
+    <a href="#services">Services</a>
+    <a href="#coverage">Coverage</a>
+    <a href="#why">Why Us</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
-<section class="hero">
-  <div class="container">
-    <div class="hero-content reveal">
-      <div class="hero-tag mono">#1 Logistics in Nairobi</div>
-      <h1 class="oswald">MOVING  
-AT THE SPEED  
-OF TRUST.</h1>
-      <p>The definitive standard for last-mile delivery. We bridge the gap between your business and your customers with unparalleled precision.</p>
-      <a href="#contact" class="btn-submit" style="display: inline-block; width: auto; padding: 20px 48px; text-decoration: none;">Book a Pickup</a>
-    </div>
-  </div>
-</section>
-
-<section id="services" class="section-padding">
-  <div class="container">
-    <div class="bento-grid">
-      <div class="bento-item bento-1 reveal">
-        <h3 class="oswald">Bespoke Enterprise Dispatch</h3>
-        <p>A dedicated logistics arm for your business. Recurring runs, bulk distribution, and integrated supply chain support tailored to your scale.</p>
-      </div>
-      <div class="bento-item bento-2 reveal">
-        <h3 class="oswald">Priority Same-Day</h3>
-        <p>When time is the only metric that matters. Point-to-point delivery across the city in record time.</p>
-      </div>
-      <div class="bento-item reveal">
-        <h3 class="oswald">Secure Docs</h3>
-        <p>Legal and sensitive documents handled with total confidentiality.</p>
-      </div>
-      <div class="bento-item reveal">
-        <h3 class="oswald">E-com Ready</h3>
-        <p>Plug-and-play delivery for Nairobi's top online retailers.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="contact" class="section-padding">
-  <div class="container">
-    <div class="contact-section reveal">
-      <div class="form-grid">
-        <div>
-          <h2 class="oswald" style="font-size: 3.5rem; line-height: 1; margin-bottom: 24px;">READY TO  
-DISPATCH?</h2>
-          <p style="opacity: 0.7; margin-bottom: 48px;">Fill out the master booking form below. Our elite routing system will assign the nearest rider to your location instantly.</p>
-          <div style="display: flex; flex-direction: column; gap: 24px;">
-            <a href="https://wa.me/254713261719" style="font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none;">WHATSAPP: +254 713 261 719</a>
+<main>
+  <section class="hero reveal">
+    <div class="wrap">
+      <div class="docket">
+        <div class="docket-row">
+          <div class="eyebrow-mono">Dispatch / Nairobi & environs</div>
+          <div class="waybill-no">WAYBILL NO. LI–2026</div>
+        </div>
+        <h1 class="title">We move it<br>across Nairobi<br>today.</h1>
+        <p class="subtitle">Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day.</p>
+        <span class="stamp">Same-day dispatch</span>
+        <div class="route-track">
+          <div class="pin start mono">PICKUP</div>
+          <div class="pin end mono">DROP-OFF</div>
+          <div class="truck">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
           </div>
         </div>
-        <form id="masterForm">
-          <div class="input-group"><label>Pickup Node</label><input type="text" id="pickup" required></div>
-          <div class="input-group"><label>Destination Node</label><input type="text" id="dropoff" required></div>
-          <div class="input-group"><label>Parcel Specs</label><textarea id="details" rows="3" required></textarea></div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="input-group"><label>Name</label><input type="text" id="name" required></div>
-            <div class="input-group"><label>Phone</label><input type="tel" id="phone" required></div>
+        <div class="cta-row">
+          <a href="#contact" class="btn btn-primary">Book a Pickup</a>
+          <a href="https://wa.me/254713261719" target="_blank" class="btn btn-secondary">WhatsApp Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="reveal">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <h2>Services</h2>
+      </div>
+      <div class="grid3">
+        <div class="card">
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg>
           </div>
-          <button type="submit" class="btn-submit">INITIALIZE DISPATCH</button>
+          <h3>Parcel & document delivery</h3>
+          <p>Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands.</p>
+        </div>
+        <div class="card">
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </div>
+          <h3>Business & e-commerce dispatch</h3>
+          <p>Recurring pickup and delivery support for shops and online sellers who need reliable, repeat runs.</p>
+        </div>
+        <div class="card">
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <h3>On-demand courier</h3>
+          <p>Need something moved right now? Call or WhatsApp for a same-day pickup — no account required.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="coverage" class="reveal">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2>Coverage</h2>
+      </div>
+      <div class="coverage-wrap">
+        <div class="coverage-list">
+          <div>Nairobi CBD</div>
+          <div>Westlands</div>
+          <div>Kilimani</div>
+          <div>Kasarani</div>
+          <div>South B / South C</div>
+          <div>Embakasi</div>
+          <div>Ngong Road</div>
+          <div>Thika Road</div>
+        </div>
+        <div class="coverage-note">
+          <div class="eyebrow-mono">Not on this list?</div>
+          <p>Lueri runs delivery across Nairobi and its surrounding towns. If your point isn't listed, message us directly — most routes are covered.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" class="testimonials reveal">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2>Why Lueri</h2>
+      </div>
+      <ul class="why-list">
+        <li>
+          <div class="n">01</div>
+          <div>
+            <h3>Direct line to the dispatcher</h3>
+            <p>You speak to the person moving your parcel, not a call centre — every job is coordinated directly.</p>
+          </div>
+        </li>
+        <li>
+          <div class="n">02</div>
+          <div>
+            <h3>Same-day turnaround</h3>
+            <p>Most pickups within Nairobi are delivered the same day they're booked.</p>
+          </div>
+        </li>
+      </ul>
+      
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-text">Lueri has been a game-changer for my online shop. Fast, reliable, and my customers love the same-day delivery!</p>
+          <div class="testimonial-author">Jane D., E-commerce Seller</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">Needed a document delivered across town urgently. Lueri picked it up in 20 minutes. Highly recommend.</p>
+          <div class="testimonial-author">Mark K., Professional</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="reveal">
+    <div class="wrap">
+      <div class="contact-shell">
+        <div class="section-head">
+          <span class="section-num">04</span>
+          <h2>Book a pickup</h2>
+        </div>
+        
+        <div class="contact-grid">
+          <div class="contact-card" onclick="copyToClipboard('254713261719', 'WhatsApp')">
+            <span class="copy-hint">Click to copy</span>
+            <div class="label">WhatsApp</div>
+            <div class="value">0713 261 719</div>
+          </div>
+          <div class="contact-card" onclick="window.location.href='tel:+254713261719'">
+            <div class="label">Call</div>
+            <div class="value">0713 261 719</div>
+          </div>
+          <div class="contact-card" onclick="copyToClipboard('emwangi001@outlook.com', 'Email')">
+            <span class="copy-hint">Click to copy</span>
+            <div class="label">Email</div>
+            <div class="value">emwangi001@outlook.com</div>
+          </div>
+        </div>
+
+        <form id="bookingForm" style="margin-top:40px;">
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="pickup">Pickup Location</label>
+              <input class="form-input" type="text" id="pickup" placeholder="e.g. Westlands, Nairobi" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dropoff">Drop-off Location</label>
+              <input class="form-input" type="text" id="dropoff" placeholder="e.g. CBD, Nairobi" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="details">Parcel Details</label>
+            <textarea class="form-input" id="details" rows="2" placeholder="Describe the item(s), approx. size/weight..." required></textarea>
+          </div>
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="name">Your Name</label>
+              <input class="form-input" type="text" id="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number</label>
+              <input class="form-input" type="tel" id="phone" placeholder="07xx xxx xxx" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="time">Preferred Pickup Time</label>
+            <select class="form-input" id="time" required>
+              <option value="" disabled selected>Select time...</option>
+              <option value="asap">ASAP (Today)</option>
+              <option value="morning">This Morning</option>
+              <option value="afternoon">This Afternoon</option>
+              <option value="evening">This Evening</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; background:var(--signal); color:var(--ink); border:none;">
+            Send Booking via WhatsApp
+          </button>
         </form>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</main>
 
-<footer class="section-padding">
-  <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-    <div class="logo oswald"><div class="logo-mark">L</div>Lueri</div>
-    <div class="mono" style="font-size: 0.8rem; opacity: 0.5;">EST. 2023 | NAIROBI HQ</div>
-    <div class="oswald">© 2026</div>
+<footer class="wrap">
+  <div class="footer-row">
+    <div class="brand">
+      <span class="mark">L</span>
+      <span>Lueri International</span>
+    </div>
+    <div class="mono" style="opacity:0.6;">© 2026 Nairobi, Kenya · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a></div>
+    <div class="foot-stamp">DISPATCH READY</div>
   </div>
 </footer>
 
 <script>
-  window.addEventListener('scroll', ( ) => {
-    const nav = document.getElementById('navbar');
-    if (window.scrollY > 50) nav.classList.add('scrolled');
-    else nav.classList.remove('scrolled');
+  // Theme Management
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    } else {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    setTheme(currentTheme === 'light' ? 'dark' : 'light');
   });
 
-  const reveal = () => {
-    const reveals = document.querySelectorAll(".reveal");
-    reveals.forEach(el => {
-      const windowHeight = window.innerHeight;
-      const elementTop = el.getBoundingClientRect().top;
-      if (elementTop < windowHeight - 100) el.classList.add("active");
-    });
-  };
-  window.addEventListener("scroll", reveal);
-  reveal();
+  // Load saved theme
+  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(savedTheme);
 
-  document.getElementById('masterForm').addEventListener('submit', function(e) {
+  // Reveal Animations
+  function reveal() {
+    var reveals = document.querySelectorAll(".reveal");
+    for (var i = 0; i < reveals.length; i++) {
+      var windowHeight = window.innerHeight;
+      var elementTop = reveals[i].getBoundingClientRect().top;
+      var elementVisible = 150;
+      if (elementTop < windowHeight - elementVisible) {
+        reveals[i].classList.add("active");
+      }
+    }
+  }
+  window.addEventListener("scroll", reveal);
+  reveal(); // Initial check
+
+  // Copy to Clipboard
+  function copyToClipboard(text, label) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert(label + ' copied to clipboard!');
+    });
+  }
+
+  // Form Management
+  const form = document.getElementById('bookingForm');
+  const overlay = document.getElementById('successOverlay');
+  
+  function closeSuccess() {
+    overlay.classList.remove('active');
+  }
+
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
+    
     const data = {
       name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
       pickup: document.getElementById('pickup').value,
       dropoff: document.getElementById('dropoff').value,
-      details: document.getElementById('details').value
+      details: document.getElementById('details').value,
+      time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text
     };
-    const msg = `Lueri Master Dispatch Request\nClient: ${data.name}\nRoute: ${data.pickup} to ${data.dropoff}\nParcel: ${data.details}`;
-    window.open(`https://wa.me/254713261719?text=${encodeURIComponent(msg )}`, '_blank');
+
+    const message = `New pickup booking - Lueri website\nName: ${data.name}\nPhone: ${data.phone}\nPickup: ${data.pickup}\nDrop-off: ${data.dropoff}\nParcel details: ${data.details}\nPreferred time: ${data.time}`;
+    const waLink = `https://wa.me/254713261719?text=${encodeURIComponent(message)}`;
+    
+    overlay.classList.add('active');
+    
+    setTimeout(() => {
+      window.open(waLink, '_blank');
+      form.reset();
+    }, 1500);
+  });
+
+  // Mobile Menu
+  const navToggle = document.getElementById('navToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  navToggle.addEventListener('click', () => {
+    mobilePanel.classList.toggle('open');
   });
 </script>
 </body>
