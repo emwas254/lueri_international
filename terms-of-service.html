@@ -5,111 +5,218 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms of Service | Lueri International</title>
 <meta name="description" content="Terms of service and delivery terms for Lueri International — Nairobi last-mile delivery and courier dispatch.">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231B2620' stroke='%23F0EAD8' stroke-width='4'/%3E%3Ctext x='50' y='65' font-family='Oswald, sans-serif' font-size='40' font-weight='700' fill='%23F0EAD8' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
-
-<!-- Premium Typography -->
+<meta property="og:title" content="Terms of Service | Lueri International">
+<meta property="og:description" content="Terms of service and delivery terms for Lueri International — Nairobi last-mile delivery and courier dispatch.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emwas254.github.io/lueri_international/terms-of-service.html">
+<meta property="og:image" content="https://emwas254.github.io/lueri_international/assets/og-image.png">
+<meta property="og:locale" content="en_KE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Terms of Service | Lueri International">
+<meta name="twitter:description" content="Terms of service and delivery terms for Lueri International — Nairobi last-mile delivery and courier dispatch.">
+<meta name="twitter:image" content="https://emwas254.github.io/lueri_international/assets/og-image.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Oswald:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --primary: #B8321F;
-    --bg: #F8F7F2;
-    --surface: #FFFFFF;
-    --text: #1B2620;
-    --text-muted: #5A6A62;
-    --border: rgba(27, 38, 32, 0.08);
-    --radius-sm: 8px;
-    --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  :root{
+    --ink:#1B2620;
+    --paper:#F0EAD8;
+    --paper-dim:#e6dfc9;
+    --route:#B8321F;
+    --slate:#4A5A52;
+    --signal:#E8B93D;
+    --line: rgba(27,38,32,0.16);
+    --card-bg: var(--paper);
+    --paper-rgb: 240,234,216;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
+  [data-theme="dark"] {
+    --ink:#F0EAD8;
+    --paper:#1B2620;
+    --paper-dim:#24312a;
+    --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16);
+    --card-bg: #24312a;
+    --paper-rgb: 27,38,32;
   }
 
-  .container { max-width: 900px; margin: 0 auto; padding: 0 32px; }
-  .oswald { font-family: 'Oswald', sans-serif; }
-  .mono { font-family: 'JetBrains Mono', monospace; }
-
-  nav {
-    padding: 24px 0;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 60px;
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
-  .nav-content { display: flex; align-items: center; justify-content: space-between; }
-  .logo { display: flex; align-items: center; gap: 12px; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; text-decoration: none; color: var(--text); }
-  .logo-mark { 
-    width: 36px; height: 36px; background: var(--text); color: var(--bg); 
-    display: flex; align-items: center; justify-content: center; border-radius: 50%; 
-    font-family: 'Oswald', sans-serif; font-size: 0.9rem; font-weight: 700;
-    transform: rotate(-8deg); border: 2px solid var(--text);
+
+  h1,h2,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0;
   }
-  
-  .back-link { font-size: 0.9rem; font-weight: 600; text-decoration: none; color: var(--text-muted); }
-  .back-link:hover { color: var(--text); }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; transition: var(--transition); }
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:840px; margin:0 auto; padding:0 24px; }
 
-  h1 { font-size: 3rem; margin-bottom: 12px; letter-spacing: -1px; }
-  .meta { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 48px; border-bottom: 1px dashed var(--border); padding-bottom: 24px; }
+  header{
+    position:sticky; top:0; z-index:100;
+    background: rgba(var(--paper-rgb), 0.85);
+    border-bottom:1px solid var(--line);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .navbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem;
+    letter-spacing:0.03em;
+  }
+  .brand .mark-img{ height:34px; width:auto; display:block; }
+  .brand .mark-dark-img{ display:none; }
+  [data-theme="dark"] .brand .mark-light{ display:none; }
+  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
 
-  section { margin-bottom: 40px; }
-  h2 { font-size: 1.5rem; margin-bottom: 16px; color: var(--primary); }
-  p { margin-bottom: 16px; }
+  .back-link{ font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; opacity:0.75; }
+  .back-link:hover{ opacity:1; color:var(--route); }
 
-  footer { margin-top: 80px; padding: 40px 0; border-top: 1px solid var(--border); }
+  .theme-toggle {
+    background: none; border: 1px solid var(--line); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition); margin-left:20px;
+  }
+  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
+  .nav-right{ display:flex; align-items:center; }
+
+  .hero-block{ padding:64px 0 24px; }
+  .eyebrow-mono{
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em;
+    color:var(--slate); text-transform:uppercase;
+  }
+  h1.title{ font-size:clamp(2.2rem, 6vw, 3.2rem); margin:12px 0 16px; }
+  .meta{
+    font-size:0.9rem; color:var(--slate); margin-bottom:48px;
+    border-bottom:1px dashed var(--line); padding-bottom:24px;
+  }
+
+  main{ padding-bottom:80px; }
+  section.clause{ margin-bottom:40px; }
+  section.clause h2{
+    font-size:1.3rem; text-transform:none; letter-spacing:0; margin-bottom:12px;
+    display:flex; align-items:baseline; gap:12px;
+  }
+  section.clause .num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:0.95rem; font-weight:600; text-transform:uppercase; }
+  section.clause p{ margin:0; color:var(--slate); font-size:1.02rem; line-height:1.7; }
+
+  footer{ padding:48px 0; border-top:1px solid var(--line); }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px; }
+  .foot-brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; }
+  .foot-brand .mark-img{ height:26px; width:auto; }
+  .foot-brand .mark-dark-img{ display:none; }
+  [data-theme="dark"] .foot-brand .mark-light{ display:none; }
+  [data-theme="dark"] .foot-brand .mark-dark-img{ display:block; }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="container nav-content">
-    <a href="index.html" class="logo oswald">
-      <div class="logo-mark">L</div>
-      Lueri
+<header>
+  <div class="navbar wrap">
+    <a href="index.html" class="brand">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
     </a>
-    <a href="index.html" class="back-link">← Back to Home</a>
+    <div class="nav-right">
+      <a href="index.html" class="back-link">← Back to Home</a>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
   </div>
-</nav>
+</header>
 
-<div class="container">
-  <h1 class="oswald">Terms of Service</h1>
-  <div class="meta mono">Effective Date: July 21, 2026 | Nairobi, Kenya</div>
+<main class="wrap">
+  <div class="hero-block">
+    <div class="eyebrow-mono">Legal / Nairobi, Kenya</div>
+    <h1 class="title">Terms of Service</h1>
+    <div class="meta mono">Effective Date: July 21, 2026 | Nairobi, Kenya</div>
+  </div>
 
-  <section>
-    <h2 class="oswald">01. Acceptance of Terms</h2>
+  <section class="clause">
+    <h2><span class="num">01</span> Acceptance of Terms</h2>
     <p>By requesting a pickup or using our services, you agree to be bound by these terms. Lueri International provides last-mile delivery and courier dispatch services in Nairobi and its environs.</p>
   </section>
 
-  <section>
-    <h2 class="oswald">02. Service Scope</h2>
+  <section class="clause">
+    <h2><span class="num">02</span> Service Scope</h2>
     <p>We handle parcels, documents, and e-commerce orders. While we aim for same-day delivery, timeframes are estimates and not guarantees, subject to traffic and weather conditions.</p>
   </section>
 
-  <section>
-    <h2 class="oswald">03. Prohibited Items</h2>
+  <section class="clause">
+    <h2><span class="num">03</span> Prohibited Items</h2>
     <p>We do not transport illegal goods, hazardous materials, or items prohibited under Kenyan law. We reserve the right to inspect or refuse any parcel.</p>
   </section>
 
-  <section>
-    <h2 class="oswald">04. Liability</h2>
+  <section class="clause">
+    <h2><span class="num">04</span> Liability</h2>
     <p>Lueri International takes reasonable care of all items. Our liability for loss or damage is limited to the lower of the declared value or KES 5,000, unless otherwise agreed in writing.</p>
   </section>
 
-  <section>
-    <h2 class="oswald">05. Governing Law</h2>
+  <section class="clause">
+    <h2><span class="num">05</span> Governing Law</h2>
     <p>These terms are governed by the laws of the Republic of Kenya.</p>
   </section>
-</div>
+</main>
 
-<footer class="container">
-  <div class="logo oswald" style="font-size: 1rem;">
-    <div class="logo-mark" style="width: 28px; height: 28px; font-size: 0.7rem;">L</div>
-    Lueri International
+<footer class="wrap">
+  <div class="footer-row">
+    <a href="index.html" class="foot-brand">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
+    </a>
+    <div class="mono" style="opacity:0.6; font-size:0.85rem;">© 2026 Nairobi, Kenya</div>
   </div>
 </footer>
 
+<script>
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    } else {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    setTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+
+  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(savedTheme);
+</script>
 </body>
 </html>
