@@ -339,6 +339,29 @@
   }
   .social-links a:hover{ opacity:1; border-color:var(--ink); color:var(--route); }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Lueri International",
+  "image": "https://emwas254.github.io/lueri_international/assets/og-image.png",
+  "url": "https://emwas254.github.io/lueri_international/",
+  "telephone": "+254713261719",
+  "email": "emwangi001@outlook.com",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Nairobi",
+    "addressCountry": "KE"
+  },
+  "areaServed": "Nairobi, Kenya",
+  "description": "Same-day last-mile delivery and courier dispatch across Nairobi for individuals and businesses.",
+  "sameAs": [
+    "https://www.facebook.com/LueriInt",
+    "https://www.instagram.com/lueri_international",
+    "https://x.com/Lueri_Int"
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -403,7 +426,7 @@
         </div>
         <div class="cta-row">
           <a href="#contact" class="btn btn-primary">Book a Pickup</a>
-          <a href="https://wa.me/254713261719" target="_blank" class="btn btn-secondary">WhatsApp Us</a>
+          <a href="https://wa.me/254713261719" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">WhatsApp Us</a>
         </div>
       </div>
     </div>
@@ -659,11 +682,16 @@
 
     const message = `New pickup booking - Lueri website\nName: ${data.name}\nPhone: ${data.phone}\nPickup: ${data.pickup}\nDrop-off: ${data.dropoff}\nParcel details: ${data.details}\nPreferred time: ${data.time}`;
     const waLink = `https://wa.me/254713261719?text=${encodeURIComponent(message)}`;
-    
+
+    // FIX: window.open must run synchronously in the same click event
+    // as the form submit, or most browsers (Safari/Chrome) block it as
+    // an unrequested popup — the visitor would see a success message
+    // while the WhatsApp message never actually opened.
+    window.open(waLink, '_blank', 'noopener,noreferrer');
+
     overlay.classList.add('active');
-    
+
     setTimeout(() => {
-      window.open(waLink, '_blank');
       form.reset();
     }, 1500);
   });
@@ -677,3 +705,20 @@
 </script>
 </body>
 </html>
+
+User-agent: *
+Allow: /
+
+Sitemap: https://emwas254.github.io/lueri_international/sitemap.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://emwas254.github.io/lueri_international/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://emwas254.github.io/lueri_international/terms-of-service.html</loc>
+    <priority>0.3</priority>
+  </url>
+</urlset>
