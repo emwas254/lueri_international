@@ -1,27 +1,338 @@
-# Lueri International website
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — Lueri International</title>
+<meta name="description" content="Terms of Service for Lueri International, a Nairobi last-mile delivery and courier dispatch company.">
+<meta property="og:title" content="Terms of Service — Lueri International">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emwas254.github.io/lueri_international/terms-of-service.html">
+<meta property="og:locale" content="en_KE">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2620;
+    --paper:#F0EAD8;
+    --paper-dim:#e6dfc9;
+    --route:#B8321F;
+    --slate:#4A5A52;
+    --signal:#E8B93D;
+    --line: rgba(27,38,32,0.16);
+    --card-bg: var(--paper);
+    --paper-rgb: 240,234,216;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme="dark"] {
+    --ink:#F0EAD8;
+    --paper:#1B2620;
+    --paper-dim:#24312a;
+    --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16);
+    --card-bg: #24312a;
+    --paper-rgb: 27,38,32;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
+  }
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:var(--route); text-decoration: underline; transition: var(--transition); }
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:840px; margin:0 auto; padding:0 24px; }
+  header{
+    position:sticky; top:0; z-index:100;
+    background: rgba(var(--paper-rgb), 0.85);
+    border-bottom:1px solid var(--line);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .navbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; max-width:1080px; margin:0 auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem;
+    letter-spacing:0.03em; text-decoration:none; color:var(--ink);
+  }
+  .brand .mark-img{ height:34px; width:auto; display:block; }
+  .brand .mark-dark-img{ display:none; }
+  [data-theme="dark"] .brand .mark-light{ display:none; }
+  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
+  .nav-controls{ display:flex; align-items:center; gap:20px; }
+  .theme-toggle {
+    background: none; border: 1px solid var(--line); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+  }
+  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;
+    text-decoration:none; opacity:0.75; font-weight:600; color:var(--ink);
+  }
+  a[href^="tel:"]{ color:var(--ink); text-decoration:none; font-weight:600; }
+  a[href^="tel:"]:hover{ color:var(--route); }
+  .back-link:hover{ opacity:1; color:var(--route); }
+  .doc-header{ padding:64px 0 32px; }
+  .eyebrow-mono{
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em;
+    color:var(--slate); text-transform:uppercase;
+  }
+  h1.title{ font-size:clamp(2rem, 6vw, 3rem); line-height:1.05; margin:12px 0; }
+  .updated{
+    display:inline-block; margin-top:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem;
+    color:var(--slate); border:1px dashed var(--line); padding:6px 12px;
+  }
+  main{ padding-bottom:80px; }
+  .toc{
+    background:var(--card-bg); border:1px solid var(--line); border-radius:4px;
+    padding:24px 28px; margin:32px 0 48px;
+  }
+  .toc .eyebrow-mono{ margin-bottom:12px; display:block; }
+  .toc ol{ margin:0; padding-left:20px; columns:2; column-gap:24px; }
+  .toc li{ break-inside:avoid; padding:6px 0; font-size:0.92rem; }
+  .toc a{ color:var(--ink); text-decoration:none; }
+  .toc a:hover{ color:var(--route); }
+  @media (max-width:600px){ .toc ol{ columns:1; } }
+  article section{
+    padding:28px 0; border-bottom:1px solid var(--line);
+  }
+  article section:last-of-type{ border-bottom:none; }
+  .sec-num{
+    font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:0.85rem; font-weight:600;
+  }
+  article h2{
+    font-size:1.35rem; text-transform:none; letter-spacing:0; margin:6px 0 14px;
+  }
+  article p, article li{
+    color:var(--slate); font-size:0.98rem; line-height:1.75; margin:0 0 12px;
+  }
+  article ul{ padding-left:20px; margin:0 0 12px; }
+  article strong{ color:var(--ink); }
+  .callout{
+    background:var(--paper-dim); border:1px dashed var(--line); border-radius:4px;
+    padding:18px 20px; margin:16px 0; font-size:0.92rem; color:var(--slate); line-height:1.7;
+  }
+  footer{ padding:40px 0; border-top:1px solid var(--line); }
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:16px; font-size:0.85rem; color:var(--slate);
+  }
+  .footer-row a{ color:var(--slate); }
+</style>
+</head>
+<body>
 
-## Files you still need to add to `assets/`
-This page references these images, which weren't included in the HTML you pasted:
-- assets/logo-mark.png (light-mode logo)
-- assets/logo-mark-dark.png (dark-mode logo)
-- assets/favicon-32.png
-- assets/favicon-512.png
-- assets/apple-touch-icon.png
-- assets/og-image.png (social share preview image)
+<header>
+  <div class="navbar">
+    <a class="brand" href="index.html">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
+    </a>
+    <div class="nav-controls">
+      <a class="back-link" href="index.html">&larr; Back to site</a>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
 
-Drop your existing logo/icon files into the `assets` folder using those exact names, and the site will pick them up automatically.
+<main class="wrap">
+  <div class="doc-header">
+    <div class="eyebrow-mono">Legal / Lueri International</div>
+    <h1 class="title">Terms of Service</h1>
+    <span class="updated">Effective date: 28 July 2026</span>
+  </div>
 
-## Also referenced but not included
-- `terms-of-service.html` — the footer and booking form link to this page. Create one (even a simple one) at the same folder level, or remove/redirect those links.
+  <nav class="toc" aria-label="Table of contents">
+    <span class="eyebrow-mono">On this page</span>
+    <ol>
+      <li><a href="#acceptance">1. Acceptance of terms</a></li>
+      <li><a href="#service">2. Our service</a></li>
+      <li><a href="#booking">3. Booking & quotes</a></li>
+      <li><a href="#pricing">4. Pricing & payment</a></li>
+      <li><a href="#prohibited">5. Prohibited items</a></li>
+      <li><a href="#delivery">6. Delivery timeframes</a></li>
+      <li><a href="#liability">7. Liability & claims</a></li>
+      <li><a href="#customer">8. Customer responsibilities</a></li>
+      <li><a href="#cancellations">9. Cancellations</a></li>
+      <li><a href="#privacy">10. Privacy</a></li>
+      <li><a href="#disputes">11. Disputes & governing law</a></li>
+      <li><a href="#changes">12. Changes to these terms</a></li>
+      <li><a href="#contact">13. Contact us</a></li>
+    </ol>
+  </nav>
 
-## Deploy to GitHub Pages (matches the URL already baked into the page: emwas254.github.io/lueri_international)
-1. Create a new GitHub repo named `lueri_international` under your account (emwas254).
-2. Upload `index.html` (and your `assets/` folder + `terms-of-service.html`) to the repo root.
-3. Go to Settings → Pages → Source → select the `main` branch, root folder → Save.
-4. Your site goes live at https://emwas254.github.io/lueri_international/ within a few minutes.
+  <article>
+    <section id="acceptance">
+      <div class="sec-num">01</div>
+      <h2>Acceptance of terms</h2>
+      <p>These Terms of Service ("Terms") govern your use of delivery and courier dispatch services provided by Lueri International ("Lueri", "we", "us", "our"), a last-mile delivery business operating in Nairobi, Kenya, founded on 13 December 2023.</p>
+      <p>By booking a pickup, sending a booking request via WhatsApp, phone, or our website form, or otherwise using our services, you ("customer", "you") agree to be bound by these Terms. If you do not agree, please do not use our services.</p>
+    </section>
 
-## Deploy elsewhere instead
-Any static host works the same way — just upload index.html + assets folder:
-- Netlify: drag-and-drop the folder onto app.netlify.com/drop
-- Vercel: `vercel` CLI or drag-and-drop via dashboard
-- Your own hosting/cPanel: upload via FTP into public_html
+    <section id="service">
+      <div class="sec-num">02</div>
+      <h2>Our service</h2>
+      <p>Lueri provides last-mile parcel, document, and e-commerce delivery within Nairobi and select surrounding towns. Our services include:</p>
+      <ul>
+        <li>On-demand, single-item courier delivery for individuals</li>
+        <li>Recurring pickup and dispatch arrangements for businesses and online sellers</li>
+        <li>Priority same-day delivery for time-sensitive items</li>
+      </ul>
+      <p>We do not currently offer cross-border or international freight. "International" in our name reflects our long-term ambition and professional service standard, not our current scope of operations.</p>
+    </section>
+
+    <section id="booking">
+      <div class="sec-num">03</div>
+      <h2>Booking & quotes</h2>
+      <p>You may book a delivery via our website form, WhatsApp, or phone. To provide an accurate quote, we require the pickup location, drop-off location, and a description of the item(s) being delivered, including approximate size and weight.</p>
+      <p>We confirm a price and estimated delivery window before dispatch. A booking is only confirmed once we have acknowledged it and provided a quote — submitting a form or message alone does not guarantee pickup.</p>
+    </section>
+
+    <section id="pricing">
+      <div class="sec-num">04</div>
+      <h2>Pricing & payment</h2>
+      <p>Pricing for on-demand deliveries starts from KES 350 and varies based on pickup zone, drop-off zone, parcel size, and urgency. Business and recurring dispatch arrangements are priced individually and agreed in advance.</p>
+      <p>Payment is accepted via M-Pesa unless a corporate invoicing arrangement has been agreed in writing for repeat business clients. Payment is generally due before or at the point of pickup, unless otherwise agreed.</p>
+    </section>
+
+    <section id="prohibited">
+      <div class="sec-num">05</div>
+      <h2>Prohibited items</h2>
+      <p>We do not transport illegal goods, hazardous or flammable materials, weapons, cash or negotiable financial instruments, live animals, or any item prohibited under Kenyan law.</p>
+      <p>Fragile, perishable, or high-value items must be declared at the time of booking so we can confirm whether we are able to carry them safely. We reserve the right to decline any item at our discretion, including after pickup, if it is found to fall within a prohibited category.</p>
+    </section>
+
+    <section id="delivery">
+      <div class="sec-num">06</div>
+      <h2>Delivery timeframes</h2>
+      <p>We aim for same-day delivery on most Nairobi routes when a booking is confirmed before our daily cut-off time (4:00 PM on working days). <strong>Delivery timeframes are estimates only and are not guaranteed.</strong> Traffic, weather, road closures, incorrect or incomplete addresses, and after-hours bookings can all affect delivery time.</p>
+      <p>We will communicate proactively if we become aware of a delay affecting your delivery.</p>
+    </section>
+
+    <section id="liability">
+      <div class="sec-num">07</div>
+      <h2>Liability & claims</h2>
+      <p>We take reasonable care in the handling and transport of every item. However, our liability for loss or damage to an item while in our custody is limited to the lower of:</p>
+      <ul>
+        <li>the declared value of the item as stated at the time of booking, or</li>
+        <li><strong>KES 5,000</strong></li>
+      </ul>
+      <p>unless a higher value has been agreed in writing in advance. We are not liable for consequential, indirect, or incidental losses, including loss of business or loss of profit arising from a delayed or failed delivery.</p>
+      <p>Claims for loss or damage must be reported to us within 24 hours of the scheduled or actual delivery time, whichever is later, together with reasonable supporting evidence.</p>
+    </section>
+
+    <section id="customer">
+      <div class="sec-num">08</div>
+      <h2>Customer responsibilities</h2>
+      <p>You are responsible for:</p>
+      <ul>
+        <li>Providing accurate pickup and drop-off addresses and contact details</li>
+        <li>Ensuring the item is appropriately packaged for transport</li>
+        <li>Declaring the true nature and value of the item(s) being sent</li>
+        <li>Ensuring someone is available to hand over and receive the item at the agreed times</li>
+      </ul>
+      <p>We are not responsible for delivery failures or delays caused by inaccurate information provided by the customer or the unavailability of a recipient.</p>
+    </section>
+
+    <section id="cancellations">
+      <div class="sec-num">09</div>
+      <h2>Cancellations</h2>
+      <p>You may cancel a booking free of charge before a rider has been dispatched for pickup. Once a rider has been dispatched, a cancellation fee may apply to cover time and distance already travelled. This will be communicated to you at the time of cancellation.</p>
+    </section>
+
+    <section id="privacy">
+      <div class="sec-num">10</div>
+      <h2>Privacy</h2>
+      <p>We collect the information you provide when booking a delivery — such as your name, phone number, and pickup/drop-off addresses — solely to fulfil and coordinate your delivery. We do not sell your personal information to third parties.</p>
+      <div class="callout">A full standalone Privacy Policy is in preparation. In the meantime, please contact us directly with any questions about how your information is used.</div>
+    </section>
+
+    <section id="disputes">
+      <div class="sec-num">11</div>
+      <h2>Disputes & governing law</h2>
+      <p>These Terms are governed by the laws of the Republic of Kenya. We encourage customers to raise any concerns directly with us first, via WhatsApp or phone, so we can resolve issues quickly and informally. Where a dispute cannot be resolved directly, it shall be subject to the jurisdiction of the courts of Kenya.</p>
+    </section>
+
+    <section id="changes">
+      <div class="sec-num">12</div>
+      <h2>Changes to these terms</h2>
+      <p>We may update these Terms from time to time to reflect changes in our services or operating practices. The effective date at the top of this page will be updated accordingly. Continued use of our services after changes are posted constitutes acceptance of the revised Terms.</p>
+    </section>
+
+    <section id="contact">
+      <div class="sec-num">13</div>
+      <h2>Contact us</h2>
+      <p>If you have any questions about these Terms, reach us at:</p>
+      <ul>
+        <li>WhatsApp / Call: <a href="tel:+254713261719">+254 713 261 719</a></li>
+        <li>Office: Kenyatta Avenue, Nairobi, Kenya</li>
+        <li>Hours: Monday–Saturday, 8:00 AM – 7:00 PM (Sunday by arrangement)</li>
+      </ul>
+    </section>
+  </article>
+</main>
+
+<footer class="wrap">
+  <div class="footer-row">
+    <div class="mono">© 2026 Lueri International, Nairobi, Kenya</div>
+    <a href="index.html">&larr; Back to home</a>
+  </div>
+</footer>
+
+<script>
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+    } else {
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    setTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+
+  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(savedTheme);
+</script>
+</body>
+</html>
