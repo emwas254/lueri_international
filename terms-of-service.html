@@ -18,128 +18,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#1B2620;
-    --paper:#F0EAD8;
-    --paper-dim:#e6dfc9;
-    --route:#B8321F;
-    --slate:#4A5A52;
-    --signal:#E8B93D;
-    --line: rgba(27,38,32,0.16);
-    --card-bg: var(--paper);
-    --paper-rgb: 240,234,216;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
 
-  [data-theme="dark"] {
-    --ink:#F0EAD8;
-    --paper:#1B2620;
-    --paper-dim:#24312a;
-    --slate:#a0b0a7;
-    --line: rgba(240,234,216,0.16);
-    --card-bg: #24312a;
-    --paper-rgb: 27,38,32;
-  }
+[120 lines collapsed]
 
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0;
-    background:var(--paper);
-    color:var(--ink);
-    font-family:'IBM Plex Sans', sans-serif;
-    line-height:1.6;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
-  h1,h2,.display{
-    font-family:'Oswald', sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.02em;
-    margin:0;
-  }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
-  a{ color:inherit; text-decoration:none; transition: var(--transition); }
-  a:focus-visible, button:focus-visible{
-    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
-  }
-  .wrap{ max-width:840px; margin:0 auto; padding:0 24px; }
-
-  header{
-    position:sticky; top:0; z-index:100;
-    background: rgba(var(--paper-rgb), 0.85);
-    border-bottom:1px solid var(--line);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  .navbar{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 24px;
-  }
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem;
-    letter-spacing:0.03em;
-  }
-  .brand .mark-img{ height:34px; width:auto; display:block; }
-  .brand .mark-dark-img{ display:none; }
-  [data-theme="dark"] .brand .mark-light{ display:none; }
-  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
-
-  .back-link{ font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; opacity:0.75; }
-  .back-link:hover{ opacity:1; color:var(--route); }
-
-  .theme-toggle {
-    background: none; border: 1px solid var(--line); border-radius: 50%;
-    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    transition: var(--transition); margin-left:20px;
-  }
-  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
-  .nav-right{ display:flex; align-items:center; }
-
-  .hero-block{ padding:64px 0 24px; }
-  .eyebrow-mono{
-    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em;
-    color:var(--slate); text-transform:uppercase;
-  }
-  h1.title{ font-size:clamp(2.2rem, 6vw, 3.2rem); margin:12px 0 16px; }
-  .meta{
-    font-size:0.9rem; color:var(--slate); margin-bottom:48px;
-    border-bottom:1px dashed var(--line); padding-bottom:24px;
-  }
-
-  main{ padding-bottom:80px; }
-  section.clause{ margin-bottom:40px; }
-  section.clause h2{
-    font-size:1.3rem; text-transform:none; letter-spacing:0; margin-bottom:12px;
-    display:flex; align-items:baseline; gap:12px;
-  }
-  section.clause .num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:0.95rem; font-weight:600; text-transform:uppercase; }
-  section.clause p{ margin:0; color:var(--slate); font-size:1.02rem; line-height:1.7; }
-
-  footer{ padding:48px 0; border-top:1px solid var(--line); }
-  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:24px; }
-  .foot-brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; }
-  .foot-brand .mark-img{ height:26px; width:auto; }
-  .foot-brand .mark-dark-img{ display:none; }
-  [data-theme="dark"] .foot-brand .mark-light{ display:none; }
-  [data-theme="dark"] .foot-brand .mark-dark-img{ display:block; }
-  .social-links{ display:flex; gap:10px; align-items:center; }
-  .social-links a{
-    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; font-weight:600;
-    letter-spacing:0.03em; text-transform:uppercase;
-    border:1px solid var(--line); border-radius:20px; padding:6px 14px;
-    opacity:0.8;
-  }
-  .social-links a:hover{ opacity:1; border-color:var(--ink); color:var(--route); }
-</style>
-</head>
 <body>
-
 <header>
   <div class="navbar wrap">
     <a href="index.html" class="brand">
@@ -156,80 +38,77 @@
     </div>
   </div>
 </header>
-
 <main class="wrap">
   <div class="hero-block">
     <div class="eyebrow-mono">Legal / Nairobi, Kenya</div>
     <h1 class="title">Terms of Service</h1>
     <div class="meta mono">Effective Date: July 21, 2026 | Nairobi, Kenya</div>
+    <div class="meta mono">Effective date: 21 July 2026 · Lueri International, Nairobi, Kenya · Founded 13 December 2023</div>
   </div>
-
   <section class="clause">
     <h2><span class="num">01</span> Acceptance of Terms</h2>
     <p>By requesting a pickup or using our services, you agree to be bound by these terms. Lueri International provides last-mile delivery and courier dispatch services in Nairobi and its environs.</p>
+    <p>These terms govern every booking made with Lueri International ("Lueri", "we", "us"), whether placed by phone, WhatsApp, email, or the booking form on our website. By requesting a pickup, you ("the customer") agree to these terms in full. If you do not agree, please do not book a delivery with us.</p>
   </section>
-
   <section class="clause">
     <h2><span class="num">02</span> Service Scope</h2>
     <p>We handle parcels, documents, and e-commerce orders. While we aim for same-day delivery, timeframes are estimates and not guarantees, subject to traffic and weather conditions.</p>
+    <p>Lueri International is a Nairobi-based last-mile delivery and courier dispatch service operating in Nairobi and surrounding towns. We provide point-to-point parcel and document delivery, recurring dispatch for businesses and e-commerce sellers, and on-demand courier pickups. Same-day delivery applies to most bookings made within our operating hours; it is not guaranteed for every route, time, or parcel type.</p>
   </section>
-
   <section class="clause">
     <h2><span class="num">03</span> Prohibited Items</h2>
     <p>We do not transport illegal goods, hazardous materials, or items prohibited under Kenyan law. We reserve the right to inspect or refuse any parcel.</p>
+    <h2><span class="num">03</span> Operating Hours & Cut-offs</h2>
+    <p>Standard operating hours are Monday to Saturday, 8:00 AM to 7:00 PM. Bookings received before 4:00 PM on a working day are typically delivered the same day, subject to route availability, traffic, and weather. Sunday and after-hours deliveries are available by prior arrangement only.</p>
   </section>
-
   <section class="clause">
     <h2><span class="num">04</span> Liability</h2>
     <p>Lueri International takes reasonable care of all items. Our liability for loss or damage is limited to the lower of the declared value or KES 5,000, unless otherwise agreed in writing.</p>
+    <h2><span class="num">04</span> Quoting & Payment</h2>
+    <p>All deliveries are quoted before pickup. The customer must confirm the quoted price before dispatch. Payment is typically made via M-Pesa unless otherwise agreed in writing for repeat business clients. We do not collect payment for undeclared or prohibited items.</p>
   </section>
-
   <section class="clause">
     <h2><span class="num">05</span> Governing Law</h2>
     <p>These terms are governed by the laws of the Republic of Kenya.</p>
+    <h2><span class="num">05</span> Prohibited Items</h2>
+    <p>We do not transport illegal goods, hazardous materials, cash, weapons, perishable items without prior agreement, or any items prohibited under Kenyan law. We reserve the right to inspect or refuse any parcel. The customer is responsible for ensuring the contents of every parcel are lawful and accurately described at booking.</p>
+  </section>
+  <section class="clause">
+    <h2><span class="num">06</span> Packaging & Declared Value</h2>
+    <p>The customer is responsible for packaging parcels adequately for transport. Lueri is not liable for damage caused by inadequate or inappropriate packaging. Fragile, perishable, or high-value items should be declared at the time of booking so we can advise whether we can safely carry them and whether additional liability cover is needed.</p>
+  </section>
+  <section class="clause">
+    <h2><span class="num">07</span> Liability</h2>
+    <p>Lueri International takes reasonable care of all items in our custody. Our liability for loss or damage is limited to the lower of the declared value or KES 5,000, unless otherwise agreed in writing before pickup. We are not liable for delays caused by events outside our reasonable control.</p>
+  </section>
+  <section class="clause">
+    <h2><span class="num">08</span> Proof of Delivery</h2>
+    <p>We provide delivery confirmation on request, which may include a message confirming receipt, a photo of the delivered parcel, or the recipient's name. The customer should specify any proof-of-delivery requirements at the time of booking.</p>
+  </section>
+  <section class="clause">
+    <h2><span class="num">09</span> Force Majeure</h2>
+    <p>Lueri is not responsible for failure or delay in performing its obligations where this is caused by events outside our reasonable control, including but not limited to severe weather, civil unrest, government action, road closures, strikes, or infrastructure failures.</p>
+  </section>
+  <section class="clause">
+    <h2><span class="num">10</span> Governing Law</h2>
+    <p>These terms are governed by the laws of the Republic of Kenya. Any disputes arising from these terms or our services will first be addressed through direct discussion between the customer and Lueri International, and if unresolved, may be referred to the courts of Kenya.</p>
+  </section>
+  <section class="clause">
+    <h2><span class="num">11</span> Contact</h2>
+    <p>Lueri International · Kenyatta Avenue, Nairobi, Kenya · Phone: +254 713 261 719 · Email: <a href="mailto:emwangi001@outlook.com">emwangi001@outlook.com</a></p>
   </section>
 </main>
-
 <footer class="wrap">
-  <div class="footer-row">
-    <a href="index.html" class="foot-brand">
-      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+
+[3 lines collapsed]
+
       <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
       <span>Lueri International</span>
     </a>
     <div class="mono" style="opacity:0.6; font-size:0.85rem;">© 2026 Nairobi, Kenya</div>
+    <div class="mono" style="opacity:0.6; font-size:0.85rem;">© 2026 Lueri International · Est. 13 Dec 2023 · <a href="index.html" style="text-decoration:underline;">Home</a></div>
     <div class="social-links">
       <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Facebook">Facebook</a>
       <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Instagram">Instagram</a>
-      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on X">X</a>
-    </div>
-  </div>
-</footer>
 
-<script>
-  const themeToggle = document.getElementById('themeToggle');
-  const sunIcon = document.getElementById('sunIcon');
-  const moonIcon = document.getElementById('moonIcon');
-
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    if (theme === 'dark') {
-      sunIcon.style.display = 'block';
-      moonIcon.style.display = 'none';
-    } else {
-      sunIcon.style.display = 'none';
-      moonIcon.style.display = 'block';
-    }
-  }
-
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    setTheme(currentTheme === 'light' ? 'dark' : 'light');
-  });
-
-  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  setTheme(savedTheme);
-</script>
-</body>
-</html>
+[32 lines collapsed]
