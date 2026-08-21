@@ -113,6 +113,28 @@
   .empty-note{ color:var(--slate); font-size:.9rem; padding:20px 0; }
   .switch-link{ text-align:center; margin-top:16px; font-size:.85rem; color:var(--slate); }
   .switch-link a{ color:var(--route); text-decoration:underline; font-weight:600; }
+
+  /* Public tier explainer */
+  .tier-explainer{ margin-top:40px; }
+  .tier-cards{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  @media (max-width:900px){ .tier-cards{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .tier-cards{ grid-template-columns:1fr; } }
+  .tier-explain-card{
+    background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:18px;
+    transition: var(--transition);
+  }
+  .tier-explain-card:hover{ border-color:var(--route); transform:translateY(-2px); }
+  .tier-explain-card .tname{
+    font-family:'Oswald', sans-serif; font-size:1.05rem; text-transform:uppercase; letter-spacing:.02em;
+    color:var(--route); margin-bottom:4px;
+  }
+  .tier-explain-card .tspend{
+    font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--slate);
+    text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;
+  }
+  .tier-explain-card ul{ margin:0; padding-left:16px; font-size:.82rem; color:var(--slate); line-height:1.7; }
+  .tier-explain-card ul li::marker{ color:var(--route); }
+  .tier-note{ font-size:.85rem; color:var(--slate); line-height:1.6; margin:20px 0 0; max-width:640px; }
 </style>
 </head>
 <body>
@@ -138,6 +160,12 @@
     <div class="eyebrow-mono">Lueri Rewards</div>
     <h1 class="title">Earn on every<br>delivery.</h1>
     <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch.</p>
+
+    <div class="tier-explainer" id="tierExplainer">
+      <div class="eyebrow-mono" style="margin-bottom:16px;">How the tiers work</div>
+      <div class="tier-cards" id="tierCards"></div>
+      <p class="tier-note">Your tier is based on lifetime spend and never resets. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
+    </div>
 
     <div class="panel">
       <div class="tabs" id="tabBar">
@@ -229,6 +257,25 @@
     setTheme(current === 'light' ? 'dark' : 'light');
   });
   setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+  // Public tier explainer — rendered live from rewards.js so it never drifts out of sync
+  (function renderTierExplainer() {
+    const container = document.getElementById('tierCards');
+    const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
+    container.innerHTML = tiersLowToHigh.map(tier => {
+      const spendLabel = tier.minSpend > 0
+        ? `${fmt(tier.minSpend)}+ lifetime spend`
+        : 'Starting tier';
+      const benefits = tier.benefits.slice(0, 3).map(b => `<li>${b}</li>`).join('');
+      return `
+        <div class="tier-explain-card">
+          <div class="tname">${tier.name}</div>
+          <div class="tspend">${spendLabel}</div>
+          <ul>${benefits}</ul>
+        </div>
+      `;
+    }).join('');
+  })();
 
   // Tabs
   function showTab(name) {

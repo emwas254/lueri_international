@@ -51,6 +51,18 @@ const LUERI_REWARDS = Object.freeze({
     // 1 point for every KES 50 spent.
     pointsPerKes: 50,
 
+    // Redemption rate: value returned when points are cashed into a
+    // voucher. Fixed on purpose — this must NOT reuse pointsPerKes
+    // (the earn rate). 100 points = KES 50, i.e. a ~1% effective
+    // cashback on qualifying spend. Change centrally here only.
+    pointValueKes: 0.5,
+
+    // Tier qualification looks at spend within a rolling window, not
+    // lifetime spend. This keeps tiers meaningful for active accounts
+    // and self-corrects when a customer goes quiet, instead of a
+    // one-time big order locking in top-tier benefits forever.
+    tierWindowDays: 365,
+
     // Minimum transaction amount that can earn points.
     minimumQualifyingSpend: 0,
 
@@ -79,7 +91,7 @@ const LUERI_REWARDS = Object.freeze({
       benefits: [
         'Everything in Platinum',
         '20% off all bookings',
-        'Unlimited free standard deliveries',
+        '4 free standard deliveries every month',
         'Personal account manager',
         'Early access to new services & promotions',
         'Invitations to exclusive Lueri events',
@@ -341,7 +353,9 @@ function isValidPhone(phone) {
    ========================================================================== */
 
 /**
- * Determine tier from lifetime spend.
+ * Determine tier from a spend figure. Callers decide whether that
+ * figure is lifetime spend or a rolling window (see
+ * calcTierWindowSpend below) — this function itself is agnostic.
  */
 function calcTier(spend) {
   const amount = Math.max(0, toNumber(spend));
@@ -353,6 +367,37 @@ function calcTier(spend) {
   return tier
     ? tier.name
     : 'Bronze';
+}
+
+/**
+ * Sum this member's qualifying spend within the rolling tier window
+ * (policy.tierWindowDays, default 365 days). Tier is earned by
+ * recent activity, not by a single large order years ago — an
+ * account that goes quiet drifts back down to the tier its current
+ * activity actually supports.
+ *
+ * lifetimeSpend on the member record is left untouched; it remains
+ * the all-time historical total shown to staff and the customer.
+ */
+function calcTierWindowSpend(member, store) {
+  if (!member || !store || !Array.isArray(store.transactions)) {
+    return toNumber(member && member.lifetimeSpend);
+  }
+
+  const windowMs =
+    LUERI_REWARDS.policy.tierWindowDays * 86400000;
+  const cutoff = Date.now() - windowMs;
+
+  return store.transactions
+    .filter(
+      t =>
+        t.memberId === member.id &&
+        toDate(t.date).getTime() >= cutoff
+    )
+    .reduce(
+      (sum, t) => sum + toNumber(t.spendDelta),
+      0
+    );
 }
 
 
@@ -386,9 +431,16 @@ function nextTier(tierName) {
 
 /**
  * Amount remaining before next tier.
+ * Uses tierWindowSpend (rolling window) — falls back to lifetimeSpend
+ * only if a member record predates this field.
  */
 function amountToNextTier(member) {
-  const tierName = calcTier(member.lifetimeSpend);
+  const windowSpend =
+    member.tierWindowSpend !== undefined
+      ? member.tierWindowSpend
+      : member.lifetimeSpend;
+
+  const tierName = calcTier(windowSpend);
   const next = nextTier(tierName);
 
   if (!next) {
@@ -397,18 +449,24 @@ function amountToNextTier(member) {
 
   return Math.max(
     0,
-    next.minSpend - toNumber(member.lifetimeSpend)
+    next.minSpend - toNumber(windowSpend)
   );
 }
 
 
 /**
  * Progress through current tier toward next tier.
+ * Uses tierWindowSpend (rolling window) — falls back to lifetimeSpend
+ * only if a member record predates this field.
  */
 function tierProgress(member) {
   const spend = Math.max(
     0,
-    toNumber(member.lifetimeSpend)
+    toNumber(
+      member.tierWindowSpend !== undefined
+        ? member.tierWindowSpend
+        : member.lifetimeSpend
+    )
   );
 
   const current = getTier(calcTier(spend));
@@ -481,12 +539,16 @@ function calculatePoints(amount) {
 
 
 /**
- * Calculate exact spend represented by points.
+ * Calculate voucher value (KES) redeemable for a given points balance.
+ * Uses the fixed redemption rate (policy.pointValueKes), NOT the earn
+ * rate — these are deliberately different numbers. Redeeming must
+ * always cost more in points than it pays out in value, or the
+ * program pays out more than customers ever spent.
  */
 function pointsToSpend(points) {
   return (
     Math.max(0, toNumber(points)) *
-    LUERI_REWARDS.policy.pointsPerKes
+    LUERI_REWARDS.policy.pointValueKes
   );
 }
 
@@ -532,6 +594,13 @@ function sanitizeMember(member) {
     )
   );
 
+  const tierWindowSpend = Math.max(
+    0,
+    toNumber(
+      member.tierWindowSpend ?? lifetimeSpend
+    )
+  );
+
   const points = Math.max(
     0,
     Math.floor(
@@ -574,6 +643,8 @@ function sanitizeMember(member) {
       nowISO(),
 
     lifetimeSpend,
+
+    tierWindowSpend,
 
     points,
 
@@ -1077,6 +1148,8 @@ function registerMember(input = {}) {
 
     lifetimeSpend: 0,
 
+    tierWindowSpend: 0,
+
     points: 0,
 
     expiredPoints: 0,
@@ -1220,8 +1293,11 @@ function updateMember(memberId, updates = {}) {
       String(updates.notes || '').trim();
   }
 
+  member.tierWindowSpend =
+    calcTierWindowSpend(member, store);
+
   member.tier =
-    calcTier(member.lifetimeSpend);
+    calcTier(member.tierWindowSpend);
 
   member.updatedAt =
     nowISO();
@@ -1400,9 +1476,6 @@ function addTransaction(input = {}) {
       )
     );
 
-  member.tier =
-    calcTier(member.lifetimeSpend);
-
   member.lastActivity =
     nowISO();
 
@@ -1450,6 +1523,15 @@ function addTransaction(input = {}) {
   store.transactions.push(
     transaction
   );
+
+  // Recalculated only now that this transaction is in store.transactions,
+  // so the rolling tier window actually includes the booking that just
+  // happened — computing this before the push silently ignored it.
+  member.tierWindowSpend =
+    calcTierWindowSpend(member, store);
+
+  member.tier =
+    calcTier(member.tierWindowSpend);
 
   if (!saveStoreData(store)) {
     return {
@@ -1527,8 +1609,11 @@ function getMemberSummary(
 
   applyExpiryPolicy(member);
 
+  member.tierWindowSpend =
+    calcTierWindowSpend(member, store);
+
   member.tier =
-    calcTier(member.lifetimeSpend);
+    calcTier(member.tierWindowSpend);
 
   saveStoreData(store);
 
@@ -1667,7 +1752,6 @@ function generateUniqueVoucherCode(
 function createVoucher({
   memberIdentifier,
   pointsCost,
-  value,
   expiresAt = null,
   createdBy = '',
   description = '',
@@ -1749,10 +1833,11 @@ function createVoucher({
       cost,
 
     value:
-      Math.max(
-        0,
-        toNumber(value)
-      ),
+      // Always derived from pointsCost via the fixed redemption
+      // rate — never accepted as caller input. This is what
+      // prevents an inconsistent voucher value from one staff
+      // member (or one bug) to the next.
+      pointsToSpend(cost),
 
     currency:
       LUERI_REWARDS.company.currency,
@@ -2281,8 +2366,11 @@ function rebuildMemberBalances() {
         Math.floor(points)
       );
 
+    member.tierWindowSpend =
+      calcTierWindowSpend(member, store);
+
     member.tier =
-      calcTier(member.lifetimeSpend);
+      calcTier(member.tierWindowSpend);
 
     member.updatedAt =
       nowISO();
