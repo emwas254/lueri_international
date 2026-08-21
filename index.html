@@ -772,6 +772,10 @@
               <option value="evening">This Evening</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label" for="memberNumber">Lueri Rewards Member No. (optional)</label>
+            <input class="form-input" type="text" id="memberNumber" placeholder="e.g. LR-1004 — leave blank if you're not a member yet">
+          </div>
           <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; background:var(--signal); color:var(--ink); border:none;">
             Send Booking via WhatsApp
           </button>
@@ -882,10 +886,12 @@
       pickup: document.getElementById('pickup').value,
       dropoff: document.getElementById('dropoff').value,
       details: document.getElementById('details').value,
-      time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text
+      time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text,
+      memberNumber: document.getElementById('memberNumber').value.trim()
     };
 
-    const message = `New pickup booking - Lueri website\nName: ${data.name}\nPhone: ${data.phone}\nPickup: ${data.pickup}\nDrop-off: ${data.dropoff}\nParcel details: ${data.details}\nPreferred time: ${data.time}`;
+    const memberLine = data.memberNumber ? `\nRewards Member No.: ${data.memberNumber}` : '';
+    const message = `New pickup booking - Lueri website\nName: ${data.name}\nPhone: ${data.phone}\nPickup: ${data.pickup}\nDrop-off: ${data.dropoff}\nParcel details: ${data.details}\nPreferred time: ${data.time}${memberLine}`;
     const waLink = `https://wa.me/254713261719?text=${encodeURIComponent(message)}`;
 
     window.open(waLink, '_blank', 'noopener,noreferrer');

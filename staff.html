@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Lueri Rewards — Staff</title>
+<style>
+  :root{ --ink:#1B2620; --paper:#F0EAD8; --route:#B8321F; --slate:#4A5A52; --success:#2e7d32; --error:#c62828; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', Arial, sans-serif; padding:24px; }
+  .wrap{ max-width:420px; margin:0 auto; }
+  h1{ font-size:1.3rem; margin:0 0 4px; }
+  p.sub{ color:var(--slate); font-size:.85rem; margin:0 0 24px; }
+  label{ display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--slate); margin:16px 0 6px; }
+  input, textarea{ width:100%; padding:12px; border:1px solid rgba(27,38,32,.2); border-radius:4px; font-size:1rem; background:#fff; }
+  button{ width:100%; margin-top:20px; padding:14px; background:var(--route); color:#fff; border:none; border-radius:4px;
+    font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:.85rem; cursor:pointer; }
+  button:disabled{ opacity:.6; cursor:default; }
+  .msg{ margin-top:14px; padding:12px; border-radius:4px; font-size:.9rem; display:none; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(198,40,40,.1); color:var(--error); border:1px solid rgba(198,40,40,.3); }
+  .msg.success{ background:rgba(46,125,50,.1); color:var(--success); border:1px solid rgba(46,125,50,.3); }
+  .lock{ text-align:center; padding-top:60px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="lockScreen">
+    <div class="lock">
+      <h1>Staff Access</h1>
+      <p class="sub">Enter the staff PIN to log a rewards transaction.</p>
+      <input type="password" id="pinInput" placeholder="PIN" inputmode="numeric">
+      <button id="unlockBtn">Unlock</button>
+      <div class="msg error" id="lockMsg"></div>
+    </div>
+  </div>
+
+  <div id="txScreen" style="display:none;">
+    <h1>Post a Transaction</h1>
+    <p class="sub">Use this only after the job is quoted and payment is confirmed. Points post automatically — do not guess the amount.</p>
+
+    <label for="memberIdentifier">Member No. or phone</label>
+    <input type="text" id="memberIdentifier" placeholder="LR-1004 or 0712345678">
+
+    <label for="amount">Confirmed order amount (KES)</label>
+    <input type="number" id="amount" placeholder="e.g. 850" min="1">
+
+    <label for="notes">Notes (optional)</label>
+    <textarea id="notes" rows="2" placeholder="e.g. Same-day delivery, Westlands to Karen"></textarea>
+
+    <button id="postBtn">Post transaction &amp; award points</button>
+    <div class="msg error" id="txError"></div>
+    <div class="msg success" id="txSuccess"></div>
+  </div>
+
+</div>
+
+<script>
+  const API_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+  let STAFF_PIN = '';
+
+  function showMsg(id, text) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.classList.add('show');
+  }
+  function hideMsg(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  document.getElementById('unlockBtn').addEventListener('click', () => {
+    const pin = document.getElementById('pinInput').value.trim();
+    if (!pin) {
+      showMsg('lockMsg', 'Enter the staff PIN.');
+      return;
+    }
+    STAFF_PIN = pin;
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('txScreen').style.display = 'block';
+    // Note: the PIN is only truly checked when you post a transaction —
+    // the server rejects it there if it's wrong.
+  });
+
+  document.getElementById('postBtn').addEventListener('click', async () => {
+    hideMsg('txError'); hideMsg('txSuccess');
+    const postBtn = document.getElementById('postBtn');
+    const memberIdentifier = document.getElementById('memberIdentifier').value.trim();
+    const amount = document.getElementById('amount').value.trim();
+    const notes = document.getElementById('notes').value.trim();
+
+    if (!memberIdentifier || !amount) {
+      showMsg('txError', 'Member number/phone and amount are both required.');
+      return;
+    }
+
+    postBtn.disabled = true;
+    postBtn.textContent = 'Posting…';
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'addTransaction',
+          pin: STAFF_PIN,
+          memberIdentifier,
+          amount,
+          notes,
+        }),
+      });
+      const result = await response.json();
+
+      postBtn.disabled = false;
+      postBtn.textContent = 'Post transaction & award points';
+
+      if (!result.success) {
+        showMsg('txError', (result.errors || ['Something went wrong.']).join(' '));
+        return;
+      }
+
+      showMsg(
+        'txSuccess',
+        `Posted. ${result.member.name} (${result.member.memberNumber}) now has ${result.member.points} points, tier: ${result.member.tier}. +${result.transaction.points} points from this order.`
+      );
+      document.getElementById('memberIdentifier').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('notes').value = '';
+
+    } catch (err) {
+      postBtn.disabled = false;
+      postBtn.textContent = 'Post transaction & award points';
+      showMsg('txError', 'Could not reach the rewards server. Check your connection and try again.');
+    }
+  });
+</script>
+</body>
+</html>

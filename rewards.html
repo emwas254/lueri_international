@@ -240,13 +240,13 @@
       </div>
 
       <div class="disclosure">
-        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your points are saved on this device/browser only — if you switch phones or clear your browser data, ask our dispatcher on WhatsApp and we'll help recover your balance manually. Points post automatically at booking; for now, message us on WhatsApp with your registered number after a delivery so our team can log the transaction on their end.
+        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your membership is saved centrally, so you can look up your account from any phone or browser using your registered number. Points aren't posted automatically yet — after a delivery, message us on WhatsApp with your registered number and our team will log the transaction on their end.
       </div>
     </div>
   </div>
 </main>
 
-<script src="rewards.js"></script>
+<script src="rewards-cloud.js"></script>
 <script>
   // Theme (shared with main site)
   const themeToggle = document.getElementById('themeToggle');
@@ -264,7 +264,7 @@
   });
   setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
-  // Public tier explainer — rendered live from rewards.js so it never drifts out of sync
+  // Public tier explainer — rendered live from the tier table so it never drifts out of sync
   (function renderTierExplainer() {
     const container = document.getElementById('tierCards');
     const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
@@ -369,13 +369,13 @@
     win.document.close();
   }
 
-  document.getElementById('lookupBtn').addEventListener('click', () => {
+  document.getElementById('lookupBtn').addEventListener('click', async () => {
     hideMsg('lookupMsg');
     const phone = document.getElementById('lookupPhone').value.trim();
     if (!phone) { showMsg('lookupMsg', 'Enter your phone number.'); return; }
-    const summary = getMemberSummary(phone);
+    const summary = await getMemberSummary(phone);
     if (!summary) {
-      showMsg('lookupMsg', "We couldn't find a Rewards account with that number on this device. If you joined on a different phone, message us on WhatsApp and we'll help.");
+      showMsg('lookupMsg', "We couldn't find a Rewards account with that number. Double-check the number, or message us on WhatsApp and we'll help.");
       return;
     }
     renderMember(summary);
@@ -387,24 +387,39 @@
     document.getElementById('lookupPhone').value = '';
   });
 
-  document.getElementById('joinBtn').addEventListener('click', () => {
+  document.getElementById('joinBtn').addEventListener('click', async () => {
     hideMsg('joinMsg'); hideMsg('joinSuccessMsg');
+    const joinBtn = document.getElementById('joinBtn');
     const input = {
       name: document.getElementById('joinName').value.trim(),
       phone: document.getElementById('joinPhone').value.trim(),
       email: document.getElementById('joinEmail').value.trim(),
     };
-    const result = registerMember(input);
+    joinBtn.disabled = true;
+    joinBtn.textContent = 'Setting up your account…';
+    const result = await registerMember(input);
+    joinBtn.disabled = false;
+    joinBtn.textContent = 'Create my Rewards account';
+
     if (!result.success) {
       showMsg('joinMsg', result.errors.join(' '));
       return;
     }
-    showMsg('joinSuccessMsg', `Welcome, ${result.member.name.split(' ')[0]}! Your Rewards account is set up. Member No. ${result.member.memberNumber}.`);
-    setTimeout(() => {
+    showMsg('joinSuccessMsg', `Welcome, ${result.member.name.split(' ')[0]}! Your Rewards account is set up. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`);
+
+    // Confirmation now stays on screen until the customer chooses to
+    // continue, instead of auto-jumping away after 1.2 seconds.
+    const continueBtn = document.createElement('button');
+    continueBtn.className = 'btn btn-secondary';
+    continueBtn.style.marginTop = '12px';
+    continueBtn.textContent = 'View my rewards →';
+    continueBtn.addEventListener('click', () => {
+      continueBtn.remove();
       showTab('lookup');
       document.getElementById('lookupPhone').value = input.phone;
       document.getElementById('lookupBtn').click();
-    }, 1200);
+    }, { once: true });
+    document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
   });
 </script>
 </body>
