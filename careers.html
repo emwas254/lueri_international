@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Careers — Lueri International</title>
+<meta name="description" content="Future opportunities at Lueri International — marketing, growth, sales, and operations roles in Nairobi last-mile delivery.">
+<meta property="og:title" content="Careers — Lueri International">
+<meta property="og:description" content="We're not actively hiring yet — but we're building a shortlist for when we are. Tell us what you do.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lueriinternational.com/careers.html">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52;
+    --signal:#E8B93D; --line: rgba(27,38,32,0.16); --success:#2e7d32; --error:#c62828;
+    --card-bg: var(--paper); --paper-rgb: 240,234,216; --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  [data-theme="dark"] {
+    --ink:#F0EAD8; --paper:#1B2620; --paper-dim:#24312a; --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16); --card-bg:#24312a; --paper-rgb:27,38,32;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5; transition: background-color .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; transition: var(--transition); }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 24px; }
+  header{ position:sticky; top:0; z-index:100; background:rgba(var(--paper-rgb),.85);
+    border-bottom:1px solid var(--line); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:900px; margin:0 auto; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; }
+  .brand img{ height:30px; }
+  .back-link{ font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75; }
+  .back-link:hover{ opacity:1; color:var(--route); }
+  .theme-toggle{ background:none; border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
+    cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center; }
+  main{ padding:56px 0 100px; }
+  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:.75rem; letter-spacing:.1em; color:var(--slate); text-transform:uppercase; }
+  h1.title{ font-size:clamp(2.2rem, 6vw, 3.4rem); line-height:1; margin:10px 0 12px; }
+  .subtitle{ max-width:620px; color:var(--slate); font-size:1.05rem; line-height:1.6; }
+  .panel{
+    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:32px;
+    margin-top:36px; box-shadow:8px 8px 0 rgba(27,38,32,0.08);
+  }
+  .status-badge{
+    display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace;
+    font-size:.75rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate);
+    border:1px dashed var(--line); border-radius:20px; padding:6px 14px; margin-bottom:8px;
+  }
+  .status-badge::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--signal); display:inline-block; }
+  .role-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin:28px 0; }
+  @media (max-width:640px){ .role-grid{ grid-template-columns:1fr; } }
+  .role-card{ border:1px solid var(--line); border-radius:4px; padding:20px; }
+  .role-card h3{ font-size:1rem; margin-bottom:8px; color:var(--route); }
+  .role-card p{ font-size:.88rem; color:var(--slate); margin:0; line-height:1.6; }
+  .form-group{ margin-bottom:20px; }
+  .form-label{ display:block; margin-bottom:6px; color:var(--slate); font-family:'IBM Plex Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+  .form-input{
+    width:100%; padding:13px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem;
+  }
+  .form-input:focus{ outline:none; border-color:var(--route); }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:600px){ .form-row2{ grid-template-columns:1fr; } }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 24px;
+    font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; border-radius:4px; font-weight:700;
+    cursor:pointer; border:none; transition:var(--transition); width:100%;
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); }
+  .btn-primary:hover{ filter:brightness(1.1); }
+  .msg{ padding:12px 16px; border-radius:4px; font-size:.88rem; margin-top:16px; display:none; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(198,40,40,0.1); color:var(--error); border:1px solid rgba(198,40,40,0.3); }
+  footer{ padding:40px 0; border-top:1px solid var(--line); text-align:center; font-size:.85rem; color:var(--slate); }
+  footer a{ text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-mark.png" alt="Lueri International">
+      <span>Lueri International</span>
+    </a>
+    <a class="back-link" href="index.html">← Main site</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="eyebrow-mono">Careers</div>
+    <h1 class="title">Build Nairobi's most reliable delivery brand with us.</h1>
+    <p class="subtitle">We're not actively hiring right now — but Lueri International is growing, and we're putting together a shortlist for when we open specific roles. If you'd be a strong fit, tell us now so we can reach out first.</p>
+
+    <div class="panel">
+      <span class="status-badge">Not actively hiring — building a shortlist</span>
+      <h2 style="font-size:1.3rem; margin-top:8px;">Where we expect to hire next</h2>
+      <p style="color:var(--slate); font-size:.92rem; margin-top:8px;">Marketing and growth are our nearest priority, alongside a few other sectors as the business expands. Roles below are indicative, not open postings.</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <h3>Marketing & Growth</h3>
+          <p>Social media management, content, paid ads, and brand partnerships — helping more Nairobi businesses and individuals discover Lueri.</p>
+        </div>
+        <div class="role-card">
+          <h3>Sales & Client Accounts</h3>
+          <p>Bringing on SMEs, e-commerce sellers, and corporate accounts that need consistent, dependable dispatch.</p>
+        </div>
+        <div class="role-card">
+          <h3>Dispatch & Operations</h3>
+          <p>Coordinating riders, managing bookings, and keeping same-day delivery promises on time.</p>
+        </div>
+        <div class="role-card">
+          <h3>Other sectors</h3>
+          <p>As Lueri expands beyond delivery, we'll look for people to lead and market those new areas too. Tell us what you do — we'll keep it on file.</p>
+        </div>
+      </div>
+
+      <form id="careersForm">
+        <div class="form-row2">
+          <div class="form-group">
+            <label class="form-label" for="cName">Your Name</label>
+            <input class="form-input" type="text" id="cName" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cPhone">Phone Number</label>
+            <input class="form-input" type="tel" id="cPhone" placeholder="07xx xxx xxx" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cEmail">Email (optional)</label>
+          <input class="form-input" type="email" id="cEmail" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cArea">Area of Interest</label>
+          <select class="form-input" id="cArea" required>
+            <option value="" disabled selected>Select an area...</option>
+            <option value="Marketing & Growth">Marketing & Growth</option>
+            <option value="Sales & Client Accounts">Sales & Client Accounts</option>
+            <option value="Dispatch & Operations">Dispatch & Operations</option>
+            <option value="Rider / Driver">Rider / Driver</option>
+            <option value="Other sector">Other sector</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="cNote">Tell us about yourself</label>
+          <textarea class="form-input" id="cNote" rows="4" placeholder="Your experience, what you'd bring to Lueri, links to past work if relevant..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="careersBtn">Send via WhatsApp</button>
+        <div class="msg error" id="careersMsg"></div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="index.html">Main site</a> · <a href="rewards.html">Rewards</a> · <a href="terms-of-service.html">Terms</a>
+  <p style="margin-top:12px;">© 2026 Lueri International, Nairobi, Kenya</p>
+</footer>
+
+<script>
+  const form = document.getElementById('careersForm');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('cName').value.trim();
+    const phone = document.getElementById('cPhone').value.trim();
+    const email = document.getElementById('cEmail').value.trim();
+    const area = document.getElementById('cArea').value;
+    const note = document.getElementById('cNote').value.trim();
+
+    if (!name || !phone || !area || !note) {
+      const msg = document.getElementById('careersMsg');
+      msg.textContent = 'Please fill in your name, phone, area of interest, and a short note.';
+      msg.classList.add('show');
+      return;
+    }
+
+    const emailLine = email ? `\nEmail: ${email}` : '';
+    const message = `Careers interest - Lueri website\nName: ${name}\nPhone: ${phone}${emailLine}\nArea of interest: ${area}\nNote: ${note}`;
+    const waLink = `https://wa.me/254713261719?text=${encodeURIComponent(message)}`;
+    window.open(waLink, '_blank', 'noopener,noreferrer');
+  });
+</script>
+</body>
+</html>
