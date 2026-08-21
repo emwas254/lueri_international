@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /rewards-staff.html
+
+Sitemap: https://lueriinternational.com/sitemap.xml
