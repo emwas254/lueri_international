@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Rewards Staff Console — Lueri International</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52;
+    --signal:#E8B93D; --line: rgba(27,38,32,0.16); --success:#2e7d32; --error:#c62828;
+    --card-bg:#fff; --transition: all .2s ease;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--paper-dim); color:var(--ink); font-family:'IBM Plex Sans', sans-serif; }
+  h1,h2,h3{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 20px; }
+
+  /* Gate */
+  #gate{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .gate-box{ background:#fff; border:1.5px solid var(--ink); border-radius:4px; padding:40px; max-width:360px; width:100%; }
+  .gate-box h1{ font-size:1.4rem; margin-bottom:8px; }
+  .gate-box p{ color:var(--slate); font-size:.88rem; line-height:1.6; margin:0 0 20px; }
+  .gate-box input{ width:100%; padding:13px; border:1px solid var(--line); border-radius:4px; font-size:1.1rem; text-align:center; letter-spacing:.2em; margin-bottom:12px; }
+  .gate-box button{ width:100%; padding:13px; background:var(--route); color:#fff; border:none; border-radius:4px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; cursor:pointer; }
+  .gate-error{ color:var(--error); font-size:.85rem; margin-top:10px; display:none; }
+  .gate-error.show{ display:block; }
+
+  /* Console */
+  #console{ display:none; }
+  header{ background:var(--ink); color:var(--paper); padding:18px 0; }
+  header .wrap{ display:flex; justify-content:space-between; align-items:center; }
+  header h1{ font-size:1.1rem; }
+  header a.exit{ font-size:.8rem; text-transform:uppercase; opacity:.7; }
+  header a.exit:hover{ opacity:1; }
+  main{ padding:32px 0 80px; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+  @media (max-width:800px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+  .stat-card{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:18px; }
+  .stat-card .n{ font-family:'IBM Plex Mono', monospace; font-size:1.8rem; font-weight:600; }
+  .stat-card .l{ font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); margin-top:4px; }
+
+  .panels{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; }
+  @media (max-width:900px){ .panels{ grid-template-columns:1fr; } }
+  .panel{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:24px; margin-bottom:24px; }
+  .panel h2{ font-size:1rem; margin-bottom:16px; }
+  .form-group{ margin-bottom:14px; }
+  .form-label{ display:block; margin-bottom:5px; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); }
+  .form-input, .form-select{ width:100%; padding:10px; border:1px solid var(--line); border-radius:4px; font-size:.95rem; font-family:inherit; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .btn{ padding:11px 18px; background:var(--route); color:#fff; border:none; border-radius:4px; font-weight:700; text-transform:uppercase; font-size:.78rem; letter-spacing:.05em; cursor:pointer; }
+  .btn:hover{ filter:brightness(1.1); }
+  .btn-outline{ background:none; border:1px solid var(--ink); color:var(--ink); }
+  .msg{ padding:10px 14px; border-radius:4px; font-size:.85rem; margin-bottom:12px; display:none; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(198,40,40,.1); color:var(--error); }
+  .msg.success{ background:rgba(46,125,50,.1); color:var(--success); }
+
+  table{ width:100%; border-collapse:collapse; font-size:.85rem; }
+  th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:var(--slate); padding:8px 6px; border-bottom:1px solid var(--line); }
+  td{ padding:9px 6px; border-bottom:1px solid var(--line); }
+  .tier-pill{ display:inline-block; padding:2px 8px; border-radius:10px; font-size:.7rem; font-weight:700; text-transform:uppercase; background:var(--paper-dim); }
+  .search-row{ display:flex; gap:10px; margin-bottom:14px; }
+  .search-row input{ flex:1; }
+  .disclosure{ font-size:.78rem; color:var(--slate); line-height:1.5; margin-top:8px; padding:10px 12px; border:1px dashed var(--line); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <h1>Staff Console</h1>
+    <p>Enter the staff passcode to access Lueri Rewards management. This gate is a soft screen for staff, not real account security — don't share the passcode publicly, and don't treat this as a secure login for sensitive data.</p>
+    <input type="password" id="passcodeInput" placeholder="••••" inputmode="numeric" maxlength="6">
+    <button id="gateBtn">Enter console</button>
+    <div class="gate-error" id="gateError">Incorrect passcode.</div>
+  </div>
+</div>
+
+<div id="console">
+  <header>
+    <div class="wrap">
+      <h1>Lueri Rewards · Staff Console</h1>
+      <a class="exit" href="index.html">Exit to site</a>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="panels">
+        <div>
+          <div class="panel">
+            <h2>Register a member</h2>
+            <div class="msg error" id="regMsg"></div>
+            <div class="msg success" id="regSuccessMsg"></div>
+            <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="regName"></div>
+            <div class="row2">
+              <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="regPhone" placeholder="07xx xxx xxx"></div>
+              <div class="form-group"><label class="form-label">Email (optional)</label><input class="form-input" id="regEmail"></div>
+            </div>
+            <button class="btn" id="regBtn">Register member</button>
+          </div>
+
+          <div class="panel">
+            <h2>Log a transaction</h2>
+            <div class="msg error" id="txMsg"></div>
+            <div class="msg success" id="txSuccessMsg"></div>
+            <div class="form-group"><label class="form-label">Member phone or number</label><input class="form-input" id="txMember" placeholder="07xx xxx xxx or member no."></div>
+            <div class="row2">
+              <div class="form-group"><label class="form-label">Amount (KES)</label><input class="form-input" type="number" id="txAmount" min="0"></div>
+              <div class="form-group">
+                <label class="form-label">Type</label>
+                <select class="form-select" id="txType">
+                  <option value="sale">Sale</option>
+                  <option value="refund">Refund</option>
+                  <option value="adjustment">Adjustment</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn" id="txBtn">Add transaction</button>
+          </div>
+
+          <div class="panel">
+            <h2>Redeem a voucher</h2>
+            <div class="msg error" id="voMsg"></div>
+            <div class="msg success" id="voSuccessMsg"></div>
+            <div class="form-group"><label class="form-label">Voucher code</label><input class="form-input" id="voCode" placeholder="LUERI-XXXXXX" style="text-transform:uppercase;"></div>
+            <button class="btn btn-outline" id="voBtn">Redeem voucher</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Members</h2>
+          <div class="search-row">
+            <input class="form-input" id="memberSearch" placeholder="Search by name, phone or member no.">
+          </div>
+          <div style="max-height:520px; overflow:auto;">
+            <table id="memberTable">
+              <thead><tr><th>No.</th><th>Name</th><th>Phone</th><th>Tier</th><th>Points</th><th>Spend</th></tr></thead>
+              <tbody id="memberTbody"></tbody>
+            </table>
+          </div>
+          <div class="disclosure">Data shown here lives in this browser's storage only. Different staff devices will show different member lists until this is migrated to a shared backend.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="rewards.js"></script>
+<script>
+  const PASSCODE = 'LueriDispatch26'; // Soft gate only — change this, and treat it as a deterrent, not real security.
+
+  document.getElementById('gateBtn').addEventListener('click', tryEnter);
+  document.getElementById('passcodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryEnter(); });
+
+  function tryEnter() {
+    const val = document.getElementById('passcodeInput').value.trim();
+    if (val === PASSCODE) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('console').style.display = 'block';
+      refreshAll();
+    } else {
+      document.getElementById('gateError').classList.add('show');
+    }
+  }
+
+  function showMsg(id, text) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+
+  function refreshStats() {
+    const stats = getDashboardStats();
+    document.getElementById('statGrid').innerHTML = `
+      <div class="stat-card"><div class="n">${stats.totalMembers}</div><div class="l">Members</div></div>
+      <div class="stat-card"><div class="n">${fmt(stats.totalLifetimeSpend)}</div><div class="l">Lifetime spend</div></div>
+      <div class="stat-card"><div class="n">${stats.totalPoints.toLocaleString()}</div><div class="l">Points outstanding</div></div>
+      <div class="stat-card"><div class="n">${stats.totalTransactions}</div><div class="l">Transactions</div></div>
+    `;
+  }
+
+  function refreshMembers(query) {
+    const store = loadStore();
+    let members = query ? searchMembers(query) : store.members;
+    members = [...members].sort((a, b) => b.lifetimeSpend - a.lifetimeSpend);
+    const tbody = document.getElementById('memberTbody');
+    if (!members.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--slate); padding:20px;">No members yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = members.map(m => `
+      <tr>
+        <td class="mono">${m.memberNumber}</td>
+        <td>${escapeHTML(m.name)}</td>
+        <td class="mono">${m.phone}</td>
+        <td><span class="tier-pill">${m.tier}</span></td>
+        <td>${m.points.toLocaleString()}</td>
+        <td>${fmt(m.lifetimeSpend)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function refreshAll(query) {
+    refreshStats();
+    refreshMembers(query);
+  }
+
+  document.getElementById('memberSearch').addEventListener('input', (e) => refreshMembers(e.target.value));
+
+  document.getElementById('regBtn').addEventListener('click', () => {
+    const result = registerMember({
+      name: document.getElementById('regName').value.trim(),
+      phone: document.getElementById('regPhone').value.trim(),
+      email: document.getElementById('regEmail').value.trim(),
+    });
+    if (!result.success) { showMsg('regMsg', result.errors.join(' ')); return; }
+    showMsg('regSuccessMsg', `Registered ${result.member.name} — Member No. ${result.member.memberNumber}.`);
+    document.getElementById('regName').value = '';
+    document.getElementById('regPhone').value = '';
+    document.getElementById('regEmail').value = '';
+    refreshAll();
+  });
+
+  document.getElementById('txBtn').addEventListener('click', () => {
+    const result = addTransaction({
+      memberId: document.getElementById('txMember').value.trim(),
+      amount: document.getElementById('txAmount').value,
+      type: document.getElementById('txType').value,
+    });
+    if (!result.success) { showMsg('txMsg', result.errors.join(' ')); return; }
+    showMsg('txSuccessMsg', `Logged. ${result.member.name} now has ${result.member.points} points (${result.member.tier}).`);
+    document.getElementById('txMember').value = '';
+    document.getElementById('txAmount').value = '';
+    refreshAll();
+  });
+
+  document.getElementById('voBtn').addEventListener('click', () => {
+    const code = document.getElementById('voCode').value.trim();
+    const result = redeemVoucher(code, 'staff-console');
+    if (!result.success) { showMsg('voMsg', result.errors.join(' ')); return; }
+    showMsg('voSuccessMsg', `Voucher ${result.voucher.code} redeemed — value ${fmt(result.voucher.value)}.`);
+    document.getElementById('voCode').value = '';
+  });
+</script>
+</body>
+</html>

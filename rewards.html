@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lueri Rewards — Lueri International</title>
+<meta name="description" content="Join Lueri Rewards — earn points on every delivery, unlock free deliveries and priority dispatch as you climb Silver, Gold, Platinum and VIP tiers.">
+<meta property="og:title" content="Lueri Rewards — Lueri International">
+<meta property="og:description" content="Earn points on every delivery. Free to join.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emwas254.github.io/lueri_international/rewards.html">
+<meta property="og:image" content="https://emwas254.github.io/lueri_international/assets/og-image.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52;
+    --signal:#E8B93D; --line: rgba(27,38,32,0.16); --success:#2e7d32; --error:#c62828;
+    --card-bg: var(--paper); --paper-rgb: 240,234,216; --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  [data-theme="dark"] {
+    --ink:#F0EAD8; --paper:#1B2620; --paper-dim:#24312a; --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16); --card-bg:#24312a; --paper-rgb:27,38,32;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5; transition: background-color .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; transition: var(--transition); }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 24px; }
+  header{ position:sticky; top:0; z-index:100; background:rgba(var(--paper-rgb),.85);
+    border-bottom:1px solid var(--line); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:900px; margin:0 auto; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; }
+  .brand img{ height:30px; }
+  .back-link{ font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75; }
+  .back-link:hover{ opacity:1; color:var(--route); }
+  .theme-toggle{ background:none; border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
+    cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center; }
+  main{ padding:56px 0 100px; }
+  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:.75rem; letter-spacing:.1em; color:var(--slate); text-transform:uppercase; }
+  h1.title{ font-size:clamp(2.2rem, 6vw, 3.4rem); line-height:1; margin:10px 0 12px; }
+  .subtitle{ max-width:560px; color:var(--slate); font-size:1.05rem; line-height:1.6; }
+  .panel{
+    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:32px;
+    margin-top:36px; box-shadow:8px 8px 0 rgba(27,38,32,0.08);
+  }
+  .tabs{ display:flex; gap:8px; margin-bottom:28px; border-bottom:1px solid var(--line); }
+  .tab-btn{
+    background:none; border:none; padding:10px 4px; margin-right:20px; font-family:'IBM Plex Mono', monospace;
+    font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); cursor:pointer;
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .tab-btn.active{ color:var(--route); border-bottom-color:var(--route); }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .form-group{ margin-bottom:20px; }
+  .form-label{ display:block; margin-bottom:6px; color:var(--slate); font-family:'IBM Plex Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+  .form-input{
+    width:100%; padding:13px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem;
+  }
+  .form-input:focus{ outline:none; border-color:var(--route); }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:600px){ .form-row2{ grid-template-columns:1fr; } }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 24px;
+    font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; border-radius:4px; font-weight:700;
+    cursor:pointer; border:none; transition:var(--transition); width:100%;
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); }
+  .btn-primary:hover{ filter:brightness(1.1); }
+  .btn-secondary{ background:transparent; border:1.5px solid var(--ink); color:var(--ink); }
+  .msg{ padding:12px 16px; border-radius:4px; font-size:.88rem; margin-bottom:16px; display:none; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(198,40,40,0.1); color:var(--error); border:1px solid rgba(198,40,40,0.3); }
+  .msg.success{ background:rgba(46,125,50,0.1); color:var(--success); border:1px solid rgba(46,125,50,0.3); }
+  .disclosure{
+    margin-top:28px; padding:16px 18px; border:1px dashed var(--line); border-radius:4px;
+    font-size:.82rem; color:var(--slate); line-height:1.6;
+  }
+  /* Member card */
+  .member-card{ display:none; }
+  .member-card.show{ display:block; }
+  .tier-band{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+    background:var(--ink); color:var(--paper); padding:28px; border-radius:4px; margin-bottom:24px;
+  }
+  .tier-name{ font-family:'Oswald', sans-serif; font-size:1.6rem; text-transform:uppercase; }
+  .tier-name .signal{ color:var(--signal); }
+  .points-num{ font-family:'IBM Plex Mono', monospace; font-size:2rem; font-weight:600; }
+  .points-label{ font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; opacity:.7; }
+  .progress-track{ height:8px; background:rgba(240,234,216,0.15); border-radius:8px; margin-top:14px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--signal); border-radius:8px; transition:width .4s ease; }
+  .progress-note{ font-size:.78rem; opacity:.75; margin-top:8px; }
+  .benefit-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:20px 0; }
+  @media (max-width:600px){ .benefit-grid{ grid-template-columns:1fr; } }
+  .benefit-item{ font-size:.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:4px; }
+  .benefit-item::before{ content:"✓ "; color:var(--route); font-weight:700; }
+  table.tx-table{ width:100%; border-collapse:collapse; font-size:.88rem; margin-top:12px; }
+  table.tx-table th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:.7rem; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--slate); padding:8px 6px; border-bottom:1px solid var(--line); }
+  table.tx-table td{ padding:10px 6px; border-bottom:1px solid var(--line); }
+  .empty-note{ color:var(--slate); font-size:.9rem; padding:20px 0; }
+  .switch-link{ text-align:center; margin-top:16px; font-size:.85rem; color:var(--slate); }
+  .switch-link a{ color:var(--route); text-decoration:underline; font-weight:600; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-mark.png" alt="Lueri International">
+      <span>Lueri International</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <a class="back-link" href="index.html">← Main site</a>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="eyebrow-mono">Lueri Rewards</div>
+    <h1 class="title">Earn on every<br>delivery.</h1>
+    <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch.</p>
+
+    <div class="panel">
+      <div class="tabs" id="tabBar">
+        <button class="tab-btn active" data-tab="lookup">My Rewards</button>
+        <button class="tab-btn" data-tab="join">Join Now</button>
+      </div>
+
+      <!-- LOOKUP VIEW -->
+      <div class="view active" id="view-lookup">
+        <div id="lookupForm">
+          <p style="color:var(--slate); font-size:.92rem; margin:0 0 20px;">Enter the phone number you registered with to view your points and tier.</p>
+          <div class="msg error" id="lookupMsg"></div>
+          <div class="form-group">
+            <label class="form-label" for="lookupPhone">Phone number</label>
+            <input class="form-input" type="tel" id="lookupPhone" placeholder="07xx xxx xxx">
+          </div>
+          <button class="btn btn-primary" id="lookupBtn">View my rewards</button>
+          <p class="switch-link">Not a member yet? <a href="#" data-tab="join">Join Lueri Rewards</a></p>
+        </div>
+
+        <div class="member-card" id="memberCard">
+          <div class="tier-band">
+            <div>
+              <div class="points-label">Current tier</div>
+              <div class="tier-name"><span id="mTierName" class="signal">Bronze</span></div>
+            </div>
+            <div style="text-align:right;">
+              <div class="points-num" id="mPoints">0</div>
+              <div class="points-label">Points balance</div>
+            </div>
+          </div>
+          <div>
+            <div class="progress-track"><div class="progress-fill" id="mProgressFill" style="width:0%;"></div></div>
+            <div class="progress-note" id="mProgressNote"></div>
+          </div>
+
+          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Your benefits</h3>
+          <div class="benefit-grid" id="mBenefits"></div>
+
+          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Recent activity</h3>
+          <div id="mTxWrap"><p class="empty-note">No transactions yet.</p></div>
+
+          <button class="btn btn-secondary" style="margin-top:24px;" id="lookupAnother">Look up a different number</button>
+        </div>
+      </div>
+
+      <!-- JOIN VIEW -->
+      <div class="view" id="view-join">
+        <div class="msg error" id="joinMsg"></div>
+        <div class="msg success" id="joinSuccessMsg"></div>
+        <div class="form-row2">
+          <div class="form-group">
+            <label class="form-label" for="joinName">Full name</label>
+            <input class="form-input" type="text" id="joinName" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="joinPhone">Phone number</label>
+            <input class="form-input" type="tel" id="joinPhone" placeholder="07xx xxx xxx" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="joinEmail">Email (optional)</label>
+          <input class="form-input" type="email" id="joinEmail">
+        </div>
+        <button class="btn btn-primary" id="joinBtn">Create my Rewards account</button>
+      </div>
+
+      <div class="disclosure">
+        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your points are saved on this device/browser only — if you switch phones or clear your browser data, ask our dispatcher on WhatsApp and we'll help recover your balance manually. Points post automatically at booking; for now, message us on WhatsApp with your registered number after a delivery so our team can log the transaction on their end.
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="rewards.js"></script>
+<script>
+  // Theme (shared with main site)
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
+    moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
+  }
+  themeToggle.addEventListener('click', () => {
+    const current = localStorage.getItem('theme') || 'light';
+    setTheme(current === 'light' ? 'dark' : 'light');
+  });
+  setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+  // Tabs
+  function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.getElementById('view-lookup').classList.toggle('active', name === 'lookup');
+    document.getElementById('view-join').classList.toggle('active', name === 'join');
+  }
+  document.querySelectorAll('[data-tab]').forEach(el => {
+    el.addEventListener('click', (e) => { e.preventDefault(); showTab(el.dataset.tab); });
+  });
+
+  function showMsg(id, text) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.classList.add('show');
+  }
+  function hideMsg(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  function renderMember(summary) {
+    document.getElementById('lookupForm').style.display = 'none';
+    document.getElementById('memberCard').classList.add('show');
+    document.getElementById('mTierName').textContent = summary.tier;
+    document.getElementById('mPoints').textContent = summary.points.toLocaleString();
+
+    const progressPct = Math.round((summary.tierProgress || 0) * 100);
+    document.getElementById('mProgressFill').style.width = progressPct + '%';
+    document.getElementById('mProgressNote').textContent = summary.nextTier
+      ? `KES ${summary.amountToNextTier.toLocaleString()} more in lifetime spend to reach ${summary.nextTier}`
+      : `You've reached our top tier — VIP.`;
+
+    const benefitsEl = document.getElementById('mBenefits');
+    benefitsEl.innerHTML = '';
+    (summary.benefits || []).forEach(b => {
+      const div = document.createElement('div');
+      div.className = 'benefit-item';
+      div.textContent = b;
+      benefitsEl.appendChild(div);
+    });
+
+    const txWrap = document.getElementById('mTxWrap');
+    const txs = getMemberTransactions(summary.member.id).slice(0, 10);
+    if (!txs.length) {
+      txWrap.innerHTML = '<p class="empty-note">No transactions yet.</p>';
+    } else {
+      let html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th></tr></thead><tbody>';
+      txs.forEach(t => {
+        html += `<tr><td>${formatDate(t.date)}</td><td style="text-transform:capitalize;">${t.type}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      txWrap.innerHTML = html;
+    }
+  }
+
+  document.getElementById('lookupBtn').addEventListener('click', () => {
+    hideMsg('lookupMsg');
+    const phone = document.getElementById('lookupPhone').value.trim();
+    if (!phone) { showMsg('lookupMsg', 'Enter your phone number.'); return; }
+    const summary = getMemberSummary(phone);
+    if (!summary) {
+      showMsg('lookupMsg', "We couldn't find a Rewards account with that number on this device. If you joined on a different phone, message us on WhatsApp and we'll help.");
+      return;
+    }
+    renderMember(summary);
+  });
+
+  document.getElementById('lookupAnother').addEventListener('click', () => {
+    document.getElementById('memberCard').classList.remove('show');
+    document.getElementById('lookupForm').style.display = 'block';
+    document.getElementById('lookupPhone').value = '';
+  });
+
+  document.getElementById('joinBtn').addEventListener('click', () => {
+    hideMsg('joinMsg'); hideMsg('joinSuccessMsg');
+    const input = {
+      name: document.getElementById('joinName').value.trim(),
+      phone: document.getElementById('joinPhone').value.trim(),
+      email: document.getElementById('joinEmail').value.trim(),
+    };
+    const result = registerMember(input);
+    if (!result.success) {
+      showMsg('joinMsg', result.errors.join(' '));
+      return;
+    }
+    showMsg('joinSuccessMsg', `Welcome, ${result.member.name.split(' ')[0]}! Your Rewards account is set up. Member No. ${result.member.memberNumber}.`);
+    setTimeout(() => {
+      showTab('lookup');
+      document.getElementById('lookupPhone').value = input.phone;
+      document.getElementById('lookupBtn').click();
+    }, 1200);
+  });
+</script>
+</body>
+</html>
