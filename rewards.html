@@ -113,6 +113,12 @@
   .empty-note{ color:var(--slate); font-size:.9rem; padding:20px 0; }
   .switch-link{ text-align:center; margin-top:16px; font-size:.85rem; color:var(--slate); }
   .switch-link a{ color:var(--route); text-decoration:underline; font-weight:600; }
+  .receipt-link{
+    background:none; border:1px solid var(--line); border-radius:3px; padding:4px 10px;
+    font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--route);
+    cursor:pointer; font-family:'IBM Plex Mono', monospace;
+  }
+  .receipt-link:hover{ border-color:var(--route); }
 
   /* Public tier explainer */
   .tier-explainer{ margin-top:40px; }
@@ -322,13 +328,45 @@
     if (!txs.length) {
       txWrap.innerHTML = '<p class="empty-note">No transactions yet.</p>';
     } else {
-      let html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th></tr></thead><tbody>';
+      let html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th><th></th></tr></thead><tbody>';
       txs.forEach(t => {
-        html += `<tr><td>${formatDate(t.date)}</td><td style="text-transform:capitalize;">${t.type}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td></tr>`;
+        html += `<tr><td>${formatDate(t.date)}</td><td style="text-transform:capitalize;">${t.type}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td><td><button class="receipt-link" data-txid="${t.id}">Receipt</button></td></tr>`;
       });
       html += '</tbody></table>';
       txWrap.innerHTML = html;
+      txWrap.querySelectorAll('.receipt-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tx = txs.find(t => t.id === btn.dataset.txid);
+          if (tx) openMemberReceipt(tx, summary.member);
+        });
+      });
     }
+  }
+
+  function openMemberReceipt(tx, member) {
+    const rows = [
+      ['Lueri International', ''],
+      ['Receipt', ''],
+      ['Transaction No.', tx.transactionNumber || tx.id],
+      ['Date', formatDate(tx.date)],
+      ['Member', `${member.name} (No. ${member.memberNumber})`],
+      ['Type', tx.type.charAt(0).toUpperCase() + tx.type.slice(1)],
+      ['Amount', fmt(tx.amount)],
+      ['Points earned', tx.points >= 0 ? `+${tx.points}` : `${tx.points}`],
+    ].map(([label, value]) => {
+      if (value === '') return `<div class="h">${label}</div>`;
+      return `<div class="row"><span>${label}</span><strong>${value}</strong></div>`;
+    }).join('');
+    const win = window.open('', '_blank', 'width=380,height=560');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${tx.transactionNumber || tx.id}</title>
+      <style>
+        body{ font-family:'Courier New', monospace; max-width:340px; margin:36px auto; color:#111; }
+        .h{ font-weight:700; text-transform:uppercase; font-size:1.1em; margin:2px 0; }
+        .row{ display:flex; justify-content:space-between; gap:16px; padding:4px 0; font-size:.95em; border-bottom:1px dashed #ddd; }
+      </style></head><body>${rows}
+      <script>window.onload = () => window.print();<\/script>
+      </body></html>`);
+    win.document.close();
   }
 
   document.getElementById('lookupBtn').addEventListener('click', () => {

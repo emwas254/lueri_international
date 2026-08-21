@@ -74,12 +74,32 @@ const LUERI_REWARDS = Object.freeze({
   sequences: {
     firstMemberNumber: 1000,
     firstTransactionNumber: 5000,
+    firstInvoiceNumber: 100,
   },
 
   company: {
     name: 'Lueri International',
     currency: 'KES',
     country: 'KE',
+
+    // Fill these in with your real registration details before this
+    // is used for anything you'd hand to a client as an official
+    // invoice. Left blank on purpose rather than faked.
+    kraPin: '',
+    address: 'Nairobi, Kenya',
+    phone: '+254 713 261 719',
+
+    // VAT registration status. Kenya's VAT threshold is KES 5,000,000
+    // annual turnover — most small couriers aren't registered.
+    // Leave false unless you have actually registered for VAT with
+    // KRA. If you ARE VAT-registered, note that KRA requires
+    // invoices to be issued through an eTIMS-compliant device/system
+    // to count as valid tax invoices — this generator is NOT
+    // eTIMS-integrated, so a document from here would not satisfy
+    // that requirement on its own. Talk to your accountant before
+    // relying on this for VAT-registered invoicing.
+    vatRegistered: false,
+    vatRate: 0.16,
   },
 
   // IMPORTANT:
@@ -566,6 +586,8 @@ function createEmptyStore() {
       LUERI_REWARDS.sequences.firstMemberNumber,
     txSeq:
       LUERI_REWARDS.sequences.firstTransactionNumber,
+    invoiceSeq:
+      LUERI_REWARDS.sequences.firstInvoiceNumber,
     updatedAt: nowISO(),
   };
 }
@@ -791,6 +813,15 @@ function loadStore() {
         )
       );
 
+    store.invoiceSeq =
+      Math.max(
+        LUERI_REWARDS.sequences.firstInvoiceNumber,
+        toNumber(
+          parsed.invoiceSeq,
+          LUERI_REWARDS.sequences.firstInvoiceNumber
+        )
+      );
+
     return store;
 
   } catch (error) {
@@ -910,6 +941,26 @@ function generateTransactionNumber(store) {
     ) + 1;
 
   return `TX-${store.txSeq}`;
+}
+
+
+/**
+ * Invoice numbers are sequential and distinct from transaction
+ * numbers — a real invoice sequence with gaps or duplicates looks
+ * wrong to a client's accounts team, so this increments only when an
+ * invoice is actually generated, and the counter persists in the
+ * store like the other sequences.
+ */
+function generateInvoiceNumber(store) {
+  store.invoiceSeq =
+    Math.max(
+      toNumber(store.invoiceSeq),
+      LUERI_REWARDS.sequences.firstInvoiceNumber
+    ) + 1;
+
+  saveStoreData(store);
+
+  return `INV-${store.invoiceSeq}`;
 }
 
 

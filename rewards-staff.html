@@ -69,6 +69,19 @@
   .search-row{ display:flex; gap:10px; margin-bottom:14px; }
   .search-row input{ flex:1; }
   .disclosure{ font-size:.78rem; color:var(--slate); line-height:1.5; margin-top:8px; padding:10px 12px; border:1px dashed var(--line); border-radius:4px; }
+
+  /* Receipt */
+  .receipt-box{ display:none; margin-top:20px; }
+  .receipt-box.show{ display:block; }
+  .receipt-preview{
+    background:var(--paper); border:1px dashed var(--ink); border-radius:4px; padding:20px;
+    font-family:'IBM Plex Mono', monospace; font-size:.82rem; line-height:1.7; margin-bottom:14px;
+  }
+  .receipt-preview .rline{ display:flex; justify-content:space-between; gap:12px; }
+  .receipt-preview .rhead{ font-family:'Oswald', sans-serif; font-size:1rem; text-transform:uppercase; margin-bottom:10px; }
+  .receipt-preview hr{ border:none; border-top:1px dashed var(--line); margin:10px 0; }
+  .receipt-actions{ display:flex; gap:10px; }
+  .receipt-actions .btn{ flex:1; width:auto; }
 </style>
 </head>
 <body>
@@ -126,6 +139,18 @@
               </div>
             </div>
             <button class="btn" id="txBtn">Add transaction</button>
+
+            <div class="receipt-box" id="receiptBox">
+              <div class="receipt-preview" id="receiptPreview"></div>
+              <div class="receipt-actions">
+                <button class="btn btn-outline" id="printReceiptBtn">Print / Save as PDF</button>
+                <button class="btn" id="waReceiptBtn">Send via WhatsApp</button>
+              </div>
+              <div class="receipt-actions" style="margin-top:10px;">
+                <button class="btn btn-outline" id="invoiceBtn">Generate Invoice (PDF)</button>
+              </div>
+              <div class="disclosure" id="invoiceDisclosure" style="display:none; margin-top:10px;"></div>
+            </div>
           </div>
 
           <div class="panel">
@@ -244,6 +269,127 @@
     document.getElementById('txMember').value = '';
     document.getElementById('txAmount').value = '';
     refreshAll();
+    showReceipt(result.transaction, result.member);
+  });
+
+  // ---- Receipt (print + WhatsApp) ----
+  let currentReceipt = null;
+
+  function receiptLines(tx, member) {
+    return [
+      ['Lueri International', ''],
+      ['Receipt', ''],
+      ['---', ''],
+      ['Transaction No.', tx.transactionNumber || tx.id],
+      ['Date', formatDateTime(tx.date)],
+      ['Member', `${member.name} (No. ${member.memberNumber})`],
+      ['Phone', member.phone],
+      ['Type', tx.type.charAt(0).toUpperCase() + tx.type.slice(1)],
+      ['Amount', fmt(tx.amount)],
+      ['Points earned', tx.points >= 0 ? `+${tx.points}` : `${tx.points}`],
+      ['---', ''],
+      ['New points balance', member.points.toLocaleString()],
+      ['Current tier', member.tier],
+    ];
+  }
+
+  function showReceipt(tx, member) {
+    currentReceipt = { tx, member };
+    const box = document.getElementById('receiptBox');
+    const preview = document.getElementById('receiptPreview');
+    const lines = receiptLines(tx, member);
+    preview.innerHTML =
+      `<div class="rhead">Lueri International — Receipt</div>` +
+      lines.slice(3).map(([label, value]) =>
+        label === '---' ? '<hr>' : `<div class="rline"><span>${label}</span><strong>${escapeHTML(String(value))}</strong></div>`
+      ).join('');
+    box.classList.add('show');
+  }
+
+  function receiptPrintHTML(tx, member) {
+    const lines = receiptLines(tx, member);
+    const rows = lines.map(([label, value]) => {
+      if (label === '---') return '<hr>';
+      if (value === '') return `<div class="h">${label}</div>`;
+      return `<div class="row"><span>${label}</span><strong>${value}</strong></div>`;
+    }).join('');
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${tx.transactionNumber || tx.id}</title>
+      <style>
+        body{ font-family:'Courier New', monospace; max-width:360px; margin:40px auto; color:#111; }
+        .h{ font-weight:700; text-transform:uppercase; font-size:1.1em; margin:2px 0; }
+        .row{ display:flex; justify-content:space-between; gap:16px; padding:4px 0; font-size:.95em; }
+        hr{ border:none; border-top:1px dashed #999; margin:10px 0; }
+      </style></head><body>${rows}
+      <script>window.onload = () => window.print();</script>
+      </body></html>`;
+  }
+
+  document.getElementById('printReceiptBtn').addEventListener('click', () => {
+    if (!currentReceipt) return;
+    const win = window.open('', '_blank', 'width=420,height=600');
+    win.document.write(receiptPrintHTML(currentReceipt.tx, currentReceipt.member));
+    win.document.close();
+  });
+
+  document.getElementById('invoiceBtn').addEventListener('click', () => {
+    if (!currentReceipt) return;
+    const { tx, member } = currentReceipt;
+    const store = loadStore();
+    const invoiceNo = generateInvoiceNumber(store);
+    const c = LUERI_REWARDS.company;
+    const vat = c.vatRegistered ? Math.round(tx.amount * c.vatRate) : 0;
+    const total = tx.amount + vat;
+
+    const win = window.open('', '_blank', 'width=480,height=700');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${invoiceNo}</title>
+      <style>
+        body{ font-family:Arial, sans-serif; max-width:480px; margin:40px auto; color:#111; font-size:13px; }
+        h1{ font-size:1.3rem; margin:0 0 2px; }
+        .muted{ color:#555; font-size:.85em; }
+        .row{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; }
+        .total{ font-weight:700; font-size:1.05em; border-top:2px solid #111; margin-top:8px; padding-top:8px; }
+        .section{ margin:20px 0; }
+        .flag{ background:#fff3cd; border:1px solid #ffe08a; padding:10px 12px; font-size:.8em; margin-top:24px; border-radius:4px; }
+      </style></head><body>
+      <h1>${c.name}</h1>
+      <div class="muted">${c.address}<br>${c.phone}${c.kraPin ? '<br>KRA PIN: ' + c.kraPin : ''}</div>
+
+      <div class="section">
+        <div class="row"><span>Invoice No.</span><strong>${invoiceNo}</strong></div>
+        <div class="row"><span>Date</span><strong>${formatDate(nowISO())}</strong></div>
+        <div class="row"><span>Bill to</span><strong>${escapeHTML(member.name)}</strong></div>
+        <div class="row"><span>Phone</span><strong>${member.phone}</strong></div>
+      </div>
+
+      <div class="section">
+        <div class="row"><span>Delivery service (Txn ${tx.transactionNumber || tx.id})</span><strong>${fmt(tx.amount)}</strong></div>
+        ${c.vatRegistered ? `<div class="row"><span>VAT (${Math.round(c.vatRate*100)}%)</span><strong>${fmt(vat)}</strong></div>` : ''}
+        <div class="row total"><span>Total</span><strong>${fmt(total)}</strong></div>
+      </div>
+
+      ${!c.kraPin ? `<div class="flag">This invoice has no KRA PIN on file for Lueri International — add one in rewards.js (company.kraPin) before sending this to a client.</div>` : ''}
+      ${c.vatRegistered ? `<div class="flag">Lueri International is marked VAT-registered. KRA requires VAT invoices to be issued through an eTIMS-compliant system to count as valid tax invoices — this document alone does not satisfy that requirement. Confirm with your accountant before relying on it.</div>` : `<div class="flag">Lueri International is not currently marked as VAT-registered, so no VAT has been charged on this invoice.</div>`}
+
+      <script>window.onload = () => window.print();</script>
+      </body></html>`);
+    win.document.close();
+  });
+
+  document.getElementById('waReceiptBtn').addEventListener('click', () => {
+    if (!currentReceipt) return;
+    const { tx, member } = currentReceipt;
+    const text = [
+      `Lueri International — Receipt`,
+      `Txn No: ${tx.transactionNumber || tx.id}`,
+      `Date: ${formatDateTime(tx.date)}`,
+      `Amount: ${fmt(tx.amount)}`,
+      `Points earned: ${tx.points >= 0 ? '+' + tx.points : tx.points}`,
+      `New balance: ${member.points.toLocaleString()} pts (${member.tier})`,
+      `Thank you for choosing Lueri International.`,
+    ].join('\n');
+    let waPhone = member.phone.replace(/\D/g, '');
+    if (waPhone.startsWith('0')) waPhone = '254' + waPhone.slice(1);
+    window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   });
 
   document.getElementById('voBtn').addEventListener('click', () => {
