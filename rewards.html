@@ -249,6 +249,18 @@
 
 <script src="rewards-cloud.js"></script>
 <script>
+  // --- FIX: fmt() was referenced in three places but never defined anywhere
+  // in this file or in rewards-cloud.js. That caused an uncaught
+  // ReferenceError on page load inside renderTierExplainer(), which halted
+  // this entire script block before it reached the code that wires up the
+  // "View My Rewards" and "Create my Rewards account" buttons. Defining it
+  // here, first, fixes all three call sites (tier explainer, transaction
+  // table, printable receipt) and matches the "KES 350" currency style
+  // already used on the main site.
+  function fmt(n) {
+    return 'KES ' + Number(n || 0).toLocaleString();
+  }
+
   // Theme (shared with main site)
   const themeToggle = document.getElementById('themeToggle');
   const sunIcon = document.getElementById('sunIcon');
@@ -266,22 +278,31 @@
   setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
   // Public tier explainer — rendered live from the tier table so it never drifts out of sync
+  // --- HARDENING: wrapped in try/catch so a future data issue (e.g. a
+  // missing field on LUERI_REWARDS.tiers) degrades gracefully instead of
+  // silently killing every script below it on the page, which is exactly
+  // what happened here.
   (function renderTierExplainer() {
     const container = document.getElementById('tierCards');
-    const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
-    container.innerHTML = tiersLowToHigh.map(tier => {
-      const spendLabel = tier.minSpend > 0
-        ? `${fmt(tier.minSpend)}+ lifetime spend`
-        : 'Starting tier';
-      const benefits = tier.benefits.slice(0, 3).map(b => `<li>${b}</li>`).join('');
-      return `
-        <div class="tier-explain-card">
-          <div class="tname">${tier.name}</div>
-          <div class="tspend">${spendLabel}</div>
-          <ul>${benefits}</ul>
-        </div>
-      `;
-    }).join('');
+    try {
+      const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
+      container.innerHTML = tiersLowToHigh.map(tier => {
+        const spendLabel = tier.minSpend > 0
+          ? `${fmt(tier.minSpend)}+ lifetime spend`
+          : 'Starting tier';
+        const benefits = tier.benefits.slice(0, 3).map(b => `<li>${b}</li>`).join('');
+        return `
+          <div class="tier-explain-card">
+            <div class="tname">${tier.name}</div>
+            <div class="tspend">${spendLabel}</div>
+            <ul>${benefits}</ul>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Tier explainer failed to render:', err);
+      if (container) container.innerHTML = '';
+    }
   })();
 
   // Tabs
