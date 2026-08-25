@@ -15,7 +15,7 @@
 
 'use strict';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbzbr0lCJRmVzBGAKzfcV52NAwdafHSdeiv1IVTfR-M_-CKbc5eyjscj4PTRZZ6gGDjg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwIDbi4ssSEF7rn6l_rljcufKUydMGs5pYeW9BjbbvA2SLekoIvyAyiJBw6i9CqyCkg/exec';
 
 /* ==========================================================================
    TIER TABLE — kept identical to your existing rewards program rules
