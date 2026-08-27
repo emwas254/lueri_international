@@ -8,6 +8,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="lueri-common.js"></script>
+<script>lueriBootTheme();</script>
 <style>
   :root{
     --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52;
@@ -20,32 +22,26 @@
   .mono{ font-family:'IBM Plex Mono', monospace; }
   a{ color:inherit; }
   .wrap{ max-width:1080px; margin:0 auto; padding:0 20px; }
-
-  /* Gate */
   #gate{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
   .gate-box{ background:#fff; border:1.5px solid var(--ink); border-radius:4px; padding:40px; max-width:360px; width:100%; }
   .gate-box h1{ font-size:1.4rem; margin-bottom:8px; }
   .gate-box p{ color:var(--slate); font-size:.88rem; line-height:1.6; margin:0 0 20px; }
-  .gate-box input{ width:100%; padding:13px; border:1px solid var(--line); border-radius:4px; font-size:1.1rem; text-align:center; letter-spacing:.2em; margin-bottom:12px; }
+  .gate-box input{ width:100%; padding:13px; border:1px solid var(--line); border-radius:4px; font-size:1.1rem; text-align:center; letter-spacing:.12em; margin-bottom:12px; }
   .gate-box button{ width:100%; padding:13px; background:var(--route); color:#fff; border:none; border-radius:4px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; cursor:pointer; }
   .gate-error{ color:var(--error); font-size:.85rem; margin-top:10px; display:none; }
   .gate-error.show{ display:block; }
-
-  /* Console */
   #console{ display:none; }
   header{ background:var(--ink); color:var(--paper); padding:18px 0; }
   header .wrap{ display:flex; justify-content:space-between; align-items:center; }
   header h1{ font-size:1.1rem; }
-  header a.exit{ font-size:.8rem; text-transform:uppercase; opacity:.7; }
+  header a.exit{ font-size:.8rem; text-transform:uppercase; opacity:.7; text-decoration:none; }
   header a.exit:hover{ opacity:1; }
   main{ padding:32px 0 80px; }
-
   .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
   @media (max-width:800px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
   .stat-card{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:18px; }
   .stat-card .n{ font-family:'IBM Plex Mono', monospace; font-size:1.8rem; font-weight:600; }
   .stat-card .l{ font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); margin-top:4px; }
-
   .panels{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; }
   @media (max-width:900px){ .panels{ grid-template-columns:1fr; } }
   .panel{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:24px; margin-bottom:24px; }
@@ -55,13 +51,12 @@
   .form-input, .form-select{ width:100%; padding:10px; border:1px solid var(--line); border-radius:4px; font-size:.95rem; font-family:inherit; }
   .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .btn{ padding:11px 18px; background:var(--route); color:#fff; border:none; border-radius:4px; font-weight:700; text-transform:uppercase; font-size:.78rem; letter-spacing:.05em; cursor:pointer; }
-  .btn:hover{ filter:brightness(1.1); }
+  .btn:disabled{ opacity:.6; cursor:default; }
   .btn-outline{ background:none; border:1px solid var(--ink); color:var(--ink); }
   .msg{ padding:10px 14px; border-radius:4px; font-size:.85rem; margin-bottom:12px; display:none; }
   .msg.show{ display:block; }
   .msg.error{ background:rgba(198,40,40,.1); color:var(--error); }
   .msg.success{ background:rgba(46,125,50,.1); color:var(--success); }
-
   table{ width:100%; border-collapse:collapse; font-size:.85rem; }
   th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:var(--slate); padding:8px 6px; border-bottom:1px solid var(--line); }
   td{ padding:9px 6px; border-bottom:1px solid var(--line); }
@@ -69,8 +64,6 @@
   .search-row{ display:flex; gap:10px; margin-bottom:14px; }
   .search-row input{ flex:1; }
   .disclosure{ font-size:.78rem; color:var(--slate); line-height:1.5; margin-top:8px; padding:10px 12px; border:1px dashed var(--line); border-radius:4px; }
-
-  /* Receipt */
   .receipt-box{ display:none; margin-top:20px; }
   .receipt-box.show{ display:block; }
   .receipt-preview{
@@ -89,10 +82,10 @@
 <div id="gate">
   <div class="gate-box">
     <h1>Staff Console</h1>
-    <p>Enter the staff passcode to access Lueri Rewards management. This gate is a soft screen for staff, not real account security — don't share the passcode publicly, and don't treat this as a secure login for sensitive data.</p>
-    <input type="password" id="passcodeInput" placeholder="••••" inputmode="numeric" maxlength="6">
-    <button id="gateBtn">Enter console</button>
-    <div class="gate-error" id="gateError">Incorrect passcode.</div>
+    <p>Enter the staff PIN stored in Apps Script. The PIN is checked on the server — it is not saved in this page.</p>
+    <input type="password" id="passcodeInput" placeholder="Staff PIN" autocomplete="current-password">
+    <button type="button" id="gateBtn">Enter console</button>
+    <div class="gate-error" id="gateError">Incorrect PIN.</div>
   </div>
 </div>
 
@@ -105,9 +98,7 @@
   </header>
   <main>
     <div class="wrap">
-
       <div class="stat-grid" id="statGrid"></div>
-
       <div class="panels">
         <div>
           <div class="panel">
@@ -119,46 +110,35 @@
               <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="regPhone" placeholder="07xx xxx xxx"></div>
               <div class="form-group"><label class="form-label">Email (optional)</label><input class="form-input" id="regEmail"></div>
             </div>
-            <button class="btn" id="regBtn">Register member</button>
+            <button class="btn" type="button" id="regBtn">Register member</button>
           </div>
 
           <div class="panel">
             <h2>Log a transaction</h2>
             <div class="msg error" id="txMsg"></div>
             <div class="msg success" id="txSuccessMsg"></div>
-            <div class="form-group"><label class="form-label">Member phone or number</label><input class="form-input" id="txMember" placeholder="07xx xxx xxx or member no."></div>
+            <div class="form-group"><label class="form-label">Member phone or number</label><input class="form-input" id="txMember" placeholder="07xx xxx xxx or LR-1004"></div>
             <div class="row2">
-              <div class="form-group"><label class="form-label">Amount (KES)</label><input class="form-input" type="number" id="txAmount" min="0"></div>
+              <div class="form-group"><label class="form-label">Amount (KES)</label><input class="form-input" type="number" id="txAmount" min="1"></div>
               <div class="form-group">
                 <label class="form-label">Type</label>
                 <select class="form-select" id="txType">
                   <option value="sale">Sale</option>
                   <option value="refund">Refund</option>
-                  <option value="adjustment">Adjustment</option>
                 </select>
               </div>
             </div>
-            <button class="btn" id="txBtn">Add transaction</button>
+            <div class="form-group"><label class="form-label">Notes (optional)</label><input class="form-input" id="txNotes" placeholder="Route, payment ref…"></div>
+            <button class="btn" type="button" id="txBtn">Add transaction</button>
 
             <div class="receipt-box" id="receiptBox">
               <div class="receipt-preview" id="receiptPreview"></div>
               <div class="receipt-actions">
-                <button class="btn btn-outline" id="printReceiptBtn">Print / Save as PDF</button>
-                <button class="btn" id="waReceiptBtn">Send via WhatsApp</button>
+                <button class="btn btn-outline" type="button" id="printReceiptBtn">Print receipt</button>
+                <button class="btn" type="button" id="waReceiptBtn">Send via WhatsApp</button>
               </div>
-              <div class="receipt-actions" style="margin-top:10px;">
-                <button class="btn btn-outline" id="invoiceBtn">Generate Invoice (PDF)</button>
-              </div>
-              <div class="disclosure" id="invoiceDisclosure" style="display:none; margin-top:10px;"></div>
+              <div class="disclosure">This is a delivery receipt / proforma, not a KRA eTIMS tax invoice.</div>
             </div>
-          </div>
-
-          <div class="panel">
-            <h2>Redeem a voucher</h2>
-            <div class="msg error" id="voMsg"></div>
-            <div class="msg success" id="voSuccessMsg"></div>
-            <div class="form-group"><label class="form-label">Voucher code</label><input class="form-input" id="voCode" placeholder="LUERI-XXXXXX" style="text-transform:uppercase;"></div>
-            <button class="btn btn-outline" id="voBtn">Redeem voucher</button>
           </div>
         </div>
 
@@ -167,211 +147,182 @@
           <div class="search-row">
             <input class="form-input" id="memberSearch" placeholder="Search by name, phone or member no.">
           </div>
-          <div style="max-height:520px; overflow:auto;">
+          <div style="max-height:640px; overflow:auto;">
             <table id="memberTable">
               <thead><tr><th>No.</th><th>Name</th><th>Phone</th><th>Tier</th><th>Points</th><th>Spend</th></tr></thead>
               <tbody id="memberTbody"></tbody>
             </table>
           </div>
-          <div class="disclosure">Data shown here lives in this browser's storage only. Different staff devices will show different member lists until this is migrated to a shared backend.</div>
+          <div class="disclosure">Live data from the shared Rewards sheet. Use this console after payment is confirmed — customers cannot post their own amounts.</div>
         </div>
       </div>
-
     </div>
   </main>
 </div>
 
-<script src="rewards.js"></script>
+<script src="rewards-cloud.js"></script>
 <script>
-  const PASSCODE = 'LueriDispatch26'; // Soft gate only — change this, and treat it as a deterrent, not real security.
+  let staffPin = '';
+  let memberCache = [];
+  let currentReceipt = null;
 
   document.getElementById('gateBtn').addEventListener('click', tryEnter);
   document.getElementById('passcodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryEnter(); });
 
-  function tryEnter() {
+  async function tryEnter() {
     const val = document.getElementById('passcodeInput').value.trim();
-    if (val === PASSCODE) {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('console').style.display = 'block';
-      refreshAll();
-    } else {
-      document.getElementById('gateError').classList.add('show');
+    const err = document.getElementById('gateError');
+    err.classList.remove('show');
+    if (!val) {
+      err.textContent = 'Enter the staff PIN.';
+      err.classList.add('show');
+      return;
     }
+    const gateBtn = document.getElementById('gateBtn');
+    gateBtn.disabled = true;
+    const result = await staffAuth(val);
+    gateBtn.disabled = false;
+    if (!result.success) {
+      err.textContent = (result.errors || ['Incorrect PIN.']).join(' ');
+      err.classList.add('show');
+      return;
+    }
+    staffPin = val;
+    sessionStorage.setItem('lueriStaffOk', '1');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('console').style.display = 'block';
+    refreshAll();
   }
 
   function showMsg(id, text) {
     const el = document.getElementById(id);
     el.textContent = text;
     el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 4000);
+    setTimeout(() => el.classList.remove('show'), 5000);
   }
 
-  function refreshStats() {
-    const stats = getDashboardStats();
-    document.getElementById('statGrid').innerHTML = `
-      <div class="stat-card"><div class="n">${stats.totalMembers}</div><div class="l">Members</div></div>
-      <div class="stat-card"><div class="n">${fmt(stats.totalLifetimeSpend)}</div><div class="l">Lifetime spend</div></div>
-      <div class="stat-card"><div class="n">${stats.totalPoints.toLocaleString()}</div><div class="l">Points outstanding</div></div>
-      <div class="stat-card"><div class="n">${stats.totalTransactions}</div><div class="l">Transactions</div></div>
-    `;
+  function refreshStats(members) {
+    const totalSpend = members.reduce((s, m) => s + (Number(m.lifetimeSpend) || 0), 0);
+    const totalPoints = members.reduce((s, m) => s + (Number(m.points) || 0), 0);
+    document.getElementById('statGrid').innerHTML =
+      '<div class="stat-card"><div class="n">' + members.length + '</div><div class="l">Members</div></div>' +
+      '<div class="stat-card"><div class="n">' + lueriFmtKes(totalSpend) + '</div><div class="l">Lifetime spend</div></div>' +
+      '<div class="stat-card"><div class="n">' + totalPoints.toLocaleString() + '</div><div class="l">Points outstanding</div></div>' +
+      '<div class="stat-card"><div class="n">' + members.filter(m => m.status === 'active').length + '</div><div class="l">Active</div></div>';
   }
 
-  function refreshMembers(query) {
-    const store = loadStore();
-    let members = query ? searchMembers(query) : store.members;
-    members = [...members].sort((a, b) => b.lifetimeSpend - a.lifetimeSpend);
+  function renderMembers(query) {
+    const q = String(query || '').trim().toLowerCase();
+    let members = memberCache;
+    if (q) {
+      members = members.filter(m => [m.name, m.phone, m.memberNumber, m.email, m.tier]
+        .filter(Boolean).some(f => String(f).toLowerCase().includes(q)));
+    }
+    members = [...members].sort((a, b) => (b.lifetimeSpend || 0) - (a.lifetimeSpend || 0));
     const tbody = document.getElementById('memberTbody');
     if (!members.length) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--slate); padding:20px;">No members yet.</td></tr>';
       return;
     }
-    tbody.innerHTML = members.map(m => `
-      <tr>
-        <td class="mono">${m.memberNumber}</td>
-        <td>${escapeHTML(m.name)}</td>
-        <td class="mono">${m.phone}</td>
-        <td><span class="tier-pill">${m.tier}</span></td>
-        <td>${m.points.toLocaleString()}</td>
-        <td>${fmt(m.lifetimeSpend)}</td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = members.map(m =>
+      '<tr>' +
+        '<td class="mono">' + lueriEscapeHtml(m.memberNumber) + '</td>' +
+        '<td>' + lueriEscapeHtml(m.name) + '</td>' +
+        '<td class="mono">' + lueriEscapeHtml(m.phone) + '</td>' +
+        '<td><span class="tier-pill">' + lueriEscapeHtml(m.tier) + '</span></td>' +
+        '<td>' + Number(m.points || 0).toLocaleString() + '</td>' +
+        '<td>' + lueriFmtKes(m.lifetimeSpend) + '</td>' +
+      '</tr>'
+    ).join('');
   }
 
-  function refreshAll(query) {
-    refreshStats();
-    refreshMembers(query);
+  async function refreshAll() {
+    const result = await listMembers(staffPin);
+    if (!result.success) {
+      showMsg('txMsg', (result.errors || ['Could not load members.']).join(' '));
+      return;
+    }
+    memberCache = result.members || [];
+    refreshStats(memberCache);
+    renderMembers(document.getElementById('memberSearch').value);
   }
 
-  document.getElementById('memberSearch').addEventListener('input', (e) => refreshMembers(e.target.value));
+  document.getElementById('memberSearch').addEventListener('input', (e) => renderMembers(e.target.value));
 
-  document.getElementById('regBtn').addEventListener('click', () => {
-    const result = registerMember({
+  document.getElementById('regBtn').addEventListener('click', async () => {
+    const phone = document.getElementById('regPhone').value.trim();
+    if (!lueriIsValidPhone(phone)) { showMsg('regMsg', 'Enter a valid Kenyan phone number.'); return; }
+    const btn = document.getElementById('regBtn');
+    btn.disabled = true;
+    const result = await registerMember({
       name: document.getElementById('regName').value.trim(),
-      phone: document.getElementById('regPhone').value.trim(),
+      phone: phone,
       email: document.getElementById('regEmail').value.trim(),
-    });
+    }, staffPin);
+    btn.disabled = false;
     if (!result.success) { showMsg('regMsg', result.errors.join(' ')); return; }
-    showMsg('regSuccessMsg', `Registered ${result.member.name} — Member No. ${result.member.memberNumber}.`);
+    showMsg('regSuccessMsg', 'Registered ' + result.member.name + ' — Member No. ' + result.member.memberNumber + '.');
     document.getElementById('regName').value = '';
     document.getElementById('regPhone').value = '';
     document.getElementById('regEmail').value = '';
     refreshAll();
   });
 
-  document.getElementById('txBtn').addEventListener('click', () => {
-    const result = addTransaction({
-      memberId: document.getElementById('txMember').value.trim(),
+  document.getElementById('txBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('txBtn');
+    btn.disabled = true;
+    const result = await addTransaction({
+      pin: staffPin,
+      memberIdentifier: document.getElementById('txMember').value.trim(),
       amount: document.getElementById('txAmount').value,
       type: document.getElementById('txType').value,
+      notes: document.getElementById('txNotes').value.trim(),
     });
+    btn.disabled = false;
     if (!result.success) { showMsg('txMsg', result.errors.join(' ')); return; }
-    showMsg('txSuccessMsg', `Logged. ${result.member.name} now has ${result.member.points} points (${result.member.tier}).`);
+    showMsg('txSuccessMsg', 'Logged. ' + result.member.name + ' now has ' + result.member.points + ' points (' + result.member.tier + ').');
     document.getElementById('txMember').value = '';
     document.getElementById('txAmount').value = '';
+    document.getElementById('txNotes').value = '';
     refreshAll();
     showReceipt(result.transaction, result.member);
   });
 
-  // ---- Receipt (print + WhatsApp) ----
-  let currentReceipt = null;
-
-  function receiptLines(tx, member) {
-    return [
-      ['Lueri International', ''],
-      ['Receipt', ''],
-      ['---', ''],
-      ['Transaction No.', tx.transactionNumber || tx.id],
-      ['Date', formatDateTime(tx.date)],
-      ['Member', `${member.name} (No. ${member.memberNumber})`],
-      ['Phone', member.phone],
-      ['Type', tx.type.charAt(0).toUpperCase() + tx.type.slice(1)],
-      ['Amount', fmt(tx.amount)],
-      ['Points earned', tx.points >= 0 ? `+${tx.points}` : `${tx.points}`],
-      ['---', ''],
-      ['New points balance', member.points.toLocaleString()],
-      ['Current tier', member.tier],
-    ];
-  }
-
   function showReceipt(tx, member) {
-    currentReceipt = { tx, member };
-    const box = document.getElementById('receiptBox');
+    currentReceipt = { tx: tx, member: member };
     const preview = document.getElementById('receiptPreview');
-    const lines = receiptLines(tx, member);
     preview.innerHTML =
-      `<div class="rhead">Lueri International — Receipt</div>` +
-      lines.slice(3).map(([label, value]) =>
-        label === '---' ? '<hr>' : `<div class="rline"><span>${label}</span><strong>${escapeHTML(String(value))}</strong></div>`
-      ).join('');
-    box.classList.add('show');
-  }
-
-  function receiptPrintHTML(tx, member) {
-    const lines = receiptLines(tx, member);
-    const rows = lines.map(([label, value]) => {
-      if (label === '---') return '<hr>';
-      if (value === '') return `<div class="h">${label}</div>`;
-      return `<div class="row"><span>${label}</span><strong>${value}</strong></div>`;
-    }).join('');
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${tx.transactionNumber || tx.id}</title>
-      <style>
-        body{ font-family:'Courier New', monospace; max-width:360px; margin:40px auto; color:#111; }
-        .h{ font-weight:700; text-transform:uppercase; font-size:1.1em; margin:2px 0; }
-        .row{ display:flex; justify-content:space-between; gap:16px; padding:4px 0; font-size:.95em; }
-        hr{ border:none; border-top:1px dashed #999; margin:10px 0; }
-      </style></head><body>${rows}
-      <script>window.onload = () => window.print();</script>
-      </body></html>`;
+      '<div class="rhead">Lueri International — Receipt</div>' +
+      '<div class="rline"><span>Transaction No.</span><strong>' + lueriEscapeHtml(tx.transactionNumber || tx.id) + '</strong></div>' +
+      '<div class="rline"><span>Date</span><strong>' + lueriEscapeHtml(formatDateTime(tx.date || tx.createdAt)) + '</strong></div>' +
+      '<div class="rline"><span>Member</span><strong>' + lueriEscapeHtml(member.name + ' (' + member.memberNumber + ')') + '</strong></div>' +
+      '<div class="rline"><span>Type</span><strong>' + lueriEscapeHtml(tx.type || 'sale') + '</strong></div>' +
+      '<div class="rline"><span>Amount</span><strong>' + lueriEscapeHtml(lueriFmtKes(tx.amount)) + '</strong></div>' +
+      '<div class="rline"><span>Points</span><strong>' + (tx.points >= 0 ? '+' : '') + tx.points + '</strong></div>' +
+      '<hr>' +
+      '<div class="rline"><span>New points balance</span><strong>' + Number(member.points).toLocaleString() + '</strong></div>' +
+      '<div class="rline"><span>Current tier</span><strong>' + lueriEscapeHtml(member.tier) + '</strong></div>';
+    document.getElementById('receiptBox').classList.add('show');
   }
 
   document.getElementById('printReceiptBtn').addEventListener('click', () => {
     if (!currentReceipt) return;
-    const win = window.open('', '_blank', 'width=420,height=600');
-    win.document.write(receiptPrintHTML(currentReceipt.tx, currentReceipt.member));
-    win.document.close();
-  });
-
-  document.getElementById('invoiceBtn').addEventListener('click', () => {
-    if (!currentReceipt) return;
     const { tx, member } = currentReceipt;
-    const store = loadStore();
-    const invoiceNo = generateInvoiceNumber(store);
-    const c = LUERI_REWARDS.company;
-    const vat = c.vatRegistered ? Math.round(tx.amount * c.vatRate) : 0;
-    const total = tx.amount + vat;
-
-    const win = window.open('', '_blank', 'width=480,height=700');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${invoiceNo}</title>
-      <style>
-        body{ font-family:Arial, sans-serif; max-width:480px; margin:40px auto; color:#111; font-size:13px; }
-        h1{ font-size:1.3rem; margin:0 0 2px; }
-        .muted{ color:#555; font-size:.85em; }
-        .row{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; }
-        .total{ font-weight:700; font-size:1.05em; border-top:2px solid #111; margin-top:8px; padding-top:8px; }
-        .section{ margin:20px 0; }
-        .flag{ background:#fff3cd; border:1px solid #ffe08a; padding:10px 12px; font-size:.8em; margin-top:24px; border-radius:4px; }
-      </style></head><body>
-      <h1>${c.name}</h1>
-      <div class="muted">${c.address}<br>${c.phone}${c.kraPin ? '<br>KRA PIN: ' + c.kraPin : ''}</div>
-
-      <div class="section">
-        <div class="row"><span>Invoice No.</span><strong>${invoiceNo}</strong></div>
-        <div class="row"><span>Date</span><strong>${formatDate(nowISO())}</strong></div>
-        <div class="row"><span>Bill to</span><strong>${escapeHTML(member.name)}</strong></div>
-        <div class="row"><span>Phone</span><strong>${member.phone}</strong></div>
-      </div>
-
-      <div class="section">
-        <div class="row"><span>Delivery service (Txn ${tx.transactionNumber || tx.id})</span><strong>${fmt(tx.amount)}</strong></div>
-        ${c.vatRegistered ? `<div class="row"><span>VAT (${Math.round(c.vatRate*100)}%)</span><strong>${fmt(vat)}</strong></div>` : ''}
-        <div class="row total"><span>Total</span><strong>${fmt(total)}</strong></div>
-      </div>
-
-      ${!c.kraPin ? `<div class="flag">This invoice has no KRA PIN on file for Lueri International — add one in rewards.js (company.kraPin) before sending this to a client.</div>` : ''}
-      ${c.vatRegistered ? `<div class="flag">Lueri International is marked VAT-registered. KRA requires VAT invoices to be issued through an eTIMS-compliant system to count as valid tax invoices — this document alone does not satisfy that requirement. Confirm with your accountant before relying on it.</div>` : `<div class="flag">Lueri International is not currently marked as VAT-registered, so no VAT has been charged on this invoice.</div>`}
-
-      <script>window.onload = () => window.print();</script>
-      </body></html>`);
+    const win = window.open('', '_blank', 'width=420,height=600');
+    if (!win) return;
+    win.document.open();
+    win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt</title>' +
+      '<style>body{font-family:Courier New,monospace;max-width:360px;margin:40px auto;color:#111}' +
+      '.h{font-weight:700;text-transform:uppercase} .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #ddd}' +
+      '.note{margin-top:20px;font-size:.8em;color:#555}</style></head><body>' +
+      '<div class="h">Lueri International</div><div class="h">Receipt</div>' +
+      '<div class="row"><span>No.</span><strong>' + lueriEscapeHtml(tx.transactionNumber || tx.id) + '</strong></div>' +
+      '<div class="row"><span>Date</span><strong>' + lueriEscapeHtml(formatDateTime(tx.date)) + '</strong></div>' +
+      '<div class="row"><span>Member</span><strong>' + lueriEscapeHtml(member.name) + '</strong></div>' +
+      '<div class="row"><span>Amount</span><strong>' + lueriEscapeHtml(lueriFmtKes(tx.amount)) + '</strong></div>' +
+      '<div class="row"><span>Points</span><strong>' + tx.points + '</strong></div>' +
+      '<p class="note">Delivery receipt / proforma — not a KRA eTIMS tax invoice.</p>' +
+      '<script>window.onload=function(){window.print();}<\\/script></body></html>');
     win.document.close();
   });
 
@@ -379,25 +330,15 @@
     if (!currentReceipt) return;
     const { tx, member } = currentReceipt;
     const text = [
-      `Lueri International — Receipt`,
-      `Txn No: ${tx.transactionNumber || tx.id}`,
-      `Date: ${formatDateTime(tx.date)}`,
-      `Amount: ${fmt(tx.amount)}`,
-      `Points earned: ${tx.points >= 0 ? '+' + tx.points : tx.points}`,
-      `New balance: ${member.points.toLocaleString()} pts (${member.tier})`,
-      `Thank you for choosing Lueri International.`,
+      'Lueri International — Receipt',
+      'Txn No: ' + (tx.transactionNumber || tx.id),
+      'Date: ' + formatDateTime(tx.date),
+      'Amount: ' + lueriFmtKes(tx.amount),
+      'Points: ' + (tx.points >= 0 ? '+' + tx.points : tx.points),
+      'New balance: ' + Number(member.points).toLocaleString() + ' pts (' + member.tier + ')',
+      'Thank you for choosing Lueri International.',
     ].join('\n');
-    let waPhone = member.phone.replace(/\D/g, '');
-    if (waPhone.startsWith('0')) waPhone = '254' + waPhone.slice(1);
-    window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
-  });
-
-  document.getElementById('voBtn').addEventListener('click', () => {
-    const code = document.getElementById('voCode').value.trim();
-    const result = redeemVoucher(code, 'staff-console');
-    if (!result.success) { showMsg('voMsg', result.errors.join(' ')); return; }
-    showMsg('voSuccessMsg', `Voucher ${result.voucher.code} redeemed — value ${fmt(result.voucher.value)}.`);
-    document.getElementById('voCode').value = '';
+    lueriOpenWhatsApp(lueriNormalizePhone(member.phone), text);
   });
 </script>
 </body>

@@ -13,6 +13,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="lueri-common.js"></script>
+<script>lueriBootTheme();</script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -42,6 +44,9 @@
   .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:900px; margin:0 auto; }
   .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; }
   .brand img{ height:30px; }
+  .brand .mark-dark-img{ display:none; }
+  [data-theme="dark"] .brand .mark-light{ display:none; }
+  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
   .back-link{ font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75; }
   .back-link:hover{ opacity:1; color:var(--route); }
   .theme-toggle{ background:none; border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
@@ -148,7 +153,8 @@
 <header>
   <div class="navbar">
     <a class="brand" href="index.html">
-      <img src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
       <span>Lueri International</span>
     </a>
     <div style="display:flex; align-items:center; gap:16px;">
@@ -171,7 +177,7 @@
     <div class="tier-explainer" id="tierExplainer">
       <div class="eyebrow-mono" style="margin-bottom:16px;">How the tiers work</div>
       <div class="tier-cards" id="tierCards"></div>
-      <p class="tier-note">Your tier is based on lifetime spend and never resets. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
+      <p class="tier-note">Your tier is based on qualifying spend in the last 12 months, so it tracks recent activity. Points are earned on confirmed bookings logged by Lueri after payment — see your balance under "My Rewards" once you've joined.</p>
     </div>
 
     <div class="panel">
@@ -241,7 +247,7 @@
       </div>
 
       <div class="disclosure">
-        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your membership is saved centrally, so you can look up your account from any phone or browser using your registered number. Points aren't posted automatically yet — after a delivery, message us on WhatsApp with your registered number and our team will log the transaction on their end.
+        <strong style="color:var(--ink);">How this works right now:</strong> Your membership is saved centrally — look it up from any phone with the Kenyan number you registered. Points are posted by Lueri staff after a delivery is quoted and paid, not from this page. Birthday bonuses and monthly free deliveries are applied by the dispatcher when you book; they are not automatic credits in this portal.
       </div>
     </div>
   </div>
@@ -249,16 +255,8 @@
 
 <script src="rewards-cloud.js"></script>
 <script>
-  // --- FIX: fmt() was referenced in three places but never defined anywhere
-  // in this file or in rewards-cloud.js. That caused an uncaught
-  // ReferenceError on page load inside renderTierExplainer(), which halted
-  // this entire script block before it reached the code that wires up the
-  // "View My Rewards" and "Create my Rewards account" buttons. Defining it
-  // here, first, fixes all three call sites (tier explainer, transaction
-  // table, printable receipt) and matches the "KES 350" currency style
-  // already used on the main site.
   function fmt(n) {
-    return 'KES ' + Number(n || 0).toLocaleString();
+    return lueriFmtKes(n);
   }
 
   // Theme (shared with main site)
@@ -288,7 +286,7 @@
       const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
       container.innerHTML = tiersLowToHigh.map(tier => {
         const spendLabel = tier.minSpend > 0
-          ? `${fmt(tier.minSpend)}+ lifetime spend`
+          ? `${fmt(tier.minSpend)}+ in the last 12 months`
           : 'Starting tier';
         const benefits = tier.benefits.slice(0, 3).map(b => `<li>${b}</li>`).join('');
         return `
@@ -333,7 +331,7 @@
     const progressPct = Math.round((summary.tierProgress || 0) * 100);
     document.getElementById('mProgressFill').style.width = progressPct + '%';
     document.getElementById('mProgressNote').textContent = summary.nextTier
-      ? `KES ${summary.amountToNextTier.toLocaleString()} more in lifetime spend to reach ${summary.nextTier}`
+      ? `KES ${summary.amountToNextTier.toLocaleString()} more in the last 12 months to reach ${summary.nextTier}`
       : `You've reached our top tier — VIP.`;
 
     const benefitsEl = document.getElementById('mBenefits');
@@ -346,13 +344,13 @@
     });
 
     const txWrap = document.getElementById('mTxWrap');
-    const txs = getMemberTransactions(summary.member.id).slice(0, 10);
+    const txs = (summary.transactions || getMemberTransactions(summary) || []).slice(0, 10);
     if (!txs.length) {
-      txWrap.innerHTML = '<p class="empty-note">No transactions yet.</p>';
+      txWrap.innerHTML = '<p class="empty-note">No transactions yet. Points appear here after Lueri logs a paid delivery.</p>';
     } else {
       let html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th><th></th></tr></thead><tbody>';
       txs.forEach(t => {
-        html += `<tr><td>${formatDate(t.date)}</td><td style="text-transform:capitalize;">${t.type}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td><td><button class="receipt-link" data-txid="${t.id}">Receipt</button></td></tr>`;
+        html += `<tr><td>${lueriEscapeHtml(formatDate(t.date || t.createdAt))}</td><td style="text-transform:capitalize;">${lueriEscapeHtml(t.type || 'sale')}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td><td><button class="receipt-link" data-txid="${lueriEscapeHtml(t.id)}">Receipt</button></td></tr>`;
       });
       html += '</tbody></table>';
       txWrap.innerHTML = html;
@@ -370,17 +368,19 @@
       ['Lueri International', ''],
       ['Receipt', ''],
       ['Transaction No.', tx.transactionNumber || tx.id],
-      ['Date', formatDate(tx.date)],
+      ['Date', formatDate(tx.date || tx.createdAt)],
       ['Member', `${member.name} (No. ${member.memberNumber})`],
-      ['Type', tx.type.charAt(0).toUpperCase() + tx.type.slice(1)],
+      ['Type', String(tx.type || 'sale').charAt(0).toUpperCase() + String(tx.type || 'sale').slice(1)],
       ['Amount', fmt(tx.amount)],
       ['Points earned', tx.points >= 0 ? `+${tx.points}` : `${tx.points}`],
     ].map(([label, value]) => {
-      if (value === '') return `<div class="h">${label}</div>`;
-      return `<div class="row"><span>${label}</span><strong>${value}</strong></div>`;
+      if (value === '') return `<div class="h">${lueriEscapeHtml(label)}</div>`;
+      return `<div class="row"><span>${lueriEscapeHtml(label)}</span><strong>${lueriEscapeHtml(value)}</strong></div>`;
     }).join('');
     const win = window.open('', '_blank', 'width=380,height=560');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${tx.transactionNumber || tx.id}</title>
+    if (!win) return;
+    win.document.open();
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${lueriEscapeHtml(tx.transactionNumber || tx.id)}</title>
       <style>
         body{ font-family:'Courier New', monospace; max-width:340px; margin:36px auto; color:#111; }
         .h{ font-weight:700; text-transform:uppercase; font-size:1.1em; margin:2px 0; }
@@ -394,10 +394,10 @@
   document.getElementById('lookupBtn').addEventListener('click', async () => {
     hideMsg('lookupMsg');
     const phone = document.getElementById('lookupPhone').value.trim();
-    if (!phone) { showMsg('lookupMsg', 'Enter your phone number.'); return; }
+    if (!lueriIsValidPhone(phone)) { showMsg('lookupMsg', 'Enter the Kenyan phone number you registered with.'); return; }
     const summary = await getMemberSummary(phone);
-    if (!summary) {
-      showMsg('lookupMsg', "We couldn't find a Rewards account with that number. Double-check the number, or message us on WhatsApp and we'll help.");
+    if (!summary || !summary.member) {
+      showMsg('lookupMsg', (summary && summary.error) || "We couldn't find a Rewards account with that number. Double-check the number, or message us on WhatsApp and we'll help.");
       return;
     }
     renderMember(summary);
@@ -417,6 +417,8 @@
       phone: document.getElementById('joinPhone').value.trim(),
       email: document.getElementById('joinEmail').value.trim(),
     };
+    if (!input.name) { showMsg('joinMsg', 'Enter your full name.'); return; }
+    if (!lueriIsValidPhone(input.phone)) { showMsg('joinMsg', 'Enter a valid Kenyan phone number.'); return; }
     joinBtn.disabled = true;
     joinBtn.textContent = 'Setting up your account…';
     const result = await registerMember(input);

@@ -23,6 +23,8 @@
 <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="lueri-common.js"></script>
+<script>lueriBootTheme();</script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -475,9 +477,12 @@
 <div id="successOverlay" class="success-overlay">
   <div>
     <div style="font-size: 4rem; color: var(--signal); margin-bottom: 20px;">✓</div>
-    <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Booking Sent!</h2>
-    <p style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 30px;">Opening WhatsApp to confirm your dispatch...</p>
-    <button onclick="closeSuccess()" class="btn btn-primary">Close</button>
+    <h2 id="successTitle" style="font-size: 2.5rem; margin-bottom: 10px;">Booking ready</h2>
+    <p id="successCopy" style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 20px;">Opening WhatsApp to confirm your dispatch...</p>
+    <p id="successFallback" style="display:none; margin-bottom: 24px;">
+      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open WhatsApp</a>
+    </p>
+    <button type="button" onclick="closeSuccess()" class="btn btn-primary">Close</button>
   </div>
 </div>
 
@@ -882,7 +887,8 @@
           <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; background:var(--signal); color:var(--ink); border:none;">
             Send Booking via WhatsApp
           </button>
-          <p style="margin:16px 0 0; font-size:0.82rem; opacity:0.65; line-height:1.5;">By booking, you agree to our <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;">Terms of Service</a>.</p>
+          <p id="bookingError" style="display:none; margin:12px 0 0; color:var(--signal); font-size:0.9rem;"></p>
+          <p style="margin:16px 0 0; font-size:0.82rem; opacity:0.65; line-height:1.5;">By booking, you agree to our <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;">Terms of Service</a> and <a href="privacy-policy.html" style="color:var(--signal); text-decoration:underline;">Privacy Policy</a>.</p>
         </form>
       </div>
     </div>
@@ -914,7 +920,7 @@
       <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
       <span>Lueri International</span>
     </div>
-    <div class="mono" style="opacity:0.6;">© 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;">Rewards</a> · <a href="careers.html" style="text-decoration:underline;">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a></div>
+    <div class="mono" style="opacity:0.6;">© 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;">Rewards</a> · <a href="careers.html" style="text-decoration:underline;">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a> · <a href="privacy-policy.html" style="text-decoration:underline;">Privacy</a></div>
     <div class="social-links">
       <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Facebook">Facebook</a>
       <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Instagram">Instagram</a>
@@ -970,43 +976,62 @@
 
   // Copy to Clipboard
   function copyToClipboard(text, label) {
-    navigator.clipboard.writeText(text).then(() => {
-      alert(label + ' copied to clipboard!');
-    });
+    const done = () => alert(label + ' copied to clipboard!');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => {
+        window.prompt('Copy this number', text);
+      });
+    } else {
+      window.prompt('Copy this number', text);
+    }
   }
 
-  // Form Management
   const form = document.getElementById('bookingForm');
   const overlay = document.getElementById('successOverlay');
   
   function closeSuccess() {
     overlay.classList.remove('active');
+    document.getElementById('successFallback').style.display = 'none';
   }
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-    
+    const bookingError = document.getElementById('bookingError');
+    bookingError.style.display = 'none';
+
     const data = {
-      name: document.getElementById('name').value,
-      phone: document.getElementById('phone').value,
-      pickup: document.getElementById('pickup').value,
-      dropoff: document.getElementById('dropoff').value,
-      details: document.getElementById('details').value,
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      pickup: document.getElementById('pickup').value.trim(),
+      dropoff: document.getElementById('dropoff').value.trim(),
+      details: document.getElementById('details').value.trim(),
       time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text,
       memberNumber: document.getElementById('memberNumber').value.trim()
     };
 
+    if (!lueriIsValidPhone(data.phone)) {
+      bookingError.textContent = 'Enter a valid Kenyan phone number (07… or 01…).';
+      bookingError.style.display = 'block';
+      return;
+    }
+
     const memberLine = data.memberNumber ? `\nRewards Member No.: ${data.memberNumber}` : '';
     const message = `New pickup booking - Lueri website\nName: ${data.name}\nPhone: ${data.phone}\nPickup: ${data.pickup}\nDrop-off: ${data.dropoff}\nParcel details: ${data.details}\nPreferred time: ${data.time}${memberLine}`;
-    const waLink = `https://wa.me/254713261719?text=${encodeURIComponent(message)}`;
+    const result = lueriOpenWhatsApp('254713261719', message);
 
-    window.open(waLink, '_blank', 'noopener,noreferrer');
-
+    document.getElementById('successTitle').textContent = result.opened ? 'Opening WhatsApp' : 'WhatsApp did not open';
+    document.getElementById('successCopy').textContent = result.opened
+      ? 'Confirm the message in WhatsApp to send your dispatch request.'
+      : 'Your browser blocked the popup. Tap the button below to open WhatsApp.';
+    const fallback = document.getElementById('successFallback');
+    const waLink = document.getElementById('successWaLink');
+    waLink.href = result.url;
+    fallback.style.display = result.opened ? 'none' : 'block';
     overlay.classList.add('active');
 
-    setTimeout(() => {
-      form.reset();
-    }, 1500);
+    if (result.opened) {
+      setTimeout(() => { form.reset(); }, 1500);
+    }
   });
 
   // Menu — unified animated dropdown (desktop + mobile)

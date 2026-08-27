@@ -1,25 +1,6 @@
-// ============================================================================
-// Lueri Rewards — Cloud Adapter (Phase 1)
-// ============================================================================
-//
-// This replaces the localStorage-based engine in rewards.js with calls to a
-// Google Sheets backend (see Code.gs), so membership data survives across
-// devices and browsers instead of living only on one phone.
-//
-// WHAT'S IN SCOPE FOR THIS FILE: registration + lookup, matching what the
-// customer-facing rewards page actually needs today. Tier/points/voucher
-// math still runs here on the client using your existing tier table, just
-// against data that now comes from the Sheet instead of localStorage.
-//
-// ============================================================================
-
 'use strict';
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbwIDbi4ssSEF7rn6l_rljcufKUydMGs5pYeW9BjbbvA2SLekoIvyAyiJBw6i9CqyCkg/exec';
-
-/* ==========================================================================
-   TIER TABLE — kept identical to your existing rewards program rules
-   ========================================================================== */
 
 const TIERS = [
   { name: 'VIP', min: 75000, benefits: [
@@ -46,6 +27,10 @@ const TIERS = [
   ]},
 ];
 
+const LUERI_REWARDS = {
+  tiers: TIERS.map(t => ({ name: t.name, minSpend: t.min, benefits: t.benefits })),
+};
+
 function calcTier(spend) {
   return TIERS.find(t => spend >= t.min) || TIERS[TIERS.length - 1];
 }
@@ -56,34 +41,39 @@ function getBenefits(tierName) {
 }
 
 function tierProgress(member) {
-  const spend = member.tierWindowSpend || 0;
+  const spend = Number(member.tierWindowSpend) || 0;
   const currentIndex = TIERS.findIndex(t => t.name === member.tier);
-  const nextTier = currentIndex > 0 ? TIERS[currentIndex - 1] : null;
+  const next = currentIndex > 0 ? TIERS[currentIndex - 1] : null;
 
-  if (!nextTier) {
+  if (!next) {
     return { nextTier: null, remaining: 0, progress: 1 };
   }
 
-  const remaining = Math.max(0, nextTier.min - spend);
-  const progress = Math.min(1, spend / nextTier.min);
-  return { nextTier: nextTier.name, remaining, progress };
+  const range = next.min - (TIERS[currentIndex] ? TIERS[currentIndex].min : 0);
+  const into = spend - (TIERS[currentIndex] ? TIERS[currentIndex].min : 0);
+  const remaining = Math.max(0, next.min - spend);
+  const progress = range > 0 ? Math.min(1, Math.max(0, into / range)) : 1;
+  return { nextTier: next.name, remaining, progress };
 }
 
-/* ==========================================================================
-   COMPATIBILITY SHIMS
-   ========================================================================== */
-
-const LUERI_REWARDS = {
-  tiers: TIERS.map(t => ({ name: t.name, minSpend: t.min, benefits: t.benefits })),
-};
-
-function getMemberTransactions(memberId) {
-  return [];
+function formatDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('en-KE', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
 }
 
-/* ==========================================================================
-   BACKEND CALLS
-   ========================================================================== */
+function formatDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('en-KE', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
 
 async function apiCall(action, payload) {
   const response = await fetch(API_URL, {
@@ -99,9 +89,11 @@ async function apiCall(action, payload) {
   return response.json();
 }
 
-async function registerMember(input) {
+async function registerMember(input, pin) {
   try {
-    return await apiCall('register', { input });
+    const payload = { input };
+    if (pin) payload.pin = pin;
+    return await apiCall('register', payload);
   } catch (err) {
     return {
       success: false,
@@ -114,13 +106,13 @@ async function registerMember(input) {
 async function getMemberSummary(phone) {
   let result;
   try {
-    result = await apiCall('lookup', { phone });
+    result = await apiCall('lookup', { phone: lueriNormalizePhone(phone) });
   } catch (err) {
     return null;
   }
 
   if (!result.success || !result.member) {
-    return null;
+    return { error: (result && result.errors && result.errors[0]) || null };
   }
 
   const member = result.member;
@@ -140,5 +132,41 @@ async function getMemberSummary(phone) {
     tierProgress: progress.progress,
     pointsExpiryDays: 365,
     lastActivity: member.lastActivity,
+    transactions: Array.isArray(result.transactions) ? result.transactions : [],
   };
+}
+
+function getMemberTransactions(summaryOrId) {
+  if (summaryOrId && Array.isArray(summaryOrId.transactions)) {
+    return summaryOrId.transactions;
+  }
+  return [];
+}
+
+async function staffAuth(pin) {
+  try {
+    return await apiCall('staffAuth', { pin });
+  } catch (err) {
+    return { success: false, errors: ['Could not reach the rewards server.'] };
+  }
+}
+
+async function listMembers(pin) {
+  try {
+    return await apiCall('listMembers', { pin });
+  } catch (err) {
+    return { success: false, errors: ['Could not reach the rewards server.'], members: [] };
+  }
+}
+
+async function addTransaction(input) {
+  try {
+    return await apiCall('addTransaction', input);
+  } catch (err) {
+    return {
+      success: false,
+      errors: ['Could not reach the rewards server. Check your connection and try again.'],
+      member: null,
+    };
+  }
 }
