@@ -1,6 +1,14 @@
 'use strict';
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbwIDbi4ssSEF7rn6l_rljcufKUydMGs5pYeW9BjbbvA2SLekoIvyAyiJBw6i9CqyCkg/exec';
+// ---------------------------------------------------------------------
+// Lueri Rewards — Supabase-backed client
+// Replaces the old Google Apps Script / Sheets backend. Keeps the same
+// function names rewards.html already calls, so the page itself needs
+// no changes beyond the <script src="..."> line.
+// ---------------------------------------------------------------------
+
+const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
 
 const TIERS = [
   { name: 'VIP', min: 75000, benefits: [
@@ -29,6 +37,14 @@ const TIERS = [
 
 const LUERI_REWARDS = {
   tiers: TIERS.map(t => ({ name: t.name, minSpend: t.min, benefits: t.benefits })),
+  company: {
+    name: 'Lueri International',
+    address: 'Nairobi, Kenya',
+    phone: '+254 713 261 719',
+    kraPin: '',
+    vatRegistered: false,
+    vatRate: 0.16,
+  },
 };
 
 function calcTier(spend) {
@@ -40,60 +56,61 @@ function getBenefits(tierName) {
   return tier.benefits;
 }
 
-function tierProgress(member) {
-  const spend = Number(member.tierWindowSpend) || 0;
-  const currentIndex = TIERS.findIndex(t => t.name === member.tier);
+// Tier progress based on LIFETIME spend (matches the promise on the
+// page: "based on lifetime spend and never resets"), not a rolling
+// window like the old localStorage engine used.
+function tierProgress(tierName, lifetimeSpend) {
+  const currentIndex = TIERS.findIndex(t => t.name === tierName);
   const next = currentIndex > 0 ? TIERS[currentIndex - 1] : null;
+  if (!next) return { nextTier: null, remaining: 0, progress: 1 };
 
-  if (!next) {
-    return { nextTier: null, remaining: 0, progress: 1 };
-  }
-
-  const range = next.min - (TIERS[currentIndex] ? TIERS[currentIndex].min : 0);
-  const into = spend - (TIERS[currentIndex] ? TIERS[currentIndex].min : 0);
-  const remaining = Math.max(0, next.min - spend);
+  const currentMin = TIERS[currentIndex].min;
+  const range = next.min - currentMin;
+  const into = lifetimeSpend - currentMin;
+  const remaining = Math.max(0, next.min - lifetimeSpend);
   const progress = range > 0 ? Math.min(1, Math.max(0, into / range)) : 1;
   return { nextTier: next.name, remaining, progress };
 }
 
-function formatDate(value) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return new Intl.DateTimeFormat('en-KE', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(date);
+function lueriNormalizePhone(phone) {
+  let value = String(phone || '').trim().replace(/[()\s-]/g, '');
+  if (value.startsWith('+254')) value = '0' + value.slice(4);
+  else if (value.startsWith('254')) value = '0' + value.slice(3);
+  return value;
 }
 
-function formatDateTime(value) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-  return new Intl.DateTimeFormat('en-KE', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
-}
-
-async function apiCall(action, payload) {
-  const response = await fetch(API_URL, {
+async function rpcCall(fnName, payload) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action, ...payload }),
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(payload),
   });
-
   if (!response.ok) {
     throw new Error('Network error: ' + response.status);
   }
-
   return response.json();
 }
 
-async function registerMember(input, pin) {
+// Cache of each looked-up member's transactions, keyed by member id —
+// fixes a bug in the old client where getMemberTransactions(id) never
+// actually had anywhere to pull data from.
+const _txCache = {};
+
+async function registerMember(input) {
   try {
-    const payload = { input };
-    if (pin) payload.pin = pin;
-    return await apiCall('register', payload);
+    const result = await rpcCall('register_member', {
+      p_name: input.name,
+      p_phone: lueriNormalizePhone(input.phone),
+      p_email: input.email || null,
+    });
+    if (!result.success) {
+      return { success: false, errors: [result.error], member: null };
+    }
+    return { success: true, errors: [], member: result.member };
   } catch (err) {
     return {
       success: false,
@@ -106,67 +123,28 @@ async function registerMember(input, pin) {
 async function getMemberSummary(phone) {
   let result;
   try {
-    result = await apiCall('lookup', { phone: lueriNormalizePhone(phone) });
+    result = await rpcCall('lookup_member', { p_phone: lueriNormalizePhone(phone) });
   } catch (err) {
     return null;
   }
-
-  if (!result.success || !result.member) {
-    return { error: (result && result.errors && result.errors[0]) || null };
-  }
+  if (!result.success || !result.member) return null;
 
   const member = result.member;
-  member.tier = calcTier(Number(member.tierWindowSpend) || 0).name;
-
-  const progress = tierProgress(member);
+  const progress = tierProgress(member.tier, member.lifetimeSpend);
+  _txCache[member.id] = result.transactions || [];
 
   return {
     member,
     tier: member.tier,
     benefits: getBenefits(member.tier),
     points: Number(member.points) || 0,
-    expiredPoints: Number(member.expiredPoints) || 0,
     lifetimeSpend: Number(member.lifetimeSpend) || 0,
     nextTier: progress.nextTier,
     amountToNextTier: progress.remaining,
     tierProgress: progress.progress,
-    pointsExpiryDays: 365,
-    lastActivity: member.lastActivity,
-    transactions: Array.isArray(result.transactions) ? result.transactions : [],
   };
 }
 
-function getMemberTransactions(summaryOrId) {
-  if (summaryOrId && Array.isArray(summaryOrId.transactions)) {
-    return summaryOrId.transactions;
-  }
-  return [];
-}
-
-async function staffAuth(pin) {
-  try {
-    return await apiCall('staffAuth', { pin });
-  } catch (err) {
-    return { success: false, errors: ['Could not reach the rewards server.'] };
-  }
-}
-
-async function listMembers(pin) {
-  try {
-    return await apiCall('listMembers', { pin });
-  } catch (err) {
-    return { success: false, errors: ['Could not reach the rewards server.'], members: [] };
-  }
-}
-
-async function addTransaction(input) {
-  try {
-    return await apiCall('addTransaction', input);
-  } catch (err) {
-    return {
-      success: false,
-      errors: ['Could not reach the rewards server. Check your connection and try again.'],
-      member: null,
-    };
-  }
+function getMemberTransactions(memberId) {
+  return _txCache[memberId] || [];
 }
