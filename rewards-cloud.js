@@ -79,6 +79,16 @@ function lueriNormalizePhone(phone) {
   return value;
 }
 
+// Supabase stores tier names lowercase ('bronze', 'silver', ...); the
+// TIERS table above (and the rest of this page) expects them
+// capitalized ('Bronze', 'Silver', ...). This normalizes it once, right
+// after data comes back from the database, so nothing downstream has
+// to think about casing.
+function capitalizeTier(tier) {
+  const value = String(tier || '').trim();
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
 async function rpcCall(fnName, payload) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
     method: 'POST',
@@ -110,7 +120,9 @@ async function registerMember(input) {
     if (!result.success) {
       return { success: false, errors: [result.error], member: null };
     }
-    return { success: true, errors: [], member: result.member };
+    const member = result.member;
+    member.tier = capitalizeTier(member.tier);
+    return { success: true, errors: [], member };
   } catch (err) {
     return {
       success: false,
@@ -130,13 +142,16 @@ async function getMemberSummary(phone) {
   if (!result.success || !result.member) return null;
 
   const member = result.member;
-  const progress = tierProgress(member.tier, member.lifetimeSpend);
+  const tierName = capitalizeTier(member.tier);
+  member.tier = tierName;
+
+  const progress = tierProgress(tierName, member.lifetimeSpend);
   _txCache[member.id] = result.transactions || [];
 
   return {
     member,
-    tier: member.tier,
-    benefits: getBenefits(member.tier),
+    tier: tierName,
+    benefits: getBenefits(tierName),
     points: Number(member.points) || 0,
     lifetimeSpend: Number(member.lifetimeSpend) || 0,
     nextTier: progress.nextTier,
