@@ -24,7 +24,16 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <script src="lueri-common.js"></script>
-<script>lueriBootTheme();</script>
+<script>
+  // Guarded on purpose: if lueri-common.js failed to load (wrong path, 404,
+  // blocked request), this must not throw — it should just skip theme boot
+  // and let the page render in light mode rather than break the console.
+  if (typeof lueriBootTheme === 'function') {
+    lueriBootTheme();
+  } else {
+    console.warn('lueri-common.js did not define lueriBootTheme — check the <script src> path and that the file was deployed.');
+  }
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -526,6 +535,14 @@
           </span>
           <span class="menu-link-arrow">→</span>
         </a>
+        <a href="corporate.html" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">BIZ</span>
+          <span class="menu-link-body">
+            <span class="menu-link-title">Business</span>
+            <span class="menu-link-caption">Set up a corporate account</span>
+          </span>
+          <span class="menu-link-arrow">→</span>
+        </a>
         <a href="#coverage" class="menu-link" data-close-menu>
           <span class="menu-link-tag">CVG</span>
           <span class="menu-link-body">
@@ -695,7 +712,7 @@
       </div>
       <div class="pricing-note" style="margin-top:16px;">
         <strong style="font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--route);">Corporate billing</strong><br>
-        Repeat business clients can set up invoicing with bank transfer. <a href="https://wa.me/254713261719?text=Hi%2C%20I%27d%20like%20to%20set%20up%20corporate%20invoicing%20for%20Lueri%20deliveries." style="color:var(--route); text-decoration:underline; font-weight:600;">Message us on WhatsApp</a> and we'll send account details directly once your account is set up.
+        Repeat business clients can set up invoicing with bank transfer. <a href="corporate.html" style="color:var(--route); text-decoration:underline; font-weight:600;">Apply for a business account</a> and we'll send account details directly once your account is set up.
       </div>
       <div class="sla-grid">
         <div class="sla-item">
@@ -819,7 +836,7 @@
         </details>
         <details class="faq-item">
           <summary>Do you offer business contracts?</summary>
-          <p>Yes. If you dispatch daily or several times a week, we can set up a recurring pickup arrangement with agreed rates and a single point of contact. Message us on WhatsApp with your volume and pickup location to discuss.</p>
+          <p>Yes. If you dispatch daily or several times a week, we can set up a recurring pickup arrangement with agreed rates and a single point of contact. <a href="corporate.html">Apply for a business account</a> with your volume and pickup location to get started.</p>
         </details>
       </div>
     </div>
@@ -988,7 +1005,21 @@
 
   const form = document.getElementById('bookingForm');
   const overlay = document.getElementById('successOverlay');
-  
+
+  // Fallbacks in case lueri-common.js didn't load — the booking form should
+  // degrade gracefully instead of throwing on submit.
+  const isValidPhone = typeof lueriIsValidPhone === 'function'
+    ? lueriIsValidPhone
+    : (phone) => /^(?:\+254|0)7\d{8}$/.test(String(phone || '').trim());
+
+  const openWhatsAppSafe = typeof lueriOpenWhatsApp === 'function'
+    ? lueriOpenWhatsApp
+    : (number, message) => {
+        const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+        const win = window.open(url, '_blank', 'noopener,noreferrer');
+        return { opened: !!win, url };
+      };
+
   function closeSuccess() {
     overlay.classList.remove('active');
     document.getElementById('successFallback').style.display = 'none';
@@ -1009,7 +1040,7 @@
       memberNumber: document.getElementById('memberNumber').value.trim()
     };
 
-    if (!lueriIsValidPhone(data.phone)) {
+    if (!isValidPhone(data.phone)) {
       bookingError.textContent = 'Enter a valid Kenyan phone number (07… or 01…).';
       bookingError.style.display = 'block';
       return;
@@ -1017,7 +1048,7 @@
 
     const memberLine = data.memberNumber ? `\nRewards Member No.: ${data.memberNumber}` : '';
     const message = `New pickup booking - Lueri website\nName: ${data.name}\nPhone: ${data.phone}\nPickup: ${data.pickup}\nDrop-off: ${data.dropoff}\nParcel details: ${data.details}\nPreferred time: ${data.time}${memberLine}`;
-    const result = lueriOpenWhatsApp('254713261719', message);
+    const result = openWhatsAppSafe('254713261719', message);
 
     document.getElementById('successTitle').textContent = result.opened ? 'Opening WhatsApp' : 'WhatsApp did not open';
     document.getElementById('successCopy').textContent = result.opened
