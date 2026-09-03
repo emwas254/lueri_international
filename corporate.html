@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Accounts — Lueri International</title>
+<meta name="description" content="Set up a Lueri International corporate delivery account — consolidated invoicing, priority dispatch, and compliant paperwork for registered companies.">
+<meta property="og:title" content="Business Accounts — Lueri International">
+<meta property="og:description" content="Consolidated invoicing, priority dispatch, and compliant paperwork for registered companies delivering through Lueri International.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lueriinternational.com/corporate.html">
+<meta property="og:site_name" content="Lueri International">
+<meta property="og:locale" content="en_KE">
+<link rel="canonical" href="https://lueriinternational.com/corporate.html">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="lueri-common.js"></script>
+<script>
+  // Guarded on purpose: if lueri-common.js failed to load (wrong path, 404,
+  // blocked request), this must not throw — it should just skip theme boot
+  // and let the page render in light mode rather than break the console
+  // and potentially halt later inline scripts in older browsers.
+  if (typeof lueriBootTheme === 'function') {
+    lueriBootTheme();
+  } else {
+    console.warn('lueri-common.js did not define lueriBootTheme — check the <script src> path and that the file was deployed.');
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Identical token system and component styles to index.html, so this page
+     reads as the same site rather than a bolted-on form. Kept in sync with
+     the main stylesheet block — if the site later moves this into a shared
+     site.css, drop this whole block and link that file instead. */
+  :root{
+    --ink:#1B2620;
+    --paper:#F0EAD8;
+    --paper-dim:#e6dfc9;
+    --route:#B8321F;
+    --slate:#4A5A52;
+    --signal:#E8B93D;
+    --line: rgba(27,38,32,0.16);
+    --success: #2e7d32;
+    --error: #c62828;
+    --card-bg: var(--paper);
+    --paper-rgb: 240,234,216;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme="dark"] {
+    --ink:#F0EAD8;
+    --paper:#1B2620;
+    --paper-dim:#24312a;
+    --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16);
+    --card-bg: #24312a;
+    --paper-rgb: 27,38,32;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
+  }
+  .reveal { opacity: 0; transform: translateY(30px); transition: var(--transition); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration: none; transition: var(--transition); }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+  header{
+    position:sticky; top:0; z-index:100; background: rgba(var(--paper-rgb), 0.85);
+    border-bottom:1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:0.03em; }
+  .brand .mark-img{ height:34px; width:auto; display:block; }
+  .brand .mark-dark-img{ display:none; }
+  [data-theme="dark"] .brand .mark-light{ display:none; }
+  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
+  .nav-controls { display: flex; align-items: center; gap: 16px; }
+  .theme-toggle {
+    background: none; border: 1px solid var(--line); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
+    display: flex; align-items: center; justify-content: center; transition: var(--transition);
+  }
+  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
+  .nav-cta{
+    display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:var(--paper);
+    padding:9px 16px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;
+    border-radius:2px; font-weight: 600;
+  }
+  .menu-trigger{
+    display:flex; align-items:center; gap:10px; background:none;
+    border:1.5px solid var(--ink); border-radius:2px; padding:8px 14px 8px 12px;
+    cursor:pointer; color:var(--ink); font-family:'IBM Plex Mono', monospace;
+    font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; transition: var(--transition);
+  }
+  .menu-trigger:hover{ border-color:var(--route); color:var(--route); }
+  .menu-trigger-bars{ position:relative; width:16px; height:11px; flex-shrink:0; }
+  .menu-trigger-bars span{ position:absolute; left:0; width:16px; height:2px; background:currentColor; transition: top .25s ease, transform .25s ease, opacity .2s ease; }
+  .menu-trigger-bars span:nth-child(1){ top:0; }
+  .menu-trigger-bars span:nth-child(2){ top:4.5px; }
+  .menu-trigger-bars span:nth-child(3){ top:9px; }
+  .menu-trigger.open .menu-trigger-bars span:nth-child(1){ top:4.5px; transform:rotate(45deg); }
+  .menu-trigger.open .menu-trigger-bars span:nth-child(2){ opacity:0; }
+  .menu-trigger.open .menu-trigger-bars span:nth-child(3){ top:4.5px; transform:rotate(-45deg); }
+  .menu-panel{
+    display:grid; grid-template-rows:0fr; background:var(--paper); border-bottom:1px solid transparent;
+    transition: grid-template-rows .45s cubic-bezier(0.4,0,0.2,1), border-color .45s ease;
+  }
+  .menu-panel.open{ grid-template-rows:1fr; border-bottom-color:var(--line); }
+  .menu-panel-inner{ overflow:hidden; }
+  .menu-panel-eyebrow{ padding:18px 24px 4px; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.12em; color:var(--slate); }
+  .menu-panel-grid{ display:grid; grid-template-columns:repeat(2,1fr); }
+  @media (max-width:700px){ .menu-panel-grid{ grid-template-columns:1fr; } }
+  .menu-link{
+    position:relative; display:flex; align-items:center; gap:16px; overflow:hidden;
+    padding:18px 24px; border-bottom:1px solid var(--line); border-right:1px solid var(--line);
+    color:var(--ink); z-index:1; transition: padding .3s cubic-bezier(0.4,0,0.2,1), color .3s ease;
+  }
+  @media (max-width:700px){ .menu-link{ border-right:none; } }
+  .menu-link::before{
+    content:""; position:absolute; inset:0; background:var(--route); transform:scaleX(0);
+    transform-origin:left; transition:transform .4s cubic-bezier(0.4,0,0.2,1); z-index:-1;
+  }
+  .menu-link:hover::before{ transform:scaleX(1); }
+  .menu-link:hover{ color:var(--paper); padding-left:34px; }
+  .menu-link-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:.68rem; letter-spacing:.06em; color:var(--route);
+    border:1px solid currentColor; border-radius:2px; padding:3px 6px; flex-shrink:0; transition: color .3s ease;
+  }
+  .menu-link:hover .menu-link-tag{ color:var(--signal); }
+  .menu-link-body{ flex:1; min-width:0; }
+  .menu-link-title{ display:block; font-family:'Oswald', sans-serif; font-size:1.25rem; text-transform:uppercase; letter-spacing:.02em; }
+  .menu-link-caption{ display:block; font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--slate); margin-top:2px; opacity:.85; transition: color .3s ease; }
+  .menu-link:hover .menu-link-caption{ color:var(--paper); opacity:.75; }
+  .menu-link-arrow{ flex-shrink:0; font-size:1.2rem; opacity:.4; transition: transform .3s cubic-bezier(0.4,0,0.2,1), opacity .3s ease; }
+  .menu-link:hover .menu-link-arrow{ transform:translateX(6px); opacity:1; }
+
+  .hero{ padding:80px 0 60px; }
+  .docket{
+    background:var(--paper); border:1.5px solid var(--ink); position:relative; padding:48px 40px;
+    box-shadow: 12px 12px 0 rgba(27,38,32,0.08); transition: var(--transition);
+  }
+  .docket:hover { transform: translate(-4px, -4px); box-shadow: 16px 16px 0 rgba(27,38,32,0.1); }
+  .docket::before, .docket::after{
+    content:""; position:absolute; width:12px; height:12px; border:1.5px solid var(--ink);
+    border-radius:50%; background:var(--paper-dim); top:16px;
+  }
+  .docket::before{ left:16px; }
+  .docket::after{ right:16px; }
+  .docket-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; margin-bottom: 24px; }
+  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em; color:var(--slate); text-transform:uppercase; }
+  .waybill-no{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; border:1px dashed var(--ink); padding:8px 12px; white-space:nowrap; }
+  h1.title{ font-size:clamp(2.8rem, 8vw, 4.8rem); line-height:0.95; margin:0 0 12px; }
+  .subtitle{ max-width:580px; color:var(--slate); font-size:1.15rem; margin:16px 0; line-height: 1.6; }
+  .stamp{
+    display:inline-block; border:3px solid var(--route); color:var(--route); font-family:'Oswald', sans-serif;
+    font-weight:700; font-size:0.9rem; letter-spacing:0.1em; text-transform:uppercase; padding:8px 18px;
+    transform:rotate(-4deg); border-radius:4px; margin:24px 0;
+  }
+  .scope-tag{
+    display:inline-block; margin-top:8px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--slate); border:1px dashed var(--line); padding:6px 10px;
+  }
+  .cta-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:32px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px; padding:16px 28px; font-size:0.9rem;
+    text-transform:uppercase; letter-spacing:0.06em; border-radius:4px; font-weight:700;
+    font-family:'IBM Plex Sans', sans-serif; cursor: pointer; transition: var(--transition);
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); border: none; }
+  .btn-secondary{ background:transparent; border:2px solid var(--ink); color:var(--ink); }
+  .btn:hover{ transform: translateY(-2px); filter:brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .btn:active{ transform: translateY(0); }
+  section{ padding:80px 0; }
+  .section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:48px; }
+  .section-num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:1rem; font-weight: 600; }
+  .section-head h2{ font-size:2.4rem; }
+  .why-list{ list-style:none; margin:0; padding:0; }
+  .why-list li{ display:flex; gap:16px; padding:20px 0; border-bottom:1px solid var(--line); }
+  .why-list .n{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-weight:600; width:36px; flex-shrink:0; }
+  .why-list h3{ font-size:1.05rem; text-transform:none; letter-spacing:0; margin:0 0 6px; }
+  .why-list p{ margin:0; color:var(--slate); font-size:0.95rem; line-height:1.6; }
+  .contact-shell{
+    background:var(--ink); color:var(--paper); padding:64px 48px; border-radius:4px; position:relative; overflow:hidden;
+  }
+  .contact-shell::before {
+    content: ""; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+    background: rgba(232, 185, 61, 0.05); border-radius: 50%;
+  }
+  .form-group { margin-bottom: 24px; }
+  .form-label{ display:block; margin-bottom:8px; color:var(--signal); font-family:'IBM Plex Mono', monospace; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; }
+  .form-input{
+    width:100%; padding:14px; border:1px solid rgba(240,234,216,0.2); background: rgba(255,255,255,0.03);
+    color:var(--paper); border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem; transition: var(--transition);
+  }
+  .form-input:focus{ outline:none; border-color:var(--signal); background: rgba(255,255,255,0.08); }
+  .form-input.invalid { border-color: var(--error); }
+  .form-input::placeholder{ color: rgba(240,234,216,0.4); }
+  textarea.form-input{ resize: vertical; }
+  select.form-input{ cursor: pointer; }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:760px){ .form-row2{ grid-template-columns:1fr; } }
+  .form-hint{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color: rgba(240,234,216,0.55); margin-top:6px; display:block; }
+  .success-overlay {
+    position: fixed; inset: 0; background: rgba(27,38,32,0.95); z-index: 1000;
+    display: none; align-items: center; justify-content: center; text-align: center; color: var(--paper); padding: 24px;
+  }
+  .success-overlay.active { display: flex; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  footer{ padding:60px 0; border-top:1px solid var(--line); }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:32px; }
+  .foot-stamp{ font-family:'IBM Plex Mono', monospace; border:1px dashed var(--ink); padding:6px 14px; font-size:0.8rem; font-weight: 600; }
+  .social-links{ display:flex; gap:10px; align-items:center; }
+  .social-links a{
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    border:1px solid var(--line); border-radius:20px; padding:6px 14px; opacity:0.8;
+  }
+  .social-links a:hover{ opacity:1; border-color:var(--ink); color:var(--route); }
+  .legal-block{
+    margin-top:32px; padding-top:32px; border-top:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px;
+    font-size:0.88rem; color:var(--slate); line-height:1.6;
+  }
+  .legal-block strong{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--ink); margin-bottom:6px;
+  }
+  [data-theme="dark"] .legal-block strong{ color:var(--paper); }
+
+  /* Mobile refinements — the shared block above matches index.html exactly,
+     but this page adds tighter spacing on small screens since its form is
+     taller than the homepage's. */
+  .skip-link{
+    position:absolute; left:-9999px; top:0; z-index:200;
+    background:var(--ink); color:var(--paper); padding:12px 20px;
+    font-family:'IBM Plex Mono', monospace; font-size:.8rem; border-radius:0 0 4px 0;
+  }
+  .skip-link:focus{ left:0; }
+  @media (max-width:600px){
+    .hero{ padding:48px 0 32px; }
+    section{ padding:48px 0; }
+    .docket{ padding:32px 24px; }
+    .contact-shell{ padding:40px 24px; }
+    h1.title{ font-size:clamp(2.2rem, 9vw, 3.2rem); }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#apply">Skip to application form</a>
+
+<div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div>
+    <div style="font-size: 4rem; color: var(--signal); margin-bottom: 20px;">✓</div>
+    <h2 id="successTitle" style="font-size: 2.5rem; margin-bottom: 10px;">Application ready</h2>
+    <p id="successCopy" style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 20px;">Opening WhatsApp to confirm your application...</p>
+    <p id="successFallback" style="display:none; margin-bottom: 24px;">
+      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open WhatsApp</a>
+    </p>
+    <button type="button" onclick="closeSuccess()" class="btn btn-primary">Close</button>
+  </div>
+</div>
+
+<header>
+  <div class="navbar wrap">
+    <a class="brand" href="index.html" style="text-decoration:none;">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
+    </a>
+    <div class="nav-controls">
+      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
+        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
+        <span id="menuTriggerLabel">Menu</span>
+      </button>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <a class="nav-cta" href="index.html#contact">Book Pickup</a>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="menuPanel">
+    <div class="menu-panel-inner">
+      <div class="menu-panel-eyebrow">Where to next</div>
+      <div class="menu-panel-grid">
+        <a href="index.html#services" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">SVC</span>
+          <span class="menu-link-body"><span class="menu-link-title">Services</span><span class="menu-link-caption">What we carry, and how fast</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#pricing" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">PRC</span>
+          <span class="menu-link-body"><span class="menu-link-title">Pricing</span><span class="menu-link-caption">Quoted rates, no hidden fees</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="corporate.html" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">BIZ</span>
+          <span class="menu-link-body"><span class="menu-link-title">Business</span><span class="menu-link-caption">Set up a corporate account</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#coverage" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">CVG</span>
+          <span class="menu-link-body"><span class="menu-link-title">Coverage</span><span class="menu-link-caption">Where we deliver in Nairobi</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#why" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">WHY</span>
+          <span class="menu-link-body"><span class="menu-link-title">Why Us</span><span class="menu-link-caption">What makes Lueri different</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#faq" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">FAQ</span>
+          <span class="menu-link-body"><span class="menu-link-title">FAQ</span><span class="menu-link-caption">Common questions, answered</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="rewards.html" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">RWD</span>
+          <span class="menu-link-body"><span class="menu-link-title">Rewards</span><span class="menu-link-caption">Earn points on every delivery</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="careers.html" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">CAR</span>
+          <span class="menu-link-body"><span class="menu-link-title">Careers</span><span class="menu-link-caption">Future roles at Lueri</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#contact" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">BK</span>
+          <span class="menu-link-body"><span class="menu-link-title">Book</span><span class="menu-link-caption">Send a pickup request now</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero reveal">
+    <div class="wrap">
+      <div class="docket">
+        <div class="docket-row">
+          <div class="eyebrow-mono">Accounts / Corporate</div>
+          <div class="waybill-no">FORM NO. CB–2026</div>
+        </div>
+        <h1 class="title">One account.<br>Every parcel<br>accounted for.</h1>
+        <p class="subtitle">A Lueri business account gives your company a single point of contact, consolidated invoicing, and priority handling — instead of every staff member booking on their own.</p>
+        <span class="scope-tag">For registered companies · Individuals should use Book a Pickup instead</span>
+        <span class="stamp">Priority dispatch</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="why-business" class="reveal">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <h2>Why a business account</h2>
+      </div>
+      <ul class="why-list">
+        <li>
+          <span class="n">01</span>
+          <div><h3>Consolidated billing</h3><p>One invoice for the whole organisation, settled monthly or by bank transfer — not per-delivery payments from every staff member.</p></div>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <div><h3>Priority handling</h3><p>Business bookings are queued ahead of ad-hoc individual requests once your account is active.</p></div>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <div><h3>Compliant paperwork</h3><p>Your KRA PIN on file means every invoice we issue is tax-compliant from day one.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="apply" class="reveal">
+    <div class="wrap">
+      <div class="contact-shell">
+        <div class="section-head">
+          <span class="section-num">02</span>
+          <h2>Apply for an account</h2>
+        </div>
+
+        <form id="corporateForm" novalidate style="margin-top:8px;">
+          <div class="form-group">
+            <label class="form-label" for="companyName">Company Name</label>
+            <input class="form-input" type="text" id="companyName" autocomplete="organization" required>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="kraPin">KRA PIN</label>
+              <input class="form-input" type="text" id="kraPin" placeholder="P051234567X" maxlength="11" autocapitalize="characters" spellcheck="false" pattern="^[A-Za-z]\d{9}[A-Za-z]$" aria-describedby="kraPinHint" required>
+              <span class="form-hint" id="kraPinHint">Used for invoicing only.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="volume">Est. Deliveries / Week</label>
+              <select class="form-input" id="volume" required>
+                <option value="" disabled selected>Select a range...</option>
+                <option value="1-5">1–5</option>
+                <option value="6-20">6–20</option>
+                <option value="21-50">21–50</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="address">Billing / Physical Address</label>
+            <textarea class="form-input" id="address" rows="2" required></textarea>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="contactName">Contact Person</label>
+              <input class="form-input" type="text" id="contactName" autocomplete="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="jobTitle">Role at Company</label>
+              <input class="form-input" type="text" id="jobTitle" placeholder="Operations Manager">
+            </div>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="contactPhone">Phone Number</label>
+              <input class="form-input" type="tel" id="contactPhone" placeholder="07xx xxx xxx" inputmode="tel" maxlength="13" pattern="^(?:\+254|0)7\d{8}$" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contactEmail">Company Email</label>
+              <input class="form-input" type="email" id="contactEmail" autocomplete="email" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; background:var(--signal); color:var(--ink); border:none;">
+            Submit Application
+          </button>
+          <p id="corporateError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:0.9rem;"></p>
+          <p style="margin:16px 0 0; font-size:0.82rem; opacity:0.65; line-height:1.5;">
+            We review every application before activating an account — usually within one working day.
+            By applying, you agree to our <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;">Terms of Service</a>
+            and <a href="privacy-policy.html" style="color:var(--signal); text-decoration:underline;">Privacy Policy</a>.
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="legal-block">
+    <div>
+      <strong>Registered business</strong>
+      Lueri International · Nairobi, Kenya<br>
+      Founded 13 December 2023<br>
+      Registration details available on request for B2B clients
+    </div>
+    <div>
+      <strong>Contact</strong>
+      <a href="tel:+254713261719">+254 713 261 719</a>
+    </div>
+    <div>
+      <strong>Hours</strong>
+      Mon–Fri, 8:00 AM – 5:00 PM<br>
+      Sat, 8:00 AM – 3:00 PM<br>
+      Closed Sunday
+    </div>
+  </div>
+  <div class="footer-row" style="margin-top:40px;">
+    <div class="brand">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
+    </div>
+    <div class="mono" style="opacity:0.6;">© 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;">Rewards</a> · <a href="careers.html" style="text-decoration:underline;">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a> · <a href="privacy-policy.html" style="text-decoration:underline;">Privacy</a></div>
+    <div class="social-links">
+      <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Facebook">Facebook</a>
+      <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Instagram">Instagram</a>
+      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on X">X</a>
+      <a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on LinkedIn">LinkedIn</a>
+      <a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on TikTok">TikTok</a>
+    </div>
+    <div class="foot-stamp">ACCOUNTS DESK</div>
+  </div>
+</footer>
+
+<script>
+  // Theme management — identical to index.html
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
+    moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
+  }
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    setTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(savedTheme);
+
+  // Reveal animations — identical to index.html
+  function reveal() {
+    var reveals = document.querySelectorAll(".reveal");
+    for (var i = 0; i < reveals.length; i++) {
+      var windowHeight = window.innerHeight;
+      var elementTop = reveals[i].getBoundingClientRect().top;
+      if (elementTop < windowHeight - 150) reveals[i].classList.add("active");
+    }
+  }
+  window.addEventListener("scroll", reveal);
+  reveal();
+
+  function closeSuccess() {
+    document.getElementById('successOverlay').classList.remove('active');
+    document.getElementById('successFallback').style.display = 'none';
+  }
+
+  // Menu — identical open/close behaviour to index.html
+  const menuTrigger = document.getElementById('menuTrigger');
+  const menuPanel = document.getElementById('menuPanel');
+  const menuTriggerLabel = document.getElementById('menuTriggerLabel');
+  function closeMenu() {
+    menuTrigger.classList.remove('open'); menuPanel.classList.remove('open');
+    menuTrigger.setAttribute('aria-expanded', 'false'); menuTriggerLabel.textContent = 'Menu';
+  }
+  function openMenu() {
+    menuTrigger.classList.add('open'); menuPanel.classList.add('open');
+    menuTrigger.setAttribute('aria-expanded', 'true'); menuTriggerLabel.textContent = 'Close';
+  }
+  menuTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menuPanel.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  menuPanel.querySelectorAll('[data-close-menu]').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('click', (e) => {
+    if (menuPanel.classList.contains('open') && !menuPanel.contains(e.target) && !menuTrigger.contains(e.target)) closeMenu();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+</script>
+<script src="corporate-signup.js"></script>
+</body>
+</html>
