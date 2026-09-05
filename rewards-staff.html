@@ -89,10 +89,26 @@
 <div id="gate">
   <div class="gate-box">
     <h1>Staff Console</h1>
-    <p>Enter the staff passcode to access Lueri Rewards management. This gate is a soft screen for staff, not real account security — don't share the passcode publicly, and don't treat this as a secure login for sensitive data.</p>
-    <input type="password" id="passcodeInput" placeholder="••••" inputmode="numeric" maxlength="6">
-    <button id="gateBtn">Enter console</button>
-    <div class="gate-error" id="gateError">Incorrect passcode.</div>
+    <p id="gateIntro">Log in with your staff account to access Lueri Rewards management.</p>
+
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="loginEmail" style="text-align:left; letter-spacing:normal;"></div>
+      <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" id="loginPassword" style="text-align:left; letter-spacing:normal;"></div>
+      <button id="gateBtn">Log in</button>
+      <div class="gate-error" id="gateError">Incorrect email or password.</div>
+      <p style="font-size:.8rem; margin:14px 0 0;"><a href="#" id="showSignup">First time here? Create an account</a></p>
+    </div>
+
+    <div id="signupForm" style="display:none;">
+      <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="signupName" style="text-align:left; letter-spacing:normal;"></div>
+      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="signupEmail" style="text-align:left; letter-spacing:normal;"></div>
+      <div class="form-group"><label class="form-label">Password (min. 6 characters)</label><input type="password" class="form-input" id="signupPassword" style="text-align:left; letter-spacing:normal;"></div>
+      <button id="signupBtn">Create account</button>
+      <div class="gate-error" id="signupError"></div>
+      <p style="font-size:.8rem; margin:14px 0 0;"><a href="#" id="showLogin">Back to log in</a></p>
+    </div>
+
+    <p style="font-size:.75rem; color:var(--slate); margin:16px 0 0;">New accounts start pending — an admin has to approve access before you can register members or log transactions.</p>
   </div>
 </div>
 
@@ -100,7 +116,7 @@
   <header>
     <div class="wrap">
       <h1>Lueri Rewards · Staff Console</h1>
-      <a class="exit" href="index.html">Exit to site</a>
+      <a class="exit" href="#" id="logoutBtn">Log out</a>
     </div>
   </header>
   <main>
@@ -173,7 +189,7 @@
               <tbody id="memberTbody"></tbody>
             </table>
           </div>
-          <div class="disclosure">Data shown here lives in this browser's storage only. Different staff devices will show different member lists until this is migrated to a shared backend.</div>
+          <div class="disclosure">Member data is now shared across every staff device via the Lueri Rewards database — the same one the customer rewards page uses. Only the "Redeem a voucher" panel above is still browser-local (there's no voucher table in the database yet, and nothing in the app currently issues vouchers, so that panel has limited real use today).</div>
         </div>
       </div>
 
@@ -181,23 +197,68 @@
   </main>
 </div>
 
-<script src="rewards.js"></script>
+<script src="rewards-staff-cloud.js"></script>
 <script>
-  const PASSCODE = 'LueriDispatch26'; // Soft gate only — change this, and treat it as a deterrent, not real security.
+  // ---- Auth: real Supabase login replaces the old shared passcode ----
 
-  document.getElementById('gateBtn').addEventListener('click', tryEnter);
-  document.getElementById('passcodeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryEnter(); });
+  document.getElementById('showSignup').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+  });
+  document.getElementById('showLogin').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+  });
 
-  function tryEnter() {
-    const val = document.getElementById('passcodeInput').value.trim();
-    if (val === PASSCODE) {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('console').style.display = 'block';
-      refreshAll();
+  document.getElementById('gateBtn').addEventListener('click', tryLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') tryLogin(); });
+
+  async function tryLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const result = await staffLogIn(email, password);
+    if (result.success) {
+      enterConsole();
     } else {
-      document.getElementById('gateError').classList.add('show');
+      const el = document.getElementById('gateError');
+      el.textContent = result.error;
+      el.classList.add('show');
     }
   }
+
+  document.getElementById('signupBtn').addEventListener('click', async () => {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const result = await staffSignUp(email, password, name);
+    const el = document.getElementById('signupError');
+    if (result.success) {
+      el.classList.remove('show');
+      alert('Account created. It is pending approval — ask an admin to activate it, then log in.');
+      document.getElementById('showLogin').click();
+    } else {
+      el.textContent = result.error;
+      el.classList.add('show');
+    }
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await staffLogOut();
+    document.getElementById('console').style.display = 'none';
+    document.getElementById('gate').style.display = 'flex';
+  });
+
+  function enterConsole() {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('console').style.display = 'block';
+    refreshAll();
+  }
+
+  // Resume an existing session on reload without asking for the password again.
+  if (isLoggedIn()) enterConsole();
 
   function showMsg(id, text) {
     const el = document.getElementById(id);
@@ -206,8 +267,8 @@
     setTimeout(() => el.classList.remove('show'), 4000);
   }
 
-  function refreshStats() {
-    const stats = getDashboardStats();
+  async function refreshStats() {
+    const stats = await getDashboardStats();
     document.getElementById('statGrid').innerHTML = `
       <div class="stat-card"><div class="n">${stats.totalMembers}</div><div class="l">Members</div></div>
       <div class="stat-card"><div class="n">${fmt(stats.totalLifetimeSpend)}</div><div class="l">Lifetime spend</div></div>
@@ -216,10 +277,8 @@
     `;
   }
 
-  function refreshMembers(query) {
-    const store = loadStore();
-    let members = query ? searchMembers(query) : store.members;
-    members = [...members].sort((a, b) => b.lifetimeSpend - a.lifetimeSpend);
+  async function refreshMembers(query) {
+    const members = await searchMembers(query || '');
     const tbody = document.getElementById('memberTbody');
     if (!members.length) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--slate); padding:20px;">No members yet.</td></tr>';
@@ -237,15 +296,19 @@
     `).join('');
   }
 
-  function refreshAll(query) {
-    refreshStats();
-    refreshMembers(query);
+  async function refreshAll(query) {
+    await Promise.all([refreshStats(), refreshMembers(query)]);
   }
 
-  document.getElementById('memberSearch').addEventListener('input', (e) => refreshMembers(e.target.value));
+  let searchDebounce;
+  document.getElementById('memberSearch').addEventListener('input', (e) => {
+    clearTimeout(searchDebounce);
+    const value = e.target.value;
+    searchDebounce = setTimeout(() => refreshMembers(value), 250);
+  });
 
-  document.getElementById('regBtn').addEventListener('click', () => {
-    const result = registerMember({
+  document.getElementById('regBtn').addEventListener('click', async () => {
+    const result = await registerMember({
       name: document.getElementById('regName').value.trim(),
       phone: document.getElementById('regPhone').value.trim(),
       email: document.getElementById('regEmail').value.trim(),
@@ -258,8 +321,8 @@
     refreshAll();
   });
 
-  document.getElementById('txBtn').addEventListener('click', () => {
-    const result = addTransaction({
+  document.getElementById('txBtn').addEventListener('click', async () => {
+    const result = await addTransaction({
       memberId: document.getElementById('txMember').value.trim(),
       amount: document.getElementById('txAmount').value,
       type: document.getElementById('txType').value,
@@ -269,6 +332,11 @@
     document.getElementById('txMember').value = '';
     document.getElementById('txAmount').value = '';
     refreshAll();
+    // Note: the receipt's "Transaction No." now falls back to the database
+    // row id (a long id) rather than a short sequential number — the old
+    // engine generated those locally per-browser, which can't work once
+    // every device shares one database. A real per-org sequence number is
+    // a small follow-up if you want a shorter number on printed receipts.
     showReceipt(result.transaction, result.member);
   });
 
@@ -426,8 +494,7 @@
   document.getElementById('invoiceBtn').addEventListener('click', () => {
     if (!currentReceipt) return;
     const { tx, member } = currentReceipt;
-    const store = loadStore();
-    const invoiceNo = generateInvoiceNumber(store);
+    const invoiceNo = generateInvoiceNumber();
     const c = LUERI_REWARDS.company;
     const vat = c.vatRegistered ? Math.round(tx.amount * c.vatRate) : 0;
     const total = tx.amount + vat;
@@ -468,7 +535,7 @@
         <div class="i-title">Invoice</div>
         <div class="i-section">
           <div class="i-row"><span>Invoice No.</span><strong>${invoiceNo}</strong></div>
-          <div class="i-row"><span>Date</span><strong>${formatDate(nowISO())}</strong></div>
+          <div class="i-row"><span>Date</span><strong>${formatDate()}</strong></div>
           <div class="i-row"><span>Bill to</span><strong>${escapeHTML(member.name)}</strong></div>
           <div class="i-row"><span>Phone</span><strong>${member.phone}</strong></div>
         </div>
