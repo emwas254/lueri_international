@@ -480,7 +480,7 @@
           </div>
         </div>
       </div></div>
-      <script>window.onload = () => window.print();</script>
+      <script>window.onload = () => window.print();<\/script>
       </body></html>`;
   }
 
@@ -549,7 +549,7 @@
         ${!c.kraPin ? `<div class="flag">This invoice has no KRA PIN on file for ${escapeHTML(c.name)} — add one in rewards.js (company.kraPin) before sending this to a client.</div>` : ''}
         ${c.vatRegistered ? `<div class="flag">${escapeHTML(c.name)} is marked VAT-registered. KRA requires VAT invoices to be issued through an eTIMS-compliant system to count as valid tax invoices — this document alone does not satisfy that requirement. Confirm with your accountant before relying on it.</div>` : `<div class="flag neutral">${escapeHTML(c.name)} is not currently marked as VAT-registered, so no VAT has been charged on this invoice.</div>`}
       </div>
-      <script>window.onload = () => window.print();</script>
+      <script>window.onload = () => window.print();<\/script>
       </body></html>`);
     win.document.close();
   });
