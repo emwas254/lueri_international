@@ -12,9 +12,10 @@
 //      lands in `organizations` + `members` where the staff console (or a
 //      future admin view) can find it and convert it into an active account.
 //
-// If you'd rather this be WhatsApp-only for now (no Supabase write) until
-// the migration below is applied, delete the two "supabaseInsert" calls in
-// the submit handler and keep everything else — the WhatsApp half works alone.
+// If you'd rather this be WhatsApp-only for now (no Supabase write), delete
+// the registerOrganizationRpc call in the submit handler and keep
+// everything else — the WhatsApp half works alone, and always runs
+// regardless of what the database call does (see the submit handler).
 //
 // SECURITY: SUPABASE_ANON_KEY must be the *anon* / publishable key — never
 // the service_role key. The anon key is safe to ship to browsers ONLY
@@ -41,7 +42,7 @@
   'use strict';
 
   const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
-  const SUPABASE_ANON_KEY = 'REPLACE_WITH_YOUR_ANON_KEY'; // the anon key, same one rewards-cloud.js uses — never the service_role key
+  const SUPABASE_ANON_KEY = 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F'; // same anon key used by rewards-cloud.js and rewards-staff-cloud.js
 
   const WHATSAPP_NUMBER = '254713261719';
   const KRA_PIN_PATTERN = /^[A-Za-z]\d{9}[A-Za-z]$/;
@@ -98,23 +99,20 @@
     return String(text).replace(/[\r\n]+/g, ' ').trim();
   }
 
-  async function supabaseInsert(table, payload) {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+  async function registerOrganizationRpc(payload) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_organization`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Prefer': 'return=representation',
       },
       body: JSON.stringify(payload),
     });
-
     if (!res.ok) {
       const bodyText = await res.text().catch(() => '');
-      const error = new Error(`${table} insert failed: ${res.status} ${bodyText}`);
+      const error = new Error(`register_organization failed: ${res.status} ${bodyText}`);
       error.status = res.status;
-      error.body = bodyText;
       throw error;
     }
     return res.json();
@@ -185,27 +183,44 @@
     submitBtn.textContent = 'Submitting…';
 
     try {
-      // 1. Durable record: organization + linked contact.
-      const orgResult = await supabaseInsert('organizations', {
-        name: data.companyName,
-        kra_pin: data.kraPin.toUpperCase(),
-        contact_email: data.contactEmail.toLowerCase(),
-        phone: normalisePhone(data.contactPhone),
-        address: data.address,
-        volume_estimate: data.volume,
-      });
-      const org = Array.isArray(orgResult) ? orgResult[0] : orgResult;
-
-      await supabaseInsert('members', {
-        full_name: data.contactName,
-        job_title: data.jobTitle || null,
-        phone: normalisePhone(data.contactPhone),
-        email: data.contactEmail.toLowerCase(),
-        organization_id: org.id,
-        role: 'org_contact',
-      });
+      // 1. Durable record — register_organization validates required fields
+      // server-side and rejects duplicate KRA PIN / company name atomically.
+      // This is the same function the site already uses for organization
+      // signups elsewhere, rather than writing to organizations/members
+      // directly (which needs a matching RLS policy per table and can
+      // leave an orphaned organization row if the second insert fails).
+      let dbOutcome = null;
+      try {
+        const rpcResult = await registerOrganizationRpc({
+          p_company_name: data.companyName,
+          p_contact_person: data.contactName,
+          p_role: data.jobTitle || null,
+          p_phone: normalisePhone(data.contactPhone),
+          p_email: data.contactEmail.toLowerCase(),
+          p_kra_pin: data.kraPin.toUpperCase(),
+          p_address: data.address,
+          p_volume: data.volume,
+        });
+        if (!rpcResult.success) {
+          // A real validation rejection (e.g. duplicate KRA PIN) — worth
+          // surfacing to the applicant rather than silently continuing,
+          // since it usually means they already have an account.
+          showError(rpcResult.error);
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+          return;
+        }
+        dbOutcome = rpcResult;
+      } catch (dbErr) {
+        // Deliberately NOT re-thrown: whatever happens to the database
+        // write, the lead must still reach you on WhatsApp. Logged so it's
+        // visible in the browser console for debugging, never shown as a
+        // blocking error to the applicant.
+        console.error('register_organization request failed (continuing to WhatsApp anyway):', dbErr);
+      }
 
       // 2. Immediate notification, same channel staff already work in.
+      // This step always runs, regardless of what happened above.
       const message = 'New corporate account application - Lueri website\n'
         + `Company: ${escapeForWhatsApp(data.companyName)}\n`
         + `KRA PIN: ${data.kraPin.toUpperCase()}\n`
@@ -213,7 +228,8 @@
         + `Est. deliveries/week: ${data.volume}\n`
         + `Contact: ${escapeForWhatsApp(data.contactName)}${data.jobTitle ? ' (' + escapeForWhatsApp(data.jobTitle) + ')' : ''}\n`
         + `Phone: ${data.contactPhone}\n`
-        + `Email: ${data.contactEmail}`;
+        + `Email: ${data.contactEmail}`
+        + (dbOutcome ? '' : '\n[Note: not yet saved to the rewards database — register manually if needed.]');
 
       const result = openWhatsApp(WHATSAPP_NUMBER, message);
 
@@ -230,14 +246,10 @@
 
       if (result.opened) setTimeout(() => form.reset(), 1500);
     } catch (err) {
+      // Only reachable now if something in the WhatsApp/DOM step itself
+      // throws — the database call above can no longer land here.
       console.error(err);
-      if (err && err.status === 409) {
-        showError('An account with this KRA PIN may already exist. WhatsApp us on 0713 261 719 and we\'ll check for you.');
-      } else if (err && err.status === 401) {
-        showError('This form isn\'t connected yet (missing or invalid API key) — please WhatsApp us on 0713 261 719 instead.');
-      } else {
-        showError('Something went wrong submitting this. Please try again or WhatsApp us directly on 0713 261 719.');
-      }
+      showError('Something went wrong submitting this. Please try again or WhatsApp us directly on 0713 261 719.');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
@@ -253,46 +265,12 @@
 })();
 
 /* -----------------------------------------------------------------------------
-   MIGRATION — run against Supabase if these columns / policies don't already
-   exist. Safe to run twice (IF NOT EXISTS guards).
-
-   ALTER TABLE organizations
-     ADD COLUMN IF NOT EXISTS kra_pin text,
-     ADD COLUMN IF NOT EXISTS phone text,
-     ADD COLUMN IF NOT EXISTS address text,
-     ADD COLUMN IF NOT EXISTS volume_estimate text;
-
-   ALTER TABLE members
-     ADD COLUMN IF NOT EXISTS job_title text,
-     ADD COLUMN IF NOT EXISTS role text DEFAULT 'individual';
-
-   -- Prevents duplicate organization rows if the same company submits twice.
-   -- Postgres has no ADD CONSTRAINT IF NOT EXISTS, so this checks first.
-   DO $$
-   BEGIN
-     IF NOT EXISTS (
-       SELECT 1 FROM pg_constraint WHERE conname = 'organizations_kra_pin_unique'
-     ) THEN
-       ALTER TABLE organizations ADD CONSTRAINT organizations_kra_pin_unique UNIQUE (kra_pin);
-     END IF;
-   END $$;
-
-   -- CRITICAL: without this, the public form's anon-key inserts will be
-   -- rejected by Row Level Security, since your existing policies were
-   -- built around authenticated staff/customer roles, not anonymous public
-   -- submissions. This policy allows ONLY inserts, from anyone, on these
-   -- two tables — it does not grant read access.
-   -- Postgres has no "CREATE POLICY IF NOT EXISTS", so drop-then-create
-   -- is the idempotent pattern (safe to run this block twice).
-   DROP POLICY IF EXISTS "Public can submit corporate applications" ON organizations;
-   CREATE POLICY "Public can submit corporate applications"
-     ON organizations FOR INSERT
-     TO anon
-     WITH CHECK (true);
-
-   DROP POLICY IF EXISTS "Public can submit corporate contacts" ON members;
-   CREATE POLICY "Public can submit corporate contacts"
-     ON members FOR INSERT
-     TO anon
-     WITH CHECK (true);
+   No migration block needed here — this form now calls register_organization,
+   an existing SECURITY DEFINER function that already validates required
+   fields, checks for a duplicate KRA PIN / company name, and inserts safely
+   without needing a public RLS INSERT policy on organizations or members.
+   (An earlier version of this file assumed direct table inserts and
+   included a migration to open a public INSERT policy for that — do not
+   apply that anymore: it would let anyone insert arbitrary rows into these
+   tables with no validation at all.)
 ------------------------------------------------------------------------------- */
