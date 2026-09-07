@@ -171,7 +171,7 @@
     <div class="tier-explainer" id="tierExplainer">
       <div class="eyebrow-mono" style="margin-bottom:16px;">How the tiers work</div>
       <div class="tier-cards" id="tierCards"></div>
-      <p class="tier-note">Your tier is based on lifetime spend and never resets. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
+      <p class="tier-note">Your tier is based on your spend over the last 12 months, so it reflects your recent activity with us. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
     </div>
 
     <div class="panel">
@@ -301,7 +301,7 @@
     const progressPct = Math.round((summary.tierProgress || 0) * 100);
     document.getElementById('mProgressFill').style.width = progressPct + '%';
     document.getElementById('mProgressNote').textContent = summary.nextTier
-      ? `KES ${summary.amountToNextTier.toLocaleString()} more in lifetime spend to reach ${summary.nextTier}`
+      ? `KES ${summary.amountToNextTier.toLocaleString()} more (in the last 12 months) to reach ${summary.nextTier}`
       : `You've reached our top tier — VIP.`;
 
     const benefitsEl = document.getElementById('mBenefits');

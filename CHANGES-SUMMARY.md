@@ -37,3 +37,10 @@ Steps 4 and 7 each pair a client file with a server-side dependency — deployin
 
 ## Still needs a business decision, not a code fix
 The lifetime-spend-forever tier model (a VIP from years ago keeps 20% off forever even if they never order again) is working as designed post-migration — that's not a bug I fixed, it's a policy call worth revisiting on its own terms.
+
+## Round 2 additions
+
+- **`staff_roles_and_departments.sql`** — staff department table (admin/finance/sales/support/info), the one-time bootstrap step to make yourself the first admin, and an `admin_set_staff_role()` RPC for approving/assigning department to new staff going forward. Also adds a `staff_login_log` table if you want a "who logged in when" record beyond the "who did what" trail the other RPCs already give you.
+- **`tier_window_migration.sql`** — switches tier qualification from lifetime spend to a rolling 365-day window, so a VIP discount stops being permanent for a customer who's gone inactive. Needs a nightly `pg_cron` job (instructions in the file) to catch members whose spend ages out of the window even with no new transaction.
+- **`rewards-cloud.js`, `rewards.html`** — updated to use the rolling window once the DB provides it, with a safe fallback to the old lifetime-spend behavior until you deploy the SQL above. `rewards-staff-cloud.js` needed no change — it already just displays whatever tier the database hands it.
+- **Honeypot**: add `<input type="text" id="corpHoneypot" name="website" autocomplete="off" tabindex="-1" style="position:absolute; left:-9999px; opacity:0;" aria-hidden="true">` inside `<form id="corporateForm">` in `corporate.html` — the JS side is already live and waiting for this field to exist.

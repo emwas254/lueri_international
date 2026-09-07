@@ -76,18 +76,26 @@ function getBenefits(tierName) {
   return tier.benefits;
 }
 
-// Tier progress based on LIFETIME spend (matches the promise on the
-// page: "based on lifetime spend and never resets"), not a rolling
-// window like the old localStorage engine used.
-function tierProgress(tierName, lifetimeSpend) {
+// CHANGED: tier now qualifies on a rolling 365-day spend window, not
+// lifetime spend — a member who goes quiet drifts back down to the tier
+// their recent activity actually supports, instead of a VIP discount
+// (and flat perks like free monthly deliveries) locking in forever from
+// one big order years ago. This is the same design the old localStorage
+// engine used, reinstated deliberately.
+//
+// windowSpend should be member.tierWindowSpend once the matching DB
+// trigger/column is deployed (see staff_roles_and_departments.sql-adjacent
+// migration). Until that's live, this falls back to lifetimeSpend so
+// nothing breaks — it just won't self-correct downward yet.
+function tierProgress(tierName, windowSpend) {
   const currentIndex = TIERS.findIndex(t => t.name === tierName);
   const next = currentIndex > 0 ? TIERS[currentIndex - 1] : null;
   if (!next) return { nextTier: null, remaining: 0, progress: 1 };
 
   const currentMin = TIERS[currentIndex].min;
   const range = next.min - currentMin;
-  const into = lifetimeSpend - currentMin;
-  const remaining = Math.max(0, next.min - lifetimeSpend);
+  const into = windowSpend - currentMin;
+  const remaining = Math.max(0, next.min - windowSpend);
   const progress = range > 0 ? Math.min(1, Math.max(0, into / range)) : 1;
   return { nextTier: next.name, remaining, progress };
 }
@@ -178,7 +186,10 @@ async function getMemberSummary(phone) {
   const tierName = capitalizeTier(member.tier);
   member.tier = tierName;
 
-  const progress = tierProgress(tierName, member.lifetimeSpend);
+  const windowSpend = member.tierWindowSpend !== undefined && member.tierWindowSpend !== null
+    ? Number(member.tierWindowSpend)
+    : Number(member.lifetimeSpend) || 0; // fallback until the DB migration lands
+  const progress = tierProgress(tierName, windowSpend);
   _txCache[member.id] = result.transactions || [];
 
   return {
