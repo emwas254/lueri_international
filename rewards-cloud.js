@@ -5,6 +5,26 @@
 // Replaces the old Google Apps Script / Sheets backend. Keeps the same
 // function names rewards.html already calls, so the page itself needs
 // no changes beyond the <script src="..."> line.
+//
+// FIXED IN THIS PASS:
+//  1. Phone normalization now outputs the SITE-WIDE canonical format
+//     (254XXXXXXXXX, no plus, no leading zero) instead of the old
+//     leading-zero (0712...) format — this was silently incompatible
+//     with corporate-signup.js's register_organization RPC, which
+//     stores +254XXXXXXXXX. Two live systems disagreed on what a
+//     Kenyan phone number looks like; this makes them agree.
+//     IMPORTANT: this requires the one-time data backfill in
+//     supabase_migration_fixes.sql to reformat phone numbers already
+//     stored in the members table — deploy that SQL BEFORE or AT THE
+//     SAME TIME as this file, not after, or existing members will
+//     temporarily fail lookup_member() until the backfill runs.
+//  2. The local phone helper is renamed from lueriNormalizePhone to
+//     _rewardsNormalizePhone. The old name is a bare top-level
+//     function declaration, which becomes a global (window.*) property
+//     — if lueri-common.js is ever added to rewards.html, its real
+//     window.lueriNormalizePhone would get silently overwritten by
+//     whichever script loaded last. Renaming removes the collision
+//     entirely rather than relying on load order.
 // ---------------------------------------------------------------------
 
 const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
@@ -72,11 +92,17 @@ function tierProgress(tierName, lifetimeSpend) {
   return { nextTier: next.name, remaining, progress };
 }
 
-function lueriNormalizePhone(phone) {
-  let value = String(phone || '').trim().replace(/[()\s-]/g, '');
-  if (value.startsWith('+254')) value = '0' + value.slice(4);
-  else if (value.startsWith('254')) value = '0' + value.slice(3);
-  return value;
+// FIX: outputs 254XXXXXXXXX (canonical, no plus) instead of the old
+// leading-zero format, and renamed so it can never shadow the real
+// window.lueriNormalizePhone from lueri-common.js. Returns null (not a
+// best-guess string) when the input can't be confidently resolved —
+// callers must check for null before using the result.
+function _rewardsNormalizePhone(phone) {
+  const value = String(phone || '').trim().replace(/[^\d]/g, '');
+  if (value.startsWith('254') && value.length === 12) return value;
+  if (value.startsWith('0') && value.length === 10) return '254' + value.slice(1);
+  if (value.length === 9 && (value.startsWith('7') || value.startsWith('1'))) return '254' + value;
+  return null;
 }
 
 // Supabase stores tier names lowercase ('bronze', 'silver', ...); the
@@ -111,10 +137,14 @@ async function rpcCall(fnName, payload) {
 const _txCache = {};
 
 async function registerMember(input) {
+  const phone = _rewardsNormalizePhone(input.phone);
+  if (!phone) {
+    return { success: false, errors: ['Enter a valid Kenyan phone number.'], member: null };
+  }
   try {
     const result = await rpcCall('register_member', {
       p_name: input.name,
-      p_phone: lueriNormalizePhone(input.phone),
+      p_phone: phone,
       p_email: input.email || null,
     });
     if (!result.success) {
@@ -133,9 +163,12 @@ async function registerMember(input) {
 }
 
 async function getMemberSummary(phone) {
+  const normalized = _rewardsNormalizePhone(phone);
+  if (!normalized) return null;
+
   let result;
   try {
-    result = await rpcCall('lookup_member', { p_phone: lueriNormalizePhone(phone) });
+    result = await rpcCall('lookup_member', { p_phone: normalized });
   } catch (err) {
     return null;
   }

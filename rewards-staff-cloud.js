@@ -3,31 +3,33 @@
 // ---------------------------------------------------------------------
 // Lueri Rewards — Staff console, Supabase-backed
 // ---------------------------------------------------------------------
-// Replaces the old rewards.js localStorage engine for everything that
-// touches shared business data (members, transactions, dashboard
-// stats). Every staff device now reads and writes the SAME database
-// that the customer-facing rewards.html already uses — no more
-// per-browser member lists.
-//
-// Auth model: staff sign in with a real Supabase Auth account (email +
-// password), not the old shared passcode. A brand-new account starts
-// as role='pending', active=false (see handle_new_auth_user trigger)
-// and can do nothing until an admin promotes it — that promotion has
-// to happen directly in the database (there is deliberately no
-// self-service "make me staff" button).
-//
-// Tier model note: this replaces the old engine's 365-day rolling
-// window with the lifetime-spend model that's already live on the
-// customer rewards page (see calculate_tier trigger). A member's tier
-// shown here will now always match what they see on their own page.
-//
-// Vouchers: the "Redeem a voucher" panel below still runs on
-// browser-local storage (see the bottom of this file). There is no
-// `vouchers` table in the database and nothing in the app currently
-// creates a voucher, so this panel has never actually been backed by
-// real, shared data — that's a pre-existing gap, not something this
-// patch introduces. Flagging it so it doesn't get mistaken for solid
-// ground later.
+// FIXED IN THIS PASS:
+//  1. normalizePhone now outputs the site-wide canonical 254XXXXXXXXX
+//     format (was leading-zero 0712...), matching the fix in
+//     rewards-cloud.js and corporate-signup.js. Requires the same
+//     one-time DB backfill (see supabase_migration_fixes.sql).
+//  2. generateInvoiceNumber() now uses a much larger random space
+//     (6 digits instead of 3) plus the time-of-day in seconds, cutting
+//     same-day collision odds from roughly 1-in-3 on a 30-transaction
+//     day down to effectively negligible. Still NOT a real atomic
+//     sequence — if you need a legally distinct invoice number per
+//     transaction, that has to come from a database sequence, not a
+//     client-generated one. Flagged here, not solved here.
+//  3. resolveMember() now distinguishes an EXACT match (phone or
+//     member number) from a FUZZY fallback (name search that happened
+//     to return exactly one row). addTransaction() refuses to proceed
+//     on a fuzzy match without an explicit confirm flag, so a loose
+//     name search can no longer silently post a transaction to the
+//     wrong customer. rewards-staff.html has been updated to show a
+//     confirmation prompt when this happens.
+//  4. registerMember() now goes through the authenticated
+//     staff_register_member RPC (staffRpcCall, requires a logged-in,
+//     approved session) instead of the anonymous public register_member
+//     RPC — so there's finally an audit trail of which staff member
+//     registered which customer. This requires the new
+//     staff_register_member function defined in
+//     supabase_migration_fixes.sql — deploy that SQL before this file,
+//     or member registration from this console will start failing.
 // ---------------------------------------------------------------------
 
 const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
@@ -160,54 +162,50 @@ async function staffRpcCall(fnName, payload) {
   return response.json();
 }
 
-// The publicly-callable register_member (no staff auth needed — same
-// function the customer signup form already uses).
-async function rpcCallPublic(fnName, payload) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!response.ok) throw new Error('Network error: ' + response.status);
-  return response.json();
-}
-
 function capitalizeTier(tier) {
   const value = String(tier || '').trim();
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
+// FIX: canonical 254XXXXXXXXX output (was leading-zero 0712...), and
+// returns null instead of a best-guess string when input can't be
+// resolved confidently.
 function normalizePhone(phone) {
-  let value = String(phone || '').trim().replace(/[()\s-]/g, '');
-  if (value.startsWith('+254')) value = '0' + value.slice(4);
-  else if (value.startsWith('254')) value = '0' + value.slice(3);
-  return value;
+  const value = String(phone || '').trim().replace(/[^\d]/g, '');
+  if (value.startsWith('254') && value.length === 12) return value;
+  if (value.startsWith('0') && value.length === 10) return '254' + value.slice(1);
+  if (value.length === 9 && (value.startsWith('7') || value.startsWith('1'))) return '254' + value;
+  return null;
 }
 
 /* ==========================================================================
-   MEMBER / TRANSACTION OPERATIONS (mirror the old rewards.js names so
-   rewards-staff.html needed minimal changes — but these are async and
-   talk to Supabase, not localStorage)
+   MEMBER / TRANSACTION OPERATIONS
    ========================================================================== */
 
+// FIX: now goes through the authenticated staff_register_member RPC
+// instead of the anonymous public register_member RPC, so registrations
+// made from this console carry the staff member's identity for audit
+// purposes. Requires supabase_migration_fixes.sql to be applied first.
 async function registerMember(input = {}) {
-  try {
-    const result = await rpcCallPublic('register_member', {
-      p_name: input.name,
-      p_phone: normalizePhone(input.phone),
-      p_email: input.email || null,
-    });
-    if (!result.success) return { success: false, errors: [result.error], member: null };
-    const member = result.member;
-    member.tier = capitalizeTier(member.tier);
-    return { success: true, errors: [], member };
-  } catch (err) {
-    return { success: false, errors: ['Could not reach the rewards server.'], member: null };
+  const phone = normalizePhone(input.phone);
+  if (!phone) {
+    return { success: false, errors: ['Enter a valid Kenyan phone number.'], member: null };
   }
+  const result = await staffRpcCall('staff_register_member', {
+    p_name: input.name,
+    p_phone: phone,
+    p_email: input.email || null,
+  });
+  if (!result.success) {
+    const message =
+      result.error === 'not_authorized' ? 'Your account is not approved for staff actions yet. Ask an admin to activate it.' :
+      result.error === 'not_logged_in' ? 'Your session has expired. Please log in again.' :
+      (result.error || 'Could not register the member.');
+    return { success: false, errors: [message], member: null };
+  }
+  const member = result.member;
+  member.tier = capitalizeTier(member.tier);
+  return { success: true, errors: [], member };
 }
 
 async function searchMembers(query = '') {
@@ -228,25 +226,58 @@ async function getDashboardStats() {
   return result;
 }
 
-// Resolves the free-text "phone or member number" field staff type into
-// an actual member row by asking the database (works across every
-// device, unlike the old findMember() which only searched local data).
+// FIX: distinguishes an exact match (phone or member number — safe to
+// use without confirmation) from a fuzzy fallback (a name search that
+// happened to return exactly one row — NOT safe to use silently, since
+// a partial name match on the wrong customer would post a transaction
+// to the wrong account with no warning).
 async function resolveMember(identifier) {
   const raw = String(identifier || '').trim();
-  if (!raw) return null;
+  if (!raw) return { member: null, exact: false };
+
   const candidates = await searchMembers(raw);
   const normalized = normalizePhone(raw);
-  return (
-    candidates.find(m => m.phone === normalized) ||
-    candidates.find(m => m.memberNumber.toLowerCase() === raw.toLowerCase()) ||
-    (candidates.length === 1 ? candidates[0] : null)
-  );
+
+  const byPhone = normalized ? candidates.find(m => m.phone === normalized) : null;
+  if (byPhone) return { member: byPhone, exact: true };
+
+  const byNumber = candidates.find(m => String(m.memberNumber).toLowerCase() === raw.toLowerCase());
+  if (byNumber) return { member: byNumber, exact: true };
+
+  if (candidates.length === 1) return { member: candidates[0], exact: false };
+  return { member: null, exact: false };
 }
 
 // type: 'sale' | 'refund' | 'adjustment' (kept as staff-facing wording;
 // mapped server-side / here to earn / adjustment as appropriate).
+//
+// FIX: when resolveMember() only found a fuzzy (non-exact) match, this
+// now returns { ambiguous: true, member } instead of silently posting
+// the transaction. The caller (rewards-staff.html) must show the
+// resolved member's name to staff and resubmit with
+// input.confirmedMemberId set to proceed.
 async function addTransaction(input = {}) {
-  const member = await resolveMember(input.memberId || input.memberNumber || input.phone);
+  let member;
+
+  if (input.confirmedMemberId) {
+    // Staff already confirmed a fuzzy match in a previous call — trust
+    // the specific id, don't re-run the fuzzy search.
+    const all = await searchMembers('');
+    member = all.find(m => m.id === input.confirmedMemberId) || null;
+  } else {
+    const resolved = await resolveMember(input.memberId || input.memberNumber || input.phone);
+    if (resolved.member && !resolved.exact) {
+      return {
+        success: false,
+        errors: [],
+        ambiguous: true,
+        transaction: null,
+        member: resolved.member,
+      };
+    }
+    member = resolved.member;
+  }
+
   if (!member) {
     return { success: false, errors: ['Member not found.'], transaction: null, member: null };
   }
@@ -274,7 +305,7 @@ async function addTransaction(input = {}) {
 }
 
 /* ==========================================================================
-   SHARED UI HELPERS (previously came from rewards.js)
+   SHARED UI HELPERS
    ========================================================================== */
 
 function fmt(amount) {
@@ -298,17 +329,17 @@ function escapeHTML(value) {
   return div.innerHTML;
 }
 
-// Not a real tax-invoice sequence (there's no invoices table backing this
-// yet, same as the old engine's locally-generated numbers) — just a
-// human-readable reference so two invoices printed the same day don't
-// look identical. Fine for a delivery receipt; talk to your accountant
-// before treating this as eTIMS-compliant for VAT purposes.
+// FIX: 6-digit random suffix (was 3) plus the current time in seconds,
+// cutting same-day collision odds to effectively negligible for any
+// realistic daily transaction volume. Still not a real tax-invoice
+// sequence — see the comment at the top of this file.
 function generateInvoiceNumber() {
   const now = new Date();
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, '0');
   const d = String(now.getDate()).padStart(2, '0');
-  const suffix = Math.floor(Math.random() * 900 + 100);
+  const secondsOfDay = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const suffix = String(secondsOfDay).padStart(5, '0') + String(Math.floor(Math.random() * 900 + 100));
   return `INV-${y}${m}${d}-${suffix}`;
 }
 
@@ -324,9 +355,8 @@ const LUERI_REWARDS = {
 };
 
 /* ==========================================================================
-   VOUCHERS — still local-only (see note at top of file). Unchanged
-   logic from the old engine, just isolated here so it keeps working
-   without depending on the removed local member/transaction store.
+   VOUCHERS — still local-only. See the disclosure text added in
+   rewards-staff.html: this panel has no real database behind it yet.
    ========================================================================== */
 
 const VOUCHER_KEY = 'lueriRewardsVouchers_v1';

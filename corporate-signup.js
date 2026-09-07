@@ -2,20 +2,40 @@
 // -----------------------------------------------------------------------------
 // Handles the corporate.html "Apply for an account" form.
 //
-// Design decision, worth stating plainly: this does BOTH of the two things
-// the rest of the site already does separately —
-//   1. Like bookingForm on index.html: opens WhatsApp with a summary message,
-//      so staff see the application immediately, the same way you already
-//      work (transactions are logged manually via WhatsApp reports today).
-//   2. Like rewards.html: writes a durable record to Supabase, so the
-//      application isn't ONLY a WhatsApp message that scrolls away — it
-//      lands in `organizations` + `members` where the staff console (or a
-//      future admin view) can find it and convert it into an active account.
+// FIXED IN THIS PASS:
+//  1. normalisePhone() no longer reimplements phone formatting locally —
+//     it now defers to the site-wide window.lueriNormalizePhone (from
+//     lueri-common.js) so this form's phone data matches the same
+//     format the rest of the shared JS uses, instead of silently
+//     storing a different shape (+254...) than everything else.
+//  2. The server error shown to an applicant is now a generic message
+//     instead of passing through the RPC's raw error text — the RPC's
+//     specific "duplicate KRA PIN" wording let anyone probing the form
+//     learn whether a given company already has a Lueri account, which
+//     is competitive information (your client list) that shouldn't be
+//     brute-force discoverable.
+//  3. The "not yet saved to the rewards database" note now sits at the
+//     TOP of the WhatsApp message, in caps with a flag emoji, instead of
+//     buried at the bottom where it's easy for a busy staff member to
+//     miss entirely.
+//  4. A basic honeypot spam check: if a hidden field (see below) gets
+//     filled in, the form pretends to succeed without actually calling
+//     the RPC or opening WhatsApp — bots that blindly fill every field
+//     get silently defeated instead of spamming your WhatsApp.
 //
-// If you'd rather this be WhatsApp-only for now (no Supabase write), delete
-// the registerOrganizationRpc call in the submit handler and keep
-// everything else — the WhatsApp half works alone, and always runs
-// regardless of what the database call does (see the submit handler).
+//     REQUIRES a new hidden field in corporate.html's #corporateForm,
+//     anywhere inside the form tag:
+//       <input type="text" name="website" id="corpHoneypot"
+//              autocomplete="off" tabindex="-1"
+//              style="position:absolute;left:-9999px;width:1px;height:1px;"
+//              aria-hidden="true">
+//     A real visitor never sees or fills this field. If it's missing
+//     from the page, this file still works fine — the check just never
+//     triggers.
+//
+// Everything else below is unchanged from the previous version — same
+// design (WhatsApp notification always fires; a database failure never
+// blocks it), same validation, same accessibility handling.
 //
 // SECURITY: SUPABASE_ANON_KEY must be the *anon* / publishable key — never
 // the service_role key. The anon key is safe to ship to browsers ONLY
@@ -25,9 +45,10 @@
 // otherwise every submission will fail silently with a permissions error.
 //
 // REQUIRES (expected to already be loaded site-wide via lueri-common.js):
-//   lueriIsValidPhone(phone) -> boolean
-//   lueriOpenWhatsApp(number, message) -> { opened: boolean, url: string }
-// If either is missing (script failed to load, or renamed), this file falls
+//   window.lueriNormalizePhone(phone) -> string | null
+//   window.lueriIsValidPhone(phone) -> boolean
+//   window.lueriOpenWhatsApp(number, message) -> { opened: boolean, url: string }
+// If any is missing (script failed to load, or renamed), this file falls
 // back to an inline equivalent below rather than silently breaking the form.
 //
 // ASSUMPTIONS TO VERIFY AGAINST YOUR LIVE SUPABASE SCHEMA:
@@ -68,6 +89,20 @@
         return { opened: !!win, url };
       };
 
+  // FIX: use the site-wide canonical normalizer (254XXXXXXXXX, no plus)
+  // instead of the old local +254XXXXXXXXX version, so phone numbers
+  // written by this form match the format the rest of the site uses.
+  // Falls back to a locally-equivalent canonical format only if
+  // lueri-common.js genuinely isn't loaded.
+  const normalisePhone = typeof window.lueriNormalizePhone === 'function'
+    ? window.lueriNormalizePhone
+    : (raw) => {
+        const trimmed = String(raw || '').trim().replace(/[^\d]/g, '');
+        if (trimmed.startsWith('254') && trimmed.length === 12) return trimmed;
+        if (trimmed.startsWith('0') && trimmed.length === 10) return '254' + trimmed.slice(1);
+        return trimmed;
+      };
+
   function setFieldError(el, hasError) {
     el.classList.toggle('invalid', hasError);
     if (hasError) {
@@ -85,11 +120,6 @@
   function hideError() {
     errorBox.style.display = 'none';
     errorBox.textContent = '';
-  }
-
-  function normalisePhone(raw) {
-    const trimmed = raw.trim();
-    return trimmed.startsWith('0') ? `+254${trimmed.slice(1)}` : trimmed;
   }
 
   function escapeForWhatsApp(text) {
@@ -121,6 +151,23 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     hideError();
+
+    // Honeypot: a real visitor never fills this hidden field. A bot that
+    // blindly fills every input on the page will. If it's filled, pretend
+    // to succeed and stop — no RPC call, no WhatsApp message, no signal
+    // to the bot that anything was rejected.
+    const honeypot = document.getElementById('corpHoneypot');
+    if (honeypot && honeypot.value.trim() !== '') {
+      const overlay = document.getElementById('successOverlay');
+      if (overlay) {
+        document.getElementById('successTitle').textContent = 'Application received';
+        document.getElementById('successCopy').textContent = 'Our team will review and activate your account within one working day.';
+        const fallback = document.getElementById('successFallback');
+        if (fallback) fallback.style.display = 'none';
+        overlay.classList.add('active');
+      }
+      return;
+    }
 
     const fields = {
       companyName: document.getElementById('companyName'),
@@ -185,10 +232,6 @@
     try {
       // 1. Durable record — register_organization validates required fields
       // server-side and rejects duplicate KRA PIN / company name atomically.
-      // This is the same function the site already uses for organization
-      // signups elsewhere, rather than writing to organizations/members
-      // directly (which needs a matching RLS policy per table and can
-      // leave an orphaned organization row if the second insert fails).
       let dbOutcome = null;
       try {
         const rpcResult = await registerOrganizationRpc({
@@ -202,10 +245,14 @@
           p_volume: data.volume,
         });
         if (!rpcResult.success) {
-          // A real validation rejection (e.g. duplicate KRA PIN) — worth
-          // surfacing to the applicant rather than silently continuing,
-          // since it usually means they already have an account.
-          showError(rpcResult.error);
+          // FIX: generic message instead of passing through rpcResult.error
+          // verbatim. The specific wording ("duplicate KRA PIN") let anyone
+          // probing the form learn whether a given company is already a
+          // Lueri client — that's not information this form should confirm
+          // to an anonymous visitor.
+          showError(
+            "We couldn't process this application. If your company already has an account with us, please contact us directly and we'll help you access it."
+          );
           submitBtn.disabled = false;
           submitBtn.textContent = originalLabel;
           return;
@@ -220,16 +267,22 @@
       }
 
       // 2. Immediate notification, same channel staff already work in.
-      // This step always runs, regardless of what happened above.
-      const message = 'New corporate account application - Lueri website\n'
+      // FIX: the "not saved to database" flag now leads the message in
+      // caps with an emoji, instead of trailing at the bottom where it's
+      // easy to miss in a wall of WhatsApp text.
+      const dbWarning = dbOutcome
+        ? ''
+        : '🚩 NOT YET SAVED TO DATABASE — register this applicant manually.\n\n';
+
+      const message = dbWarning
+        + 'New corporate account application - Lueri website\n'
         + `Company: ${escapeForWhatsApp(data.companyName)}\n`
         + `KRA PIN: ${data.kraPin.toUpperCase()}\n`
         + `Address: ${escapeForWhatsApp(data.address)}\n`
         + `Est. deliveries/week: ${data.volume}\n`
         + `Contact: ${escapeForWhatsApp(data.contactName)}${data.jobTitle ? ' (' + escapeForWhatsApp(data.jobTitle) + ')' : ''}\n`
         + `Phone: ${data.contactPhone}\n`
-        + `Email: ${data.contactEmail}`
-        + (dbOutcome ? '' : '\n[Note: not yet saved to the rewards database — register manually if needed.]');
+        + `Email: ${data.contactEmail}`;
 
       const result = openWhatsApp(WHATSAPP_NUMBER, message);
 

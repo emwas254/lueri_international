@@ -249,21 +249,15 @@
 
 <script src="rewards-cloud.js"></script>
 <script>
-  // --- FIX: fmt() was referenced in three places but never defined anywhere
-  // in this file or in rewards-cloud.js. That caused an uncaught
-  // ReferenceError on page load inside renderTierExplainer(), which halted
-  // this entire script block before it reached the code that wires up the
-  // "View My Rewards" and "Create my Rewards account" buttons. Defining it
-  // here, first, fixes all three call sites (tier explainer, transaction
-  // table, printable receipt) and matches the "KES 350" currency style
-  // already used on the main site.
+  // fmt()/formatDate() are defined locally because they were referenced
+  // in three places but never defined anywhere in this file or in
+  // rewards-cloud.js — that previously caused an uncaught ReferenceError
+  // on page load inside renderTierExplainer(), which halted this entire
+  // script block before it reached the code that wires up the "View My
+  // Rewards" and "Create my Rewards account" buttons.
   function fmt(n) {
     return 'KES ' + Number(n || 0).toLocaleString();
   }
-
-  // formatDate was called (transaction table, receipt) but never defined
-  // anywhere in this file — likely throwing silently in production before
-  // this fix. Matches the site's existing date style.
   function formatDate(value) {
     const d = new Date(value);
     if (isNaN(d)) return '';
@@ -273,59 +267,21 @@
     });
   }
 
-  // Theme (shared with main site)
-  const themeToggle = document.getElementById('themeToggle');
-  const sunIcon = document.getElementById('sunIcon');
-  const moonIcon = document.getElementById('moonIcon');
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
-    moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
+  // FIX: escapes every interpolated value, using the same helper already
+  // used correctly in rewards-staff.html's copy of this receipt. Never
+  // trust member.name / member.phone / tx.reference / company fields to
+  // be HTML-safe just because they're normally short and plain-looking —
+  // reference/description fields in particular are staff-entered from
+  // manual WhatsApp reports today, and this receipt is built with
+  // document.write into a same-origin popup.
+  function escapeHTML(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
-  themeToggle.addEventListener('click', () => {
-    const current = localStorage.getItem('theme') || 'light';
-    setTheme(current === 'light' ? 'dark' : 'light');
-  });
-  setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-
-  // Public tier explainer — rendered live from the tier table so it never drifts out of sync
-  // --- HARDENING: wrapped in try/catch so a future data issue (e.g. a
-  // missing field on LUERI_REWARDS.tiers) degrades gracefully instead of
-  // silently killing every script below it on the page, which is exactly
-  // what happened here.
-  (function renderTierExplainer() {
-    const container = document.getElementById('tierCards');
-    try {
-      const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
-      container.innerHTML = tiersLowToHigh.map(tier => {
-        const spendLabel = tier.minSpend > 0
-          ? `${fmt(tier.minSpend)}+ lifetime spend`
-          : 'Starting tier';
-        const benefits = tier.benefits.slice(0, 3).map(b => `<li>${b}</li>`).join('');
-        return `
-          <div class="tier-explain-card">
-            <div class="tname">${tier.name}</div>
-            <div class="tspend">${spendLabel}</div>
-            <ul>${benefits}</ul>
-          </div>
-        `;
-      }).join('');
-    } catch (err) {
-      console.error('Tier explainer failed to render:', err);
-      if (container) container.innerHTML = '';
-    }
-  })();
-
-  // Tabs
-  function showTab(name) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-    document.getElementById('view-lookup').classList.toggle('active', name === 'lookup');
-    document.getElementById('view-join').classList.toggle('active', name === 'join');
-  }
-  document.querySelectorAll('[data-tab]').forEach(el => {
-    el.addEventListener('click', (e) => { e.preventDefault(); showTab(el.dataset.tab); });
-  });
 
   function showMsg(id, text) {
     const el = document.getElementById(id);
@@ -386,7 +342,7 @@
     const logo = `${location.origin}/assets/logo-mark.png`;
 
     const win = window.open('', '_blank', 'width=440,height=720');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${tx.transactionNumber || tx.id}</title>
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${escapeHTML(tx.transactionNumber || tx.id)}</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
       <style>
@@ -437,29 +393,29 @@
             <div style="display:flex; gap:10px; align-items:center;">
               <div class="logo"><img src="${logo}" alt=""></div>
               <div>
-                <p class="bname">${c.name}</p>
+                <p class="bname">${escapeHTML(c.name)}</p>
                 <p class="btag">Same-day courier &middot; Nairobi</p>
               </div>
             </div>
-            <div class="tier-badge">${member.tier} member</div>
+            <div class="tier-badge">${escapeHTML(member.tier)} member</div>
           </div>
           <div class="rstatus">
             <div class="paid-stamp">Paid</div>
             <div class="rno">
               <div class="lbl">Receipt no.</div>
-              <div class="val">${tx.transactionNumber || tx.id}</div>
+              <div class="val">${escapeHTML(tx.transactionNumber || tx.id)}</div>
             </div>
           </div>
         </div>
         <div class="rbody">
           <div class="field-grid">
             <div class="field"><div class="lbl">Date &amp; time</div><div class="val">${formatDate(tx.date)}</div></div>
-            <div class="field"><div class="lbl">Member</div><div class="val">${member.name}</div></div>
-            <div class="field"><div class="lbl">Member no.</div><div class="val mono">${member.memberNumber}</div></div>
-            <div class="field"><div class="lbl">Phone</div><div class="val mono">${member.phone}</div></div>
+            <div class="field"><div class="lbl">Member</div><div class="val">${escapeHTML(member.name)}</div></div>
+            <div class="field"><div class="lbl">Member no.</div><div class="val mono">${escapeHTML(member.memberNumber)}</div></div>
+            <div class="field"><div class="lbl">Phone</div><div class="val mono">${escapeHTML(member.phone)}</div></div>
           </div>
           <table class="charges">
-            <tr><td>${serviceLabel}${tx.reference ? `<br><span class="lbl-sub">Ref: ${tx.reference}</span>` : ''}</td><td class="amt">${fmt(subtotal)}</td></tr>
+            <tr><td>${serviceLabel}${tx.reference ? `<br><span class="lbl-sub">Ref: ${escapeHTML(tx.reference)}</span>` : ''}</td><td class="amt">${fmt(subtotal)}</td></tr>
             ${vatOn ? `<tr><td>VAT (${Math.round(c.vatRate*100)}%)</td><td class="amt">${fmt(vatAmt)}</td></tr>` : ''}
             <tr class="total-row"><td class="lbl">Total</td><td class="amt">${fmt(tx.amount)}</td></tr>
           </table>
@@ -469,10 +425,10 @@
           </div>
         </div>
         <div class="rfoot">
-          <p class="thanks">Thank you for choosing ${c.name}.</p>
+          <p class="thanks">Thank you for choosing ${escapeHTML(c.name)}.</p>
           <div class="contact-cols">
-            <div class="hd">${c.name}</div>
-            ${c.address}<br>${c.phone}${c.kraPin ? '<br>KRA PIN: ' + c.kraPin : ''}
+            <div class="hd">${escapeHTML(c.name)}</div>
+            ${escapeHTML(c.address)}<br>${escapeHTML(c.phone)}${c.kraPin ? '<br>KRA PIN: ' + escapeHTML(c.kraPin) : ''}
           </div>
         </div>
       </div></div>
@@ -480,6 +436,23 @@
       </body></html>`);
     win.document.close();
   }
+
+  // FIX: tab switching and the two conversion buttons (Lookup, Join) are
+  // now wired FIRST, before any decorative rendering (theme toggle, tier
+  // explainer). In a plain <script> block, an uncaught error on one
+  // top-level statement stops every statement after it in that block —
+  // that's exactly what silently disabled these two buttons before, when
+  // an earlier statement (the tier explainer) threw on undefined fmt()/
+  // formatDate(). Now, even if something later in this script throws,
+  // the buttons that actually drive lookups and signups are already wired.
+  function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.getElementById('view-lookup').classList.toggle('active', name === 'lookup');
+    document.getElementById('view-join').classList.toggle('active', name === 'join');
+  }
+  document.querySelectorAll('[data-tab]').forEach(el => {
+    el.addEventListener('click', (e) => { e.preventDefault(); showTab(el.dataset.tab); });
+  });
 
   document.getElementById('lookupBtn').addEventListener('click', async () => {
     hideMsg('lookupMsg');
@@ -533,6 +506,53 @@
     }, { once: true });
     document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
   });
+
+  // ---- Decorative code below — wrapped so it can never take the
+  // buttons above down with it again. ----
+
+  // Theme (shared with main site)
+  try {
+    const themeToggle = document.getElementById('themeToggle');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
+      moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
+    }
+    themeToggle.addEventListener('click', () => {
+      const current = localStorage.getItem('theme') || 'light';
+      setTheme(current === 'light' ? 'dark' : 'light');
+    });
+    setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  } catch (err) {
+    console.error('Theme setup failed:', err);
+  }
+
+  // Public tier explainer — rendered live from the tier table so it never drifts out of sync
+  (function renderTierExplainer() {
+    const container = document.getElementById('tierCards');
+    try {
+      const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
+      container.innerHTML = tiersLowToHigh.map(tier => {
+        const spendLabel = tier.minSpend > 0
+          ? `${fmt(tier.minSpend)}+ lifetime spend`
+          : 'Starting tier';
+        const benefits = tier.benefits.slice(0, 3).map(b => `<li>${escapeHTML(b)}</li>`).join('');
+        return `
+          <div class="tier-explain-card">
+            <div class="tname">${escapeHTML(tier.name)}</div>
+            <div class="tspend">${spendLabel}</div>
+            <ul>${benefits}</ul>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Tier explainer failed to render:', err);
+      if (container) container.innerHTML = '';
+    }
+  })();
 </script>
 </body>
 </html>

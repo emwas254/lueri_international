@@ -50,6 +50,8 @@
   @media (max-width:900px){ .panels{ grid-template-columns:1fr; } }
   .panel{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:24px; margin-bottom:24px; }
   .panel h2{ font-size:1rem; margin-bottom:16px; }
+  .panel h2 .badge{ font-family:'IBM Plex Mono', monospace; font-size:.6rem; text-transform:uppercase; letter-spacing:.05em; background:var(--signal); color:var(--ink); padding:3px 8px; border-radius:10px; margin-left:8px; vertical-align:middle; }
+  .panel.disabled-look{ opacity:.72; }
   .form-group{ margin-bottom:14px; }
   .form-label{ display:block; margin-bottom:5px; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); }
   .form-input, .form-select{ width:100%; padding:10px; border:1px solid var(--line); border-radius:4px; font-size:.95rem; font-family:inherit; }
@@ -169,12 +171,15 @@
             </div>
           </div>
 
-          <div class="panel">
-            <h2>Redeem a voucher</h2>
+          <div class="panel disabled-look">
+            <h2>Redeem a voucher <span class="badge">Not yet live</span></h2>
             <div class="msg error" id="voMsg"></div>
             <div class="msg success" id="voSuccessMsg"></div>
             <div class="form-group"><label class="form-label">Voucher code</label><input class="form-input" id="voCode" placeholder="LUERI-XXXXXX" style="text-transform:uppercase;"></div>
             <button class="btn btn-outline" id="voBtn">Redeem voucher</button>
+            <div class="disclosure">
+              There is no shared voucher database yet — this panel only checks vouchers stored in THIS browser. A redemption here will not be visible on any other device and nothing in the app currently issues real vouchers. Treat any "success" message here as a placeholder, not a completed transaction.
+            </div>
           </div>
         </div>
 
@@ -189,7 +194,7 @@
               <tbody id="memberTbody"></tbody>
             </table>
           </div>
-          <div class="disclosure">Member data is now shared across every staff device via the Lueri Rewards database — the same one the customer rewards page uses. Only the "Redeem a voucher" panel above is still browser-local (there's no voucher table in the database yet, and nothing in the app currently issues vouchers, so that panel has limited real use today).</div>
+          <div class="disclosure">Member data is shared across every staff device via the Lueri Rewards database — the same one the customer rewards page uses.</div>
         </div>
       </div>
 
@@ -270,8 +275,8 @@
   async function refreshStats() {
     const stats = await getDashboardStats();
     document.getElementById('statGrid').innerHTML = `
-      <div class="stat-card"><div class="n">${stats.totalMembers}</div><div class="l">Members</div></div>
       <div class="stat-card"><div class="n">${fmt(stats.totalLifetimeSpend)}</div><div class="l">Lifetime spend</div></div>
+      <div class="stat-card"><div class="n">${stats.totalMembers}</div><div class="l">Members</div></div>
       <div class="stat-card"><div class="n">${stats.totalPoints.toLocaleString()}</div><div class="l">Points outstanding</div></div>
       <div class="stat-card"><div class="n">${stats.totalTransactions}</div><div class="l">Transactions</div></div>
     `;
@@ -321,24 +326,38 @@
     refreshAll();
   });
 
-  document.getElementById('txBtn').addEventListener('click', async () => {
+  // FIX: addTransaction() can now come back with { ambiguous: true, member }
+  // when the phone/number field only matched by a loose name search. Staff
+  // must explicitly confirm the resolved name before the transaction is
+  // actually posted — this replaces the old behaviour of silently trusting
+  // a single fuzzy search result.
+  async function submitTransaction(confirmedMemberId) {
     const result = await addTransaction({
       memberId: document.getElementById('txMember').value.trim(),
       amount: document.getElementById('txAmount').value,
       type: document.getElementById('txType').value,
+      confirmedMemberId: confirmedMemberId || undefined,
     });
+
+    if (result.ambiguous) {
+      const proceed = window.confirm(
+        `This didn't match an exact phone number or member number. Closest match: ${result.member.name} (${result.member.memberNumber}, ${result.member.phone}).\n\nLog this transaction against ${result.member.name}?`
+      );
+      if (proceed) {
+        await submitTransaction(result.member.id);
+      }
+      return;
+    }
+
     if (!result.success) { showMsg('txMsg', result.errors.join(' ')); return; }
     showMsg('txSuccessMsg', `Logged. ${result.member.name} now has ${result.member.points} points (${result.member.tier}).`);
     document.getElementById('txMember').value = '';
     document.getElementById('txAmount').value = '';
     refreshAll();
-    // Note: the receipt's "Transaction No." now falls back to the database
-    // row id (a long id) rather than a short sequential number — the old
-    // engine generated those locally per-browser, which can't work once
-    // every device shares one database. A real per-org sequence number is
-    // a small follow-up if you want a shorter number on printed receipts.
     showReceipt(result.transaction, result.member);
-  });
+  }
+
+  document.getElementById('txBtn').addEventListener('click', () => submitTransaction());
 
   // ---- Receipt (print + WhatsApp) ----
   let currentReceipt = null;
@@ -374,9 +393,6 @@
     box.classList.add('show');
   }
 
-  // Shared brand tokens + logo path so print/PDF popups match the live
-  // site's look (they open as separate documents so can't inherit the
-  // page's own stylesheet — everything needed is embedded here).
   const BRAND = {
     ink: '#1B2620', paper: '#F0EAD8', paperDim: '#e6dfc9',
     route: '#B8321F', slate: '#4A5A52', signal: '#E8B93D',
@@ -546,7 +562,7 @@
           <div class="i-total-block"><span class="i-total-label">Total</span><span class="i-total-value">${fmt(total)}</span></div>
         </div>
 
-        ${!c.kraPin ? `<div class="flag">This invoice has no KRA PIN on file for ${escapeHTML(c.name)} — add one in rewards.js (company.kraPin) before sending this to a client.</div>` : ''}
+        ${!c.kraPin ? `<div class="flag">This invoice has no KRA PIN on file for ${escapeHTML(c.name)} — add one to the LUERI_REWARDS.company.kraPin value in rewards-staff-cloud.js (and rewards-cloud.js, so both pages match) before sending this to a client.</div>` : ''}
         ${c.vatRegistered ? `<div class="flag">${escapeHTML(c.name)} is marked VAT-registered. KRA requires VAT invoices to be issued through an eTIMS-compliant system to count as valid tax invoices — this document alone does not satisfy that requirement. Confirm with your accountant before relying on it.</div>` : `<div class="flag neutral">${escapeHTML(c.name)} is not currently marked as VAT-registered, so no VAT has been charged on this invoice.</div>`}
       </div>
       <script>window.onload = () => window.print();<\/script>
@@ -566,16 +582,16 @@
       `New balance: ${member.points.toLocaleString()} pts (${member.tier})`,
       `Thank you for choosing Lueri International.`,
     ].join('\n');
-    let waPhone = member.phone.replace(/\D/g, '');
-    if (waPhone.startsWith('0')) waPhone = '254' + waPhone.slice(1);
-    window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    // member.phone is already canonical 254XXXXXXXXX (see rewards-staff-cloud.js) —
+    // no reformatting needed before handing it to wa.me.
+    window.open(`https://wa.me/${member.phone}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   });
 
   document.getElementById('voBtn').addEventListener('click', () => {
     const code = document.getElementById('voCode').value.trim();
     const result = redeemVoucher(code, 'staff-console');
     if (!result.success) { showMsg('voMsg', result.errors.join(' ')); return; }
-    showMsg('voSuccessMsg', `Voucher ${result.voucher.code} redeemed — value ${fmt(result.voucher.value)}.`);
+    showMsg('voSuccessMsg', `Voucher ${result.voucher.code} redeemed locally — value ${fmt(result.voucher.value)}. (Not saved to the shared database — see note above.)`);
     document.getElementById('voCode').value = '';
   });
 </script>
