@@ -1,689 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lueri Rewards — Lueri International</title>
-<meta name="description" content="Join Lueri Rewards — earn points on every delivery, unlock free deliveries and priority dispatch as you climb Silver, Gold, Platinum and VIP tiers.">
-<meta property="og:title" content="Lueri Rewards — Lueri International">
-<meta property="og:description" content="Earn points on every delivery. Free to join.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://lueriinternational.com/rewards.html">
-<meta property="og:image" content="https://lueriinternational.com/assets/og-image.png">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52;
-    --signal:#E8B93D; --line: rgba(27,38,32,0.16); --success:#2e7d32; --error:#c62828;
-    --card-bg: var(--paper); --paper-rgb: 240,234,216; --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-  }
-  [data-theme="dark"] {
-    --ink:#F0EAD8; --paper:#1B2620; --paper-dim:#24312a; --slate:#a0b0a7;
-    --line: rgba(240,234,216,0.16); --card-bg:#24312a; --paper-rgb:27,38,32;
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
-    line-height:1.5; transition: background-color .3s ease, color .3s ease;
-  }
-  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.02em; margin:0; }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
-  a{ color:inherit; text-decoration:none; transition: var(--transition); }
-  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
-    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
-  }
-  .wrap{ max-width:900px; margin:0 auto; padding:0 24px; }
-  header{ position:sticky; top:0; z-index:100; background:rgba(var(--paper-rgb),.85);
-    border-bottom:1px solid var(--line); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
-  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:900px; margin:0 auto; }
-  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; }
-  .brand img{ height:30px; }
-  .back-link{ font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75; }
-  .back-link:hover{ opacity:1; color:var(--route); }
-  .theme-toggle{ background:none; border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
-    cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center; }
-  main{ padding:56px 0 100px; }
-  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:.75rem; letter-spacing:.1em; color:var(--slate); text-transform:uppercase; }
-  h1.title{ font-size:clamp(2.2rem, 6vw, 3.4rem); line-height:1; margin:10px 0 12px; }
-  .subtitle{ max-width:560px; color:var(--slate); font-size:1.05rem; line-height:1.6; }
-  .panel{
-    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:32px;
-    margin-top:36px; box-shadow:8px 8px 0 rgba(27,38,32,0.08);
-  }
-  .tabs{ display:flex; gap:8px; margin-bottom:28px; border-bottom:1px solid var(--line); }
-  .tab-btn{
-    background:none; border:none; padding:10px 4px; margin-right:20px; font-family:'IBM Plex Mono', monospace;
-    font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); cursor:pointer;
-    border-bottom:2px solid transparent; margin-bottom:-1px;
-  }
-  .tab-btn.active{ color:var(--route); border-bottom-color:var(--route); }
-  .view{ display:none; }
-  .view.active{ display:block; }
-  .form-group{ margin-bottom:20px; }
-  .form-label{ display:block; margin-bottom:6px; color:var(--slate); font-family:'IBM Plex Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
-  .form-input{
-    width:100%; padding:13px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
-    border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem;
-  }
-  .form-input:focus{ outline:none; border-color:var(--route); }
-  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  @media (max-width:600px){ .form-row2{ grid-template-columns:1fr; } }
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 24px;
-    font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; border-radius:4px; font-weight:700;
-    cursor:pointer; border:none; transition:var(--transition); width:100%;
-  }
-  .btn-primary{ background:var(--route); color:var(--paper); }
-  .btn-primary:hover{ filter:brightness(1.1); }
-  .btn-secondary{ background:transparent; border:1.5px solid var(--ink); color:var(--ink); }
-  .msg{ padding:12px 16px; border-radius:4px; font-size:.88rem; margin-bottom:16px; display:none; }
-  .msg.show{ display:block; }
-  .msg.error{ background:rgba(198,40,40,0.1); color:var(--error); border:1px solid rgba(198,40,40,0.3); }
-  .msg.success{ background:rgba(46,125,50,0.1); color:var(--success); border:1px solid rgba(46,125,50,0.3); }
-  .disclosure{
-    margin-top:28px; padding:16px 18px; border:1px dashed var(--line); border-radius:4px;
-    font-size:.82rem; color:var(--slate); line-height:1.6;
-  }
-  /* Member card */
-  .member-card{ display:none; }
-  .member-card.show{ display:block; }
-  .tier-band{
-    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
-    background:var(--ink); color:var(--paper); padding:28px; border-radius:4px; margin-bottom:24px;
-  }
-  .tier-name{ font-family:'Oswald', sans-serif; font-size:1.6rem; text-transform:uppercase; }
-  .tier-name .signal{ color:var(--signal); }
-  .points-num{ font-family:'IBM Plex Mono', monospace; font-size:2rem; font-weight:600; }
-  .points-label{ font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; opacity:.7; }
-  .progress-track{ height:8px; background:rgba(240,234,216,0.15); border-radius:8px; margin-top:14px; overflow:hidden; }
-  .progress-fill{ height:100%; background:var(--signal); border-radius:8px; transition:width .4s ease; }
-  .progress-note{ font-size:.78rem; opacity:.75; margin-top:8px; }
-  .benefit-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:20px 0; }
-  @media (max-width:600px){ .benefit-grid{ grid-template-columns:1fr; } }
-  .benefit-item{ font-size:.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:4px; }
-  .benefit-item::before{ content:"✓ "; color:var(--route); font-weight:700; }
-  table.tx-table{ width:100%; border-collapse:collapse; font-size:.88rem; margin-top:12px; }
-  table.tx-table th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:.7rem; text-transform:uppercase;
-    letter-spacing:.06em; color:var(--slate); padding:8px 6px; border-bottom:1px solid var(--line); }
-  table.tx-table td{ padding:10px 6px; border-bottom:1px solid var(--line); }
-  .empty-note{ color:var(--slate); font-size:.9rem; padding:20px 0; }
-  .switch-link{ text-align:center; margin-top:16px; font-size:.85rem; color:var(--slate); }
-  .switch-link a{ color:var(--route); text-decoration:underline; font-weight:600; }
-  .receipt-link{
-    background:none; border:1px solid var(--line); border-radius:3px; padding:4px 10px;
-    font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--route);
-    cursor:pointer; font-family:'IBM Plex Mono', monospace;
-  }
-  .receipt-link:hover{ border-color:var(--route); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lueri Rewards - Membership Plans</title>
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f0e8;
+            color: #1a2520;
+        }
+        
+        /* REWARDS TIERS STYLING */
+        .rewards-tiers-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+            background: #f5f0e8;
+        }
 
-  /* Public tier explainer (earn-it-free) */
-  .tier-explainer{ margin-top:40px; }
-  .tier-cards{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
-  @media (max-width:900px){ .tier-cards{ grid-template-columns:repeat(2,1fr); } }
-  @media (max-width:480px){ .tier-cards{ grid-template-columns:1fr; } }
-  .tier-explain-card{
-    background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:18px;
-    transition: var(--transition);
-  }
-  .tier-explain-card:hover{ border-color:var(--route); transform:translateY(-2px); }
-  .tier-explain-card .tname{
-    font-family:'Oswald', sans-serif; font-size:1.05rem; text-transform:uppercase; letter-spacing:.02em;
-    color:var(--route); margin-bottom:4px;
-  }
-  .tier-explain-card .tspend{
-    font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--slate);
-    text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;
-  }
-  .tier-explain-card ul{ margin:0; padding-left:16px; font-size:.82rem; color:var(--slate); line-height:1.7; }
-  .tier-explain-card ul li::marker{ color:var(--route); }
-  .tier-note{ font-size:.85rem; color:var(--slate); line-height:1.6; margin:20px 0 0; max-width:640px; }
+        .tier-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-  /* Buy-it-outright section — same visual language as the earn-it-free
-     cards above (tier-explain-card), so it reads as one coherent site,
-     not a bolted-on widget. Distinguished by a price tag and a CTA. */
-  .purchase-section{ margin-top:56px; }
-  .purchase-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
-  .purchase-head h2{ font-size:1.5rem; }
-  .purchase-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-  @media (max-width:900px){ .purchase-cards{ grid-template-columns:repeat(2,1fr); } }
-  @media (max-width:480px){ .purchase-cards{ grid-template-columns:1fr; } }
-  .purchase-card{
-    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:20px;
-    display:flex; flex-direction:column; box-shadow:5px 5px 0 rgba(27,38,32,0.06); transition:var(--transition);
-  }
-  .purchase-card:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 rgba(27,38,32,0.09); }
-  .purchase-card .tname{ font-family:'Oswald', sans-serif; font-size:1.15rem; text-transform:uppercase; color:var(--route); margin-bottom:2px; }
-  .purchase-card .tprice{ font-family:'IBM Plex Mono', monospace; font-size:1.3rem; font-weight:600; margin-bottom:2px; }
-  .purchase-card .tperiod{ font-family:'IBM Plex Mono', monospace; font-size:.68rem; color:var(--slate); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
-  .purchase-card ul{ margin:0 0 18px; padding-left:16px; font-size:.8rem; color:var(--slate); line-height:1.65; flex-grow:1; }
-  .purchase-card ul li::marker{ color:var(--route); }
-  .purchase-card .btn{ margin-top:auto; }
-  .purchase-card.owned{ opacity:.55; }
-  .purchase-card.owned .btn{ cursor:default; }
+        .tier-header h2 {
+            font-size: 2.5rem;
+            color: #1a2520;
+            margin-bottom: 15px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-family: 'Arial Black', sans-serif;
+        }
 
-  /* Selection banner shown in the Join view once a paid tier is chosen */
-  .plan-banner{
-    display:none; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
-    background:var(--ink); color:var(--paper); padding:14px 18px; border-radius:4px; margin-bottom:24px;
-  }
-  .plan-banner.show{ display:flex; }
-  .plan-banner .pb-label{ font-family:'IBM Plex Mono', monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; opacity:.75; }
-  .plan-banner .pb-tier{ font-family:'Oswald', sans-serif; font-size:1.1rem; text-transform:uppercase; color:var(--signal); }
-  .plan-banner .pb-clear{ background:none; border:1px solid rgba(240,234,216,0.4); color:var(--paper); border-radius:3px;
-    padding:5px 10px; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; cursor:pointer; font-family:'IBM Plex Mono', monospace; }
-  .plan-banner .pb-clear:hover{ border-color:var(--signal); color:var(--signal); }
-</style>
+        .tier-header p {
+            font-size: 1.1rem;
+            color: #2d3b2f;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* FREE JOIN LINK - SECONDARY */
+        .free-join-section {
+            text-align: center;
+            margin: 60px 0 40px 0;
+            padding: 30px;
+            background: #faf7f2;
+            border: 2px dashed #d4cfc4;
+            border-radius: 4px;
+        }
+
+        .free-join-section p {
+            color: #2d3b2f;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .btn-join-free {
+            display: inline-block;
+            padding: 12px 30px;
+            background: transparent;
+            color: #1a2520;
+            border: 2px solid #1a2520;
+            border-radius: 2px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-join-free:hover {
+            background: #1a2520;
+            color: #f5f0e8;
+            transform: translateY(-2px);
+        }
+
+        /* PAID TIERS GRID */
+        .tiers-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 20px !important;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .tier-card {
+            background: #faf7f2;
+            border: 2px solid #1a2520;
+            border-radius: 2px;
+            padding: 35px 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 8px 8px 0 #1a2520;
+        }
+
+        .tier-card.featured {
+            border: 3px solid #c41e3a;
+            box-shadow: 8px 8px 0 #c41e3a;
+        }
+
+        .tier-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #c41e3a;
+            color: #f5f0e8;
+            padding: 6px 20px;
+            border-radius: 2px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tier-name {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #1a2520;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .tier-price {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: #c41e3a;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .tier-price .period {
+            font-size: 0.85rem;
+            color: #6b7a6f;
+            font-weight: 500;
+        }
+
+        .tier-desc {
+            color: #2d3b2f;
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 0.85rem;
+        }
+
+        .tier-benefits {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+            flex-grow: 1;
+        }
+
+        .tier-benefits li {
+            padding: 10px 0;
+            border-bottom: 1px dashed #d4cfc4;
+            color: #1a2520;
+            font-size: 0.8rem;
+            position: relative;
+            padding-left: 26px;
+        }
+
+        .tier-benefits li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #c41e3a;
+            font-weight: 700;
+        }
+
+        .tier-benefits li:last-child {
+            border-bottom: none;
+        }
+
+        .btn-pay {
+            width: 100%;
+            padding: 14px 20px;
+            background: #1a2520;
+            color: #f5f0e8;
+            border: 2px solid #1a2520;
+            border-radius: 2px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-pay:hover {
+            background: #c41e3a;
+            border-color: #c41e3a;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 #1a2520;
+        }
+
+        .btn-pay:disabled {
+            background: #6b7a6f;
+            border-color: #6b7a6f;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .tiers-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .rewards-tiers-container {
+                padding: 60px 20px;
+            }
+            .tiers-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .tier-header h2 {
+                font-size: 2rem;
+            }
+            .tier-price {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="navbar">
-    <a class="brand" href="index.html">
-      <img src="assets/logo-mark.png" alt="Lueri International">
-      <span>Lueri International</span>
-    </a>
-    <div style="display:flex; align-items:center; gap:16px;">
-      <a class="back-link" href="index.html">← Main site</a>
-      <a class="back-link" href="careers.html">Careers</a>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-        <svg id="sunIcon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <div class="wrap">
-    <div class="eyebrow-mono">Lueri Rewards</div>
-    <h1 class="title">Earn on every<br>delivery.</h1>
-    <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch. Or skip the wait and buy your tier outright below.</p>
-
-    <div class="tier-explainer" id="tierExplainer">
-      <div class="eyebrow-mono" style="margin-bottom:16px;">Earn it free — tiers by spend</div>
-      <div class="tier-cards" id="tierCards"></div>
-      <p class="tier-note">Your tier is based on your spend over the last 12 months, so it reflects your recent activity with us. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
-    </div>
-
-    <div class="purchase-section" id="purchaseSection">
-      <div class="purchase-head">
-        <div>
-          <div class="eyebrow-mono" style="margin-bottom:4px;">Or buy it outright</div>
-          <h2>Skip the wait — 1 year, instant</h2>
-        </div>
-      </div>
-      <div class="purchase-cards" id="purchaseCards"></div>
-    </div>
-
-    <div class="panel">
-      <div class="tabs" id="tabBar">
-        <button class="tab-btn active" data-tab="lookup">My Rewards</button>
-        <button class="tab-btn" data-tab="join">Join Now</button>
-      </div>
-
-      <!-- LOOKUP VIEW -->
-      <div class="view active" id="view-lookup">
-        <div id="lookupForm">
-          <p style="color:var(--slate); font-size:.92rem; margin:0 0 20px;">Enter the phone number you registered with to view your points and tier.</p>
-          <div class="msg error" id="lookupMsg"></div>
-          <div class="form-group">
-            <label class="form-label" for="lookupPhone">Phone number</label>
-            <input class="form-input" type="tel" id="lookupPhone" placeholder="07xx xxx xxx">
-          </div>
-          <button class="btn btn-primary" id="lookupBtn">View my rewards</button>
-          <p class="switch-link">Not a member yet? <a href="#" data-tab="join">Join Lueri Rewards</a></p>
+    <!-- REWARDS MEMBERSHIP SECTION -->
+    <section id="lueri-rewards-tiers" class="rewards-tiers-container">
+        <div class="tier-header">
+            <h2>More Deliveries. More Value. More Rewards.</h2>
+            <p>Choose a Lueri membership built around the way you deliver. Enjoy better rates, priority support and benefits designed to reward you for choosing Lueri more often.</p>
         </div>
 
-        <div class="member-card" id="memberCard">
-          <div class="tier-band">
-            <div>
-              <div class="points-label">Current tier</div>
-              <div class="tier-name"><span id="mTierName" class="signal">Bronze</span></div>
+        <!-- PAID MEMBERSHIP TIERS -->
+        <div class="tiers-grid">
+            <!-- SILVER -->
+            <div class="tier-card">
+                <div class="tier-name">Silver</div>
+                <div class="tier-price">KES 5,000<span class="period">/year</span></div>
+                <p class="tier-desc">Best for customers beginning to use Lueri regularly.</p>
+                <ul class="tier-benefits">
+                    <li>5% discount on eligible priority bookings</li>
+                    <li>KES 200 monthly delivery credit</li>
+                    <li>Faster WhatsApp response</li>
+                    <li>Rewards points accumulation</li>
+                </ul>
+                <button class="btn-pay" id="btn-silver" onclick="startMembershipPurchase('silver')">Pay & Join Silver</button>
             </div>
-            <div style="text-align:right;">
-              <div class="points-num" id="mPoints">0</div>
-              <div class="points-label">Points balance</div>
+
+            <!-- GOLD -->
+            <div class="tier-card featured">
+                <div class="tier-badge">Most Popular</div>
+                <div class="tier-name">Gold</div>
+                <div class="tier-price">KES 15,000<span class="period">/year</span></div>
+                <p class="tier-desc">For frequent customers who want stronger savings.</p>
+                <ul class="tier-benefits">
+                    <li>Everything in Silver</li>
+                    <li>10% discount on eligible priority bookings</li>
+                    <li>1 free standard delivery each month</li>
+                    <li>Dedicated dispatcher support</li>
+                </ul>
+                <button class="btn-pay" id="btn-gold" onclick="startMembershipPurchase('gold')">Pay & Join Gold</button>
             </div>
-          </div>
-          <div>
-            <div class="progress-track"><div class="progress-fill" id="mProgressFill" style="width:0%;"></div></div>
-            <div class="progress-note" id="mProgressNote"></div>
-          </div>
 
-          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Your benefits</h3>
-          <div class="benefit-grid" id="mBenefits"></div>
+            <!-- PLATINUM -->
+            <div class="tier-card">
+                <div class="tier-name">Platinum</div>
+                <div class="tier-price">KES 35,000<span class="period">/year</span></div>
+                <p class="tier-desc">For high-frequency customers and professionals.</p>
+                <ul class="tier-benefits">
+                    <li>Everything in Gold</li>
+                    <li>15% discount on eligible priority bookings</li>
+                    <li>2 free standard deliveries each month</li>
+                    <li>Priority dispatch during peak periods</li>
+                </ul>
+                <button class="btn-pay" id="btn-platinum" onclick="startMembershipPurchase('platinum')">Pay & Join Platinum</button>
+            </div>
 
-          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Recent activity</h3>
-          <div id="mTxWrap"><p class="empty-note">No transactions yet.</p></div>
-
-          <button class="btn btn-secondary" style="margin-top:24px;" id="lookupAnother">Look up a different number</button>
+            <!-- VIP -->
+            <div class="tier-card">
+                <div class="tier-name">VIP</div>
+                <div class="tier-price">KES 75,000<span class="period">/year</span></div>
+                <p class="tier-desc">For premium customers requiring maximum convenience.</p>
+                <ul class="tier-benefits">
+                    <li>Everything in Platinum</li>
+                    <li>20% discount on eligible bookings</li>
+                    <li>4 free standard deliveries each month</li>
+                    <li>Dedicated account manager</li>
+                </ul>
+                <button class="btn-pay" id="btn-vip" onclick="startMembershipPurchase('vip')">Pay & Join VIP</button>
+            </div>
         </div>
-      </div>
 
-      <!-- JOIN VIEW -->
-      <div class="view" id="view-join">
-        <div class="plan-banner" id="planBanner">
-          <div>
-            <div class="pb-label">You're signing up for</div>
-            <div class="pb-tier" id="planBannerTier">Gold — KES 15,000/year</div>
-          </div>
-          <button type="button" class="pb-clear" id="planBannerClear">Just join free instead</button>
+        <!-- FREE JOIN SECTION - SEPARATE & SECONDARY -->
+        <div class="free-join-section">
+            <p><strong>Prefer to start without a paid membership?</strong></p>
+            <button class="btn-join-free" onclick="joinFreeMembership()">Join for Free</button>
         </div>
-        <div class="msg error" id="joinMsg"></div>
-        <div class="msg success" id="joinSuccessMsg"></div>
-        <div class="form-row2">
-          <div class="form-group">
-            <label class="form-label" for="joinName">Full name</label>
-            <input class="form-input" type="text" id="joinName" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="joinPhone">Phone number</label>
-            <input class="form-input" type="tel" id="joinPhone" placeholder="07xx xxx xxx" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="joinEmail">Email (optional)</label>
-          <input class="form-input" type="email" id="joinEmail">
-        </div>
-        <button class="btn btn-primary" id="joinBtn">Create my Rewards account</button>
-      </div>
+    </section>
 
-      <div class="disclosure">
-        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your membership is saved centrally, so you can look up your account from any phone or browser using your registered number. Points aren't posted automatically yet — after a delivery, message us on WhatsApp with your registered number and our team will log the transaction on their end.
-      </div>
-    </div>
-  </div>
-</main>
+    <!-- PAYMENT JAVASCRIPT -->
+    <script>
+        // =============================================================================
+        // SUPABASE CONFIGURATION
+        // =============================================================================
+        const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsaWZ2ZXhxYW14dnd6dmhtd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw';
+        
+        // Initialize Supabase
+        let supabase;
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase initialized successfully');
+            } else {
+                console.error('❌ Supabase library not loaded!');
+            }
+        } catch (error) {
+            console.error('❌ Error initializing Supabase:', error);
+        }
 
-<script src="rewards-cloud.js"></script>
-<script>
-  // fmt()/formatDate() are defined locally because they were referenced
-  // in three places but never defined anywhere in this file or in
-  // rewards-cloud.js — that previously caused an uncaught ReferenceError
-  // on page load inside renderTierExplainer(), which halted this entire
-  // script block before it reached the code that wires up the "View My
-  // Rewards" and "Create my Rewards account" buttons.
-  function fmt(n) {
-    return 'KES ' + Number(n || 0).toLocaleString();
-  }
-  function formatDate(value) {
-    const d = new Date(value);
-    if (isNaN(d)) return '';
-    return d.toLocaleString('en-KE', {
-      day: 'numeric', month: 'short', year: 'numeric',
-      hour: 'numeric', minute: '2-digit',
-    });
-  }
+        // =============================================================================
+        // PAID MEMBERSHIP PURCHASE FUNCTION
+        // =============================================================================
+        async function startMembershipPurchase(planCode) {
+            console.log('🔔 Payment initiated for plan:', planCode);
+            
+            const button = document.getElementById(`btn-${planCode}`);
+            if (!button) {
+                console.error('❌ Button not found:', `btn-${planCode}`);
+                alert('Payment button not found. Please refresh the page.');
+                return;
+            }
 
-  // FIX: escapes every interpolated value, using the same helper already
-  // used correctly in rewards-staff.html's copy of this receipt. Never
-  // trust member.name / member.phone / tx.reference / company fields to
-  // be HTML-safe just because they're normally short and plain-looking —
-  // reference/description fields in particular are staff-entered from
-  // manual WhatsApp reports today, and this receipt is built with
-  // document.write into a same-origin popup.
-  function escapeHTML(value) {
-    return String(value ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
+            // Disable button to prevent double-clicks
+            button.disabled = true;
+            const originalText = button.innerText;
+            button.innerText = 'Preparing secure payment…';
+            button.style.opacity = '0.7';
 
-  function showMsg(id, text) {
-    const el = document.getElementById(id);
-    el.textContent = text;
-    el.classList.add('show');
-  }
-  function hideMsg(id) {
-    document.getElementById(id).classList.remove('show');
-  }
+            try {
+                if (!supabase) {
+                    throw new Error('Payment system not initialized. Please refresh the page.');
+                }
 
-  function renderMember(summary) {
-    document.getElementById('lookupForm').style.display = 'none';
-    document.getElementById('memberCard').classList.add('show');
-    document.getElementById('mTierName').textContent = summary.tier;
-    document.getElementById('mPoints').textContent = summary.points.toLocaleString();
+                // Check if user is logged in
+                console.log('🔍 Checking authentication...');
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                
+                if (authError || !user) {
+                    console.log('⚠️ User not logged in');
+                    alert('Please log in or create an account to purchase a membership.');
+                    button.disabled = false;
+                    button.innerText = originalText;
+                    button.style.opacity = '1';
+                    return;
+                }
 
-    const progressPct = Math.round((summary.tierProgress || 0) * 100);
-    document.getElementById('mProgressFill').style.width = progressPct + '%';
-    document.getElementById('mProgressNote').textContent = summary.nextTier
-      ? `KES ${summary.amountToNextTier.toLocaleString()} more (in the last 12 months) to reach ${summary.nextTier}`
-      : `You've reached our top tier — VIP.`;
+                console.log('✅ User authenticated:', user.id);
 
-    const benefitsEl = document.getElementById('mBenefits');
-    benefitsEl.innerHTML = '';
-    (summary.benefits || []).forEach(b => {
-      const div = document.createElement('div');
-      div.className = 'benefit-item';
-      div.textContent = b;
-      benefitsEl.appendChild(div);
-    });
+                // Get current session
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    throw new Error('No active session. Please log in again.');
+                }
 
-    const txWrap = document.getElementById('mTxWrap');
-    const txs = getMemberTransactions(summary.member.id).slice(0, 10);
-    if (!txs.length) {
-      txWrap.innerHTML = '<p class="empty-note">No transactions yet.</p>';
-    } else {
-      let html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th><th></th></tr></thead><tbody>';
-      txs.forEach(t => {
-        html += `<tr><td>${formatDate(t.date)}</td><td style="text-transform:capitalize;">${t.type}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td><td><button class="receipt-link" data-txid="${t.id}">Receipt</button></td></tr>`;
-      });
-      html += '</tbody></table>';
-      txWrap.innerHTML = html;
-      txWrap.querySelectorAll('.receipt-link').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const tx = txs.find(t => t.id === btn.dataset.txid);
-          if (tx) openMemberReceipt(tx, summary.member);
+                // Call the Edge Function
+                console.log('📡 Calling pesapal-initiate Edge Function...');
+                const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-initiate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`,
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({
+                        member_id: user.id,
+                        plan_code: planCode  // silver, gold, platinum, or vip
+                    })
+                });
+
+                console.log('📥 Response status:', response.status);
+                const data = await response.json();
+                console.log('📦 Response data:', data);
+
+                // Handle errors
+                if (!response.ok) {
+                    throw new Error(data.error || `Server error: ${response.status}`);
+                }
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Success - redirect to Pesapal
+                if (data.redirect_url) {
+                    console.log('✅ Redirecting to Pesapal:', data.redirect_url);
+                    button.innerText = 'Redirecting to secure checkout…';
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 500);
+                } else {
+                    throw new Error('No redirect URL received from payment server');
+                }
+
+            } catch (error) {
+                console.error('❌ Payment Error:', error);
+                
+                // Reset button
+                button.disabled = false;
+                button.innerText = 'Try Again';
+                button.style.opacity = '1';
+                
+                // Show user-friendly error (never expose raw API errors)
+                let errorMessage = 'We couldn\'t start your payment. ';
+                if (error.message.includes('authentication') || error.message.includes('session')) {
+                    errorMessage += 'Please log in and try again.';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage += 'Please check your internet connection.';
+                } else {
+                    errorMessage += 'Please try again or contact Lueri International for assistance.';
+                }
+                
+                alert(errorMessage);
+                
+                // Reset to original text after 3 seconds
+                setTimeout(() => {
+                    button.innerText = originalText;
+                }, 3000);
+            }
+        }
+
+        // =============================================================================
+        // FREE MEMBERSHIP JOIN FUNCTION
+        // =============================================================================
+        async function joinFreeMembership() {
+            console.log('🔔 Free membership join initiated');
+            
+            try {
+                if (!supabase) {
+                    alert('System not initialized. Please refresh the page.');
+                    return;
+                }
+
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (!user) {
+                    alert('Please create an account to join Lueri Rewards.');
+                    return;
+                }
+
+                console.log('✅ Registering free membership for:', user.id);
+                
+                // Redirect to existing rewards signup/lookup section
+                window.location.href = '/rewards.html#join';
+                
+            } catch (error) {
+                console.error('❌ Free membership error:', error);
+                alert('Unable to process free membership. Please try again or contact support.');
+            }
+        }
+
+        // =============================================================================
+        // PAGE LOAD DEBUG
+        // =============================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ Lueri Rewards page loaded');
+            console.log('🔧 Supabase available:', !!window.supabase);
+            console.log('🔧 Supabase client initialized:', !!supabase);
+            
+            // Verify all buttons exist
+            const buttons = ['silver', 'gold', 'platinum', 'vip'];
+            buttons.forEach(plan => {
+                const btn = document.getElementById(`btn-${plan}`);
+                if (btn) {
+                    console.log(`✅ Payment button found: ${plan}`);
+                } else {
+                    console.error(`❌ Payment button missing: ${plan}`);
+                }
+            });
         });
-      });
-    }
-  }
+    </script>
 
-  function openMemberReceipt(tx, member) {
-    const c = LUERI_REWARDS.company;
-    const vatOn = !!c.vatRegistered;
-    const vatAmt = vatOn ? tx.amount * c.vatRate / (1 + c.vatRate) : 0;
-    const subtotal = vatOn ? tx.amount - vatAmt : tx.amount;
-    const serviceLabel = tx.type.charAt(0).toUpperCase() + tx.type.slice(1);
-    const logo = `${location.origin}/assets/logo-mark.png`;
-
-    const win = window.open('', '_blank', 'width=440,height=720');
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${escapeHTML(tx.transactionNumber || tx.id)}</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-      <style>
-        :root{ --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52; --signal:#E8B93D; --line:rgba(27,38,32,0.16); --success:#2e7d32; }
-        *{box-sizing:border-box;}
-        body{ margin:0; padding:32px 16px 60px; background:var(--paper-dim); color:var(--ink); font-family:'IBM Plex Sans', sans-serif; }
-        .mono{ font-family:'IBM Plex Mono', monospace; }
-        .wrap{ max-width:400px; margin:0 auto; }
-        .receipt{ background:var(--paper); border:1px solid var(--line); border-radius:6px; overflow:hidden; box-shadow:0 18px 40px rgba(27,38,32,0.12); }
-        .perf{ height:12px; width:100%; background-image:radial-gradient(circle at 6px 6px, var(--paper-dim) 3.5px, transparent 4px); background-size:12px 12px; background-repeat:repeat-x; }
-        .rhead{ padding:22px 24px 16px; border-bottom:1px dashed var(--line); }
-        .brandrow{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
-        .logo{ width:40px; height:40px; border-radius:50%; border:1px solid var(--ink); overflow:hidden; flex-shrink:0; background:var(--ink); }
-        .logo img{ width:100%; height:100%; object-fit:contain; }
-        .bname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; margin:2px 0 2px; }
-        .btag{ font-size:.7rem; color:var(--slate); }
-        .tier-badge{ display:flex; align-items:center; gap:5px; background:var(--ink); color:var(--signal); font-family:'Oswald', sans-serif; font-size:.62rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:5px 10px; border-radius:3px; white-space:nowrap; border:1px solid var(--signal); }
-        .rstatus{ display:flex; align-items:center; justify-content:space-between; margin-top:18px; }
-        .paid-stamp{ display:inline-flex; align-items:center; gap:6px; border:2px solid var(--success); color:var(--success); font-family:'Oswald', sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.1em; padding:4px 11px; border-radius:4px; transform:rotate(-3deg); text-transform:uppercase; }
-        .rno{ text-align:right; }
-        .rno .lbl{ font-size:.6rem; color:var(--slate); text-transform:uppercase; letter-spacing:.07em; }
-        .rno .val{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:.82rem; }
-        .rbody{ padding:18px 24px 6px; }
-        .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-bottom:18px; }
-        .field .lbl{ font-size:.6rem; color:var(--slate); text-transform:uppercase; letter-spacing:.07em; margin-bottom:2px; }
-        .field .val{ font-size:.85rem; font-weight:500; }
-        table.charges{ width:100%; border-collapse:collapse; font-size:.82rem; margin-bottom:4px; }
-        table.charges td{ padding:7px 0; }
-        table.charges tr{ border-bottom:1px solid var(--line); }
-        table.charges tr:last-of-type{ border-bottom:none; }
-        .charges .amt{ text-align:right; font-family:'IBM Plex Mono', monospace; }
-        .charges .lbl-sub{ color:var(--slate); font-size:.7rem; }
-        .total-row td{ padding-top:12px; border-top:1.5px solid var(--ink); border-bottom:none !important; }
-        .total-row .amt{ font-family:'Oswald', sans-serif; font-weight:700; font-size:1.2rem; }
-        .total-row .lbl{ font-family:'Oswald', sans-serif; font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
-        .points-row{ display:flex; align-items:center; gap:8px; margin:14px 0 4px; }
-        .points-pill{ display:inline-flex; align-items:center; gap:5px; background:var(--paper-dim); border-radius:20px; padding:4px 11px; font-size:.75rem; font-weight:500; }
-        .rfoot{ border-top:1px dashed var(--line); padding:16px 24px 22px; }
-        .thanks{ font-family:'Oswald', sans-serif; font-size:.88rem; font-weight:500; margin:0 0 10px; }
-        .contact-cols{ font-size:.7rem; color:var(--slate); line-height:1.6; }
-        .contact-cols .hd{ font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink); font-weight:600; margin-bottom:3px; }
-        @media print{ body{ background:#fff; padding:0; } .receipt{ box-shadow:none; border:none; } }
-      </style></head><body>
-      <div class="wrap"><div class="receipt">
-        <div class="perf"></div>
-        <div class="rhead">
-          <div class="brandrow">
-            <div style="display:flex; gap:10px; align-items:center;">
-              <div class="logo"><img src="${logo}" alt=""></div>
-              <div>
-                <p class="bname">${escapeHTML(c.name)}</p>
-                <p class="btag">Same-day courier &middot; Nairobi</p>
-              </div>
-            </div>
-            <div class="tier-badge">${escapeHTML(member.tier)} member</div>
-          </div>
-          <div class="rstatus">
-            <div class="paid-stamp">Paid</div>
-            <div class="rno">
-              <div class="lbl">Receipt no.</div>
-              <div class="val">${escapeHTML(tx.transactionNumber || tx.id)}</div>
-            </div>
-          </div>
-        </div>
-        <div class="rbody">
-          <div class="field-grid">
-            <div class="field"><div class="lbl">Date &amp; time</div><div class="val">${formatDate(tx.date)}</div></div>
-            <div class="field"><div class="lbl">Member</div><div class="val">${escapeHTML(member.name)}</div></div>
-            <div class="field"><div class="lbl">Member no.</div><div class="val mono">${escapeHTML(member.memberNumber)}</div></div>
-            <div class="field"><div class="lbl">Phone</div><div class="val mono">${escapeHTML(member.phone)}</div></div>
-          </div>
-          <table class="charges">
-            <tr><td>${serviceLabel}${tx.reference ? `<br><span class="lbl-sub">Ref: ${escapeHTML(tx.reference)}</span>` : ''}</td><td class="amt">${fmt(subtotal)}</td></tr>
-            ${vatOn ? `<tr><td>VAT (${Math.round(c.vatRate*100)}%)</td><td class="amt">${fmt(vatAmt)}</td></tr>` : ''}
-            <tr class="total-row"><td class="lbl">Total</td><td class="amt">${fmt(tx.amount)}</td></tr>
-          </table>
-          <div class="points-row">
-            <span class="points-pill">${tx.points >= 0 ? '+' + tx.points : tx.points} pts earned</span>
-            <span style="font-size:.78rem; color:var(--slate);">New balance: ${member.points.toLocaleString()} pts</span>
-          </div>
-        </div>
-        <div class="rfoot">
-          <p class="thanks">Thank you for choosing ${escapeHTML(c.name)}.</p>
-          <div class="contact-cols">
-            <div class="hd">${escapeHTML(c.name)}</div>
-            ${escapeHTML(c.address)}<br>${escapeHTML(c.phone)}${c.kraPin ? '<br>KRA PIN: ' + escapeHTML(c.kraPin) : ''}
-          </div>
-        </div>
-      </div></div>
-      <script>window.onload = () => window.print();<\/script>
-      </body></html>`);
-    win.document.close();
-  }
-
-  // FIX: tab switching and the two conversion buttons (Lookup, Join) are
-  // now wired FIRST, before any decorative rendering (theme toggle, tier
-  // explainer). In a plain <script> block, an uncaught error on one
-  // top-level statement stops every statement after it in that block —
-  // that's exactly what silently disabled these two buttons before, when
-  // an earlier statement (the tier explainer) threw on undefined fmt()/
-  // formatDate(). Now, even if something later in this script throws,
-  // the buttons that actually drive lookups and signups are already wired.
-  function showTab(name) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-    document.getElementById('view-lookup').classList.toggle('active', name === 'lookup');
-    document.getElementById('view-join').classList.toggle('active', name === 'join');
-  }
-  document.querySelectorAll('[data-tab]').forEach(el => {
-    el.addEventListener('click', (e) => { e.preventDefault(); showTab(el.dataset.tab); });
-  });
-
-  document.getElementById('lookupBtn').addEventListener('click', async () => {
-    hideMsg('lookupMsg');
-    const phone = document.getElementById('lookupPhone').value.trim();
-    if (!phone) { showMsg('lookupMsg', 'Enter your phone number.'); return; }
-    const summary = await getMemberSummary(phone);
-    if (!summary) {
-      showMsg('lookupMsg', "We couldn't find a Rewards account with that number. Double-check the number, or message us on WhatsApp and we'll help.");
-      return;
-    }
-    renderMember(summary);
-  });
-
-  document.getElementById('lookupAnother').addEventListener('click', () => {
-    document.getElementById('memberCard').classList.remove('show');
-    document.getElementById('lookupForm').style.display = 'block';
-    document.getElementById('lookupPhone').value = '';
-  });
-
-  // ---------------------------------------------------------------
-  // Buy-it-outright: selection-first purchase flow.
-  // Prices/benefits here are DISPLAY ONLY, for the card copy — the
-  // real price is always enforced server-side in the pesapal-initiate
-  // Edge Function against membership_plans.price_kes. This list must
-  // be kept in sync by eye with that table; it never governs what's
-  // actually charged.
-  // ---------------------------------------------------------------
-  const PURCHASE_TIERS = [
-    { code: 'silver',   name: 'Silver',   price: 5000,  benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
-    { code: 'gold',     name: 'Gold',     price: 15000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
-    { code: 'platinum', name: 'Platinum', price: 30000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
-    { code: 'vip',      name: 'VIP',      price: 75000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
-  ];
-
-  let selectedPurchasePlan = null; // { code, name, price } or null for free join
-
-  function renderPurchaseCards() {
-    const container = document.getElementById('purchaseCards');
-    container.innerHTML = PURCHASE_TIERS.map(tier => `
-      <div class="purchase-card">
-        <div class="tname">${escapeHTML(tier.name)}</div>
-        <div class="tprice">${fmt(tier.price)}</div>
-        <div class="tperiod">per year</div>
-        <ul>${tier.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>
-        <button type="button" class="btn btn-primary" data-choose="${tier.code}">Choose ${escapeHTML(tier.name)}</button>
-      </div>
-    `).join('');
-
-    container.querySelectorAll('[data-choose]').forEach(btn => {
-      btn.addEventListener('click', () => choosePurchasePlan(btn.dataset.choose));
-    });
-  }
-
-  function choosePurchasePlan(code) {
-    const tier = PURCHASE_TIERS.find(t => t.code === code);
-    if (!tier) return;
-    selectedPurchasePlan = tier;
-
-    document.getElementById('planBannerTier').textContent = `${tier.name} — ${fmt(tier.price)}/year`;
-    document.getElementById('planBanner').classList.add('show');
-
-    showTab('join');
-    document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('joinName').focus();
-  }
-
-  document.getElementById('planBannerClear').addEventListener('click', () => {
-    selectedPurchasePlan = null;
-    document.getElementById('planBanner').classList.remove('show');
-  });
-
-  document.getElementById('joinBtn').addEventListener('click', async () => {
-    hideMsg('joinMsg'); hideMsg('joinSuccessMsg');
-    const joinBtn = document.getElementById('joinBtn');
-    const input = {
-      name: document.getElementById('joinName').value.trim(),
-      phone: document.getElementById('joinPhone').value.trim(),
-      email: document.getElementById('joinEmail').value.trim(),
-    };
-
-    joinBtn.disabled = true;
-    joinBtn.textContent = 'Setting up your account…';
-    let result = await registerMember(input);
-
-    // If a paid tier was selected and this phone already has a free
-    // account, don't dead-end them — look them up and carry straight
-    // to checkout. This matches register_member's EXACT duplicate-phone
-    // message; if that message ever changes server-side, this check
-    // needs updating too.
-    const alreadyMember = !result.success
-      && result.errors.length === 1
-      && result.errors[0] === 'A rewards member already exists with this phone number.';
-
-    if (!result.success && selectedPurchasePlan && alreadyMember) {
-      const summary = await getMemberSummary(input.phone);
-      if (summary) {
-        result = { success: true, errors: [], member: summary.member };
-      }
-    }
-
-    joinBtn.disabled = false;
-    joinBtn.textContent = 'Create my Rewards account';
-
-    if (!result.success) {
-      showMsg('joinMsg', result.errors.join(' '));
-      return;
-    }
-
-    if (selectedPurchasePlan) {
-      showMsg('joinSuccessMsg', `Setting up your ${selectedPurchasePlan.name} membership — redirecting you to secure payment…`);
-      await startMembershipPurchase(result.member.id, selectedPurchasePlan.code);
-      return; // startMembershipPurchase redirects the browser on success
-    }
-
-    showMsg('joinSuccessMsg', `Welcome, ${result.member.name.split(' ')[0]}! Your Rewards account is set up. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`);
-
-    // Confirmation now stays on screen until the customer chooses to
-    // continue, instead of auto-jumping away after 1.2 seconds.
-    const continueBtn = document.createElement('button');
-    continueBtn.className = 'btn btn-secondary';
-    continueBtn.style.marginTop = '12px';
-    continueBtn.textContent = 'View my rewards →';
-    continueBtn.addEventListener('click', () => {
-      continueBtn.remove();
-      showTab('lookup');
-      document.getElementById('lookupPhone').value = input.phone;
-      document.getElementById('lookupBtn').click();
-    }, { once: true });
-    document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
-  });
-
-  renderPurchaseCards();
-
-  // ---- Decorative code below — wrapped so it can never take the
-  // buttons above down with it again. ----
-
-  // Theme (shared with main site)
-  try {
-    const themeToggle = document.getElementById('themeToggle');
-    const sunIcon = document.getElementById('sunIcon');
-    const moonIcon = document.getElementById('moonIcon');
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
-      moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
-    }
-    themeToggle.addEventListener('click', () => {
-      const current = localStorage.getItem('theme') || 'light';
-      setTheme(current === 'light' ? 'dark' : 'light');
-    });
-    setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-  } catch (err) {
-    console.error('Theme setup failed:', err);
-  }
-
-  // Public tier explainer — rendered live from the tier table so it never drifts out of sync
-  (function renderTierExplainer() {
-    const container = document.getElementById('tierCards');
-    try {
-      const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
-      container.innerHTML = tiersLowToHigh.map(tier => {
-        const spendLabel = tier.minSpend > 0
-          ? `${fmt(tier.minSpend)}+ annual spend`
-          : 'Starting tier';
-        const benefits = tier.benefits.slice(0, 3).map(b => `<li>${escapeHTML(b)}</li>`).join('');
-        return `
-          <div class="tier-explain-card">
-            <div class="tname">${escapeHTML(tier.name)}</div>
-            <div class="tspend">${spendLabel}</div>
-            <ul>${benefits}</ul>
-          </div>
-        `;
-      }).join('');
-    } catch (err) {
-      console.error('Tier explainer failed to render:', err);
-      if (container) container.innerHTML = '';
-    }
-  })();
-</script>
 </body>
 </html>
