@@ -25,11 +25,16 @@
 //     window.lueriNormalizePhone would get silently overwritten by
 //     whichever script loaded last. Renaming removes the collision
 //     entirely rather than relying on load order.
-//  3. NEW: Pesapal membership purchase. After ANY successful
-//     registerMember() or getMemberSummary() call, renderMembershipOffers()
-//     now runs automatically and injects a "buy your tier outright" panel
-//     into the page. Price is enforced server-side by the pesapal-initiate
-//     Edge Function — nothing here can be tampered with to pay less.
+//  3. Pesapal membership purchase: startMembershipPurchase() calls the
+//     pesapal-initiate Edge Function and redirects to Pesapal's hosted
+//     checkout. It's invoked directly from rewards.html's own inline
+//     script as part of the selection-first Join flow (pick a tier,
+//     fill in details, straight to checkout) — there is deliberately
+//     no auto-rendered upsell panel here anymore; an earlier version of
+//     this file added one after every lookup/registration, but with a
+//     dedicated purchase section now on the page itself, a second,
+//     different tier-picker appearing after login was redundant and
+//     looked bolted-on rather than designed in.
 // ---------------------------------------------------------------------
 
 const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
@@ -75,64 +80,11 @@ const LUERI_REWARDS = {
 // ---------------------------------------------------------------------
 // Membership purchase — Pesapal, price enforced server-side.
 // plan_code values MUST match membership_plans.code in Supabase
-// (lowercase: 'silver' | 'gold' | 'platinum' | 'vip'). Prices shown here
-// are DISPLAY ONLY — the pesapal-initiate Edge Function looks up the
-// real price itself and ignores anything sent from this page.
+// (lowercase: 'silver' | 'gold' | 'platinum' | 'vip'). Called from
+// rewards.html's own inline script, right after a successful
+// registerMember()/lookup, as part of the selection-first Join flow.
 // ---------------------------------------------------------------------
-const MEMBERSHIP_PLANS = [
-  { code: 'silver',   label: 'Silver',   price: 5000 },
-  { code: 'gold',     label: 'Gold',     price: 15000 },
-  { code: 'platinum', label: 'Platinum', price: 30000 },
-  { code: 'vip',      label: 'VIP',      price: 75000 },
-];
-
-// TIERS is ordered VIP → Bronze; build a rank map (Bronze=0 .. VIP=4) so
-// "already unlocked" comparisons read naturally low-to-high.
-const _TIER_RANK = {};
-[...TIERS].reverse().forEach((t, i) => { _TIER_RANK[t.name] = i; });
-
-function renderMembershipOffers(memberId, tierName) {
-  if (!memberId) return;
-
-  let container = document.getElementById('membership-offers');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'membership-offers';
-    const anchor = document.querySelector('#your-benefits, .benefits, main') || document.body;
-    anchor.appendChild(container);
-  }
-
-  const currentRank = _TIER_RANK[tierName] ?? 0;
-
-  container.innerHTML = `
-    <h3>Skip the wait — buy your tier outright (1 year)</h3>
-    <div class="membership-offer-grid" style="display:flex;gap:12px;flex-wrap:wrap;">
-      ${MEMBERSHIP_PLANS.map(plan => {
-        const alreadyThere = _TIER_RANK[plan.label] <= currentRank;
-        return `
-          <button
-            class="membership-offer-btn"
-            data-plan="${plan.code}"
-            ${alreadyThere ? 'disabled' : ''}
-            style="padding:12px 20px;border-radius:8px;cursor:${alreadyThere ? 'default' : 'pointer'};opacity:${alreadyThere ? '0.5' : '1'};">
-            ${plan.label}<br/><strong>KES ${plan.price.toLocaleString()}</strong>
-            ${alreadyThere ? '<br/><small>Already unlocked</small>' : ''}
-          </button>
-        `;
-      }).join('')}
-    </div>
-    <p id="membership-offer-status" style="margin-top:8px;font-size:0.9em;"></p>
-  `;
-
-  container.querySelectorAll('.membership-offer-btn:not([disabled])').forEach(btn => {
-    btn.addEventListener('click', () => startMembershipPurchase(memberId, btn.dataset.plan));
-  });
-}
-
 async function startMembershipPurchase(memberId, planCode) {
-  const status = document.getElementById('membership-offer-status');
-  if (status) status.textContent = 'Starting payment…';
-
   try {
     const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-initiate`, {
       method: 'POST',
@@ -145,18 +97,16 @@ async function startMembershipPurchase(memberId, planCode) {
     const data = await response.json();
 
     if (!data.redirect_url) {
-      if (status) {
-        status.textContent = data.error === 'plan_not_purchasable'
-          ? "This plan isn't available for online purchase yet."
-          : 'Could not start payment. Please try again.';
-      }
+      alert(data.error === 'plan_not_purchasable'
+        ? "This plan isn't available for online purchase yet. Please contact us."
+        : 'Could not start payment. Please try again.');
       return;
     }
 
     window.location.href = data.redirect_url; // hands off to Pesapal's hosted checkout
   } catch (err) {
     console.error(err);
-    if (status) status.textContent = 'Something went wrong. Please try again.';
+    alert('Something went wrong starting your payment. Please try again.');
   }
 }
 
@@ -171,9 +121,10 @@ async function startMembershipPurchase(memberId, planCode) {
   if (params.get('payment') === 'complete') {
     document.addEventListener('DOMContentLoaded', () => {
       const banner = document.createElement('div');
-      banner.style.cssText = 'padding:12px;background:#eef;border-radius:8px;margin:12px 0;';
-      banner.textContent = 'Payment received — confirming your membership. Look yourself up below if your tier hasn\u2019t updated in a few seconds.';
-      document.body.prepend(banner);
+      banner.style.cssText = 'padding:12px 18px;background:#2e7d32;color:#fff;border-radius:4px;margin:12px 0;font-family:sans-serif;';
+      banner.textContent = 'Payment received — confirming your membership. Look yourself up below in a few seconds if your tier hasn\u2019t updated yet.';
+      const wrap = document.querySelector('.wrap');
+      if (wrap) wrap.prepend(banner);
     });
   }
 })();
@@ -271,7 +222,6 @@ async function registerMember(input) {
     }
     const member = result.member;
     member.tier = capitalizeTier(member.tier);
-    renderMembershipOffers(member.id, member.tier);
     return { success: true, errors: [], member };
   } catch (err) {
     return {
@@ -303,8 +253,6 @@ async function getMemberSummary(phone) {
     : Number(member.lifetimeSpend) || 0; // fallback until the DB migration lands
   const progress = tierProgress(tierName, windowSpend);
   _txCache[member.id] = result.transactions || [];
-
-  renderMembershipOffers(member.id, tierName);
 
   return {
     member,

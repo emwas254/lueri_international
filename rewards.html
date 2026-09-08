@@ -120,7 +120,7 @@
   }
   .receipt-link:hover{ border-color:var(--route); }
 
-  /* Public tier explainer */
+  /* Public tier explainer (earn-it-free) */
   .tier-explainer{ margin-top:40px; }
   .tier-cards{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
   @media (max-width:900px){ .tier-cards{ grid-template-columns:repeat(2,1fr); } }
@@ -141,6 +141,41 @@
   .tier-explain-card ul{ margin:0; padding-left:16px; font-size:.82rem; color:var(--slate); line-height:1.7; }
   .tier-explain-card ul li::marker{ color:var(--route); }
   .tier-note{ font-size:.85rem; color:var(--slate); line-height:1.6; margin:20px 0 0; max-width:640px; }
+
+  /* Buy-it-outright section — same visual language as the earn-it-free
+     cards above (tier-explain-card), so it reads as one coherent site,
+     not a bolted-on widget. Distinguished by a price tag and a CTA. */
+  .purchase-section{ margin-top:56px; }
+  .purchase-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+  .purchase-head h2{ font-size:1.5rem; }
+  .purchase-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  @media (max-width:900px){ .purchase-cards{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .purchase-cards{ grid-template-columns:1fr; } }
+  .purchase-card{
+    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:20px;
+    display:flex; flex-direction:column; box-shadow:5px 5px 0 rgba(27,38,32,0.06); transition:var(--transition);
+  }
+  .purchase-card:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 rgba(27,38,32,0.09); }
+  .purchase-card .tname{ font-family:'Oswald', sans-serif; font-size:1.15rem; text-transform:uppercase; color:var(--route); margin-bottom:2px; }
+  .purchase-card .tprice{ font-family:'IBM Plex Mono', monospace; font-size:1.3rem; font-weight:600; margin-bottom:2px; }
+  .purchase-card .tperiod{ font-family:'IBM Plex Mono', monospace; font-size:.68rem; color:var(--slate); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+  .purchase-card ul{ margin:0 0 18px; padding-left:16px; font-size:.8rem; color:var(--slate); line-height:1.65; flex-grow:1; }
+  .purchase-card ul li::marker{ color:var(--route); }
+  .purchase-card .btn{ margin-top:auto; }
+  .purchase-card.owned{ opacity:.55; }
+  .purchase-card.owned .btn{ cursor:default; }
+
+  /* Selection banner shown in the Join view once a paid tier is chosen */
+  .plan-banner{
+    display:none; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    background:var(--ink); color:var(--paper); padding:14px 18px; border-radius:4px; margin-bottom:24px;
+  }
+  .plan-banner.show{ display:flex; }
+  .plan-banner .pb-label{ font-family:'IBM Plex Mono', monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; opacity:.75; }
+  .plan-banner .pb-tier{ font-family:'Oswald', sans-serif; font-size:1.1rem; text-transform:uppercase; color:var(--signal); }
+  .plan-banner .pb-clear{ background:none; border:1px solid rgba(240,234,216,0.4); color:var(--paper); border-radius:3px;
+    padding:5px 10px; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; cursor:pointer; font-family:'IBM Plex Mono', monospace; }
+  .plan-banner .pb-clear:hover{ border-color:var(--signal); color:var(--signal); }
 </style>
 </head>
 <body>
@@ -166,12 +201,22 @@
   <div class="wrap">
     <div class="eyebrow-mono">Lueri Rewards</div>
     <h1 class="title">Earn on every<br>delivery.</h1>
-    <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch.</p>
+    <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch. Or skip the wait and buy your tier outright below.</p>
 
     <div class="tier-explainer" id="tierExplainer">
-      <div class="eyebrow-mono" style="margin-bottom:16px;">How the tiers work</div>
+      <div class="eyebrow-mono" style="margin-bottom:16px;">Earn it free — tiers by spend</div>
       <div class="tier-cards" id="tierCards"></div>
       <p class="tier-note">Your tier is based on your spend over the last 12 months, so it reflects your recent activity with us. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
+    </div>
+
+    <div class="purchase-section" id="purchaseSection">
+      <div class="purchase-head">
+        <div>
+          <div class="eyebrow-mono" style="margin-bottom:4px;">Or buy it outright</div>
+          <h2>Skip the wait — 1 year, instant</h2>
+        </div>
+      </div>
+      <div class="purchase-cards" id="purchaseCards"></div>
     </div>
 
     <div class="panel">
@@ -221,6 +266,13 @@
 
       <!-- JOIN VIEW -->
       <div class="view" id="view-join">
+        <div class="plan-banner" id="planBanner">
+          <div>
+            <div class="pb-label">You're signing up for</div>
+            <div class="pb-tier" id="planBannerTier">Gold — KES 15,000/year</div>
+          </div>
+          <button type="button" class="pb-clear" id="planBannerClear">Just join free instead</button>
+        </div>
         <div class="msg error" id="joinMsg"></div>
         <div class="msg success" id="joinSuccessMsg"></div>
         <div class="form-row2">
@@ -472,6 +524,58 @@
     document.getElementById('lookupPhone').value = '';
   });
 
+  // ---------------------------------------------------------------
+  // Buy-it-outright: selection-first purchase flow.
+  // Prices/benefits here are DISPLAY ONLY, for the card copy — the
+  // real price is always enforced server-side in the pesapal-initiate
+  // Edge Function against membership_plans.price_kes. This list must
+  // be kept in sync by eye with that table; it never governs what's
+  // actually charged.
+  // ---------------------------------------------------------------
+  const PURCHASE_TIERS = [
+    { code: 'silver',   name: 'Silver',   price: 5000,  benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
+    { code: 'gold',     name: 'Gold',     price: 15000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
+    { code: 'platinum', name: 'Platinum', price: 30000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
+    { code: 'vip',      name: 'VIP',      price: 75000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
+  ];
+
+  let selectedPurchasePlan = null; // { code, name, price } or null for free join
+
+  function renderPurchaseCards() {
+    const container = document.getElementById('purchaseCards');
+    container.innerHTML = PURCHASE_TIERS.map(tier => `
+      <div class="purchase-card">
+        <div class="tname">${escapeHTML(tier.name)}</div>
+        <div class="tprice">${fmt(tier.price)}</div>
+        <div class="tperiod">per year</div>
+        <ul>${tier.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>
+        <button type="button" class="btn btn-primary" data-choose="${tier.code}">Choose ${escapeHTML(tier.name)}</button>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('[data-choose]').forEach(btn => {
+      btn.addEventListener('click', () => choosePurchasePlan(btn.dataset.choose));
+    });
+  }
+
+  function choosePurchasePlan(code) {
+    const tier = PURCHASE_TIERS.find(t => t.code === code);
+    if (!tier) return;
+    selectedPurchasePlan = tier;
+
+    document.getElementById('planBannerTier').textContent = `${tier.name} — ${fmt(tier.price)}/year`;
+    document.getElementById('planBanner').classList.add('show');
+
+    showTab('join');
+    document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('joinName').focus();
+  }
+
+  document.getElementById('planBannerClear').addEventListener('click', () => {
+    selectedPurchasePlan = null;
+    document.getElementById('planBanner').classList.remove('show');
+  });
+
   document.getElementById('joinBtn').addEventListener('click', async () => {
     hideMsg('joinMsg'); hideMsg('joinSuccessMsg');
     const joinBtn = document.getElementById('joinBtn');
@@ -480,9 +584,27 @@
       phone: document.getElementById('joinPhone').value.trim(),
       email: document.getElementById('joinEmail').value.trim(),
     };
+
     joinBtn.disabled = true;
     joinBtn.textContent = 'Setting up your account…';
-    const result = await registerMember(input);
+    let result = await registerMember(input);
+
+    // If a paid tier was selected and this phone already has a free
+    // account, don't dead-end them — look them up and carry straight
+    // to checkout. This matches register_member's EXACT duplicate-phone
+    // message; if that message ever changes server-side, this check
+    // needs updating too.
+    const alreadyMember = !result.success
+      && result.errors.length === 1
+      && result.errors[0] === 'A rewards member already exists with this phone number.';
+
+    if (!result.success && selectedPurchasePlan && alreadyMember) {
+      const summary = await getMemberSummary(input.phone);
+      if (summary) {
+        result = { success: true, errors: [], member: summary.member };
+      }
+    }
+
     joinBtn.disabled = false;
     joinBtn.textContent = 'Create my Rewards account';
 
@@ -490,6 +612,13 @@
       showMsg('joinMsg', result.errors.join(' '));
       return;
     }
+
+    if (selectedPurchasePlan) {
+      showMsg('joinSuccessMsg', `Setting up your ${selectedPurchasePlan.name} membership — redirecting you to secure payment…`);
+      await startMembershipPurchase(result.member.id, selectedPurchasePlan.code);
+      return; // startMembershipPurchase redirects the browser on success
+    }
+
     showMsg('joinSuccessMsg', `Welcome, ${result.member.name.split(' ')[0]}! Your Rewards account is set up. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`);
 
     // Confirmation now stays on screen until the customer chooses to
@@ -506,6 +635,8 @@
     }, { once: true });
     document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
   });
+
+  renderPurchaseCards();
 
   // ---- Decorative code below — wrapped so it can never take the
   // buttons above down with it again. ----
@@ -537,7 +668,7 @@
       const tiersLowToHigh = [...LUERI_REWARDS.tiers].reverse();
       container.innerHTML = tiersLowToHigh.map(tier => {
         const spendLabel = tier.minSpend > 0
-          ? `${fmt(tier.minSpend)}+ lifetime spend`
+          ? `${fmt(tier.minSpend)}+ annual spend`
           : 'Starting tier';
         const benefits = tier.benefits.slice(0, 3).map(b => `<li>${escapeHTML(b)}</li>`).join('');
         return `
