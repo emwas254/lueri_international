@@ -1,65 +1,65 @@
 <!-- =============================================================================
-     LUERI REWARDS TIERS - PREMIUM UI & STYLING
+     LUERI REWARDS TIERS - PROFESSIONAL LOGISTICS BRANDING
      ============================================================================= -->
 
 <style>
-    /* Premium Card Styling */
     .rewards-tiers-container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
-        padding: 60px 20px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        padding: 80px 40px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #f8f9fa;
     }
 
     .tier-header {
         text-align: center;
-        margin-bottom: 50px;
+        margin-bottom: 60px;
     }
 
     .tier-header h2 {
         font-size: 2.5rem;
-        color: #1a1a1a;
-        margin-bottom: 15px;
+        color: #1a1a2e;
+        margin-bottom: 20px;
         font-weight: 700;
         letter-spacing: -0.5px;
     }
 
     .tier-header p {
         font-size: 1.125rem;
-        color: #666;
-        max-width: 700px;
+        color: #555;
+        max-width: 750px;
         margin: 0 auto;
-        line-height: 1.6;
+        line-height: 1.7;
     }
 
     .tiers-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-top: 50px;
     }
 
     .tier-card {
         background: white;
-        border: 2px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 35px 30px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 30px 25px;
         position: relative;
         transition: all 0.3s ease;
         display: flex;
         flex-direction: column;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .tier-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border-color: #3b82f6;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        border-color: #2563eb;
     }
 
     .tier-card.featured {
-        border-color: #3b82f6;
-        border-width: 3px;
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+        border: 2px solid #2563eb;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
     }
 
     .tier-badge {
@@ -67,26 +67,26 @@
         top: -12px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        background: #2563eb;
         color: white;
         padding: 6px 20px;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
     .tier-name {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 700;
-        color: #1a1a1a;
+        color: #1a1a2e;
         margin-bottom: 15px;
         text-align: center;
     }
 
     .tier-price {
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #2563eb;
         text-align: center;
@@ -94,34 +94,35 @@
     }
 
     .tier-price .period {
-        font-size: 1rem;
-        color: #666;
-        font-weight: 400;
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 500;
     }
 
     .tier-desc {
-        color: #666;
+        color: #6b7280;
         text-align: center;
         margin-bottom: 25px;
-        line-height: 1.5;
-        font-size: 0.95rem;
+        line-height: 1.6;
+        font-size: 0.9rem;
+        min-height: 40px;
     }
 
     .tier-benefits {
         list-style: none;
         padding: 0;
-        margin: 0 0 30px 0;
+        margin: 0 0 25px 0;
         flex-grow: 1;
     }
 
     .tier-benefits li {
-        padding: 12px 0;
+        padding: 10px 0;
         border-bottom: 1px solid #f3f4f6;
         color: #374151;
-        font-size: 0.95rem;
-        line-height: 1.4;
+        font-size: 0.875rem;
+        line-height: 1.5;
         position: relative;
-        padding-left: 28px;
+        padding-left: 26px;
     }
 
     .tier-benefits li:before {
@@ -129,8 +130,8 @@
         position: absolute;
         left: 0;
         color: #10b981;
-        font-weight: 700;
-        font-size: 1.1rem;
+        font-weight: 600;
+        font-size: 1rem;
     }
 
     .tier-benefits li:last-child {
@@ -139,24 +140,24 @@
 
     .btn-pay {
         width: 100%;
-        padding: 16px 24px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        padding: 14px 20px;
+        background: #2563eb;
         color: white;
         border: none;
-        border-radius: 10px;
-        font-size: 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-top: auto;
     }
 
     .btn-pay:hover {
-        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        background: #1d4ed8;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
     }
 
     .btn-pay:active {
@@ -169,20 +170,49 @@
         transform: none;
     }
 
-    /* Mobile Responsiveness */
+    /* Tablet */
+    @media (max-width: 1200px) {
+        .tiers-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Mobile */
     @media (max-width: 768px) {
-        .rewards-tiers-container { padding: 40px 15px; }
-        .tier-header h2 { font-size: 2rem; }
-        .tier-header p { font-size: 1rem; }
-        .tiers-grid { grid-template-columns: 1fr; gap: 25px; }
-        .tier-card { padding: 30px 25px; }
-        .tier-price { font-size: 2rem; }
+        .rewards-tiers-container {
+            padding: 60px 20px;
+        }
+        
+        .tier-header h2 {
+            font-size: 2rem;
+        }
+        
+        .tier-header p {
+            font-size: 1rem;
+        }
+        
+        .tiers-grid {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        .tier-card {
+            padding: 30px 25px;
+        }
+        
+        .tier-price {
+            font-size: 1.75rem;
+        }
     }
 
     @media (max-width: 480px) {
-        .tier-header h2 { font-size: 1.75rem; }
-        .tier-name { font-size: 1.5rem; }
-        .tier-price { font-size: 1.75rem; }
+        .tier-name {
+            font-size: 1.4rem;
+        }
+        
+        .tier-price {
+            font-size: 1.6rem;
+        }
     }
 </style>
 
@@ -193,7 +223,7 @@
     </div>
 
     <div class="tiers-grid">
-        <!-- SILVER TIER -->
+        <!-- SILVER -->
         <div class="tier-card">
             <div class="tier-name">Silver</div>
             <div class="tier-price">KES 5,000<span class="period">/year</span></div>
@@ -207,7 +237,7 @@
             <button class="btn-pay" id="btn-silver" onclick="startMembershipPurchase('silver')">Pay & Join Silver</button>
         </div>
 
-        <!-- GOLD TIER -->
+        <!-- GOLD -->
         <div class="tier-card featured">
             <div class="tier-badge">Most Popular</div>
             <div class="tier-name">Gold</div>
@@ -222,7 +252,7 @@
             <button class="btn-pay" id="btn-gold" onclick="startMembershipPurchase('gold')">Pay & Join Gold</button>
         </div>
 
-        <!-- PLATINUM TIER -->
+        <!-- PLATINUM -->
         <div class="tier-card">
             <div class="tier-name">Platinum</div>
             <div class="tier-price">KES 35,000<span class="period">/year</span></div>
@@ -236,7 +266,7 @@
             <button class="btn-pay" id="btn-platinum" onclick="startMembershipPurchase('platinum')">Pay & Join Platinum</button>
         </div>
 
-        <!-- VIP TIER -->
+        <!-- VIP -->
         <div class="tier-card">
             <div class="tier-name">VIP</div>
             <div class="tier-price">KES 75,000<span class="period">/year</span></div>
