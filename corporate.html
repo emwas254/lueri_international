@@ -16,6 +16,7 @@
 <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="lueri-common.js"></script>
 <script>
   // Guarded on purpose: if lueri-common.js failed to load (wrong path, 404,
@@ -28,7 +29,8 @@
     console.warn('lueri-common.js did not define lueriBootTheme — check the <script src> path and that the file was deployed.');
   }
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
   /* Identical token system and component styles to index.html, so this page
      reads as the same site rather than a bolted-on form. Kept in sync with
