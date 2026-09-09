@@ -217,6 +217,7 @@
         </div>
       </div>
       <div class="purchase-cards" id="purchaseCards"></div>
+      <p class="switch-link">Prefer to start without a paid membership? <a href="#" id="joinFreeLink">Join for Free</a></p>
     </div>
 
     <div class="panel">
@@ -271,7 +272,6 @@
             <div class="pb-label">You're signing up for</div>
             <div class="pb-tier" id="planBannerTier">Gold — KES 15,000/year</div>
           </div>
-          <button type="button" class="pb-clear" id="planBannerClear">Just join free instead</button>
         </div>
         <div class="msg error" id="joinMsg"></div>
         <div class="msg success" id="joinSuccessMsg"></div>
@@ -535,7 +535,7 @@
   const PURCHASE_TIERS = [
     { code: 'silver',   name: 'Silver',   price: 5000,  benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
     { code: 'gold',     name: 'Gold',     price: 15000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
-    { code: 'platinum', name: 'Platinum', price: 30000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
+    { code: 'platinum', name: 'Platinum', price: 35000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
     { code: 'vip',      name: 'VIP',      price: 75000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
   ];
 
@@ -571,9 +571,13 @@
     document.getElementById('joinName').focus();
   }
 
-  document.getElementById('planBannerClear').addEventListener('click', () => {
+  document.getElementById('joinFreeLink').addEventListener('click', (e) => {
+    e.preventDefault();
     selectedPurchasePlan = null;
     document.getElementById('planBanner').classList.remove('show');
+    showTab('join');
+    document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('joinName').focus();
   });
 
   document.getElementById('joinBtn').addEventListener('click', async () => {
