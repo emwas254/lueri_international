@@ -1,0 +1,113 @@
+*** Begin Patch
+*** Update File: index.html
+@@
+   .nav-cta{
+@@
+   }
++  body.menu-open{ overflow:hidden; }
++  @media (max-width:700px){
++    .nav-cta{ display:none; }
++    .menu-trigger{ min-width:44px; min-height:44px; justify-content:center; }
++  }
+@@
+   function closeMenu() {
+     menuTrigger.classList.remove('open');
+     menuPanel.classList.remove('open');
++    document.body.classList.remove('menu-open');
+     menuTrigger.setAttribute('aria-expanded', 'false');
+@@
+   function openMenu() {
+     menuTrigger.classList.add('open');
+     menuPanel.classList.add('open');
++    document.body.classList.add('menu-open');
+     menuTrigger.setAttribute('aria-expanded', 'true');
+@@
+ </script>
++<script src="lucy.js" defer></script>
+ </body>
+*** Update File: corporate.html
+@@
+   .nav-cta{
+@@
+   }
++  body.menu-open{ overflow:hidden; }
++  @media (max-width:700px){
++    .nav-cta{ display:none; }
++    .menu-trigger{ min-width:44px; min-height:44px; justify-content:center; }
++  }
+@@
+   function closeMenu() {
+     menuTrigger.classList.remove('open'); menuPanel.classList.remove('open');
++    document.body.classList.remove('menu-open');
+@@
+   function openMenu() {
+     menuTrigger.classList.add('open'); menuPanel.classList.add('open');
++    document.body.classList.add('menu-open');
+@@
+   </section>
++
++  <section id="plans" class="reveal">
++    <div class="wrap">
++      <div class="section-head"><span class="section-num">02</span><h2>Choose your operating plan</h2></div>
++      <div class="pricing-grid">
++        <article class="pricing-card"><div class="tier">Corporate Starter</div><h3>For repeat senders</h3><div class="price">KES 2,500 / month</div><p>Up to 3 authorised bookers, monthly statement, priority booking where capacity allows, WhatsApp support and 5% off eligible standard quotes. Recommended from 10 deliveries a month.</p></article>
++        <article class="pricing-card"><div class="tier">Corporate Professional</div><h3>For growing teams</h3><div class="price">KES 7,500 / month</div><p>Up to 12 bookers, two departments, scheduled pickups, monthly activity report, account contact and 10% off eligible standard quotes. Recommended from 30 deliveries a month.</p></article>
++        <article class="pricing-card"><div class="tier">Corporate Enterprise</div><h3>For complex operations</h3><div class="price">Custom pricing</div><p>Negotiated routes and minimum commitment, multi-branch billing, service windows, reporting and escalation support. Talk to Lueri before onboarding.</p></article>
++      </div>
++      <p class="pricing-note">Every delivery remains separately quoted or contracted. Discounts, dispatch priority, same-day availability and credit terms remain subject to route, capacity and an approved agreement.</p>
++      <p style="margin-top:20px;"><a class="btn btn-secondary" href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer">Talk to Lueri on WhatsApp</a></p>
++    </div>
++  </section>
+ 
+   <section id="apply" class="reveal">
+@@
+         <form id="corporateForm" novalidate style="margin-top:8px;">
++          <input type="text" name="website" id="corpHoneypot" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;" aria-hidden="true">
++          <div class="form-group">
++            <label class="form-label" for="plan">Preferred Corporate Plan</label>
++            <select class="form-input" id="plan"><option value="">Help me choose</option><option value="Corporate Starter">Corporate Starter</option><option value="Corporate Professional">Corporate Professional</option><option value="Corporate Enterprise">Corporate Enterprise</option></select>
++          </div>
+@@
+ </script>
+ <script src="corporate-signup.js"></script>
++<script src="lucy.js" defer></script>
+ </body>
+*** Update File: corporate-signup.js
+@@
+       contactPhone: document.getElementById('contactPhone'),
+       contactEmail: document.getElementById('contactEmail'),
++      plan: document.getElementById('plan'),
+@@
+       contactEmail: 'Company Email',
++      plan: 'Preferred Corporate Plan',
+@@
+         + `Company: ${escapeForWhatsApp(data.companyName)}\n`
+-        + `KRA PIN: ${data.kraPin.toUpperCase()}\n`
++        + 'KRA PIN: stored in the secure application record; do not request it over WhatsApp.\n'
++        + `Preferred plan: ${data.plan || 'Help me choose'}\n`
+         + `Address: ${escapeForWhatsApp(data.address)}\n`
+*** Add File: lucy.js
+/* Lucy v1: static, allow-listed support. Never reads accounts, orders or payments. */
+(function () {
+  'use strict';
+  const wa = 'https://wa.link/qk7m3b';
+  const answers = {
+    'Book a delivery': 'Use Book a Pickup or WhatsApp Lueri with your pickup, drop-off and parcel details. A dispatcher confirms the quote and availability before collection.',
+    'Corporate plans': 'Lueri has Starter, Professional and Enterprise business plans. Corporate activation is reviewed by the team; no account is activated automatically.',
+    'Service area': 'Lueri handles last-mile delivery across Nairobi and surrounding towns. Share both locations on WhatsApp for a route check.',
+    'Opening hours': 'Monday–Friday, 8:00 AM–5:00 PM; Saturday, 8:00 AM–3:00 PM; closed Sunday. Bookings outside hours are handled on the next business day.',
+    'Track a delivery': 'For a live delivery update, please use WhatsApp. Lucy cannot access customer records, locations, payment details or order status.'
+  };
+  const style = document.createElement('style');
+  style.textContent = '.lucy-launch{position:fixed;right:20px;bottom:20px;z-index:1100;border:0;border-radius:999px;background:#1B2620;color:#F0EAD8;padding:14px 18px;font:600 14px system-ui;box-shadow:0 8px 24px #0003;cursor:pointer}.lucy-panel{position:fixed;right:20px;bottom:76px;z-index:1100;width:min(360px,calc(100vw - 40px));padding:20px;background:#F0EAD8;color:#1B2620;border:1px solid #1B2620;border-radius:6px;box-shadow:0 16px 40px #0004}.lucy-panel[hidden]{display:none}.lucy-panel h2{margin:0 0 8px;font:600 22px system-ui}.lucy-options{display:grid;gap:8px;margin:14px 0}.lucy-options button,.lucy-escalate{padding:10px;border:1px solid #1B2620;background:transparent;text-align:left;cursor:pointer;border-radius:3px}.lucy-escalate{display:inline-block;background:#B8321F;color:#fff;text-decoration:none;border-color:#B8321F}.lucy-answer{min-height:44px;line-height:1.5}';
+  document.head.appendChild(style);
+  const panel = document.createElement('aside');
+  panel.className = 'lucy-panel'; panel.hidden = true; panel.setAttribute('aria-label', 'Lucy support');
+  panel.innerHTML = '<h2>Lucy</h2><p>Quick answers from Lueri’s approved service information.</p><div class="lucy-options"></div><p class="lucy-answer" aria-live="polite">Choose a topic. For anything specific to you, talk to Lueri on WhatsApp.</p><a class="lucy-escalate" href="' + wa + '" target="_blank" rel="noopener noreferrer">Talk to Lueri on WhatsApp</a>';
+  const answer = panel.querySelector('.lucy-answer'); const options = panel.querySelector('.lucy-options');
+  Object.keys(answers).forEach((topic) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = topic; b.addEventListener('click', () => { answer.textContent = answers[topic]; }); options.appendChild(b); });
+  const launch = document.createElement('button'); launch.type = 'button'; launch.className = 'lucy-launch'; launch.textContent = 'Ask Lucy'; launch.setAttribute('aria-expanded', 'false');
+  launch.addEventListener('click', () => { panel.hidden = !panel.hidden; launch.setAttribute('aria-expanded', String(!panel.hidden)); if (!panel.hidden) panel.querySelector('button')?.focus(); });
+  document.body.append(panel, launch);
+})();
+*** End Patch
