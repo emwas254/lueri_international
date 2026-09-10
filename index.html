@@ -26,9 +26,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="lueri-common.js"></script>
 <script>
-  // Guarded on purpose: if lueri-common.js failed to load (wrong path, 404,
-  // blocked request), this must not throw — it should just skip theme boot
-  // and let the page render in light mode rather than break the console.
   if (typeof lueriBootTheme === 'function') {
     lueriBootTheme();
   } else {
@@ -74,6 +71,7 @@
       radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
       radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
   }
+  body.menu-open{ overflow:hidden; }
   .reveal { opacity: 0; transform: translateY(30px); transition: var(--transition); }
   .reveal.active { opacity: 1; transform: translateY(0); }
   h1,h2,h3,.display{
@@ -125,7 +123,6 @@
     border-radius:2px; font-weight: 600;
   }
 
-  /* Menu trigger — replaces the old inline link row + separate mobile hamburger */
   .menu-trigger{
     display:flex; align-items:center; gap:10px; background:none;
     border:1.5px solid var(--ink); border-radius:2px; padding:8px 14px 8px 12px;
@@ -146,7 +143,6 @@
   .menu-trigger.open .menu-trigger-bars span:nth-child(2){ opacity:0; }
   .menu-trigger.open .menu-trigger-bars span:nth-child(3){ top:4.5px; transform:rotate(-45deg); }
 
-  /* Menu panel — the "manifest" drawer that drops beneath the header */
   .menu-panel{
     display:grid; grid-template-rows:0fr; background:var(--paper);
     border-bottom:1px solid transparent;
@@ -442,6 +438,12 @@
   }
   .trust-banner p{ margin:0; color:var(--slate); font-size:0.95rem; line-height:1.7; }
   .trust-banner a{ text-decoration:underline; color:var(--route); font-weight:600; }
+
+  /* Mobile: hide header CTA only (hero .btn-primary is untouched), keep menu trigger tappable */
+  @media (max-width:700px){
+    .nav-cta{ display:none; }
+    .menu-trigger{ min-width:44px; min-height:44px; justify-content:center; }
+  }
 </style>
 <script type="application/ld+json">
 {
@@ -1014,8 +1016,6 @@
   const form = document.getElementById('bookingForm');
   const overlay = document.getElementById('successOverlay');
 
-  // Fallbacks in case lueri-common.js didn't load — the booking form should
-  // degrade gracefully instead of throwing on submit.
   const isValidPhone = typeof lueriIsValidPhone === 'function'
     ? lueriIsValidPhone
     : (phone) => /^(?:\+254|0)7\d{8}$/.test(String(phone || '').trim());
@@ -1081,12 +1081,15 @@
   function closeMenu() {
     menuTrigger.classList.remove('open');
     menuPanel.classList.remove('open');
+    document.body.classList.remove('menu-open');
     menuTrigger.setAttribute('aria-expanded', 'false');
     menuTriggerLabel.textContent = 'Menu';
+    menuTrigger.focus();
   }
   function openMenu() {
     menuTrigger.classList.add('open');
     menuPanel.classList.add('open');
+    document.body.classList.add('menu-open');
     menuTrigger.setAttribute('aria-expanded', 'true');
     menuTriggerLabel.textContent = 'Close';
   }
@@ -1112,5 +1115,6 @@
     if (e.key === 'Escape') closeMenu();
   });
 </script>
+<script src="lucy.js" defer></script>
 </body>
 </html>
