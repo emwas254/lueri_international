@@ -8,9 +8,7 @@
 // =============================================================================
 
 const SUPABASE_URL = 'https://ylifvexqamxwvzvhmwex.supabase.co';
-// ⚠️ REPLACE WITH YOUR REAL ANON KEY (Supabase Dashboard → Settings → API → anon/public key)
-// This is currently a placeholder — payments will not work until this is real.
-const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsaWZ2ZXhxYW14dnd6dmhtd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw';
 
 let supabase;
 try {
@@ -38,20 +36,17 @@ function lueriBootTheme() {
 // 3. PHONE VALIDATION & NORMALIZATION
 // =============================================================================
 
-// Accepts 07xxxxxxxx, 01xxxxxxxx, +2547xxxxxxxx, +2541xxxxxxxx, 2547xxxxxxxx, 2541xxxxxxxx
 function lueriIsValidPhone(phone) {
     const p = String(phone || '').trim().replace(/\s+/g, '');
     return /^(?:\+254|254|0)(7|1)\d{8}$/.test(p);
 }
 
-// Canonical output format: 254XXXXXXXXX (no leading zero, no plus)
-// This is the single format every Lueri system (rewards, corporate, bookings) should store.
 function lueriNormalizePhone(phone) {
     const p = String(phone || '').trim().replace(/\s+/g, '');
     if (/^0(7|1)\d{8}$/.test(p)) return '254' + p.slice(1);
     if (/^\+254(7|1)\d{8}$/.test(p)) return p.slice(1);
     if (/^254(7|1)\d{8}$/.test(p)) return p;
-    return null; // invalid — caller should check lueriIsValidPhone first
+    return null;
 }
 
 // =============================================================================
