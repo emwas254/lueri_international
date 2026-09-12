@@ -251,45 +251,42 @@ async function _lueriPollPaymentStatus(paymentId, internalReference, planDisplay
     }
 }
 
-async function startMembershipPurchase(planCode) {
-    const button = document.getElementById(`btn-${planCode}`);
-    if (button) {
-        button.disabled = true;
-        var originalText = button.innerText;
-        button.innerText = 'Preparing secure payment…';
-        button.style.opacity = '0.7';
-    }
-
-    const resetButton = () => { if (button) { button.disabled = false; button.innerText = originalText; button.style.opacity = '1'; } };
-
+// -----------------------------------------------------------------------
+// FIX (N-09, confirmed live bug): this function previously took a single
+// planCode argument and required a Supabase Auth session before starting
+// checkout. registerMember() never creates an Auth session — members are
+// plain rows in the members table — so supabase.auth.getUser() always
+// returned null and EVERY paid membership purchase dead-ended on a
+// "please log in" alert with no login UI anywhere on the page. It also
+// sent the wrong ID (an auth.users id, when apply_membership_payment
+// resolves everything off members.id).
+//
+// rewards.html already calls this correctly as
+// startMembershipPurchase(result.member.id, selectedPurchasePlan.code) —
+// the bug was entirely in this shared file, not the caller. Fixed by
+// taking the memberId the caller passes, dropping the auth requirement,
+// and sending the anon key as the bearer token (server-side price
+// enforcement against membership_plans.price_kes is pesapal-initiate's
+// job, not the client's).
+// -----------------------------------------------------------------------
+async function startMembershipPurchase(memberId, planCode) {
     try {
         if (!supabase) throw new Error('Payment system not initialized. Please refresh the page.');
-
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            alert('Please log in or create an account to purchase a membership.');
-            resetButton();
-            return;
-        }
-
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError || !session) throw new Error('No active session. Please log in again.');
+        if (!memberId) throw new Error('Missing member reference. Please refresh and try again.');
 
         const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-initiate`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${session.access_token}`,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                 'apikey': SUPABASE_ANON_KEY
             },
-            body: JSON.stringify({ member_id: user.id, plan_code: planCode })
+            body: JSON.stringify({ member_id: memberId, plan_code: planCode })
         });
 
         const data = await response.json();
         if (!response.ok || data.error) throw new Error(data.error || `Server error: ${response.status}`);
         if (!data.redirect_url || !data.payment_id) throw new Error('No checkout URL received from payment server');
-
-        resetButton();
 
         const backdrop = _lueriRenderCheckoutShell(data.plan_display_name || planCode);
         const body = document.getElementById('lueriCheckoutBody');
@@ -309,10 +306,8 @@ async function startMembershipPurchase(planCode) {
 
     } catch (error) {
         console.error('❌ Payment Error:', error);
-        resetButton();
-        let errorMessage = 'We couldn\'t start your payment. ';
-        if (error.message.includes('authentication')) errorMessage += 'Please log in and try again.';
-        else if (error.message.includes('network') || error.message.includes('fetch')) errorMessage += 'Please check your internet connection.';
+        let errorMessage = "We couldn't start your payment. ";
+        if (error.message.includes('network') || error.message.includes('fetch')) errorMessage += 'Please check your internet connection.';
         else errorMessage += 'Please try again or contact support.';
         alert(errorMessage);
     }
