@@ -112,6 +112,7 @@
 
     const invalid = {
       companyName: data.companyName.length < 2,
+      plan: data.plan === '',
       kraPin: !KRA_PIN_PATTERN.test(data.kraPin),
       address: data.address.length < 4,
       contactName: data.contactName.length < 2,
@@ -122,6 +123,7 @@
 
     const labels = {
       companyName: 'Company Name',
+      plan: 'Preferred Plan',
       kraPin: 'KRA PIN',
       address: 'Billing / Physical Address',
       contactName: 'Contact Person',
@@ -129,6 +131,10 @@
       contactEmail: 'Company Email',
       volume: 'Est. Deliveries / Week',
     };
+
+    // "enterprise" is a custom-quote request, not a real plan code in business_plans —
+    // never send it to the RPC as p_plan_code.
+    const rpcPlanCode = ['biz_gold', 'biz_platinum', 'biz_vip'].includes(data.plan) ? data.plan : null;
 
     let hasError = false;
     const invalidLabels = [];
@@ -166,6 +172,7 @@
           p_kra_pin: data.kraPin.toUpperCase(),
           p_address: data.address,
           p_volume: data.volume,
+          p_plan_code: rpcPlanCode,
         });
         if (!rpcResult.success) {
           showError(
@@ -188,7 +195,7 @@
         + 'New corporate account application - Lueri website\n'
         + `Company: ${escapeForWhatsApp(data.companyName)}\n`
         + 'KRA PIN: stored in the secure application record; do not request it over WhatsApp.\n'
-        + `Preferred plan: ${data.plan || 'Help me choose'}\n`
+        + `Preferred plan: ${{biz_gold:'Essential (KES 25,000/mo)',biz_platinum:'Professional (KES 45,000/mo)',biz_vip:'Elite (KES 75,000/mo)',enterprise:'Enterprise — custom quote'}[data.plan] || 'Help me choose'}\n`
         + `Address: ${escapeForWhatsApp(data.address)}\n`
         + `Est. deliveries/week: ${data.volume}\n`
         + `Contact: ${escapeForWhatsApp(data.contactName)}${data.jobTitle ? ' (' + escapeForWhatsApp(data.jobTitle) + ')' : ''}\n`
@@ -216,6 +223,16 @@
       submitBtn.disabled = false;
       submitBtn.textContent = originalLabel;
     }
+  });
+
+  document.querySelectorAll('.pricing-card[data-plan]').forEach((card) => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      const planSelect = document.getElementById('plan');
+      if (planSelect) planSelect.value = card.getAttribute('data-plan');
+      document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('companyName')?.focus();
+    });
   });
 
   window.closeSuccess = function closeSuccess() {

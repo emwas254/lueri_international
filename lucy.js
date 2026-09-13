@@ -1,14 +1,13 @@
-<script>
 /* Lucy: animated, interactive Lueri support assistant */
 (function () {
   'use strict';
 
   const wa = 'https://wa.link/qk7m3b';
-  const CHAT_ENDPOINT = 'https://ylifvexqamxwvzvhmwex.supabase.co/functions/v1/lucy-chat';
+  const CHAT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/lucy-chat';
 
   const answers = {
     'Book a delivery': 'I’d be happy to help! Use “Book a Pickup” or message Lueri on WhatsApp with your pickup, drop-off and parcel details.',
-    'Corporate plans': 'Lueri offers Starter, Professional and Enterprise plans. Our team reviews each corporate activation personally.',
+    'Corporate plans': 'Lueri offers Essential (KES 25,000/mo), Professional (KES 45,000/mo) and Elite (KES 75,000/mo) corporate plans, plus custom Enterprise agreements for larger volume. Our team reviews each corporate activation personally.',
     'Service area': 'Lueri delivers across Nairobi and surrounding towns. Send both locations on WhatsApp and we’ll confirm the route for you.',
     'Opening hours': 'We’re open Monday–Friday, 8:00 AM–5:00 PM, and Saturday, 8:00 AM–3:00 PM. We’re closed on Sunday.',
     'Track a delivery': 'For privacy, I can’t access delivery records or locations. Please message Lueri on WhatsApp for a live update.'
@@ -430,4 +429,3 @@
 
   document.body.append(panel, launch);
 })();
-</script>
