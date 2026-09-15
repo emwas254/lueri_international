@@ -5,16 +5,16 @@
   const wa = 'https://wa.link/qk7m3b';
   const CHAT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/lucy-chat';
 
-  // Lucy brand assets — place these files at /assets/images/
-  const LUCY_AVATAR = 'assets/lucy-avatar.webp';
+  // Lucy brand assets — FIXED to use existing file
+  const LUCY_AVATAR = 'assets/lucy-avatar-sm.webp';
   const LUCY_AVATAR_SMALL = 'assets/lucy-avatar-sm.webp';
 
   const answers = {
-    'Book a delivery': 'I’d be happy to help! Use “Book a Pickup” or message Lueri on WhatsApp with your pickup, drop-off and parcel details.',
+    'Book a delivery': 'I'd be happy to help! Use "Book a Pickup" or message Lueri on WhatsApp with your pickup, drop-off and parcel details.',
     'Corporate plans': 'Lueri offers Essential (KES 25,000/mo), Professional (KES 45,000/mo) and Elite (KES 75,000/mo) corporate plans, plus custom Enterprise agreements for larger volume. Our team reviews each corporate activation personally.',
-    'Service area': 'Lueri delivers across Nairobi and surrounding towns. Send both locations on WhatsApp and we’ll confirm the route for you.',
-    'Opening hours': 'We’re open Monday–Friday, 8:00 AM–5:00 PM, and Saturday, 8:00 AM–3:00 PM. We’re closed on Sunday.',
-    'Track a delivery': 'For privacy, I can’t access delivery records or locations. Please message Lueri on WhatsApp for a live update.'
+    'Service area': 'Lueri delivers across Nairobi and surrounding towns. Send both locations on WhatsApp and we'll confirm the route for you.',
+    'Opening hours': 'We're open Monday–Friday, 8:00 AM–5:00 PM, and Saturday, 8:00 AM–3:00 PM. We're closed on Sunday.',
+    'Track a delivery': 'For privacy, I can't access delivery records or locations. Please message Lueri on WhatsApp for a live update.'
   };
 
   const style = document.createElement('style');
@@ -299,7 +299,7 @@
 
     <div class="lucy-body">
       <div class="lucy-message">
-        Hi, I’m Lucy! ✨ I can help with Lueri deliveries, business plans,
+        Hi, I'm Lucy! ✨ I can help with Lueri deliveries, business plans,
         service areas, and more. What would you like to know?
       </div>
 
@@ -384,7 +384,7 @@
     if (llmDisabled) {
       addMessage(question, true);
       input.value = '';
-      respond('I’m resting for now — please chat with Lueri directly on WhatsApp.');
+      respond('I'm resting for now — please chat with Lueri directly on WhatsApp.');
       return;
     }
     const now = Date.now();
@@ -421,7 +421,7 @@
 
       addMessage(
         data.reply ||
-        'I’m not certain about that. Please chat with Lueri on WhatsApp for help.',
+        'I'm not certain about that. Please chat with Lueri on WhatsApp for help.',
         false
       );
       failures = 0;
@@ -431,7 +431,7 @@
       if (failures >= MAX_FAILURES) llmDisabled = true;
 
       addMessage(
-        'I’m temporarily offline. Please chat with Lueri on WhatsApp and the team will assist you.',
+        'I'm temporarily offline. Please chat with Lueri on WhatsApp and the team will assist you.',
         false
       );
     } finally {
