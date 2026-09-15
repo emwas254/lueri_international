@@ -1,314 +1,396 @@
-/**
- * LUERI INTERNATIONAL - COMMON JAVASCRIPT
- * Shared utilities, theme management, and payment functions
- */
+/* ============================================================
+   LUERI INTERNATIONAL — SHARED MODULE (single source of truth)
+   Replaces: lueri-common.js, rewards-cloud.js, rewards-staff-cloud.js
+   Fixes: N-01 (paired lookup), N-03 (single VAT fn), N-05 (structured
+   error codes), N-06 (uniform escaping), N-07 (popup fallback),
+   N-09 (member-id purchase flow), N-13 (module drift), V-04/V-05/V-07.
 
-// =============================================================================
-// 1. SUPABASE INITIALIZATION
-// =============================================================================
+   PATCH (2026-09-13): removed the modal-based checkout flow (section
+   12 in the previous version: checkoutShell/checkoutFrame/checkoutResult
+   /pollPayment/startMembershipPurchase). rewards.html's "Choose {tier}"
+   button redirects straight to checkout.html?plan=... — nothing in the
+   codebase ever called lueri.checkout.startMembershipPurchase(). Two
+   independent, near-identical implementations of the same payment flow
+   is exactly how the missing members.points column happened: one place
+   gets fixed, the other silently doesn't. checkout.html is the real,
+   live implementation; this file no longer duplicates it.
+   ============================================================ */
+(function (global) {
+  'use strict';
 
-const SUPABASE_URL = 'https://ylifvexqamxwvzvhmwex.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsaWZ2ZXhxYW14dnd6dmhtd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw';
+  /* ---------------- 1. CONFIG ---------------- */
+  const LUERI = {
+    supabaseUrl: 'https://ylifvexqamxvwzvhmwex.supabase.co', // CORRECTED 2026-09-14: this is the real, live project ref (verified via direct Supabase connection). The previous value was never a deployed project.
+    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsaWZ2ZXhxYW14dnd6dmhtd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw',
+    whatsapp: '254713261719',
+    whatsappDisplay: '0713 261 719',
+    email: 'info@lueriinternational.com',
+    waGeneralLink: 'https://wa.link/qk7m3b',
+    company: {
+      name: 'Lueri International',
+      address: 'Nairobi, Kenya',
+      phone: '+254 713 261 719',
+      kraPin: null,          // set when registered; both docs read this one value
+      vatRegistered: false,  // flip only when eTIMS-compliant invoicing is in place
+      vatRate: 0.16,
+    },
+    pointsPerKes: 20, // 1 point per KES 20 — ASSUMPTION, keep in sync with add_transaction SQL
+  };
 
-let supabase;
-try {
-    if (window.supabase) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('✅ Supabase initialized successfully');
-    } else {
-        console.error('❌ Supabase library not loaded!');
+  /* Embedded tier catalog — DISPLAY ONLY. Server enforces spend thresholds
+     (tier thresholds live in the DB view v_member_tier). Keep in sync. */
+  const TIER_CATALOG = [
+    { code: 'bronze',   name: 'Bronze',   minSpend: 0,      benefits: ['Earn 1 point per KES 20 spent', 'Points redeemable for delivery vouchers'] },
+    { code: 'silver',   name: 'Silver',   minSpend: 50000,  benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
+    { code: 'gold',     name: 'Gold',     minSpend: 150000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
+    { code: 'platinum', name: 'Platinum', minSpend: 350000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
+    { code: 'vip',      name: 'VIP',      minSpend: 750000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
+  ];
+
+  /* Paid plans — DISPLAY ONLY. pesapal-initiate enforces price server-side
+     against membership_plans.price_kes. Never trust these for charging. */
+  const PURCHASE_TIERS = [
+    { code: 'silver',   name: 'Silver',   price: 5000  },
+    { code: 'gold',     name: 'Gold',     price: 15000 },
+    { code: 'platinum', name: 'Platinum', price: 35000 },
+    { code: 'vip',      name: 'VIP',      price: 75000 },
+  ];
+
+  /* ---------------- 2. SUPABASE ---------------- */
+  let supabase = null;
+  try {
+    if (global.supabase) {
+      supabase = global.supabase.createClient(LUERI.supabaseUrl, LUERI.supabaseAnonKey);
     }
-} catch (error) {
-    console.error('❌ Error initializing Supabase:', error);
-}
+  } catch (e) { console.error('Supabase init failed:', e); }
 
-// =============================================================================
-// 2. THEME BOOT
-// =============================================================================
+  async function rpc(name, args) {
+    if (!supabase) return { success: false, errors: [{ code: 'no_client', message: 'System not initialized. Please refresh.' }] };
+    const { data, error } = await supabase.rpc(name, args || {});
+    if (error) return { success: false, errors: [{ code: 'rpc_error', message: error.message }] };
+    return data; // server returns jsonb envelopes {success, errors:[{code,message}], ...}
+  }
 
-function lueriBootTheme() {
+  /* ---------------- 3. THEME ---------------- */
+  function bootTheme() {
     const saved = localStorage.getItem('theme');
-    const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const theme = saved || (global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
-}
+  }
 
-// =============================================================================
-// 3. PHONE VALIDATION & NORMALIZATION
-// =============================================================================
+  function initThemeToggle(button) {
+    if (!button) return;
+    const sun = document.getElementById('sunIcon');
+    const moon = document.getElementById('moonIcon');
+    const paint = () => {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (sun) sun.style.display = dark ? 'block' : 'none';
+      if (moon) moon.style.display = dark ? 'none' : 'block';
+    };
+    button.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      paint();
+    });
+    paint();
+  }
 
-function lueriIsValidPhone(phone) {
-    const p = String(phone || '').trim().replace(/\s+/g, '');
-    return /^(?:\+254|254|0)(7|1)\d{8}$/.test(p);
-}
+  /* ---------------- 4. MENU (fix V-06: no forced focus except Escape) ---------------- */
+  function initMenu() {
+    const trigger = document.getElementById('menuTrigger');
+    const panel = document.getElementById('menuPanel');
+    const label = document.getElementById('menuTriggerLabel');
+    if (!trigger || !panel) return;
+    const close = (opts) => {
+      opts = opts || {};
+      trigger.classList.remove('open');
+      panel.classList.remove('open');
+      document.body.classList.remove('menu-open');
+      trigger.setAttribute('aria-expanded', 'false');
+      if (label) label.textContent = 'Menu';
+      if (opts.focusTrigger) trigger.focus();
+    };
+    const open = () => {
+      trigger.classList.add('open');
+      panel.classList.add('open');
+      document.body.classList.add('menu-open');
+      trigger.setAttribute('aria-expanded', 'true');
+      if (label) label.textContent = 'Close';
+    };
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      panel.classList.contains('open') ? close({}) : open();
+    });
+    panel.querySelectorAll('[data-close-menu]').forEach((link) =>
+      link.addEventListener('click', () => close({})));
+    document.addEventListener('click', (e) => {
+      if (panel.classList.contains('open') && !panel.contains(e.target) && !trigger.contains(e.target)) close({});
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && panel.classList.contains('open')) close({ focusTrigger: true });
+    });
+  }
 
-function lueriNormalizePhone(phone) {
+  /* ---------------- 5. REVEAL (fix V-05: CSS already gated behind .js) ---------------- */
+  function initReveal() {
+    const items = document.querySelectorAll('.reveal');
+    if (!items.length) return;
+    const reveal = () => {
+      const vh = global.innerHeight;
+      items.forEach((el) => {
+        if (el.getBoundingClientRect().top < vh - 150) el.classList.add('active');
+      });
+    };
+    global.addEventListener('scroll', reveal, { passive: true });
+    reveal();
+  }
+
+  /* ---------------- 6. PHONE ---------------- */
+  function isValidPhone(phone) {
+    return /^(?:\+254|254|0)(7|1)\d{8}$/.test(String(phone || '').trim().replace(/\s+/g, ''));
+  }
+  function normalizePhone(phone) {
     const p = String(phone || '').trim().replace(/\s+/g, '');
     if (/^0(7|1)\d{8}$/.test(p)) return '254' + p.slice(1);
     if (/^\+254(7|1)\d{8}$/.test(p)) return p.slice(1);
     if (/^254(7|1)\d{8}$/.test(p)) return p;
     return null;
-}
+  }
 
-// =============================================================================
-// 4. WHATSAPP OPEN HELPER
-// =============================================================================
-
-function lueriOpenWhatsApp(number, message) {
-    const cleanNumber = String(number || '').replace(/\D/g, '');
-    const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
-    const win = window.open(url, '_blank', 'noopener,noreferrer');
-    return { opened: !!win, url };
-}
-
-// =============================================================================
-// 5. UTILITY FUNCTIONS
-// =============================================================================
-
-function formatKES(amount) {
-    return new Intl.NumberFormat('en-KE', {
-        style: 'currency', currency: 'KES', minimumFractionDigits: 0
-    }).format(amount);
-}
-
-function showToast(message, type = 'info') {
+  /* ---------------- 7. FORMATTERS / ESCAPING ---------------- */
+  function escapeHTML(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+  const fmt = (n) => 'KES ' + Number(n || 0).toLocaleString('en-KE');
+  function formatDateTime(value) {
+    const d = new Date(value);
+    if (isNaN(d)) return '';
+    return d.toLocaleString('en-KE', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  }
+  function formatKES(amount) {
+    return new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(amount);
+  }
+  function showToast(message, type) {
     const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
     toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed; top: 20px; right: 20px; padding: 12px 24px;
-        background: ${type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#3b82f6'};
-        color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999;
-    `;
+    toast.style.cssText = 'position:fixed; top:20px; right:20px; padding:12px 24px; color:#fff; border-radius:8px;' +
+      'box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; background:' +
+      (type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#3b82f6');
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
-}
+  }
+  function openWhatsApp(number, message) {
+    const url = 'https://wa.me/' + String(number).replace(/\D/g, '') + '?text=' + encodeURIComponent(message);
+    const win = global.open(url, '_blank', 'noopener,noreferrer');
+    return { opened: !!win, url };
+  }
+  function copyToClipboard(text, label) {
+    const done = () => showToast((label || 'Value') + ' copied', 'success');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => global.prompt('Copy this:', text));
+    } else global.prompt('Copy this:', text);
+  }
 
-// =============================================================================
-// 6. CHECKOUT MODAL — in-page Pesapal checkout with live status polling.
-//
-// Why polling instead of trusting the iframe's post-payment redirect:
-// Pesapal's own developer forum documents that the automatic redirect to
-// your callback URL does not reliably fire inside an iframe — the
-// customer sometimes has to click a manual "continue" link. Rather than
-// depend on that, this modal polls get_payment_status() (a narrow,
-// token-gated RPC) every 3 seconds. The moment pesapal-ipn's webhook
-// confirms payment server-side, the modal shows success — completely
-// independent of whether the iframe's own redirect ever fires.
-// =============================================================================
+  /* ---------------- 8. VAT (fix N-03: ONE treatment, inclusive) ----------------
+     M-Pesa collections are quoted gross. VAT is ALWAYS inclusive:
+     vat = gross * rate/(1+rate). Both receipt and invoice use this. */
+  function vatBreakdown(gross) {
+    const c = LUERI.company;
+    const on = !!c.vatRegistered;
+    const vat = on ? (Number(gross) * c.vatRate / (1 + c.vatRate)) : 0;
+    return { vatRegistered: on, rate: c.vatRate, vat: vat, net: Number(gross) - vat, gross: Number(gross) };
+  }
 
-let _lueriCheckoutPoll = null;
-let _lueriCheckoutAttempts = 0;
-const LUERI_CHECKOUT_MAX_ATTEMPTS = 200; // ~10 minutes at 3s intervals
+  /* ---------------- 9. DOCUMENT BUILDERS (fix N-06: everything escaped) ------- */
+  const BRAND = {
+    fonts: '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">',
+    logo: () => location.origin + '/assets/logo-mark.png',
+  };
 
-function _lueriInjectCheckoutStyles() {
-    if (document.getElementById('lueri-checkout-styles')) return;
-    const style = document.createElement('style');
-    style.id = 'lueri-checkout-styles';
-    style.textContent = `
-        .lueri-checkout-backdrop{position:fixed;inset:0;background:rgba(27,38,32,0.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .25s ease;}
-        .lueri-checkout-backdrop.open{opacity:1;}
-        .lueri-checkout-card{background:var(--paper,#F0EAD8);color:var(--ink,#1B2620);border-radius:10px;width:min(480px,100%);max-height:92vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.35);transform:scale(.92) translateY(12px);transition:transform .3s cubic-bezier(0.16,1,0.3,1);}
-        .lueri-checkout-backdrop.open .lueri-checkout-card{transform:scale(1) translateY(0);}
-        .lueri-checkout-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line,rgba(27,38,32,0.16));}
-        .lueri-checkout-head h3{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.02em;font-size:1.1rem;margin:0;}
-        .lueri-checkout-close{background:none;border:none;font-size:1.4rem;line-height:1;cursor:pointer;color:var(--slate,#4A5A52);padding:4px 8px;border-radius:4px;}
-        .lueri-checkout-close:hover{color:var(--route,#B8321F);}
-        .lueri-checkout-body{padding:24px;}
-        .lueri-checkout-status{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:.78rem;letter-spacing:.03em;color:var(--slate,#4A5A52);margin-bottom:16px;padding:10px 14px;background:var(--paper-dim,#e6dfc9);border-radius:6px;}
-        .lueri-checkout-dot{width:8px;height:8px;border-radius:50%;background:#E8B93D;flex-shrink:0;animation:lueriPulse 1.4s ease-in-out infinite;}
-        .lueri-checkout-status.success .lueri-checkout-dot{background:#2e7d32;animation:none;}
-        .lueri-checkout-status.failed .lueri-checkout-dot{background:#c62828;animation:none;}
-        @keyframes lueriPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(0.7);}}
-        .lueri-checkout-frame-wrap{position:relative;border:1px solid var(--line,rgba(27,38,32,0.16));border-radius:8px;overflow:hidden;background:#fff;}
-        .lueri-checkout-frame-wrap iframe{width:100%;height:480px;border:0;display:block;}
-        .lueri-checkout-fallback{display:none;text-align:center;padding:14px;font-size:.85rem;}
-        .lueri-checkout-fallback.show{display:block;}
-        .lueri-checkout-fallback a{color:var(--route,#B8321F);font-weight:600;text-decoration:underline;}
-        .lueri-checkout-manual{display:block;width:100%;text-align:center;margin-top:14px;background:none;border:1px dashed var(--line,rgba(27,38,32,0.16));border-radius:6px;padding:10px;font-size:.82rem;color:var(--slate,#4A5A52);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
-        .lueri-checkout-manual:hover{border-color:var(--route,#B8321F);color:var(--route,#B8321F);}
-        .lueri-checkout-result{text-align:center;padding:16px 0 8px;}
-        .lueri-checkout-icon{width:72px;height:72px;margin:0 auto 20px;}
-        .lueri-checkout-icon circle{stroke-dasharray:166;stroke-dashoffset:166;animation:lueriDrawCircle .5s ease forwards;}
-        .lueri-checkout-icon path{stroke-dasharray:48;stroke-dashoffset:48;animation:lueriDrawCheck .35s .4s ease forwards;}
-        @keyframes lueriDrawCircle{to{stroke-dashoffset:0;}}
-        @keyframes lueriDrawCheck{to{stroke-dashoffset:0;}}
-        .lueri-checkout-result h2{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:1.5rem;margin:0 0 8px;}
-        .lueri-checkout-result p{color:var(--slate,#4A5A52);line-height:1.6;margin:0 0 6px;}
-        .lueri-checkout-amount{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600;margin:12px 0;}
-        .lueri-checkout-btn{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:12px 28px;border-radius:4px;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;border:none;font-family:'IBM Plex Sans',sans-serif;}
-        .lueri-checkout-btn.primary{background:var(--route,#B8321F);color:#fff;}
-        .lueri-checkout-btn.ghost{background:transparent;border:2px solid var(--ink,#1B2620);color:var(--ink,#1B2620);}
-    `;
-    document.head.appendChild(style);
-}
+  function receiptHTML(tx, member) {
+    const b = vatBreakdown(tx.amount);
+    const label = escapeHTML(String(tx.type || '').charAt(0).toUpperCase() + String(tx.type || '').slice(1));
+    const ref = escapeHTML(tx.transactionNumber || tx.id);
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ' + ref + '</title>' + BRAND.fonts +
+      '<style>' + docStyles() + '</style></head><body><div class="wrap"><div class="receipt">' +
+      '<div class="perf"></div>' +
+      '<div class="rhead"><div class="brandrow">' +
+      '<div style="display:flex;gap:10px;align-items:center;"><div class="logo"><img src="' + BRAND.logo() + '" alt=""></div>' +
+      '<div><p class="bname">' + escapeHTML(LUERI.company.name) + '</p><p class="btag">Same-day courier &middot; Nairobi</p></div></div>' +
+      '<div class="tier-badge">' + escapeHTML(member.tier) + ' member</div></div>' +
+      '<div class="rstatus"><div class="paid-stamp">Paid</div><div class="rno"><div class="lbl">Receipt no.</div><div class="val">' + ref + '</div></div></div></div>' +
+      '<div class="rbody"><div class="field-grid">' +
+      '<div class="field"><div class="lbl">Date &amp; time</div><div class="val">' + escapeHTML(formatDateTime(tx.date)) + '</div></div>' +
+      '<div class="field"><div class="lbl">Member</div><div class="val">' + escapeHTML(member.name) + '</div></div>' +
+      '<div class="field"><div class="lbl">Member no.</div><div class="val mono">' + escapeHTML(member.memberNumber) + '</div></div>' +
+      '<div class="field"><div class="lbl">Phone</div><div class="val mono">' + escapeHTML(member.phone) + '</div></div></div>' +
+      '<table class="charges">' +
+      '<tr><td>' + label + (tx.reference ? '<br><span class="lbl-sub">Ref: ' + escapeHTML(tx.reference) + '</span>' : '') + '</td><td class="amt">' + fmt(b.net) + '</td></tr>' +
+      (b.vatRegistered ? '<tr><td>VAT (inclusive, ' + Math.round(b.rate * 100) + '%)</td><td class="amt">' + fmt(b.vat) + '</td></tr>' : '') +
+      '<tr class="total-row"><td class="lbl">Total</td><td class="amt">' + fmt(b.gross) + '</td></tr></table>' +
+      '<div class="points-row"><span class="points-pill">' + (tx.points >= 0 ? '+' + tx.points : tx.points) + ' pts earned</span>' +
+      '<span style="font-size:.78rem;color:#4A5A52;">New balance: ' + Number(member.points || 0).toLocaleString() + ' pts</span></div></div>' +
+      '<div class="rfoot"><p class="thanks">Thank you for choosing ' + escapeHTML(LUERI.company.name) + '.</p>' +
+      '<div class="contact-cols"><div class="hd">' + escapeHTML(LUERI.company.name) + '</div>' +
+      escapeHTML(LUERI.company.address) + '<br>' + escapeHTML(LUERI.company.phone) +
+      (LUERI.company.kraPin ? '<br>KRA PIN: ' + escapeHTML(LUERI.company.kraPin) : '') + '</div></div>' +
+      '</div></div><script>window.onload=function(){window.print();}<\/script></body></html>';
+  }
 
-function _lueriCloseCheckout() {
-    if (_lueriCheckoutPoll) { clearInterval(_lueriCheckoutPoll); _lueriCheckoutPoll = null; }
-    const backdrop = document.getElementById('lueri-checkout-backdrop');
-    if (backdrop) { backdrop.classList.remove('open'); setTimeout(() => backdrop.remove(), 250); }
-}
+  function invoiceHTML(tx, member, invoiceNo) {
+    const b = vatBreakdown(tx.amount); // SAME treatment as receipt (fix N-03)
+    const ref = escapeHTML(tx.transactionNumber || tx.id);
+    let flags = '';
+    if (!LUERI.company.kraPin) {
+      flags += '<div class="flag">No KRA PIN on file for ' + escapeHTML(LUERI.company.name) +
+        ' — set LUERI.company.kraPin in lueri-common.js before sending this to a client.</div>';
+    }
+    if (LUERI.company.vatRegistered) {
+      flags += '<div class="flag">' + escapeHTML(LUERI.company.name) +
+        ' is marked VAT-registered. KRA requires VAT invoices via an eTIMS-compliant system — this document alone is not a valid tax invoice. Confirm with your accountant.</div>';
+    } else {
+      flags += '<div class="flag neutral">Not VAT-registered — no VAT charged.</div>';
+    }
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ' + escapeHTML(invoiceNo) + '</title>' + BRAND.fonts +
+      '<style>' + invoiceStyles() + '</style></head><body><div class="inv">' +
+      '<div class="i-brand"><div class="i-mark"><img src="' + BRAND.logo() + '" alt=""></div><div>' +
+      '<div class="i-name">' + escapeHTML(LUERI.company.name) + '</div>' +
+      '<div class="i-meta">' + escapeHTML(LUERI.company.address) + '<br>' + escapeHTML(LUERI.company.phone) +
+      (LUERI.company.kraPin ? '<br>KRA PIN: ' + escapeHTML(LUERI.company.kraPin) : '') + '</div></div></div>' +
+      '<div class="i-title">Invoice</div>' +
+      '<div class="i-section">' +
+      '<div class="i-row"><span>Invoice No.</span><strong>' + escapeHTML(invoiceNo) + '</strong></div>' +
+      '<div class="i-row"><span>Date</span><strong>' + escapeHTML(formatDateTime(new Date().toISOString())) + '</strong></div>' +
+      '<div class="i-row"><span>Bill to</span><strong>' + escapeHTML(member.name) + '</strong></div>' +
+      '<div class="i-row"><span>Phone</span><strong>' + escapeHTML(member.phone) + '</strong></div></div>' +
+      '<div class="i-section">' +
+      '<div class="i-row"><span>Delivery service (Txn ' + ref + ')</span><strong>' + fmt(b.net) + '</strong></div>' +
+      (b.vatRegistered ? '<div class="i-row"><span>VAT (inclusive, ' + Math.round(b.rate * 100) + '%)</span><strong>' + fmt(b.vat) + '</strong></div>' : '') +
+      '<div class="i-total-block"><span class="i-total-label">Total</span><span class="i-total-value">' + fmt(b.gross) + '</span></div></div>' +
+      flags + '</div><script>window.onload=function(){window.print();}<\/script></body></html>';
+  }
 
-function _lueriRenderCheckoutShell(planDisplayName) {
-    _lueriInjectCheckoutStyles();
-    const backdrop = document.createElement('div');
-    backdrop.className = 'lueri-checkout-backdrop';
-    backdrop.id = 'lueri-checkout-backdrop';
-    backdrop.innerHTML = `
-        <div class="lueri-checkout-card" role="dialog" aria-modal="true" aria-labelledby="lueriCheckoutTitle">
-            <div class="lueri-checkout-head">
-                <h3 id="lueriCheckoutTitle"></h3>
-                <button type="button" class="lueri-checkout-close" aria-label="Close">&times;</button>
-            </div>
-            <div class="lueri-checkout-body" id="lueriCheckoutBody"></div>
-        </div>`;
-    document.body.appendChild(backdrop);
-    backdrop.querySelector('h3').textContent = `${planDisplayName} membership`;
-    backdrop.querySelector('.lueri-checkout-close').addEventListener('click', _lueriCloseCheckout);
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) _lueriCloseCheckout(); });
-    requestAnimationFrame(() => backdrop.classList.add('open'));
-    return backdrop;
-}
+  /* Open a generated document; fallback to Blob download if popups blocked (fix N-07) */
+  function openDoc(html, width, height) {
+    const win = global.open('', '_blank', 'width=' + (width || 440) + ',height=' + (height || 720));
+    if (win) { win.document.write(html); win.document.close(); return true; }
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    return false;
+  }
 
-function _lueriRenderCheckoutFrame(body, redirectUrl) {
-    body.innerHTML = `
-        <div class="lueri-checkout-status" id="lueriCheckoutStatus">
-            <span class="lueri-checkout-dot"></span>
-            <span id="lueriCheckoutStatusText">Waiting for payment confirmation…</span>
-        </div>
-        <div class="lueri-checkout-frame-wrap">
-            <iframe id="lueriCheckoutIframe" title="Secure Pesapal checkout"></iframe>
-        </div>
-        <p class="lueri-checkout-fallback" id="lueriCheckoutFallback">
-            Checkout not loading? <a id="lueriCheckoutOpenNewTab" href="#" target="_blank" rel="noopener noreferrer">Open it in a new tab</a> — we'll keep watching for your payment here.
-        </p>
-        <button type="button" class="lueri-checkout-manual" id="lueriCheckoutManualCheck">Already paid? Check now</button>
-    `;
-    const iframe = body.querySelector('#lueriCheckoutIframe');
-    iframe.src = redirectUrl;
-    body.querySelector('#lueriCheckoutOpenNewTab').href = redirectUrl;
+  function docStyles() {
+    return '*{box-sizing:border-box;}' +
+      'body{margin:0;padding:32px 16px 60px;background:#e6dfc9;color:#1B2620;font-family:"IBM Plex Sans",sans-serif;}' +
+      '.wrap{max-width:400px;margin:0 auto;}.receipt{background:#F0EAD8;border:1px solid rgba(27,38,32,0.16);border-radius:6px;overflow:hidden;box-shadow:0 18px 40px rgba(27,38,32,0.12);}' +
+      '.perf{height:12px;width:100%;background-image:radial-gradient(circle at 6px 6px,#e6dfc9 3.5px,transparent 4px);background-size:12px 12px;background-repeat:repeat-x;}' +
+      '.rhead{padding:22px 24px 16px;border-bottom:1px dashed rgba(27,38,32,0.16);}.brandrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}' +
+      '.logo{width:40px;height:40px;border-radius:50%;border:1px solid #1B2620;overflow:hidden;flex-shrink:0;background:#1B2620;}.logo img{width:100%;height:100%;object-fit:contain;}' +
+      '.bname{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.1rem;margin:2px 0 2px;}.btag{font-size:.7rem;color:#4A5A52;}' +
+      '.tier-badge{display:flex;align-items:center;gap:5px;background:#1B2620;color:#E8B93D;font-family:"Oswald",sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:3px;white-space:nowrap;border:1px solid #E8B93D;}' +
+      '.rstatus{display:flex;align-items:center;justify-content:space-between;margin-top:18px;}' +
+      '.paid-stamp{display:inline-flex;align-items:center;gap:6px;border:2px solid #2e7d32;color:#2e7d32;font-family:"Oswald",sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.1em;padding:4px 11px;border-radius:4px;transform:rotate(-3deg);text-transform:uppercase;}' +
+      '.rno{text-align:right;}.rno .lbl{font-size:.6rem;color:#4A5A52;text-transform:uppercase;letter-spacing:.07em;}.rno .val{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.82rem;}' +
+      '.rbody{padding:18px 24px 6px;}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-bottom:18px;}' +
+      '.field .lbl{font-size:.6rem;color:#4A5A52;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;}.field .val{font-size:.85rem;font-weight:500;}' +
+      'table.charges{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:4px;}table.charges td{padding:7px 0;}table.charges tr{border-bottom:1px solid rgba(27,38,32,0.16);}table.charges tr:last-of-type{border-bottom:none;}' +
+      '.charges .amt{text-align:right;font-family:"IBM Plex Mono",monospace;}.charges .lbl-sub{color:#4A5A52;font-size:.7rem;}' +
+      '.total-row td{padding-top:12px;border-top:1.5px solid #1B2620;border-bottom:none !important;}.total-row .amt{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.2rem;}.total-row .lbl{font-family:"Oswald",sans-serif;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;}' +
+      '.points-row{display:flex;align-items:center;gap:8px;margin:14px 0 4px;}.points-pill{display:inline-flex;align-items:center;gap:5px;background:#e6dfc9;border-radius:20px;padding:4px 11px;font-size:.75rem;font-weight:500;}' +
+      '.rfoot{border-top:1px dashed rgba(27,38,32,0.16);padding:16px 24px 22px;}.thanks{font-family:"Oswald",sans-serif;font-size:.88rem;font-weight:500;margin:0 0 10px;}' +
+      '.contact-cols{font-size:.7rem;color:#4A5A52;line-height:1.6;}.contact-cols .hd{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:#1B2620;font-weight:600;margin-bottom:3px;}' +
+      '@media print{body{background:#fff;padding:0;}.receipt{box-shadow:none;border:none;}}';
+  }
 
-    let loaded = false;
-    iframe.addEventListener('load', () => { loaded = true; });
-    setTimeout(() => {
-        if (!loaded) body.querySelector('#lueriCheckoutFallback').classList.add('show');
-    }, 4000);
-}
+  function invoiceStyles() {
+    return '*{box-sizing:border-box;}' +
+      'body{margin:0;padding:40px 20px;background:#e6dfc9;color:#1B2620;font-family:"IBM Plex Sans",sans-serif;display:flex;justify-content:center;}' +
+      '.inv{width:460px;background:#F0EAD8;border:1.5px solid #1B2620;border-radius:4px;padding:36px 32px;}' +
+      '.i-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px;}.i-mark{width:40px;height:40px;border-radius:50%;border:1.5px solid #1B2620;overflow:hidden;flex-shrink:0;background:#1B2620;}.i-mark img{width:100%;height:100%;object-fit:contain;}' +
+      '.i-name{font-family:"Oswald",sans-serif;font-weight:600;font-size:1.2rem;}.i-meta{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:#4A5A52;line-height:1.6;margin-top:2px;}' +
+      '.i-title{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:#B8321F;font-weight:500;border-top:1.5px solid #1B2620;border-bottom:1px dashed rgba(27,38,32,0.16);padding:14px 0 8px;margin-bottom:14px;}' +
+      '.i-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.88rem;border-bottom:1px dashed rgba(27,38,32,0.16);}' +
+      '.i-row span{color:#4A5A52;font-family:"IBM Plex Mono",monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;}.i-row strong{font-weight:600;}' +
+      '.i-section{margin:18px 0;}.i-total-block{margin-top:10px;padding:16px 20px;background:#1B2620;color:#F0EAD8;border-radius:4px;display:flex;justify-content:space-between;align-items:center;}' +
+      '.i-total-label{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8;}.i-total-value{font-family:"Oswald",sans-serif;font-size:1.5rem;font-weight:700;}' +
+      '.flag{background:#E8B93D;border:1px solid #1B2620;color:#1B2620;padding:10px 12px;font-size:.78rem;line-height:1.5;margin-top:20px;border-radius:4px;}' +
+      '.flag.neutral{background:#e6dfc9;border:1px dashed #4A5A52;}' +
+      '@media print{body{background:#fff;padding:0;}.inv{border:none;margin:0 auto;}}';
+  }
 
-function _lueriRenderCheckoutResult(body, { success, planDisplayName, amount, message }) {
-    const iconSuccess = `<svg class="lueri-checkout-icon" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" stroke="#2e7d32" stroke-width="3"/><path stroke="#2e7d32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M16 27l7 7 13-15"/></svg>`;
-    const iconFail = `<svg class="lueri-checkout-icon" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" stroke="#c62828" stroke-width="3"/><path stroke="#c62828" stroke-width="3.5" stroke-linecap="round" d="M18 18l16 16M34 18L18 34"/></svg>`;
-    body.innerHTML = `
-        <div class="lueri-checkout-result">
-            ${success ? iconSuccess : iconFail}
-            <h2 id="lueriResultTitle"></h2>
-            <p id="lueriResultBody"></p>
-            ${success ? '<div class="lueri-checkout-amount" id="lueriResultAmount"></div><p>A receipt has been sent to your email.</p>' : ''}
-            <div>
-                ${success
-                    ? '<button type="button" class="lueri-checkout-btn primary" id="lueriResultClose">Done</button>'
-                    : '<a class="lueri-checkout-btn primary" href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer">WhatsApp Lueri</a> <button type="button" class="lueri-checkout-btn ghost" id="lueriResultClose">Close</button>'
-                }
-            </div>
-        </div>`;
-    body.querySelector('#lueriResultTitle').textContent = success ? 'Congratulations!' : 'Payment not completed';
-    body.querySelector('#lueriResultBody').textContent = success
-        ? `You're now a ${planDisplayName} member with Lueri International.`
-        : (message || "We couldn't confirm your payment. Nothing was charged if it truly failed — if you were debited, please contact us.");
-    if (success) body.querySelector('#lueriResultAmount').textContent = formatKES(amount);
-    body.querySelector('#lueriResultClose').addEventListener('click', _lueriCloseCheckout);
-}
-
-async function _lueriPollPaymentStatus(paymentId, internalReference, planDisplayName, backdrop) {
-    _lueriCheckoutAttempts++;
-    if (!supabase) return;
-    const { data, error } = await supabase.rpc('get_payment_status', {
-        p_payment_id: paymentId,
-        p_reference: internalReference
+  /* ---------------- 10. BOOKINGS (fix V-01: persist before WhatsApp) --------- */
+  async function createBooking(payload) {
+    return rpc('create_booking', {
+      p_name: payload.name,
+      p_phone: payload.phone,
+      p_pickup: payload.pickup,
+      p_dropoff: payload.dropoff,
+      p_details: payload.details,
+      p_pickup_time: payload.time,
+      p_member_number: payload.memberNumber || null,
     });
-    if (error) { console.error('get_payment_status error', error); return; }
-    const row = Array.isArray(data) ? data[0] : data;
-    if (!row) return;
+  }
 
-    const statusEl = document.getElementById('lueriCheckoutStatus');
-    const statusText = document.getElementById('lueriCheckoutStatusText');
+  /* ---------------- 11. REWARDS API ----------------
+     VERIFIED 2026-09-14 against the live database: only register_member
+     matches a real RPC (register_member(p_name, p_phone, p_email)).
+     get_member_summary, add_transaction, search_members and
+     get_dashboard_stats below do NOT exist server-side. The real
+     equivalents are lookup_member_secure(p_phone, p_member_no),
+     staff_add_transaction(p_member_id, p_type, p_amount, p_note,
+     p_points_delta, p_spend_delta), staff_search_members(p_query), and
+     staff_dashboard_stats() — but the exact expected payload shapes
+     haven't been cross-checked against rewards-cloud.js /
+     rewards-staff-cloud.js yet, which are the files actually calling
+     them successfully in production today. Do NOT wire rewards.html or
+     rewards-staff.html to the helpers below until that's done — they
+     will fail. Left as-is rather than guessing at a rename. */
+  function getMemberSummary(phone, memberNumber) {
+    return rpc('get_member_summary', { p_phone: phone, p_member_number: memberNumber });
+  }
+  function registerMember(input) {
+    return rpc('register_member', { p_name: input.name, p_phone: input.phone, p_email: input.email || null });
+  }
+  function addTransaction(input) {
+    return rpc('add_transaction', {
+      p_member_ref: input.memberRef,
+      p_amount: input.amount,
+      p_type: input.type,
+      p_confirmed_member_id: input.confirmedMemberId || null,
+    });
+  }
 
-    if (row.status === 'successful') {
-        clearInterval(_lueriCheckoutPoll); _lueriCheckoutPoll = null;
-        const body = document.getElementById('lueriCheckoutBody');
-        _lueriRenderCheckoutResult(body, { success: true, planDisplayName, amount: row.amount });
-    } else if (row.status === 'failed' || row.status === 'cancelled') {
-        clearInterval(_lueriCheckoutPoll); _lueriCheckoutPoll = null;
-        const body = document.getElementById('lueriCheckoutBody');
-        _lueriRenderCheckoutResult(body, { success: false, planDisplayName, message: row.status === 'cancelled' ? 'You cancelled the payment.' : 'Your payment could not be confirmed.' });
-    } else if (statusText) {
-        if (statusEl) statusEl.className = 'lueri-checkout-status';
-    }
+  /* ---------------- 12. PAGE BOOT ---------------- */
+  function boot() {
+    document.documentElement.classList.add('js');
+    bootTheme();
+    initThemeToggle(document.getElementById('themeToggle'));
+    initMenu();
+    initReveal();
+  }
 
-    if (_lueriCheckoutAttempts >= LUERI_CHECKOUT_MAX_ATTEMPTS && _lueriCheckoutPoll) {
-        clearInterval(_lueriCheckoutPoll); _lueriCheckoutPoll = null;
-        const body = document.getElementById('lueriCheckoutBody');
-        _lueriRenderCheckoutResult(body, { success: false, planDisplayName, message: "This is taking longer than expected. If you completed payment, it may still confirm shortly — otherwise please contact us." });
-    }
-}
-
-// -----------------------------------------------------------------------
-// FIX (N-09, confirmed live bug): this function previously took a single
-// planCode argument and required a Supabase Auth session before starting
-// checkout. registerMember() never creates an Auth session — members are
-// plain rows in the members table — so supabase.auth.getUser() always
-// returned null and EVERY paid membership purchase dead-ended on a
-// "please log in" alert with no login UI anywhere on the page. It also
-// sent the wrong ID (an auth.users id, when apply_membership_payment
-// resolves everything off members.id).
-//
-// rewards.html already calls this correctly as
-// startMembershipPurchase(result.member.id, selectedPurchasePlan.code) —
-// the bug was entirely in this shared file, not the caller. Fixed by
-// taking the memberId the caller passes, dropping the auth requirement,
-// and sending the anon key as the bearer token (server-side price
-// enforcement against membership_plans.price_kes is pesapal-initiate's
-// job, not the client's).
-// -----------------------------------------------------------------------
-async function startMembershipPurchase(memberId, planCode) {
-    try {
-        if (!supabase) throw new Error('Payment system not initialized. Please refresh the page.');
-        if (!memberId) throw new Error('Missing member reference. Please refresh and try again.');
-
-        const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-initiate`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'apikey': SUPABASE_ANON_KEY
-            },
-            body: JSON.stringify({ member_id: memberId, plan_code: planCode })
-        });
-
-        const data = await response.json();
-        if (!response.ok || data.error) throw new Error(data.error || `Server error: ${response.status}`);
-        if (!data.redirect_url || !data.payment_id) throw new Error('No checkout URL received from payment server');
-
-        const backdrop = _lueriRenderCheckoutShell(data.plan_display_name || planCode);
-        const body = document.getElementById('lueriCheckoutBody');
-        _lueriRenderCheckoutFrame(body, data.redirect_url);
-
-        _lueriCheckoutAttempts = 0;
-        _lueriCheckoutPoll = setInterval(
-            () => _lueriPollPaymentStatus(data.payment_id, data.internal_reference, data.plan_display_name || planCode, backdrop),
-            3000
-        );
-
-        document.addEventListener('click', function manualCheckHandler(e) {
-            if (e.target && e.target.id === 'lueriCheckoutManualCheck') {
-                _lueriPollPaymentStatus(data.payment_id, data.internal_reference, data.plan_display_name || planCode, backdrop);
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Payment Error:', error);
-        let errorMessage = "We couldn't start your payment. ";
-        if (error.message.includes('network') || error.message.includes('fetch')) errorMessage += 'Please check your internet connection.';
-        else errorMessage += 'Please try again or contact support.';
-        alert(errorMessage);
-    }
-}
+  /* ---------------- EXPORT ---------------- */
+  global.LUERI = LUERI;
+  global.LUERI_TIERS = TIER_CATALOG;
+  global.LUERI_PLANS = PURCHASE_TIERS;
+  global.lueriBootTheme = bootTheme;
+  global.lueriIsValidPhone = isValidPhone;
+  global.lueriNormalizePhone = normalizePhone;
+  global.lueriOpenWhatsApp = openWhatsApp;
+  global.lueriCopyToClipboard = copyToClipboard;
+  global.lueri = {
+    boot, supabase: () => supabase, rpc,
+    fmt, escapeHTML, formatDateTime, formatKES, showToast, vatBreakdown,
+    docs: { receiptHTML, invoiceHTML, openDoc },
+    booking: { create: createBooking },
+    rewards: { getMemberSummary, registerMember, addTransaction },
+  };
+})(window);

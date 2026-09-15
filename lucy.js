@@ -5,6 +5,10 @@
   const wa = 'https://wa.link/qk7m3b';
   const CHAT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/lucy-chat';
 
+  // Lucy brand assets — place these files at /assets/images/
+  const LUCY_AVATAR = 'assets/lucy-avatar.webp';
+  const LUCY_AVATAR_SMALL = 'assets/lucy-avatar-sm.webp';
+
   const answers = {
     'Book a delivery': 'I’d be happy to help! Use “Book a Pickup” or message Lueri on WhatsApp with your pickup, drop-off and parcel details.',
     'Corporate plans': 'Lueri offers Essential (KES 25,000/mo), Professional (KES 45,000/mo) and Elite (KES 75,000/mo) corporate plans, plus custom Enterprise agreements for larger volume. Our team reviews each corporate activation personally.',
@@ -41,9 +45,16 @@
     }
 
     .lucy-launch .lucy-avatar {
-      width: 27px;
-      height: 27px;
-      font-size: 18px;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      display: block;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center;
+      background: #F0EAD8;
+      border: 1px solid #F0EAD8;
+      box-shadow: 0 2px 8px #0003;
     }
 
     @keyframes lucyFloat {
@@ -93,14 +104,16 @@
     }
 
     .lucy-header-avatar {
-      width: 42px;
-      height: 42px;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
       border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 25px;
+      display: block;
+      object-fit: cover;
+      object-position: center;
       background: #F0EAD8;
-      box-shadow: inset 0 0 0 2px #ffffff55;
+      border: 2px solid #F0EAD8;
+      box-shadow: inset 0 0 0 1px #ffffff55, 0 3px 10px #0003;
     }
 
     .lucy-header h2 {
@@ -277,7 +290,7 @@
 
   panel.innerHTML = `
     <div class="lucy-header">
-      <div class="lucy-header-avatar">👩🏾</div>
+      <img class="lucy-header-avatar" src="${LUCY_AVATAR}" alt="Lucy — Lueri Digital Assistant" width="46" height="46" />
       <div>
         <h2>Lucy</h2>
         <p class="lucy-status">Online and ready to help</p>
@@ -358,10 +371,30 @@
     options.appendChild(button);
   });
 
+  const RATE_LIMIT_MS = 6000;
+  const MAX_FAILURES = 3;
+  let lastCall = 0;
+  let failures = 0;
+  let llmDisabled = false;
+
   async function askLucy() {
     const question = input.value.trim();
-
     if (!question) return;
+
+    if (llmDisabled) {
+      addMessage(question, true);
+      input.value = '';
+      respond('I’m resting for now — please chat with Lueri directly on WhatsApp.');
+      return;
+    }
+    const now = Date.now();
+    if (now - lastCall < RATE_LIMIT_MS) {
+      addMessage(question, true);
+      input.value = '';
+      respond('One moment — or pick a topic above for an instant answer.');
+      return;
+    }
+    lastCall = now;
 
     addMessage(question, true);
     input.value = '';
@@ -381,6 +414,7 @@
         })
       });
 
+      if (!response.ok) throw new Error('HTTP ' + response.status);
       const data = await response.json();
 
       typing.classList.remove('show');
@@ -390,8 +424,11 @@
         'I’m not certain about that. Please chat with Lueri on WhatsApp for help.',
         false
       );
+      failures = 0;
     } catch (error) {
       typing.classList.remove('show');
+      failures++;
+      if (failures >= MAX_FAILURES) llmDisabled = true;
 
       addMessage(
         'I’m temporarily offline. Please chat with Lueri on WhatsApp and the team will assist you.',
@@ -415,7 +452,16 @@
   const launch = document.createElement('button');
   launch.type = 'button';
   launch.className = 'lucy-launch';
-  launch.innerHTML = '<span class="lucy-avatar">👩🏾</span> Chat with Lucy';
+  launch.innerHTML = `
+    <img
+      class="lucy-avatar"
+      src="${LUCY_AVATAR_SMALL}"
+      alt="Lucy — Lueri Digital Assistant"
+      width="30"
+      height="30"
+    />
+    <span>Chat with Lucy</span>
+  `;
   launch.setAttribute('aria-expanded', 'false');
 
   launch.addEventListener('click', () => {

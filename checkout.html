@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Checkout — Lueri International</title>
+<meta name="description" content="Lueri Rewards membership checkout — secure payment via Pesapal.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="lueri-common.js"></script>
+<script>lueri.boot();</script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  body{background:var(--paper-dim);}
+  main{padding:32px 16px 80px;}
+  .co-col{max-width:460px; margin:0 auto;}
+  .co-brand{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:20px;}
+  .co-brand img{height:30px;}
+  .co-brand span{font-family:'Oswald',sans-serif; font-weight:700; letter-spacing:.03em;}
+  .co-card{background:#fff; border:1.5px solid var(--ink); border-radius:6px; overflow:hidden; box-shadow:8px 8px 0 rgba(27,38,32,0.08);}
+  .co-head{padding:28px 24px 20px; border-bottom:1px dashed var(--line); text-align:center;}
+  .co-head h1{font-size:1.5rem; line-height:1.15; margin-bottom:8px;}
+  .co-head p{margin:0; color:var(--slate); font-size:.92rem; line-height:1.6;}
+  .co-body{padding:28px 24px;}
+  .co-summary{background:var(--paper); border:1px dashed var(--ink); border-radius:4px; padding:16px; margin-bottom:24px; font-size:.88rem;}
+  .co-summary .row{display:flex; justify-content:space-between; gap:12px; padding:4px 0;}
+  .co-summary .row.total{border-top:1.5px solid var(--ink); margin-top:8px; padding-top:10px; font-weight:700;}
+  .co-summary .mono{color:var(--slate); font-size:.78rem;}
+  .amount-box{display:flex; align-items:stretch; border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-bottom:20px;}
+  .amount-box .cur{background:var(--paper-dim); padding:13px 14px; font-family:'IBM Plex Mono',monospace; font-weight:600; border-right:1px solid var(--line);}
+  .amount-box .val{flex:1; padding:13px 14px; font-family:'IBM Plex Mono',monospace; font-size:1.1rem; font-weight:600; color:var(--ink);}
+  .co-pay{width:100%; padding:16px; font-size:1rem;}
+  .co-secure{text-align:center; font-family:'IBM Plex Mono',monospace; font-size:.68rem; color:var(--slate); margin-top:14px; letter-spacing:.04em;}
+  .co-step{display:none;}
+  .co-step.active{display:block; animation:coFade .3s ease;}
+  @keyframes coFade{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:none;}}
+  .co-status{display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--slate); padding:10px 14px; background:var(--paper-dim); border-radius:6px; margin-bottom:20px;}
+  .co-dot{width:8px; height:8px; border-radius:50%; background:var(--signal); animation:lueriPulse 1.4s ease-in-out infinite; flex-shrink:0;}
+  .co-status.success .co-dot{background:var(--success); animation:none;}
+  .co-status.failed .co-dot{background:var(--error); animation:none;}
+  .co-done{text-align:center; padding:12px 0;}
+  .co-check{width:76px; height:76px; margin:0 auto 18px;}
+  .co-check circle{stroke-dasharray:166; stroke-dashoffset:166; animation:lueriDrawCircle .5s ease forwards;}
+  .co-check path{stroke-dasharray:48; stroke-dashoffset:48; animation:lueriDrawCheck .35s .4s ease forwards;}
+  .co-done h2{font-size:1.4rem; margin-bottom:8px;}
+  .co-done p{color:var(--slate); line-height:1.6; margin:0 0 8px;}
+  .co-ref{font-family:'IBM Plex Mono',monospace; font-size:1.15rem; color:var(--route); margin:10px 0 18px;}
+  .co-error{background:rgba(198,40,40,.08); border:1px solid rgba(198,40,40,.3); color:var(--error); padding:12px 16px; border-radius:4px; font-size:.88rem; margin-bottom:16px; display:none;}
+  .co-note{font-size:.8rem; color:var(--slate); line-height:1.6; margin-top:18px; padding:12px 14px; border:1px dashed var(--line); border-radius:4px;}
+</style>
+</head>
+<body>
+
+<main>
+  <div class="co-col">
+
+    <div class="co-brand">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>LUERI INTERNATIONAL</span>
+    </div>
+
+    <!-- STEP 1: order summary + buyer details (the Paystack-style page) -->
+    <div class="co-card co-step active" id="stepForm">
+      <div class="co-head">
+        <h1 id="coPlanName">Lueri Membership</h1>
+        <p id="coPlanDesc">12 months of member benefits — points, discounts and priority dispatch.</p>
+      </div>
+      <div class="co-body">
+        <div class="co-summary">
+          <div class="row"><span id="coItemLabel">Membership</span><strong id="coItemPrice">—</strong></div>
+          <div class="row"><span>Duration</span><strong>12 months</strong></div>
+          <div class="row total"><span>Total due today</span><strong id="coTotal">—</strong></div>
+          <div class="mono" style="margin-top:8px;">Price verified server-side at payment time.</div>
+        </div>
+
+        <div class="co-error" id="coError" role="alert" aria-live="assertive"></div>
+
+        <div class="form-group">
+          <label class="form-label on-light" for="firstName">First name</label>
+          <input class="input-light" type="text" id="firstName" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label on-light" for="lastName">Last name</label>
+          <input class="input-light" type="text" id="lastName" autocomplete="family-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label on-light" for="email">Email address</label>
+          <input class="input-light" type="email" id="email" autocomplete="email" placeholder="For your receipt">
+        </div>
+        <div class="form-group">
+          <label class="form-label on-light" for="phone">Phone number</label>
+          <input class="input-light" type="tel" id="phone" inputmode="tel" placeholder="07xx xxx xxx — your Lueri Rewards number">
+        </div>
+        <input type="text" name="website" id="coHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
+
+        <button type="button" class="btn btn-signal co-pay" id="payBtn">Pay now</button>
+        <div class="co-secure">SECURE CHECKOUT · POWERED BY PESAPAL · M-PESA &amp; CARDS</div>
+        <div class="co-note">Your membership is created under this phone number. If you already have a Lueri Rewards account, we'll use it — one account per number.</div>
+      </div>
+    </div>
+
+    <!-- STEP 2: payment in progress. Opened in a popup window rather than an
+         iframe: hosted payment pages commonly refuse to be framed (clickjacking
+         protection / 3-D Secure requirements), which would otherwise leave the
+         customer staring at a blank box mid-checkout. A popup is a full
+         top-level window, so it isn't subject to that restriction, and we still
+         never leave this page — we just watch for the popup to close or for
+         the payment to confirm, and poll status either way. -->
+    <div class="co-card co-step" id="stepPay">
+      <div class="co-head"><h1>Complete payment</h1><p>A secure payment window has opened. This page updates automatically once you're done — you don't need to do anything here.</p></div>
+      <div class="co-body">
+        <div class="co-status" id="coStatus" aria-live="polite"><span class="co-dot"></span><span id="coStatusText">Waiting for payment confirmation…</span></div>
+        <button type="button" class="btn btn-secondary co-pay" id="coReopenBtn">Reopen payment window</button>
+        <p style="text-align:center; font-size:.85rem; margin:16px 0 0;">
+          Already paid? <a href="#" id="coCheckNow" style="color:var(--route); font-weight:600;">Check now</a>
+          &nbsp;·&nbsp;
+          <a href="#" id="coStartOver" style="color:var(--slate); text-decoration:underline;">Start over</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- STEP 3: result -->
+    <div class="co-card co-step" id="stepDone">
+      <div class="co-body co-done" id="doneBody"></div>
+    </div>
+
+    <p style="text-align:center; margin-top:20px; font-size:.82rem; color:var(--slate);">
+      <a href="rewards.html" style="text-decoration:underline;">&larr; Back to Rewards</a> ·
+      <a href="index.html" style="text-decoration:underline;">Main site</a>
+    </p>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var esc = lueri.escapeHTML, fmt = lueri.fmt;
+  var planCode = new URLSearchParams(location.search).get('plan');
+  var plan = null, member = null, payment = null, poll = null, attempts = 0;
+  var MAX_ATTEMPTS = 200;
+  var payWin = null, popupWatcher = null;
+
+  /* Resume support: if the customer refreshes, or the tab closes and reopens,
+     while a payment is pending, we'd otherwise lose all state and either
+     strand them or risk them starting a second parallel payment for the same
+     plan (the server's one-open-payment-per-plan index blocks a true double
+     charge, but the customer would just see a confusing error). We persist
+     the minimum needed to resume — the payment reference and the member we
+     already registered — and expire it after 30 minutes so a resume attempt
+     days later doesn't silently reopen a long-abandoned checkout. */
+  var STORAGE_KEY = 'lueriCheckout:' + planCode;
+  var STORAGE_MAX_AGE_MS = 30 * 60 * 1000;
+
+  function saveResumeState() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ member: member, payment: payment, savedAt: Date.now() }));
+    } catch (e) { /* storage unavailable — resume just won't be offered, checkout still works */ }
+  }
+  function clearResumeState() {
+    try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+  function loadResumeState() {
+    try {
+      var raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var saved = JSON.parse(raw);
+      if (!saved || !saved.member || !saved.payment) return null;
+      if (Date.now() - (saved.savedAt || 0) > STORAGE_MAX_AGE_MS) { clearResumeState(); return null; }
+      return saved;
+    } catch (e) { return null; }
+  }
+
+  function fail(msg) {
+    var el = document.getElementById('coError');
+    el.textContent = msg; el.style.display = 'block';
+  }
+  function showStep(id) {
+    document.querySelectorAll('.co-step').forEach(function (s) { s.classList.toggle('active', s.id === id); });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* Open the Pesapal page in a real popup window (not an iframe — see note
+     above the stepPay markup for why). If the popup is blocked, show a
+     button the user can click directly, which counts as a fresh user
+     gesture and is far less likely to be blocked than a script-only open. */
+  function openPaymentWindow(url) {
+    var w = 480, h = 720;
+    var left = Math.max(0, (screen.width - w) / 2);
+    var top = Math.max(0, (screen.height - h) / 2);
+    payWin = window.open(url, 'lueriPay', 'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top);
+    var blocked = !payWin || payWin.closed || typeof payWin.closed === 'undefined';
+    var reopenBtn = document.getElementById('coReopenBtn');
+    var statusText = document.getElementById('coStatusText');
+
+    if (blocked) {
+      statusText.textContent = 'Your browser blocked the payment popup — click below to continue.';
+      reopenBtn.textContent = 'Open secure payment';
+    } else {
+      statusText.textContent = 'Waiting for payment confirmation…';
+      reopenBtn.textContent = 'Reopen payment window';
+      if (popupWatcher) clearInterval(popupWatcher);
+      popupWatcher = setInterval(function () {
+        if (payWin && payWin.closed) {
+          clearInterval(popupWatcher);
+          popupWatcher = null;
+          tick(); // check immediately — they may have finished and closed it themselves
+        }
+      }, 800);
+    }
+    reopenBtn.onclick = function () { openPaymentWindow(url); };
+  }
+
+  /* Load plan (server-verified price) */
+  (async function () {
+    if (!planCode) { fail('No plan selected.'); document.getElementById('payBtn').disabled = true; return; }
+    var res = await lueri.rpc('get_plan', { p_code: planCode });
+    if (!res || !res.success) { fail('That plan is not available.'); document.getElementById('payBtn').disabled = true; return; }
+    plan = res.plan;
+    var tier = LUERI_TIERS.find(function (t) { return t.code === plan.code; });
+    document.getElementById('coPlanName').textContent = plan.name + ' Membership';
+    document.title = plan.name + ' Membership — Secure Checkout';
+    if (tier) {
+      document.getElementById('coPlanDesc').textContent = tier.benefits[0] + ' — plus every ' + plan.name + ' benefit for 12 months.';
+    }
+    document.getElementById('coItemLabel').textContent = plan.name + ' Membership (12 months)';
+    document.getElementById('coItemPrice').textContent = fmt(plan.price);
+    document.getElementById('coTotal').textContent = fmt(plan.price);
+
+    // Resume a payment in progress (refresh, accidental close, browser crash).
+    // We don't auto-open the payment popup here — browsers block window.open()
+    // outside a direct user gesture, and a page load doesn't count as one.
+    // Instead we start polling immediately (a fresh success may already be
+    // sitting there waiting) and let the customer manually reopen if needed.
+    var resumed = loadResumeState();
+    if (resumed) {
+      member = resumed.member;
+      payment = resumed.payment;
+      showStep('stepPay');
+      document.getElementById('coStatusText').textContent = 'Resuming your payment — checking status…';
+      document.getElementById('coReopenBtn').textContent = 'Resume secure payment';
+      document.getElementById('coReopenBtn').onclick = function () { openPaymentWindow(payment.redirect_url); };
+      attempts = 0;
+      poll = setInterval(tick, 3000);
+      tick(); // check immediately rather than waiting 3s for the first poll
+    }
+  })();
+
+  // Bound once, unconditionally, so it works whether the customer just paid
+  // or is resuming a payment from a reloaded page (fix: previously only
+  // bound inside the payBtn handler, so a resumed session had no working
+  // "Already paid? Check now" link).
+  document.getElementById('coCheckNow').addEventListener('click', function (e) { e.preventDefault(); tick(); });
+  document.getElementById('coStartOver').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (poll) { clearInterval(poll); poll = null; }
+    stopWatchingPopup();
+    clearResumeState();
+    location.href = location.pathname + location.search; // reload without a stale hash/state
+  });
+
+  document.getElementById('payBtn').addEventListener('click', async function () {
+    var btn = this;
+    document.getElementById('coError').style.display = 'none';
+    if (document.getElementById('coHoneypot').value) return;
+
+    var first = document.getElementById('firstName').value.trim();
+    var last = document.getElementById('lastName').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    if (!first || !last) return fail('Enter your first and last name.');
+    if (!lueriIsValidPhone(phone)) return fail('Enter a valid Kenyan phone number (07… or 01…).');
+
+    btn.disabled = true; btn.textContent = 'Preparing secure payment…';
+
+    try {
+      // 1. Ensure the member exists (reuses account on duplicate phone — server returns it)
+      var reg = await lueri.rewards.registerMember({ name: first + ' ' + last, phone: phone, email: email });
+      if (!reg.success) {
+        var dup = reg.errors.some(function (e) { return e.code === 'duplicate_phone'; });
+        if (!dup || !reg.member) throw new Error(reg.errors[0] ? reg.errors[0].message : 'Could not set up your account.');
+        member = reg.member;
+      } else {
+        member = reg.member;
+      }
+
+      // 2. Initiate payment (price enforced server-side)
+      var headers = { 'Content-Type': 'application/json', 'apikey': LUERI.supabaseAnonKey };
+      var sessionRes = await lueri.supabase().auth.getSession();
+      if (sessionRes.data.session) headers['Authorization'] = 'Bearer ' + sessionRes.data.session.access_token;
+      var res = await fetch(LUERI.supabaseUrl + '/functions/v1/pesapal-initiate', {
+        method: 'POST', headers: headers,
+        body: JSON.stringify({ member_id: member.id, plan_code: plan.code }),
+      });
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok || data.error) throw new Error(data.error || ('Server error: ' + res.status));
+      payment = data;
+      saveResumeState();
+
+      // 3. Popup payment step (see openPaymentWindow for why not an iframe)
+      showStep('stepPay');
+      openPaymentWindow(data.redirect_url);
+      attempts = 0;
+      poll = setInterval(tick, 3000);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Pay now';
+      fail(err.message || 'We couldn\'t start your payment. Please try again.');
+    }
+  });
+
+  async function tick() {
+    attempts++;
+    var res = await lueri.rpc('get_payment_status', { p_payment_id: payment.payment_id, p_reference: payment.internal_reference });
+    var row = res && res.success ? res.payment : null;
+    if (!row) return;
+    var statusEl = document.getElementById('coStatus');
+    var textEl = document.getElementById('coStatusText');
+    if (row.status === 'successful') {
+      clearInterval(poll); poll = null;
+      renderDone(true);
+    } else if (row.status === 'failed' || row.status === 'cancelled') {
+      clearInterval(poll); poll = null;
+      renderDone(false, row.status);
+    }
+    if (attempts >= MAX_ATTEMPTS && poll) {
+      clearInterval(poll); poll = null;
+      if (textEl) textEl.textContent = 'Still waiting — if you completed payment it may confirm shortly. Keep this page open or contact us on WhatsApp.';
+    }
+  }
+
+  function stopWatchingPopup() {
+    if (popupWatcher) { clearInterval(popupWatcher); popupWatcher = null; }
+    if (payWin && !payWin.closed) { try { payWin.close(); } catch (e) {} }
+  }
+
+  function renderDone(success, status) {
+    stopWatchingPopup();
+    clearResumeState();
+    var body = document.getElementById('doneBody');
+    if (success) {
+      body.innerHTML =
+        '<svg class="co-check" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" stroke="#2e7d32" stroke-width="3"/><path stroke="#2e7d32" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" d="M16 27l7 7 13-15"/></svg>' +
+        '<h2>Welcome to ' + esc(plan.name) + '!</h2>' +
+        '<p>Your payment of <strong>' + fmt(plan.price) + '</strong> is confirmed and your membership is active for 12 months.</p>' +
+        (member && member.memberNumber ? '<div class="co-ref">Member No. ' + esc(member.memberNumber) + '</div>' : '') +
+        '<p>Save your member number — together with your phone number, it\'s how you view your rewards and book with benefits.</p>' +
+        '<div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px;">' +
+        '<a class="btn btn-primary" href="rewards.html">View my rewards</a>' +
+        '<a class="btn btn-secondary" href="index.html">Back to site</a></div>';
+    } else {
+      body.innerHTML =
+        '<svg class="co-check" viewBox="0 0 52 52" fill="none"><circle cx="26" cy="26" r="24" stroke="#c62828" stroke-width="3"/><path stroke="#c62828" stroke-width="3.5" stroke-linecap="round" d="M18 18l16 16M34 18L18 34"/></svg>' +
+        '<h2>Payment not completed</h2>' +
+        '<p>' + (status === 'cancelled' ? 'You cancelled the payment — nothing was charged.' : 'We couldn\'t confirm your payment. If you were debited, it reverses automatically or contact us.') + '</p>' +
+        '<div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:10px;">' +
+        '<button class="btn btn-primary" onclick="location.reload()">Try again</button>' +
+        '<a class="btn btn-secondary" href="' + LUERI.waGeneralLink + '" target="_blank" rel="noopener noreferrer">WhatsApp Lueri</a></div>';
+    }
+    showStep('stepDone');
+  }
+})();
+</script>
+</body>
+</html>

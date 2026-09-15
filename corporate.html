@@ -17,6 +17,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="lueri-common.js"></script>
 <script>
   if (typeof lueriBootTheme === 'function') {
@@ -214,6 +215,8 @@
   .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
   @media (max-width:760px){ .form-row2{ grid-template-columns:1fr; } }
   .form-hint{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color: rgba(240,234,216,0.55); margin-top:6px; display:block; }
+  /* Honeypot: invisible to people, present to bots that fill every field. */
+  .honeypot{ position:absolute !important; left:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none; }
   .success-overlay {
     position: fixed; inset: 0; background: rgba(27,38,32,0.95); z-index: 1000;
     display: none; align-items: center; justify-content: center; text-align: center; color: var(--paper); padding: 24px;
@@ -431,6 +434,9 @@
         </div>
 
         <form id="corporateForm" novalidate style="margin-top:8px;">
+          <!-- Spam trap: real people never see or fill this in. Referenced by corporate-signup.js. -->
+          <input type="text" name="website" id="corpHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
+
           <div class="form-group">
             <label class="form-label" for="companyName">Company Name</label>
             <input class="form-input" type="text" id="companyName" autocomplete="organization" required>
@@ -600,5 +606,6 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
 </script>
 <script src="corporate-signup.js"></script>
+<script src="lucy.js" defer></script>
 </body>
 </html>

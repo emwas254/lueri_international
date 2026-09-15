@@ -2,12 +2,9 @@
 (function () {
   'use strict';
 
-  const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
-
-  const WHATSAPP_NUMBER = '254713261719';
+  const WHATSAPP_NUMBER = (window.LUERI && window.LUERI.whatsapp) || '254713261719';
   const KRA_PIN_PATTERN = /^[A-Za-z]\d{9}[A-Za-z]$/;
-  const PHONE_PATTERN = /^(?:\+254|0)7\d{8}$/;
+  const PHONE_PATTERN = /^(?:\+254|0)(7|1)\d{8}$/;
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const form = document.getElementById('corporateForm');
@@ -59,23 +56,19 @@
     return String(text).replace(/[\r\n]+/g, ' ').trim();
   }
 
+  // PATCH (2026-09-14): this used to fetch() a hardcoded Supabase URL + key
+  // directly. That URL had a typo (ylifvexqamxvwzvhmwex vs the correct
+  // ylifvexqamxwvzvhmwex used everywhere else on the site) — every
+  // application would have silently failed to save, with no visible error,
+  // because the failure is caught below and falls back to WhatsApp-only.
+  // Routing through lueri.rpc() (the same client every other page already
+  // uses) removes the duplicate credential entirely, so this class of bug
+  // can't happen again here.
   async function registerOrganizationRpc(payload) {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_organization`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const bodyText = await res.text().catch(() => '');
-      const error = new Error(`register_organization failed: ${res.status} ${bodyText}`);
-      error.status = res.status;
-      throw error;
+    if (!window.lueri || typeof window.lueri.rpc !== 'function') {
+      throw new Error('lueri-common.js not loaded — cannot reach the server.');
     }
-    return res.json();
+    return window.lueri.rpc('register_organization', payload);
   }
 
   form.addEventListener('submit', async (event) => {
@@ -174,7 +167,7 @@
           p_volume: data.volume,
           p_plan_code: rpcPlanCode,
         });
-        if (!rpcResult.success) {
+        if (!rpcResult || !rpcResult.success) {
           showError(
             "We couldn't process this application. If your company already has an account with us, please contact us directly and we'll help you access it."
           );
@@ -191,11 +184,18 @@
         ? ''
         : '🚩 NOT YET SAVED TO DATABASE — register this applicant manually.\n\n';
 
+      const planLabels = {
+        biz_gold: 'Essential (KES 25,000/mo)',
+        biz_platinum: 'Professional (KES 45,000/mo)',
+        biz_vip: 'Elite (KES 75,000/mo)',
+        enterprise: 'Enterprise — custom quote',
+      };
+
       const message = dbWarning
         + 'New corporate account application - Lueri website\n'
         + `Company: ${escapeForWhatsApp(data.companyName)}\n`
         + 'KRA PIN: stored in the secure application record; do not request it over WhatsApp.\n'
-        + `Preferred plan: ${{biz_gold:'Essential (KES 25,000/mo)',biz_platinum:'Professional (KES 45,000/mo)',biz_vip:'Elite (KES 75,000/mo)',enterprise:'Enterprise — custom quote'}[data.plan] || 'Help me choose'}\n`
+        + `Preferred plan: ${planLabels[data.plan] || 'Help me choose'}\n`
         + `Address: ${escapeForWhatsApp(data.address)}\n`
         + `Est. deliveries/week: ${data.volume}\n`
         + `Contact: ${escapeForWhatsApp(data.contactName)}${data.jobTitle ? ' (' + escapeForWhatsApp(data.jobTitle) + ')' : ''}\n`
@@ -242,5 +242,5 @@
   };
 })();
 
-/* No migration needed — this form calls register_organization, an existing
-   SECURITY DEFINER function that already validates and inserts safely. */
+/* Requires the register_organization SQL function — see
+   supabase/schema.sql (Corporate Accounts section, added 2026-09-14). */
