@@ -366,7 +366,18 @@
     el.addEventListener('click', function () { lueriCopyToClipboard(el.getAttribute('data-copy'), el.getAttribute('data-copy-label')); });
   });
   document.querySelectorAll('[data-href]').forEach(function (el) {
-    el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
+    el.addEventListener('click', function () {
+      var rawHref = el.getAttribute('data-href');
+      if (!rawHref) return;
+      try {
+        var parsed = new URL(rawHref, window.location.origin);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+          window.location.href = parsed.href;
+        }
+      } catch (_) {
+        // Ignore invalid URLs.
+      }
+    });
   });
 
   var form = document.getElementById('bookingForm');
