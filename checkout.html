@@ -316,7 +316,6 @@
     var res = await lueri.rpc('get_payment_status', { p_payment_id: payment.payment_id, p_reference: payment.internal_reference });
     var row = res && res.success ? res.payment : null;
     if (!row) return;
-    var statusEl = document.getElementById('coStatus');
     var textEl = document.getElementById('coStatusText');
     if (row.status === 'successful') {
       clearInterval(poll); poll = null;
