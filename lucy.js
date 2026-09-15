@@ -5,16 +5,21 @@
   const wa = 'https://wa.link/qk7m3b';
   const CHAT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/lucy-chat';
 
-  // Lucy brand assets — FIXED to use existing file
+  // Lucy brand assets
   const LUCY_AVATAR = 'assets/lucy-avatar-sm.webp';
   const LUCY_AVATAR_SMALL = 'assets/lucy-avatar-sm.webp';
 
+  // Fallback SVG avatar (green gradient with "L") - used if image fails to load
+  const LUCY_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="lucyGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1B2620;stop-opacity:1" /><stop offset="100%" style="stop-color:#34503E;stop-opacity:1" /></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#lucyGrad)"/><text x="50" y="68" text-anchor="middle" font-family="system-ui,sans-serif" font-size="55" font-weight="bold" fill="#F0EAD8">L</text></svg>'
+  );
+
   const answers = {
-    'Book a delivery': 'I'd be happy to help! Use "Book a Pickup" or message Lueri on WhatsApp with your pickup, drop-off and parcel details.',
+    'Book a delivery': 'I\'d be happy to help! Use "Book a Pickup" or message Lueri on WhatsApp with your pickup, drop-off and parcel details.',
     'Corporate plans': 'Lueri offers Essential (KES 25,000/mo), Professional (KES 45,000/mo) and Elite (KES 75,000/mo) corporate plans, plus custom Enterprise agreements for larger volume. Our team reviews each corporate activation personally.',
-    'Service area': 'Lueri delivers across Nairobi and surrounding towns. Send both locations on WhatsApp and we'll confirm the route for you.',
-    'Opening hours': 'We're open Monday–Friday, 8:00 AM–5:00 PM, and Saturday, 8:00 AM–3:00 PM. We're closed on Sunday.',
-    'Track a delivery': 'For privacy, I can't access delivery records or locations. Please message Lueri on WhatsApp for a live update.'
+    'Service area': 'Lueri delivers across Nairobi and surrounding towns. Send both locations on WhatsApp and we\'ll confirm the route for you.',
+    'Opening hours': 'We\'re open Monday–Friday, 8:00 AM–5:00 PM, and Saturday, 8:00 AM–3:00 PM. We\'re closed on Sunday.',
+    'Track a delivery': 'For privacy, I can\'t access delivery records or locations. Please message Lueri on WhatsApp for a live update.'
   };
 
   const style = document.createElement('style');
@@ -384,7 +389,7 @@
     if (llmDisabled) {
       addMessage(question, true);
       input.value = '';
-      respond('I'm resting for now — please chat with Lueri directly on WhatsApp.');
+      respond('I\'m resting for now — please chat with Lueri directly on WhatsApp.');
       return;
     }
     const now = Date.now();
@@ -421,7 +426,7 @@
 
       addMessage(
         data.reply ||
-        'I'm not certain about that. Please chat with Lueri on WhatsApp for help.',
+        'I\'m not certain about that. Please chat with Lueri on WhatsApp for help.',
         false
       );
       failures = 0;
@@ -431,7 +436,7 @@
       if (failures >= MAX_FAILURES) llmDisabled = true;
 
       addMessage(
-        'I'm temporarily offline. Please chat with Lueri on WhatsApp and the team will assist you.',
+        'I\'m temporarily offline. Please chat with Lueri on WhatsApp and the team will assist you.',
         false
       );
     } finally {
@@ -474,4 +479,16 @@
   });
 
   document.body.append(panel, launch);
+
+  // === FALLBACK SYSTEM: If images fail to load, use SVG fallback ===
+  setTimeout(() => {
+    document.querySelectorAll('.lucy-header-avatar, .lucy-avatar').forEach(img => {
+      if (img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)) {
+        img.src = LUCY_FALLBACK;
+      }
+      img.addEventListener('error', function() {
+        this.src = LUCY_FALLBACK;
+      });
+    });
+  }, 100);
 })();
