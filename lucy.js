@@ -6,8 +6,9 @@
   const CHAT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/lucy-chat';
 
   // Lucy brand assets
-  const LUCY_AVATAR = 'assets/lucy-avatar-sm.webp';
-  const LUCY_AVATAR_SMALL = 'assets/lucy-avatar-sm.webp';
+  // IMPORTANT: Ensure your image file in the 'assets' folder is named EXACTLY 'lucy-avatar.png'
+  const LUCY_AVATAR = 'assets/lucy-avatar.png';
+  const LUCY_AVATAR_SMALL = 'assets/lucy-avatar.png';
 
   // Fallback SVG avatar (green gradient with "L") - used if image fails to load
   const LUCY_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
