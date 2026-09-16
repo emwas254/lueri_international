@@ -1,47 +1,260 @@
-/* LUERI INTERNATIONAL — customer-facing localization layer */
-(function(){'use strict';
-const LANGS={en:'English',sw:'Kiswahili',fr:'Français',es:'Español',ar:'العربية',pt:'Português',zh:'中文'};
-const RTL=new Set(['ar']);
-const T={
- en:{menu:'Menu',close:'Close',home:'Home',services:'Services',rewards:'Rewards',corporate:'Corporate',careers:'Careers',book:'Book a Pickup',contact:'Contact',language:'Language',back:'Back',submit:'Submit',continue:'Continue',pay:'Pay now',pending:'Pending verification',secure:'Secure checkout',bank:'Bank transfer',cheque:'Cheque',pesapal:'Pesapal',support:'Contact support',sameDay:'Same-day delivery',courier:'Courier & delivery',whatsapp:'WhatsApp Us',coverage:'Coverage',why:'Why Us',pricing:'Pricing',faq:'FAQ',business:'Business',pickup:'Pickup',dropoff:'Drop-off',choose:'Choose',perYear:'per year',learnMore:'Learn more',viewRewards:'View Rewards',requestPickup:'Request Pickup',yourName:'Your Name',phone:'Phone',email:'Email',preferredPickup:'Preferred Pickup Time',parcelDetails:'Parcel Details',pickupLocation:'Pickup Location',dropoffLocation:'Drop-off Location'},
- sw:{menu:'Menyu',close:'Funga',home:'Nyumbani',services:'Huduma',rewards:'Zawadi',corporate:'Kampuni',careers:'Kazi',book:'Agiza Pickup',contact:'Wasiliana',language:'Lugha',back:'Rudi',submit:'Tuma',continue:'Endelea',pay:'Lipa sasa',pending:'Inasubiri uthibitisho',secure:'Malipo salama',bank:'Uhamisho wa benki',cheque:'Hundi',pesapal:'Pesapal',support:'Wasiliana na usaidizi',sameDay:'Uwasilishaji wa siku hiyo',courier:'Huduma za courier na uwasilishaji',whatsapp:'Wasiliana nasi WhatsApp',coverage:'Maeneo ya huduma',why:'Kwa nini sisi',pricing:'Bei',faq:'Maswali yanayoulizwa mara kwa mara',business:'Biashara',pickup:'Kuchukua',dropoff:'Kushusha',choose:'Chagua',perYear:'kwa mwaka',learnMore:'Jifunze zaidi',viewRewards:'Tazama Zawadi',requestPickup:'Omba Kuchukuliwa',yourName:'Jina lako',phone:'Simu',email:'Barua pepe',preferredPickup:'Muda unaopendelea wa kuchukua',parcelDetails:'Maelezo ya kifurushi',pickupLocation:'Mahali pa kuchukua',dropoffLocation:'Mahali pa kushusha'},
- fr:{menu:'Menu',close:'Fermer',home:'Accueil',services:'Services',rewards:'Récompenses',corporate:'Entreprises',careers:'Carrières',book:'Réserver un enlèvement',contact:'Contact',language:'Langue',back:'Retour',submit:'Envoyer',continue:'Continuer',pay:'Payer maintenant',pending:'En attente de vérification',secure:'Paiement sécurisé',bank:'Virement bancaire',cheque:'Chèque',pesapal:'Pesapal',support:'Contacter le support',sameDay:'Livraison le jour même',courier:'Messagerie et livraison',whatsapp:'Nous contacter sur WhatsApp',coverage:'Zone de couverture',why:'Pourquoi nous',pricing:'Tarifs',faq:'Questions fréquentes',business:'Entreprises',pickup:'Enlèvement',dropoff:'Livraison',choose:'Choisir',perYear:'par an',learnMore:'En savoir plus',viewRewards:'Voir les récompenses',requestPickup:'Demander un enlèvement',yourName:'Votre nom',phone:'Téléphone',email:'E-mail',preferredPickup:'Heure d’enlèvement souhaitée',parcelDetails:'Détails du colis',pickupLocation:'Lieu d’enlèvement',dropoffLocation:'Lieu de livraison'},
- es:{menu:'Menú',close:'Cerrar',home:'Inicio',services:'Servicios',rewards:'Recompensas',corporate:'Empresas',careers:'Empleo',book:'Reservar recogida',contact:'Contacto',language:'Idioma',back:'Volver',submit:'Enviar',continue:'Continuar',pay:'Pagar ahora',pending:'Pendiente de verificación',secure:'Pago seguro',bank:'Transferencia bancaria',cheque:'Cheque',pesapal:'Pesapal',support:'Contactar soporte',sameDay:'Entrega el mismo día',courier:'Mensajería y entregas',whatsapp:'Contactar por WhatsApp',coverage:'Cobertura',why:'Por qué nosotros',pricing:'Precios',faq:'Preguntas frecuentes',business:'Empresas',pickup:'Recogida',dropoff:'Entrega',choose:'Elegir',perYear:'al año',learnMore:'Más información',viewRewards:'Ver recompensas',requestPickup:'Solicitar recogida',yourName:'Tu nombre',phone:'Teléfono',email:'Correo electrónico',preferredPickup:'Hora preferida de recogida',parcelDetails:'Detalles del paquete',pickupLocation:'Lugar de recogida',dropoffLocation:'Lugar de entrega'},
- ar:{menu:'القائمة',close:'إغلاق',home:'الرئيسية',services:'الخدمات',rewards:'المكافآت',corporate:'الشركات',careers:'الوظائف',book:'حجز استلام',contact:'اتصل بنا',language:'اللغة',back:'رجوع',submit:'إرسال',continue:'متابعة',pay:'ادفع الآن',pending:'بانتظار التحقق',secure:'دفع آمن',bank:'تحويل بنكي',cheque:'شيك',pesapal:'Pesapal',support:'تواصل مع الدعم',sameDay:'توصيل في نفس اليوم',courier:'خدمات التوصيل والشحن',whatsapp:'تواصل عبر واتساب',coverage:'نطاق التغطية',why:'لماذا نحن',pricing:'الأسعار',faq:'الأسئلة الشائعة',business:'الأعمال',pickup:'الاستلام',dropoff:'التسليم',choose:'اختر',perYear:'سنويًا',learnMore:'اعرف المزيد',viewRewards:'عرض المكافآت',requestPickup:'طلب استلام',yourName:'اسمك',phone:'الهاتف',email:'البريد الإلكتروني',preferredPickup:'وقت الاستلام المفضل',parcelDetails:'تفاصيل الطرد',pickupLocation:'موقع الاستلام',dropoffLocation:'موقع التسليم'},
- pt:{menu:'Menu',close:'Fechar',home:'Início',services:'Serviços',rewards:'Recompensas',corporate:'Empresas',careers:'Carreiras',book:'Agendar recolha',contact:'Contacto',language:'Idioma',back:'Voltar',submit:'Enviar',continue:'Continuar',pay:'Pagar agora',pending:'A aguardar verificação',secure:'Pagamento seguro',bank:'Transferência bancária',cheque:'Cheque',pesapal:'Pesapal',support:'Contactar suporte',sameDay:'Entrega no mesmo dia',courier:'Serviços de correio e entrega',whatsapp:'Contactar pelo WhatsApp',coverage:'Cobertura',why:'Porquê nós',pricing:'Preços',faq:'Perguntas frequentes',business:'Empresas',pickup:'Recolha',dropoff:'Entrega',choose:'Escolher',perYear:'por ano',learnMore:'Saiba mais',viewRewards:'Ver recompensas',requestPickup:'Solicitar recolha',yourName:'O seu nome',phone:'Telefone',email:'E-mail',preferredPickup:'Hora preferida para recolha',parcelDetails:'Detalhes do pacote',pickupLocation:'Local de recolha',dropoffLocation:'Local de entrega'},
- zh:{menu:'菜单',close:'关闭',home:'首页',services:'服务',rewards:'会员奖励',corporate:'企业服务',careers:'招聘',book:'预约取件',contact:'联系我们',language:'语言',back:'返回',submit:'提交',continue:'继续',pay:'立即支付',pending:'等待验证',secure:'安全结账',bank:'银行转账',cheque:'支票',pesapal:'Pesapal',support:'联系支持',sameDay:'当日配送',courier:'快递与配送',whatsapp:'通过 WhatsApp 联系我们',coverage:'服务范围',why:'为什么选择我们',pricing:'价格',faq:'常见问题',business:'企业服务',pickup:'取件',dropoff:'送达',choose:'选择',perYear:'每年',learnMore:'了解更多',viewRewards:'查看奖励',requestPickup:'预约取件',yourName:'姓名',phone:'电话',email:'电子邮箱',preferredPickup:'首选取件时间',parcelDetails:'包裹详情',pickupLocation:'取件地点',dropoffLocation:'送达地点'}
-};
-const AUTO={};
-Object.keys(T.en).forEach(function(k){AUTO[T.en[k]]=k;});
-const KEY='lueri-language';
-function get(){try{const s=localStorage.getItem(KEY);return LANGS[s]?s:'en';}catch(_){return'en';}}
-function set(lang){if(!LANGS[lang])return;try{localStorage.setItem(KEY,lang);}catch(_){}apply(lang);}
-function wireElement(el,key){if(!el.hasAttribute('data-i18n'))el.setAttribute('data-i18n',key);}
-function autoWire(){
- document.querySelectorAll('[data-i18n]').forEach(function(el){if(!el.hasAttribute('data-i18n-source'))el.setAttribute('data-i18n-source',el.textContent);});
- document.querySelectorAll('h1,h2,h3,h4,p,a,button,span,label,summary,div').forEach(function(el){
-   if(el.children.length||el.hasAttribute('data-i18n'))return;
-   const text=(el.textContent||'').trim();
-   if(AUTO[text])wireElement(el,AUTO[text]);
- });
- document.querySelectorAll('input,textarea').forEach(function(el){
-   if(el.hasAttribute('data-i18n-placeholder'))return;
-   const p=(el.getAttribute('placeholder')||'').trim();
-   if(p==='e.g. Westlands, Nairobi')wireElement(el,'pickupLocation');
-   else if(p==='e.g. CBD, Nairobi')wireElement(el,'dropoffLocation');
-   else if(p==='Full name')wireElement(el,'yourName');
-   else if(p==='Today at 2 PM')wireElement(el,'preferredPickup');
- });
-}
-function apply(lang){
- document.documentElement.lang=lang;document.documentElement.dir=RTL.has(lang)?'rtl':'ltr';
- document.querySelectorAll('[data-i18n]').forEach(function(el){const k=el.getAttribute('data-i18n');if(T[lang]?.[k])el.textContent=T[lang][k];});
- document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){const k=el.getAttribute('data-i18n-placeholder');if(T[lang]?.[k])el.setAttribute('placeholder',T[lang][k]);});
- document.querySelectorAll('[data-lueri-language]').forEach(function(el){el.value=lang;});
-}
-function injectStyles(){if(document.getElementById('lueri-i18n-style'))return;const s=document.createElement('style');s.id='lueri-i18n-style';s.textContent='.lueri-language-picker{display:flex;align-items:center;margin-left:8px;flex:0 0 auto;position:relative;z-index:100}.lueri-language-picker select{font:500 12px/1.2 inherit;letter-spacing:.04em;border:1px solid currentColor;border-radius:2px;background:#1b2620;color:#f0ead8;padding:9px 28px 9px 10px;min-height:38px;min-width:122px;cursor:pointer;color-scheme:dark}.lueri-language-picker select option{background:#1b2620;color:#f0ead8}.lueri-language-picker select option:checked{background:#2f4a3c;color:#fff}.lueri-language-picker select:focus{outline:2px solid currentColor;outline-offset:2px}@media(max-width:640px){.lueri-language-picker{margin-left:4px}.lueri-language-picker select{max-width:122px;min-width:112px;padding:8px 20px 8px 7px;font-size:11px}}';document.head.appendChild(s);}
-function inject(){if(document.querySelector('.lueri-language-picker'))return;injectStyles();const wrap=document.createElement('div');wrap.className='lueri-language-picker';wrap.setAttribute('aria-label','Language selector');const select=document.createElement('select');select.setAttribute('data-lueri-language','');select.setAttribute('aria-label','Language');Object.entries(LANGS).forEach(([code,name])=>{const o=document.createElement('option');o.value=code;o.textContent=name;select.appendChild(o);});select.addEventListener('change',e=>set(e.target.value));wrap.appendChild(select);const host=document.querySelector('.nav-controls')||document.querySelector('.navbar > div:last-child')||document.querySelector('header nav,.site-header nav,.header-nav,.nav-links');if(host)host.appendChild(wrap);else document.body.appendChild(wrap);}
-function init(){autoWire();inject();apply(get());}
-window.LueriI18n={languages:LANGS,translations:T,get,set,apply,init};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+/* LUERI INTERNATIONAL — complete customer-facing localization layer
+ *
+ * The previous implementation translated only a small whitelist of exact
+ * English strings. That caused the language selector to produce mixed pages:
+ * some strings changed while headings, paragraphs, FAQ copy, legal copy,
+ * dynamically rendered content and form text remained English.
+ *
+ * This version uses Google's website translation engine for the complete DOM
+ * while retaining Lueri's branded language selector. The selector itself is
+ * excluded from translation, the selected language persists across pages, and
+ * Arabic switches the document direction to RTL.
+ */
+(function(){
+  'use strict';
+
+  const LANGS = {
+    en: 'English',
+    sw: 'Kiswahili',
+    fr: 'Français',
+    es: 'Español',
+    ar: 'العربية',
+    pt: 'Português',
+    zh: '中文'
+  };
+
+  const GOOGLE_CODES = {
+    en: 'en',
+    sw: 'sw',
+    fr: 'fr',
+    es: 'es',
+    ar: 'ar',
+    pt: 'pt',
+    zh: 'zh-CN'
+  };
+
+  const RTL = new Set(['ar']);
+  const KEY = 'lueri-language';
+  let googleReady = false;
+  let pendingLanguage = null;
+
+  function get(){
+    try {
+      const saved = localStorage.getItem(KEY);
+      return LANGS[saved] ? saved : 'en';
+    } catch (_) {
+      return 'en';
+    }
+  }
+
+  function setDocumentLanguage(lang){
+    if (!LANGS[lang]) lang = 'en';
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
+    document.documentElement.dir = RTL.has(lang) ? 'rtl' : 'ltr';
+    document.documentElement.dataset.lueriLanguage = lang;
+    document.querySelectorAll('[data-lueri-language]').forEach(function(el){
+      el.value = lang;
+    });
+  }
+
+  function save(lang){
+    try { localStorage.setItem(KEY, lang); } catch (_) {}
+  }
+
+  function ensureGoogleStyles(){
+    if (document.getElementById('lueri-google-translate-style')) return;
+    const style = document.createElement('style');
+    style.id = 'lueri-google-translate-style';
+    style.textContent = `
+      /* Keep Google's translation machinery invisible; Lueri owns the UI. */
+      .goog-te-banner-frame.skiptranslate,
+      body > .skiptranslate,
+      .goog-te-gadget,
+      .goog-logo-link,
+      .goog-te-balloon-frame { display:none !important; }
+      body { top:0 !important; }
+      html.translated-ltr, html.translated-rtl { margin-top:0 !important; }
+      .lueri-language-picker { display:flex; align-items:center; margin-left:8px; flex:0 0 auto; position:relative; z-index:10000; }
+      .lueri-language-picker select {
+        font:500 12px/1.2 'IBM Plex Sans', sans-serif;
+        letter-spacing:.03em;
+        border:1px solid currentColor;
+        border-radius:3px;
+        background:#1b2620;
+        color:#f0ead8;
+        padding:9px 30px 9px 10px;
+        min-height:38px;
+        min-width:122px;
+        cursor:pointer;
+        color-scheme:dark;
+      }
+      .lueri-language-picker select option { background:#1b2620; color:#f0ead8; }
+      .lueri-language-picker select:focus { outline:2px solid currentColor; outline-offset:2px; }
+      [dir="rtl"] .lueri-language-picker { margin-left:0; margin-right:8px; }
+      @media(max-width:640px){
+        .lueri-language-picker { margin-left:4px; }
+        .lueri-language-picker select { max-width:122px; min-width:112px; padding:8px 20px 8px 7px; font-size:11px; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function injectPicker(){
+    if (document.querySelector('.lueri-language-picker')) return;
+    ensureGoogleStyles();
+
+    const wrap = document.createElement('div');
+    wrap.className = 'lueri-language-picker notranslate';
+    wrap.setAttribute('translate','no');
+    wrap.setAttribute('aria-label','Language selector');
+
+    const select = document.createElement('select');
+    select.setAttribute('data-lueri-language','');
+    select.setAttribute('aria-label','Language');
+    select.className = 'notranslate';
+    select.setAttribute('translate','no');
+
+    Object.entries(LANGS).forEach(function(entry){
+      const code = entry[0], name = entry[1];
+      const option = document.createElement('option');
+      option.value = code;
+      option.textContent = name;
+      option.className = 'notranslate';
+      option.setAttribute('translate','no');
+      select.appendChild(option);
+    });
+
+    select.addEventListener('change', function(e){
+      set(e.target.value);
+    });
+
+    wrap.appendChild(select);
+    const host = document.querySelector('.nav-controls')
+      || document.querySelector('.navbar > div:last-child')
+      || document.querySelector('header nav,.site-header nav,.header-nav,.nav-links');
+    if (host) host.appendChild(wrap);
+    else document.body.appendChild(wrap);
+  }
+
+  function findGoogleSelect(){
+    return document.querySelector('.goog-te-combo');
+  }
+
+  function applyGoogleLanguage(lang){
+    const code = GOOGLE_CODES[lang] || 'en';
+    const combo = findGoogleSelect();
+    if (!combo) {
+      pendingLanguage = lang;
+      return false;
+    }
+
+    if (combo.value !== code) {
+      combo.value = code;
+      combo.dispatchEvent(new Event('change', { bubbles:true }));
+    }
+    setDocumentLanguage(lang);
+    pendingLanguage = null;
+    return true;
+  }
+
+  function set(lang){
+    if (!LANGS[lang]) return;
+    save(lang);
+    setDocumentLanguage(lang);
+    if (lang === 'en') {
+      /* Google Translate uses the English target to restore the source page. */
+      applyGoogleLanguage('en');
+    } else {
+      applyGoogleLanguage(lang);
+    }
+  }
+
+  function installGoogle(){
+    if (window.google && window.google.translate && window.google.translate.TranslateElement) {
+      initGoogle();
+      return;
+    }
+    if (document.getElementById('lueri-google-translate-script')) return;
+
+    window.googleTranslateElementInit = function(){ initGoogle(); };
+    const script = document.createElement('script');
+    script.id = 'lueri-google-translate-script';
+    script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
+  function initGoogle(){
+    if (googleReady) return;
+    try {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'sw,fr,es,ar,pt,zh-CN',
+        autoDisplay: false,
+        multilanguagePage: true
+      }, 'lueri-google-translate');
+      googleReady = true;
+      const wanted = pendingLanguage || get();
+      setDocumentLanguage(wanted);
+      window.setTimeout(function(){ applyGoogleLanguage(wanted); }, 250);
+      window.setTimeout(function(){ applyGoogleLanguage(wanted); }, 1000);
+      window.setTimeout(function(){ applyGoogleLanguage(wanted); }, 2500);
+    } catch (err) {
+      console.error('Lueri language engine failed to initialize:', err);
+    }
+  }
+
+  function injectGoogleHost(){
+    if (document.getElementById('lueri-google-translate')) return;
+    const host = document.createElement('div');
+    host.id = 'lueri-google-translate';
+    host.className = 'notranslate';
+    host.setAttribute('translate','no');
+    host.setAttribute('aria-hidden','true');
+    host.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;left:-99999px;top:-99999px;';
+    document.body.appendChild(host);
+  }
+
+  function observeDynamicContent(){
+    if (window.__lueriI18nObserver) return;
+    let timer = null;
+    const observer = new MutationObserver(function(mutations){
+      if (!googleReady) return;
+      let relevant = false;
+      for (const mutation of mutations) {
+        if (mutation.target && mutation.target.closest && mutation.target.closest('.lueri-language-picker,#lueri-google-translate,.goog-te-menu-frame')) continue;
+        if (mutation.type === 'childList' && mutation.addedNodes.length) { relevant = true; break; }
+      }
+      if (!relevant) return;
+      clearTimeout(timer);
+      timer = setTimeout(function(){
+        const lang = get();
+        if (lang !== 'en') applyGoogleLanguage(lang);
+      }, 350);
+    });
+    observer.observe(document.body, { childList:true, subtree:true });
+    window.__lueriI18nObserver = observer;
+  }
+
+  function init(){
+    ensureGoogleStyles();
+    injectPicker();
+    injectGoogleHost();
+    const lang = get();
+    setDocumentLanguage(lang);
+    installGoogle();
+    observeDynamicContent();
+  }
+
+  window.LueriI18n = {
+    languages: LANGS,
+    get: get,
+    set: set,
+    apply: set,
+    init: init
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
+  else init();
 })();
