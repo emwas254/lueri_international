@@ -15,22 +15,31 @@
     zh:{menu:'菜单',close:'关闭',home:'首页',services:'服务',rewards:'会员奖励',corporate:'企业服务',careers:'招聘',book:'预约取件',contact:'联系我们',language:'语言',back:'返回',submit:'提交',continue:'继续',pay:'立即支付',pending:'等待验证',secure:'安全结账',bank:'银行转账',cheque:'支票',pesapal:'Pesapal',support:'联系支持',sameDay:'当日配送',courier:'快递与配送'}
   };
   const KEY='lueri-language';
-  function get(){const saved=localStorage.getItem(KEY);return LANGS[saved]?saved:'en';}
-  function set(lang){if(!LANGS[lang])return;localStorage.setItem(KEY,lang);apply(lang);}
+  const STYLE=''';
+  function get(){try{const saved=localStorage.getItem(KEY);return LANGS[saved]?saved:'en';}catch(_){return 'en';}}
+  function set(lang){if(!LANGS[lang])return;try{localStorage.setItem(KEY,lang);}catch(_){}apply(lang);}
+  function translate(lang){
+    document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(T[lang]&&T[lang][key])el.textContent=T[lang][key];});
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder');if(T[lang]&&T[lang][key])el.setAttribute('placeholder',T[lang][key]);});
+  }
   function apply(lang){
     document.documentElement.lang=lang;
     document.documentElement.dir=RTL.has(lang)?'rtl':'ltr';
-    document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(T[lang]&&T[lang][key])el.textContent=T[lang][key];});
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder');if(T[lang]&&T[lang][key])el.setAttribute('placeholder',T[lang][key]);});
+    translate(lang);
     document.querySelectorAll('[data-lueri-language]').forEach(el=>el.value=lang);
+  }
+  function injectStyles(){
+    if(document.getElementById('lueri-i18n-style'))return;
+    const s=document.createElement('style');s.id='lueri-i18n-style';s.textContent='.lueri-language-picker{display:flex;align-items:center;margin-left:8px}.lueri-language-picker select{font:500 12px/1.2 inherit;letter-spacing:.04em;border:1px solid currentColor;border-radius:2px;background:transparent;color:inherit;padding:9px 28px 9px 10px;min-height:38px;cursor:pointer}.lueri-language-picker select:focus{outline:2px solid currentColor;outline-offset:2px}@media(max-width:640px){.lueri-language-picker{margin-left:4px}.lueri-language-picker select{max-width:92px;padding:8px 20px 8px 7px;font-size:11px}}';document.head.appendChild(s);
   }
   function inject(){
     if(document.querySelector('.lueri-language-picker'))return;
+    injectStyles();
     const wrap=document.createElement('div');wrap.className='lueri-language-picker';wrap.setAttribute('aria-label','Language selector');
     const select=document.createElement('select');select.setAttribute('data-lueri-language','');select.setAttribute('aria-label','Language');
     Object.entries(LANGS).forEach(([code,name])=>{const o=document.createElement('option');o.value=code;o.textContent=name;select.appendChild(o);});
     select.addEventListener('change',e=>set(e.target.value));wrap.appendChild(select);
-    const host=document.querySelector('header nav,.site-header nav,.header-nav,.nav-links');
+    const host=document.querySelector('.nav-controls') || document.querySelector('header nav,.site-header nav,.header-nav,.nav-links');
     if(host)host.appendChild(wrap);else document.body.appendChild(wrap);
   }
   function init(){inject();apply(get());}
