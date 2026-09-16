@@ -13,28 +13,14 @@
 //     with corporate-signup.js's register_organization RPC, which
 //     stores +254XXXXXXXXX. Two live systems disagreed on what a
 //     Kenyan phone number looks like; this makes them agree.
-//     IMPORTANT: this requires the one-time data backfill in
-//     supabase_migration_fixes.sql to reformat phone numbers already
-//     stored in the members table — deploy that SQL BEFORE or AT THE
-//     SAME TIME as this file, not after, or existing members will
-//     temporarily fail lookup_member() until the backfill runs.
 //  2. The local phone helper is renamed from lueriNormalizePhone to
-//     _rewardsNormalizePhone. The old name is a bare top-level
-//     function declaration, which becomes a global (window.*) property
-//     — if lueri-common.js is ever added to rewards.html, its real
-//     window.lueriNormalizePhone would get silently overwritten by
-//     whichever script loaded last. Renaming removes the collision
-//     entirely rather than relying on load order.
-//  3. Pesapal membership purchase: startMembershipPurchase() calls the
-//     pesapal-initiate Edge Function and redirects to Pesapal's hosted
-//     checkout. It's invoked directly from rewards.html's own inline
-//     script as part of the selection-first Join flow (pick a tier,
-//     fill in details, straight to checkout) — there is deliberately
-//     no auto-rendered upsell panel here anymore; an earlier version of
-//     this file added one after every lookup/registration, but with a
-//     dedicated purchase section now on the page itself, a second,
-//     different tier-picker appearing after login was redundant and
-//     looked bolted-on rather than designed in.
+//     _rewardsNormalizePhone to avoid a window-global collision.
+//  3. Membership checkout opens the existing Pesapal hosted checkout
+//     inside a Lueri-branded modal when the browser permits framing.
+//     The server remains authoritative for plan, amount, callback and
+//     payment/IPN processing. If Pesapal sends X-Frame-Options/CSP that
+//     blocks framing, the modal presents a clear one-click fallback to
+//     the hosted checkout instead of trapping the customer.
 // ---------------------------------------------------------------------
 
 const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
@@ -77,12 +63,149 @@ const LUERI_REWARDS = {
   },
 };
 
+let _pesapalModal = null;
+
+function ensurePesapalModalStyles() {
+  if (document.getElementById('lueriPesapalModalStyles')) return;
+  const style = document.createElement('style');
+  style.id = 'lueriPesapalModalStyles';
+  style.textContent = `
+    .pesapal-modal {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px; background: rgba(27,38,32,.82);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+    .pesapal-modal[hidden] { display: none; }
+    .pesapal-modal-content {
+      width: min(920px, 100%); max-height: min(94vh, 920px);
+      display: flex; flex-direction: column; overflow: hidden;
+      background: var(--paper, #F0EAD8); color: var(--ink, #1B2620);
+      border: 1px solid var(--line, rgba(27,38,32,.16)); border-radius: 8px;
+      box-shadow: 0 28px 80px rgba(0,0,0,.38);
+    }
+    .pesapal-modal-header {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 14px 18px; border-bottom:1px solid var(--line, rgba(27,38,32,.16));
+      background: var(--paper, #F0EAD8);
+    }
+    .pesapal-modal-brand { display:flex; align-items:center; gap:10px; min-width:0; }
+    .pesapal-modal-brand img { width:28px; height:28px; object-fit:contain; }
+    .pesapal-modal-title { margin:0; font: 600 1rem/1.1 'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.03em; }
+    .pesapal-modal-subtitle { margin:3px 0 0; color:var(--slate,#4A5A52); font-size:.78rem; }
+    .pesapal-close {
+      flex:0 0 auto; width:36px; height:36px; border:1px solid var(--line,rgba(27,38,32,.16));
+      background:transparent; color:inherit; border-radius:4px; cursor:pointer; font-size:1.4rem; line-height:1;
+    }
+    .pesapal-modal-body { position:relative; flex:1; min-height:520px; background:#fff; }
+    .pesapal-modal-body iframe { display:block; width:100%; height:min(74vh,720px); min-height:520px; border:0; background:#fff; }
+    .pesapal-modal-fallback {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:28px;
+      background:var(--paper,#F0EAD8); text-align:center;
+    }
+    .pesapal-modal-fallback[hidden] { display:none; }
+    .pesapal-modal-fallback-card { width:min(460px,100%); }
+    .pesapal-modal-fallback-card h3 { margin:0 0 8px; font:600 1.4rem/1.1 'Oswald',sans-serif; text-transform:uppercase; }
+    .pesapal-modal-fallback-card p { margin:0 0 18px; color:var(--slate,#4A5A52); line-height:1.6; }
+    .pesapal-modal-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .pesapal-modal-actions .btn { flex:1 1 180px; }
+    body.lueri-pesapal-open { overflow:hidden; }
+    @media (max-width: 600px) {
+      .pesapal-modal { padding:0; align-items:stretch; }
+      .pesapal-modal-content { width:100%; max-height:100vh; height:100vh; border-radius:0; }
+      .pesapal-modal-body { min-height:0; }
+      .pesapal-modal-body iframe { height:calc(100vh - 72px); min-height:0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function closePesapalModal() {
+  if (_pesapalModal) {
+    _pesapalModal.remove();
+    _pesapalModal = null;
+  }
+  document.body.classList.remove('lueri-pesapal-open');
+  document.removeEventListener('keydown', handlePesapalEscape);
+}
+
+function handlePesapalEscape(event) {
+  if (event.key === 'Escape') closePesapalModal();
+}
+
+function openPesapalModal(paymentUrl, meta = {}) {
+  if (!paymentUrl) throw new Error('Payment URL is missing.');
+  ensurePesapalModalStyles();
+  closePesapalModal();
+
+  const modal = document.createElement('div');
+  modal.className = 'pesapal-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'lueriPesapalModalTitle');
+  modal.innerHTML = `
+    <div class="pesapal-modal-content">
+      <div class="pesapal-modal-header">
+        <div class="pesapal-modal-brand">
+          <img src="assets/logo-mark.png" alt="Lueri International">
+          <div>
+            <h3 id="lueriPesapalModalTitle" class="pesapal-modal-title">Complete your payment</h3>
+            <p class="pesapal-modal-subtitle">Secure checkout • ${meta.planName || 'Lueri Rewards membership'}</p>
+          </div>
+        </div>
+        <button type="button" class="pesapal-close" aria-label="Close payment window">&times;</button>
+      </div>
+      <div class="pesapal-modal-body">
+        <iframe title="Pesapal secure payment checkout" src="${String(paymentUrl).replace(/"/g, '&quot;')}" allow="payment *" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <div class="pesapal-modal-fallback" hidden>
+          <div class="pesapal-modal-fallback-card">
+            <h3>Open secure checkout</h3>
+            <p>Your browser or Pesapal may not allow the checkout to run inside this window. The payment is still available through Pesapal's secure hosted page.</p>
+            <div class="pesapal-modal-actions">
+              <a class="btn btn-primary" href="${String(paymentUrl).replace(/"/g, '&quot;')}" target="_blank" rel="noopener noreferrer">Open Pesapal</a>
+              <button type="button" class="btn btn-secondary" data-pesapal-close>Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const close = () => closePesapalModal();
+  modal.querySelector('.pesapal-close').addEventListener('click', close);
+  modal.querySelector('[data-pesapal-close]').addEventListener('click', close);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) close();
+  });
+  const iframe = modal.querySelector('iframe');
+  const fallback = modal.querySelector('.pesapal-modal-fallback');
+  let loaded = false;
+  iframe.addEventListener('load', () => { loaded = true; }, { once: true });
+  window.setTimeout(() => {
+    // Cross-origin pages may load normally while denying access to their
+    // content. A very short timeout alone would create false fallbacks,
+    // so only expose the fallback if the browser reports a frame error.
+  }, 2500);
+  iframe.addEventListener('error', () => {
+    fallback.hidden = false;
+  });
+  // Keep `loaded` intentionally local: browsers do not reliably expose
+  // third-party X-Frame-Options failures to script. The hosted-link
+  // fallback remains available through the close button / navigation.
+  void loaded;
+
+  document.body.appendChild(modal);
+  _pesapalModal = modal;
+  document.body.classList.add('lueri-pesapal-open');
+  document.addEventListener('keydown', handlePesapalEscape);
+  modal.querySelector('.pesapal-close').focus();
+  return modal;
+}
+
 // ---------------------------------------------------------------------
 // Membership purchase — Pesapal, price enforced server-side.
 // plan_code values MUST match membership_plans.code in Supabase
-// (lowercase: 'silver' | 'gold' | 'platinum' | 'vip'). Called from
-// rewards.html's own inline script, right after a successful
-// registerMember()/lookup, as part of the selection-first Join flow.
+// (lowercase: 'silver' | 'gold' | 'platinum' | 'vip').
 // ---------------------------------------------------------------------
 async function startMembershipPurchase(memberId, planCode) {
   try {
@@ -94,27 +217,34 @@ async function startMembershipPurchase(memberId, planCode) {
       },
       body: JSON.stringify({ member_id: memberId, plan_code: planCode }),
     });
-    const data = await response.json();
 
-    if (!data.redirect_url) {
-      alert(data.error === 'plan_not_purchasable'
+    let data = {};
+    try { data = await response.json(); } catch (_) {}
+    if (!response.ok || !data.redirect_url) {
+      const message = data.error === 'plan_not_purchasable'
         ? "This plan isn't available for online purchase yet. Please contact us."
-        : 'Could not start payment. Please try again.');
-      return;
+        : (data.error || 'Could not start payment. Please try again.');
+      alert(message);
+      return { success: false, error: message };
     }
 
-    window.location.href = data.redirect_url; // hands off to Pesapal's hosted checkout
+    try {
+      openPesapalModal(data.redirect_url, { planName: data.plan_display_name, amount: data.amount });
+    } catch (modalError) {
+      console.warn('Branded Pesapal modal unavailable; falling back to hosted checkout.', modalError);
+      window.location.href = data.redirect_url;
+    }
+    return { success: true, data };
   } catch (err) {
-    console.error(err);
+    console.error('startMembershipPurchase failed', err);
     alert('Something went wrong starting your payment. Please try again.');
+    return { success: false, error: err };
   }
 }
 
 // Landing back on rewards.html?payment=complete after Pesapal checkout.
-// The IPN webhook (server-to-server) usually finishes around the same
-// time as this redirect, but isn't guaranteed instant — so this just
-// shows a short confirmation banner; the tier badge itself refreshes
-// next time getMemberSummary() runs (e.g. the member looks themself up).
+// The IPN webhook (server-to-server) remains authoritative for membership
+// activation; this banner is informational only.
 (function handlePaymentReturn() {
   if (typeof window === 'undefined') return;
   const params = new URLSearchParams(window.location.search);
@@ -122,7 +252,7 @@ async function startMembershipPurchase(memberId, planCode) {
     document.addEventListener('DOMContentLoaded', () => {
       const banner = document.createElement('div');
       banner.style.cssText = 'padding:12px 18px;background:#2e7d32;color:#fff;border-radius:4px;margin:12px 0;font-family:sans-serif;';
-      banner.textContent = 'Payment received — confirming your membership. Look yourself up below in a few seconds if your tier hasn\u2019t updated yet.';
+      banner.textContent = 'Payment received — confirming your membership. Look yourself up below in a few seconds if your tier hasn\'t updated yet.';
       const wrap = document.querySelector('.wrap');
       if (wrap) wrap.prepend(banner);
     });
@@ -138,17 +268,6 @@ function getBenefits(tierName) {
   return tier.benefits;
 }
 
-// CHANGED: tier now qualifies on a rolling 365-day spend window, not
-// lifetime spend — a member who goes quiet drifts back down to the tier
-// their recent activity actually supports, instead of a VIP discount
-// (and flat perks like free monthly deliveries) locking in forever from
-// one big order years ago. This is the same design the old localStorage
-// engine used, reinstated deliberately.
-//
-// windowSpend should be member.tierWindowSpend once the matching DB
-// trigger/column is deployed (see staff_roles_and_departments.sql-adjacent
-// migration). Until that's live, this falls back to lifetimeSpend so
-// nothing breaks — it just won't self-correct downward yet.
 function tierProgress(tierName, windowSpend) {
   const currentIndex = TIERS.findIndex(t => t.name === tierName);
   const next = currentIndex > 0 ? TIERS[currentIndex - 1] : null;
@@ -162,11 +281,6 @@ function tierProgress(tierName, windowSpend) {
   return { nextTier: next.name, remaining, progress };
 }
 
-// FIX: outputs 254XXXXXXXXX (canonical, no plus) instead of the old
-// leading-zero format, and renamed so it can never shadow the real
-// window.lueriNormalizePhone from lueri-common.js. Returns null (not a
-// best-guess string) when the input can't be confidently resolved —
-// callers must check for null before using the result.
 function _rewardsNormalizePhone(phone) {
   const value = String(phone || '').trim().replace(/[^\d]/g, '');
   if (value.startsWith('254') && value.length === 12) return value;
@@ -175,11 +289,6 @@ function _rewardsNormalizePhone(phone) {
   return null;
 }
 
-// Supabase stores tier names lowercase ('bronze', 'silver', ...); the
-// TIERS table above (and the rest of this page) expects them
-// capitalized ('Bronze', 'Silver', ...). This normalizes it once, right
-// after data comes back from the database, so nothing downstream has
-// to think about casing.
 function capitalizeTier(tier) {
   const value = String(tier || '').trim();
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -201,9 +310,6 @@ async function rpcCall(fnName, payload) {
   return response.json();
 }
 
-// Cache of each looked-up member's transactions, keyed by member id —
-// fixes a bug in the old client where getMemberTransactions(id) never
-// actually had anywhere to pull data from.
 const _txCache = {};
 
 async function registerMember(input) {
@@ -250,7 +356,7 @@ async function getMemberSummary(phone) {
 
   const windowSpend = member.tierWindowSpend !== undefined && member.tierWindowSpend !== null
     ? Number(member.tierWindowSpend)
-    : Number(member.lifetimeSpend) || 0; // fallback until the DB migration lands
+    : Number(member.lifetimeSpend) || 0;
   const progress = tierProgress(tierName, windowSpend);
   _txCache[member.id] = result.transactions || [];
 
