@@ -17,380 +17,90 @@
    ============================================================ */
 (function (global) {
   'use strict';
-
-  /* ---------------- 1. CONFIG ---------------- */
   const LUERI = {
-    supabaseUrl: 'https://ylifvexqamxvwzvhmwex.supabase.co', // CORRECTED 2026-09-14: this is the real, live project ref (verified via direct Supabase connection). The previous value was never a deployed project.
+    supabaseUrl: 'https://ylifvexqamxvwzvhmwex.supabase.co',
     supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsaWZ2ZXhxYW14dnd6dmhtd2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw',
-    whatsapp: '254713261719',
-    whatsappDisplay: '0713 261 719',
-    email: 'info@lueriinternational.com',
-    waGeneralLink: 'https://wa.link/qk7m3b',
-    company: {
-      name: 'Lueri International',
-      address: 'Nairobi, Kenya',
-      phone: '+254 713 261 719',
-      kraPin: null,          // set when registered; both docs read this one value
-      vatRegistered: false,  // flip only when eTIMS-compliant invoicing is in place
-      vatRate: 0.16,
-    },
-    pointsPerKes: 20, // 1 point per KES 20 — ASSUMPTION, keep in sync with add_transaction SQL
+    whatsapp: '254713261719', whatsappDisplay: '0713 261 719', email: 'info@lueriinternational.com', waGeneralLink: 'https://wa.link/qk7m3b',
+    company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254 713 261 719', kraPin: null, vatRegistered: false, vatRate: 0.16 },
+    pointsPerKes: 50,
   };
-
-  /* Embedded tier catalog — DISPLAY ONLY. Server enforces spend thresholds
-     (tier thresholds live in the DB view v_member_tier). Keep in sync. */
   const TIER_CATALOG = [
-    { code: 'bronze',   name: 'Bronze',   minSpend: 0,      benefits: ['Earn 1 point per KES 20 spent', 'Points redeemable for delivery vouchers'] },
-    { code: 'silver',   name: 'Silver',   minSpend: 50000,  benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
-    { code: 'gold',     name: 'Gold',     minSpend: 150000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
-    { code: 'platinum', name: 'Platinum', minSpend: 350000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
-    { code: 'vip',      name: 'VIP',      minSpend: 750000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
+    { code: 'bronze', name: 'Bronze', minSpend: 0, benefits: ['Earn 1 point per KES 50 spent', 'Points redeemable for delivery vouchers'] },
+    { code: 'silver', name: 'Silver', minSpend: 5000, benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
+    { code: 'gold', name: 'Gold', minSpend: 15000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
+    { code: 'platinum', name: 'Platinum', minSpend: 35000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
+    { code: 'vip', name: 'VIP', minSpend: 75000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
   ];
-
-  /* Paid plans — DISPLAY ONLY. pesapal-initiate enforces price server-side
-     against membership_plans.price_kes. Never trust these for charging. */
   const PURCHASE_TIERS = [
-    { code: 'silver',   name: 'Silver',   price: 5000  },
-    { code: 'gold',     name: 'Gold',     price: 15000 },
-    { code: 'platinum', name: 'Platinum', price: 35000 },
-    { code: 'vip',      name: 'VIP',      price: 75000 },
+    { code: 'silver', name: 'Silver', price: 5000 }, { code: 'gold', name: 'Gold', price: 15000 },
+    { code: 'platinum', name: 'Platinum', price: 35000 }, { code: 'vip', name: 'VIP', price: 75000 },
   ];
-
-  /* ---------------- 2. SUPABASE ---------------- */
   let supabase = null;
-  try {
-    if (global.supabase) {
-      supabase = global.supabase.createClient(LUERI.supabaseUrl, LUERI.supabaseAnonKey);
-    }
-  } catch (e) { console.error('Supabase init failed:', e); }
-
+  try { if (global.supabase) supabase = global.supabase.createClient(LUERI.supabaseUrl, LUERI.supabaseAnonKey); }
+  catch (e) { console.error('Supabase init failed:', e); }
   async function rpc(name, args) {
     if (!supabase) return { success: false, errors: [{ code: 'no_client', message: 'System not initialized. Please refresh.' }] };
     const { data, error } = await supabase.rpc(name, args || {});
     if (error) return { success: false, errors: [{ code: 'rpc_error', message: error.message }] };
-    return data; // server returns jsonb envelopes {success, errors:[{code,message}], ...}
+    return data;
   }
-
-  /* ---------------- 3. THEME ---------------- */
   function bootTheme() {
     const saved = localStorage.getItem('theme');
     const theme = saved || (global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
   }
-
   function initThemeToggle(button) {
     if (!button) return;
-    const sun = document.getElementById('sunIcon');
-    const moon = document.getElementById('moonIcon');
-    const paint = () => {
-      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      if (sun) sun.style.display = dark ? 'block' : 'none';
-      if (moon) moon.style.display = dark ? 'none' : 'block';
-    };
-    button.addEventListener('click', () => {
-      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      paint();
-    });
+    const sun = document.getElementById('sunIcon'), moon = document.getElementById('moonIcon');
+    const paint = () => { const dark = document.documentElement.getAttribute('data-theme') === 'dark'; if (sun) sun.style.display = dark ? 'block' : 'none'; if (moon) moon.style.display = dark ? 'none' : 'block'; };
+    button.addEventListener('click', () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); localStorage.setItem('theme', next); paint(); });
     paint();
   }
-
-  /* ---------------- 4. MENU (fix V-06: no forced focus except Escape) ---------------- */
   function initMenu() {
-    const trigger = document.getElementById('menuTrigger');
-    const panel = document.getElementById('menuPanel');
-    const label = document.getElementById('menuTriggerLabel');
+    const trigger = document.getElementById('menuTrigger'), panel = document.getElementById('menuPanel'), label = document.getElementById('menuTriggerLabel');
     if (!trigger || !panel) return;
-    const close = (opts) => {
-      opts = opts || {};
-      trigger.classList.remove('open');
-      panel.classList.remove('open');
-      document.body.classList.remove('menu-open');
-      trigger.setAttribute('aria-expanded', 'false');
-      if (label) label.textContent = 'Menu';
-      if (opts.focusTrigger) trigger.focus();
-    };
-    const open = () => {
-      trigger.classList.add('open');
-      panel.classList.add('open');
-      document.body.classList.add('menu-open');
-      trigger.setAttribute('aria-expanded', 'true');
-      if (label) label.textContent = 'Close';
-    };
-    trigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      panel.classList.contains('open') ? close({}) : open();
-    });
-    panel.querySelectorAll('[data-close-menu]').forEach((link) =>
-      link.addEventListener('click', () => close({})));
-    document.addEventListener('click', (e) => {
-      if (panel.classList.contains('open') && !panel.contains(e.target) && !trigger.contains(e.target)) close({});
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && panel.classList.contains('open')) close({ focusTrigger: true });
-    });
+    const close = (opts) => { opts = opts || {}; trigger.classList.remove('open'); panel.classList.remove('open'); document.body.classList.remove('menu-open'); trigger.setAttribute('aria-expanded', 'false'); if (label) label.textContent = 'Menu'; if (opts.focusTrigger) trigger.focus(); };
+    const open = () => { trigger.classList.add('open'); panel.classList.add('open'); document.body.classList.add('menu-open'); trigger.setAttribute('aria-expanded', 'true'); if (label) label.textContent = 'Close'; };
+    trigger.addEventListener('click', (e) => { e.stopPropagation(); panel.classList.contains('open') ? close({}) : open(); });
+    panel.querySelectorAll('[data-close-menu]').forEach((link) => link.addEventListener('click', () => close({})));
+    document.addEventListener('click', (e) => { if (panel.classList.contains('open') && !panel.contains(e.target) && !trigger.contains(e.target)) close({}); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && panel.classList.contains('open')) close({ focusTrigger: true }); });
   }
-
-  /* ---------------- 5. REVEAL (fix V-05: CSS already gated behind .js) ---------------- */
   function initReveal() {
-    const items = document.querySelectorAll('.reveal');
-    if (!items.length) return;
-    const reveal = () => {
-      const vh = global.innerHeight;
-      items.forEach((el) => {
-        if (el.getBoundingClientRect().top < vh - 150) el.classList.add('active');
-      });
-    };
-    global.addEventListener('scroll', reveal, { passive: true });
-    reveal();
+    const items = document.querySelectorAll('.reveal'); if (!items.length) return;
+    const reveal = () => { const vh = global.innerHeight; items.forEach((el) => { if (el.getBoundingClientRect().top < vh - 150) el.classList.add('active'); }); };
+    global.addEventListener('scroll', reveal, { passive: true }); reveal();
   }
-
-  /* ---------------- 6. PHONE ---------------- */
-  function isValidPhone(phone) {
-    return /^(?:\+254|254|0)(7|1)\d{8}$/.test(String(phone || '').trim().replace(/\s+/g, ''));
-  }
-  function normalizePhone(phone) {
-    const p = String(phone || '').trim().replace(/\s+/g, '');
-    if (/^0(7|1)\d{8}$/.test(p)) return '254' + p.slice(1);
-    if (/^\+254(7|1)\d{8}$/.test(p)) return p.slice(1);
-    if (/^254(7|1)\d{8}$/.test(p)) return p;
-    return null;
-  }
-
-  /* ---------------- 7. FORMATTERS / ESCAPING ---------------- */
-  function escapeHTML(value) {
-    return String(value == null ? '' : value)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-  }
+  function isValidPhone(phone) { return /^(?:\+254|254|0)(7|1)\d{8}$/.test(String(phone || '').trim().replace(/\s+/g, '')); }
+  function normalizePhone(phone) { const p = String(phone || '').trim().replace(/\s+/g, ''); if (/^0(7|1)\d{8}$/.test(p)) return '254' + p.slice(1); if (/^\+254(7|1)\d{8}$/.test(p)) return p.slice(1); if (/^254(7|1)\d{8}$/.test(p)) return p; return null; }
+  function escapeHTML(value) { return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;'); }
   const fmt = (n) => 'KES ' + Number(n || 0).toLocaleString('en-KE');
-  function formatDateTime(value) {
-    const d = new Date(value);
-    if (isNaN(d)) return '';
-    return d.toLocaleString('en-KE', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
-  }
-  function formatKES(amount) {
-    return new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(amount);
-  }
-  function showToast(message, type) {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = 'position:fixed; top:20px; right:20px; padding:12px 24px; color:#fff; border-radius:8px;' +
-      'box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; background:' +
-      (type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#3b82f6');
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-  function openWhatsApp(number, message) {
-    const url = 'https://wa.me/' + String(number).replace(/\D/g, '') + '?text=' + encodeURIComponent(message);
-    const win = global.open(url, '_blank', 'noopener,noreferrer');
-    return { opened: !!win, url };
-  }
-  function copyToClipboard(text, label) {
-    const done = () => showToast((label || 'Value') + ' copied', 'success');
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done).catch(() => global.prompt('Copy this:', text));
-    } else global.prompt('Copy this:', text);
-  }
-
-  /* ---------------- 8. VAT (fix N-03: ONE treatment, inclusive) ----------------
-     M-Pesa collections are quoted gross. VAT is ALWAYS inclusive:
-     vat = gross * rate/(1+rate). Both receipt and invoice use this. */
-  function vatBreakdown(gross) {
-    const c = LUERI.company;
-    const on = !!c.vatRegistered;
-    const vat = on ? (Number(gross) * c.vatRate / (1 + c.vatRate)) : 0;
-    return { vatRegistered: on, rate: c.vatRate, vat: vat, net: Number(gross) - vat, gross: Number(gross) };
-  }
-
-  /* ---------------- 9. DOCUMENT BUILDERS (fix N-06: everything escaped) ------- */
-  const BRAND = {
-    fonts: '<link rel="preconnect" href="https://fonts.googleapis.com">' +
-      '<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">',
-    logo: () => location.origin + '/assets/logo-mark.png',
-  };
-
+  function formatDateTime(value) { const d = new Date(value); if (isNaN(d)) return ''; return d.toLocaleString('en-KE', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+  function formatKES(amount) { return new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(amount); }
+  function showToast(message, type) { const toast = document.createElement('div'); toast.textContent = message; toast.style.cssText = 'position:fixed; top:20px; right:20px; padding:12px 24px; color:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:9999; background:' + (type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#3b82f6'); document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+  function openWhatsApp(number, message) { const url = 'https://wa.me/' + String(number).replace(/\D/g, '') + '?text=' + encodeURIComponent(message); const win = global.open(url, '_blank', 'noopener,noreferrer'); return { opened: !!win, url }; }
+  function copyToClipboard(text, label) { const done = () => showToast((label || 'Value') + ' copied', 'success'); if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => global.prompt('Copy this:', text)); else global.prompt('Copy this:', text); }
+  function vatBreakdown(gross) { const c = LUERI.company, on = !!c.vatRegistered, vat = on ? (Number(gross) * c.vatRate / (1 + c.vatRate)) : 0; return { vatRegistered: on, rate: c.vatRate, vat, net: Number(gross) - vat, gross: Number(gross) }; }
+  const BRAND = { fonts: '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">', logo: () => location.origin + '/assets/logo-mark.png' };
   function receiptHTML(tx, member) {
-    const b = vatBreakdown(tx.amount);
-    const label = escapeHTML(String(tx.type || '').charAt(0).toUpperCase() + String(tx.type || '').slice(1));
-    const ref = escapeHTML(tx.transactionNumber || tx.id);
-    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ' + ref + '</title>' + BRAND.fonts +
-      '<style>' + docStyles() + '</style></head><body><div class="wrap"><div class="receipt">' +
-      '<div class="perf"></div>' +
-      '<div class="rhead"><div class="brandrow">' +
-      '<div style="display:flex;gap:10px;align-items:center;"><div class="logo"><img src="' + BRAND.logo() + '" alt=""></div>' +
-      '<div><p class="bname">' + escapeHTML(LUERI.company.name) + '</p><p class="btag">Same-day courier &middot; Nairobi</p></div></div>' +
-      '<div class="tier-badge">' + escapeHTML(member.tier) + ' member</div></div>' +
-      '<div class="rstatus"><div class="paid-stamp">Paid</div><div class="rno"><div class="lbl">Receipt no.</div><div class="val">' + ref + '</div></div></div></div>' +
-      '<div class="rbody"><div class="field-grid">' +
-      '<div class="field"><div class="lbl">Date &amp; time</div><div class="val">' + escapeHTML(formatDateTime(tx.date)) + '</div></div>' +
-      '<div class="field"><div class="lbl">Member</div><div class="val">' + escapeHTML(member.name) + '</div></div>' +
-      '<div class="field"><div class="lbl">Member no.</div><div class="val mono">' + escapeHTML(member.memberNumber) + '</div></div>' +
-      '<div class="field"><div class="lbl">Phone</div><div class="val mono">' + escapeHTML(member.phone) + '</div></div></div>' +
-      '<table class="charges">' +
-      '<tr><td>' + label + (tx.reference ? '<br><span class="lbl-sub">Ref: ' + escapeHTML(tx.reference) + '</span>' : '') + '</td><td class="amt">' + fmt(b.net) + '</td></tr>' +
-      (b.vatRegistered ? '<tr><td>VAT (inclusive, ' + Math.round(b.rate * 100) + '%)</td><td class="amt">' + fmt(b.vat) + '</td></tr>' : '') +
-      '<tr class="total-row"><td class="lbl">Total</td><td class="amt">' + fmt(b.gross) + '</td></tr></table>' +
-      '<div class="points-row"><span class="points-pill">' + (tx.points >= 0 ? '+' + tx.points : tx.points) + ' pts earned</span>' +
-      '<span style="font-size:.78rem;color:#4A5A52;">New balance: ' + Number(member.points || 0).toLocaleString() + ' pts</span></div></div>' +
-      '<div class="rfoot"><p class="thanks">Thank you for choosing ' + escapeHTML(LUERI.company.name) + '.</p>' +
-      '<div class="contact-cols"><div class="hd">' + escapeHTML(LUERI.company.name) + '</div>' +
-      escapeHTML(LUERI.company.address) + '<br>' + escapeHTML(LUERI.company.phone) +
-      (LUERI.company.kraPin ? '<br>KRA PIN: ' + escapeHTML(LUERI.company.kraPin) : '') + '</div></div>' +
-      '</div></div><script>window.onload=function(){window.print();}<\/script></body></html>';
+    const b = vatBreakdown(tx.amount), label = escapeHTML(String(tx.type || '').charAt(0).toUpperCase() + String(tx.type || '').slice(1)), ref = escapeHTML(tx.transactionNumber || tx.id);
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ' + ref + '</title>' + BRAND.fonts + '<style>' + docStyles() + '</style></head><body><div class="wrap"><div class="receipt"><div class="perf"></div><div class="rhead"><div class="brandrow"><div style="display:flex;gap:10px;align-items:center;"><div class="logo"><img src="' + BRAND.logo() + '" alt=""></div><div><p class="bname">' + escapeHTML(LUERI.company.name) + '</p><p class="btag">Same-day courier &middot; Nairobi</p></div></div><div class="tier-badge">' + escapeHTML(member.tier) + ' member</div></div><div class="rstatus"><div class="paid-stamp">Paid</div><div class="rno"><div class="lbl">Receipt no.</div><div class="val">' + ref + '</div></div></div></div><div class="rbody"><div class="field-grid"><div class="field"><div class="lbl">Date &amp; time</div><div class="val">' + escapeHTML(formatDateTime(tx.date)) + '</div></div><div class="field"><div class="lbl">Member</div><div class="val">' + escapeHTML(member.name) + '</div></div><div class="field"><div class="lbl">Member no.</div><div class="val mono">' + escapeHTML(member.memberNumber) + '</div></div><div class="field"><div class="lbl">Phone</div><div class="val mono">' + escapeHTML(member.phone) + '</div></div></div><table class="charges"><tr><td>' + label + (tx.reference ? '<br><span class="lbl-sub">Ref: ' + escapeHTML(tx.reference) + '</span>' : '') + '</td><td class="amt">' + fmt(b.net) + '</td></tr>' + (b.vatRegistered ? '<tr><td>VAT (inclusive, ' + Math.round(b.rate * 100) + '%)</td><td class="amt">' + fmt(b.vat) + '</td></tr>' : '') + '<tr class="total-row"><td class="lbl">Total</td><td class="amt">' + fmt(b.gross) + '</td></tr></table><div class="points-row"><span class="points-pill">' + (tx.points >= 0 ? '+' + tx.points : tx.points) + ' pts earned</span><span style="font-size:.78rem;color:#4A5A52;">New balance: ' + Number(member.points || 0).toLocaleString() + ' pts</span></div></div><div class="rfoot"><p class="thanks">Thank you for choosing ' + escapeHTML(LUERI.company.name) + '.</p><div class="contact-cols"><div class="hd">' + escapeHTML(LUERI.company.name) + '</div>' + escapeHTML(LUERI.company.address) + '<br>' + escapeHTML(LUERI.company.phone) + (LUERI.company.kraPin ? '<br>KRA PIN: ' + escapeHTML(LUERI.company.kraPin) : '') + '</div></div></div></div><script>window.onload=function(){window.print();}<\/script></body></html>';
   }
-
   function invoiceHTML(tx, member, invoiceNo) {
-    const b = vatBreakdown(tx.amount); // SAME treatment as receipt (fix N-03)
-    const ref = escapeHTML(tx.transactionNumber || tx.id);
-    let flags = '';
-    if (!LUERI.company.kraPin) {
-      flags += '<div class="flag">No KRA PIN on file for ' + escapeHTML(LUERI.company.name) +
-        ' — set LUERI.company.kraPin in lueri-common.js before sending this to a client.</div>';
-    }
-    if (LUERI.company.vatRegistered) {
-      flags += '<div class="flag">' + escapeHTML(LUERI.company.name) +
-        ' is marked VAT-registered. KRA requires VAT invoices via an eTIMS-compliant system — this document alone is not a valid tax invoice. Confirm with your accountant.</div>';
-    } else {
-      flags += '<div class="flag neutral">Not VAT-registered — no VAT charged.</div>';
-    }
-    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ' + escapeHTML(invoiceNo) + '</title>' + BRAND.fonts +
-      '<style>' + invoiceStyles() + '</style></head><body><div class="inv">' +
-      '<div class="i-brand"><div class="i-mark"><img src="' + BRAND.logo() + '" alt=""></div><div>' +
-      '<div class="i-name">' + escapeHTML(LUERI.company.name) + '</div>' +
-      '<div class="i-meta">' + escapeHTML(LUERI.company.address) + '<br>' + escapeHTML(LUERI.company.phone) +
-      (LUERI.company.kraPin ? '<br>KRA PIN: ' + escapeHTML(LUERI.company.kraPin) : '') + '</div></div></div>' +
-      '<div class="i-title">Invoice</div>' +
-      '<div class="i-section">' +
-      '<div class="i-row"><span>Invoice No.</span><strong>' + escapeHTML(invoiceNo) + '</strong></div>' +
-      '<div class="i-row"><span>Date</span><strong>' + escapeHTML(formatDateTime(new Date().toISOString())) + '</strong></div>' +
-      '<div class="i-row"><span>Bill to</span><strong>' + escapeHTML(member.name) + '</strong></div>' +
-      '<div class="i-row"><span>Phone</span><strong>' + escapeHTML(member.phone) + '</strong></div></div>' +
-      '<div class="i-section">' +
-      '<div class="i-row"><span>Delivery service (Txn ' + ref + ')</span><strong>' + fmt(b.net) + '</strong></div>' +
-      (b.vatRegistered ? '<div class="i-row"><span>VAT (inclusive, ' + Math.round(b.rate * 100) + '%)</span><strong>' + fmt(b.vat) + '</strong></div>' : '') +
-      '<div class="i-total-block"><span class="i-total-label">Total</span><span class="i-total-value">' + fmt(b.gross) + '</span></div></div>' +
-      flags + '</div><script>window.onload=function(){window.print();}<\/script></body></html>';
+    const b = vatBreakdown(tx.amount), ref = escapeHTML(tx.transactionNumber || tx.id); let flags = '';
+    if (!LUERI.company.kraPin) flags += '<div class="flag">No KRA PIN on file for ' + escapeHTML(LUERI.company.name) + ' — set LUERI.company.kraPin in lueri-common.js before sending this to a client.</div>';
+    if (LUERI.company.vatRegistered) flags += '<div class="flag">' + escapeHTML(LUERI.company.name) + ' is marked VAT-registered. KRA requires VAT invoices via an eTIMS-compliant system — this document alone is not a valid tax invoice. Confirm with your accountant.</div>'; else flags += '<div class="flag neutral">Not VAT-registered — no VAT charged.</div>';
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ' + escapeHTML(invoiceNo) + '</title>' + BRAND.fonts + '<style>' + invoiceStyles() + '</style></head><body><div class="inv"><div class="i-brand"><div class="i-mark"><img src="' + BRAND.logo() + '" alt=""></div><div><div class="i-name">' + escapeHTML(LUERI.company.name) + '</div><div class="i-meta">' + escapeHTML(LUERI.company.address) + '<br>' + escapeHTML(LUERI.company.phone) + (LUERI.company.kraPin ? '<br>KRA PIN: ' + escapeHTML(LUERI.company.kraPin) : '') + '</div></div></div><div class="i-title">Invoice</div><div class="i-section"><div class="i-row"><span>Invoice No.</span><strong>' + escapeHTML(invoiceNo) + '</strong></div><div class="i-row"><span>Date</span><strong>' + escapeHTML(formatDateTime(new Date().toISOString())) + '</strong></div><div class="i-row"><span>Bill to</span><strong>' + escapeHTML(member.name) + '</strong></div><div class="i-row"><span>Phone</span><strong>' + escapeHTML(member.phone) + '</strong></div></div><div class="i-section"><div class="i-row"><span>Delivery service (Txn ' + ref + ')</span><strong>' + fmt(b.net) + '</strong></div>' + (b.vatRegistered ? '<div class="i-row"><span>VAT (inclusive, ' + Math.round(b.rate * 100) + '%)</span><strong>' + fmt(b.vat) + '</strong></div>' : '') + '<div class="i-total-block"><span class="i-total-label">Total</span><span class="i-total-value">' + fmt(b.gross) + '</span></div></div>' + flags + '</div><script>window.onload=function(){window.print();}<\/script></body></html>';
   }
-
-  /* Open a generated document; fallback to Blob download if popups blocked (fix N-07) */
-  function openDoc(html, width, height) {
-    const win = global.open('', '_blank', 'width=' + (width || 440) + ',height=' + (height || 720));
-    if (win) { win.document.write(html); win.document.close(); return true; }
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.target = '_blank'; a.rel = 'noopener';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
-    return false;
-  }
-
-  function docStyles() {
-    return '*{box-sizing:border-box;}' +
-      'body{margin:0;padding:32px 16px 60px;background:#e6dfc9;color:#1B2620;font-family:"IBM Plex Sans",sans-serif;}' +
-      '.wrap{max-width:400px;margin:0 auto;}.receipt{background:#F0EAD8;border:1px solid rgba(27,38,32,0.16);border-radius:6px;overflow:hidden;box-shadow:0 18px 40px rgba(27,38,32,0.12);}' +
-      '.perf{height:12px;width:100%;background-image:radial-gradient(circle at 6px 6px,#e6dfc9 3.5px,transparent 4px);background-size:12px 12px;background-repeat:repeat-x;}' +
-      '.rhead{padding:22px 24px 16px;border-bottom:1px dashed rgba(27,38,32,0.16);}.brandrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}' +
-      '.logo{width:40px;height:40px;border-radius:50%;border:1px solid #1B2620;overflow:hidden;flex-shrink:0;background:#1B2620;}.logo img{width:100%;height:100%;object-fit:contain;}' +
-      '.bname{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.1rem;margin:2px 0 2px;}.btag{font-size:.7rem;color:#4A5A52;}' +
-      '.tier-badge{display:flex;align-items:center;gap:5px;background:#1B2620;color:#E8B93D;font-family:"Oswald",sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:3px;white-space:nowrap;border:1px solid #E8B93D;}' +
-      '.rstatus{display:flex;align-items:center;justify-content:space-between;margin-top:18px;}' +
-      '.paid-stamp{display:inline-flex;align-items:center;gap:6px;border:2px solid #2e7d32;color:#2e7d32;font-family:"Oswald",sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.1em;padding:4px 11px;border-radius:4px;transform:rotate(-3deg);text-transform:uppercase;}' +
-      '.rno{text-align:right;}.rno .lbl{font-size:.6rem;color:#4A5A52;text-transform:uppercase;letter-spacing:.07em;}.rno .val{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.82rem;}' +
-      '.rbody{padding:18px 24px 6px;}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-bottom:18px;}' +
-      '.field .lbl{font-size:.6rem;color:#4A5A52;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;}.field .val{font-size:.85rem;font-weight:500;}' +
-      'table.charges{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:4px;}table.charges td{padding:7px 0;}table.charges tr{border-bottom:1px solid rgba(27,38,32,0.16);}table.charges tr:last-of-type{border-bottom:none;}' +
-      '.charges .amt{text-align:right;font-family:"IBM Plex Mono",monospace;}.charges .lbl-sub{color:#4A5A52;font-size:.7rem;}' +
-      '.total-row td{padding-top:12px;border-top:1.5px solid #1B2620;border-bottom:none !important;}.total-row .amt{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.2rem;}.total-row .lbl{font-family:"Oswald",sans-serif;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;}' +
-      '.points-row{display:flex;align-items:center;gap:8px;margin:14px 0 4px;}.points-pill{display:inline-flex;align-items:center;gap:5px;background:#e6dfc9;border-radius:20px;padding:4px 11px;font-size:.75rem;font-weight:500;}' +
-      '.rfoot{border-top:1px dashed rgba(27,38,32,0.16);padding:16px 24px 22px;}.thanks{font-family:"Oswald",sans-serif;font-size:.88rem;font-weight:500;margin:0 0 10px;}' +
-      '.contact-cols{font-size:.7rem;color:#4A5A52;line-height:1.6;}.contact-cols .hd{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:#1B2620;font-weight:600;margin-bottom:3px;}' +
-      '@media print{body{background:#fff;padding:0;}.receipt{box-shadow:none;border:none;}}';
-  }
-
-  function invoiceStyles() {
-    return '*{box-sizing:border-box;}' +
-      'body{margin:0;padding:40px 20px;background:#e6dfc9;color:#1B2620;font-family:"IBM Plex Sans",sans-serif;display:flex;justify-content:center;}' +
-      '.inv{width:460px;background:#F0EAD8;border:1.5px solid #1B2620;border-radius:4px;padding:36px 32px;}' +
-      '.i-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px;}.i-mark{width:40px;height:40px;border-radius:50%;border:1.5px solid #1B2620;overflow:hidden;flex-shrink:0;background:#1B2620;}.i-mark img{width:100%;height:100%;object-fit:contain;}' +
-      '.i-name{font-family:"Oswald",sans-serif;font-weight:600;font-size:1.2rem;}.i-meta{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:#4A5A52;line-height:1.6;margin-top:2px;}' +
-      '.i-title{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:#B8321F;font-weight:500;border-top:1.5px solid #1B2620;border-bottom:1px dashed rgba(27,38,32,0.16);padding:14px 0 8px;margin-bottom:14px;}' +
-      '.i-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.88rem;border-bottom:1px dashed rgba(27,38,32,0.16);}' +
-      '.i-row span{color:#4A5A52;font-family:"IBM Plex Mono",monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;}.i-row strong{font-weight:600;}' +
-      '.i-section{margin:18px 0;}.i-total-block{margin-top:10px;padding:16px 20px;background:#1B2620;color:#F0EAD8;border-radius:4px;display:flex;justify-content:space-between;align-items:center;}' +
-      '.i-total-label{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8;}.i-total-value{font-family:"Oswald",sans-serif;font-size:1.5rem;font-weight:700;}' +
-      '.flag{background:#E8B93D;border:1px solid #1B2620;color:#1B2620;padding:10px 12px;font-size:.78rem;line-height:1.5;margin-top:20px;border-radius:4px;}' +
-      '.flag.neutral{background:#e6dfc9;border:1px dashed #4A5A52;}' +
-      '@media print{body{background:#fff;padding:0;}.inv{border:none;margin:0 auto;}}';
-  }
-
-  /* ---------------- 10. BOOKINGS (fix V-01: persist before WhatsApp) --------- */
-  async function createBooking(payload) {
-    return rpc('create_booking', {
-      p_name: payload.name,
-      p_phone: payload.phone,
-      p_pickup: payload.pickup,
-      p_dropoff: payload.dropoff,
-      p_details: payload.details,
-      p_pickup_time: payload.time,
-      p_member_number: payload.memberNumber || null,
-    });
-  }
-
-  /* ---------------- 11. REWARDS API ----------------
-     VERIFIED 2026-09-14 against the live database: only register_member
-     matches a real RPC (register_member(p_name, p_phone, p_email)).
-     get_member_summary, add_transaction, search_members and
-     get_dashboard_stats below do NOT exist server-side. The real
-     equivalents are lookup_member_secure(p_phone, p_member_no),
-     staff_add_transaction(p_member_id, p_type, p_amount, p_note,
-     p_points_delta, p_spend_delta), staff_search_members(p_query), and
-     staff_dashboard_stats() — but the exact expected payload shapes
-     haven't been cross-checked against rewards-cloud.js /
-     rewards-staff-cloud.js yet, which are the files actually calling
-     them successfully in production today. Do NOT wire rewards.html or
-     rewards-staff.html to the helpers below until that's done — they
-     will fail. Left as-is rather than guessing at a rename. */
-  function getMemberSummary(phone, memberNumber) {
-    return rpc('get_member_summary', { p_phone: phone, p_member_number: memberNumber });
-  }
-  function registerMember(input) {
-    return rpc('register_member', { p_name: input.name, p_phone: input.phone, p_email: input.email || null });
-  }
-  function addTransaction(input) {
-    return rpc('add_transaction', {
-      p_member_ref: input.memberRef,
-      p_amount: input.amount,
-      p_type: input.type,
-      p_confirmed_member_id: input.confirmedMemberId || null,
-    });
-  }
-
-  /* ---------------- 12. PAGE BOOT ---------------- */
-  function boot() {
-    document.documentElement.classList.add('js');
-    bootTheme();
-    initThemeToggle(document.getElementById('themeToggle'));
-    initMenu();
-    initReveal();
-  }
-
-  /* ---------------- EXPORT ---------------- */
-  global.LUERI = LUERI;
-  global.LUERI_TIERS = TIER_CATALOG;
-  global.LUERI_PLANS = PURCHASE_TIERS;
-  global.lueriBootTheme = bootTheme;
-  global.lueriIsValidPhone = isValidPhone;
-  global.lueriNormalizePhone = normalizePhone;
-  global.lueriOpenWhatsApp = openWhatsApp;
-  global.lueriCopyToClipboard = copyToClipboard;
-  global.lueri = {
-    boot, supabase: () => supabase, rpc,
-    fmt, escapeHTML, formatDateTime, formatKES, showToast, vatBreakdown,
-    docs: { receiptHTML, invoiceHTML, openDoc },
-    booking: { create: createBooking },
-    rewards: { getMemberSummary, registerMember, addTransaction },
-  };
+  function openDoc(html, width, height) { const win = global.open('', '_blank', 'width=' + (width || 440) + ',height=' + (height || 720)); if (win) { win.document.write(html); win.document.close(); return true; } const blob = new Blob([html], { type: 'text/html' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000); return false; }
+  function docStyles() { return '*{box-sizing:border-box;}body{margin:0;padding:32px 16px 60px;background:#e6dfc9;color:#1B2620;font-family:"IBM Plex Sans",sans-serif;}.wrap{max-width:400px;margin:0 auto;}.receipt{background:#F0EAD8;border:1px solid rgba(27,38,32,0.16);border-radius:6px;overflow:hidden;box-shadow:0 18px 40px rgba(27,38,32,0.12);}.perf{height:12px;width:100%;background-image:radial-gradient(circle at 6px 6px,#e6dfc9 3.5px,transparent 4px);background-size:12px 12px;background-repeat:repeat-x;}.rhead{padding:22px 24px 16px;border-bottom:1px dashed rgba(27,38,32,0.16);}.brandrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}.logo{width:40px;height:40px;border-radius:50%;border:1px solid #1B2620;overflow:hidden;flex-shrink:0;background:#1B2620;}.logo img{width:100%;height:100%;object-fit:contain;}.bname{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.1rem;margin:2px 0 2px;}.btag{font-size:.7rem;color:#4A5A52;}.tier-badge{display:flex;align-items:center;gap:5px;background:#1B2620;color:#E8B93D;font-family:"Oswald",sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:3px;white-space:nowrap;border:1px solid #E8B93D;}.rstatus{display:flex;align-items:center;justify-content:space-between;margin-top:18px;}.paid-stamp{display:inline-flex;align-items:center;gap:6px;border:2px solid #2e7d32;color:#2e7d32;font-family:"Oswald",sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.1em;padding:4px 11px;border-radius:4px;transform:rotate(-3deg);text-transform:uppercase;}.rno{text-align:right;}.rno .lbl{font-size:.6rem;color:#4A5A52;text-transform:uppercase;letter-spacing:.07em;}.rno .val{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.82rem;}.rbody{padding:18px 24px 6px;}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-bottom:18px;}.field .lbl{font-size:.6rem;color:#4A5A52;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;}.field .val{font-size:.85rem;font-weight:500;}table.charges{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:4px;}table.charges td{padding:7px 0;}table.charges tr{border-bottom:1px solid rgba(27,38,32,0.16);}table.charges tr:last-of-type{border-bottom:none;}.charges .amt{text-align:right;font-family:"IBM Plex Mono",monospace;}.charges .lbl-sub{color:#4A5A52;font-size:.7rem;}.total-row td{padding-top:12px;border-top:1.5px solid #1B2620;border-bottom:none !important;}.total-row .amt{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.2rem;}.total-row .lbl{font-family:"Oswald",sans-serif;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;}.points-row{display:flex;align-items:center;gap:8px;margin:14px 0 4px;}.points-pill{display:inline-flex;align-items:center;gap:5px;background:#e6dfc9;border-radius:20px;padding:4px 11px;font-size:.75rem;font-weight:500;}.rfoot{border-top:1px dashed rgba(27,38,32,0.16);padding:16px 24px 22px;}.thanks{font-family:"Oswald",sans-serif;font-size:.88rem;font-weight:500;margin:0 0 10px;}.contact-cols{font-size:.7rem;color:#4A5A52;line-height:1.6;}.contact-cols .hd{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:#1B2620;font-weight:600;margin-bottom:3px;}@media print{body{background:#fff;padding:0;}.receipt{box-shadow:none;border:none;}}'; }
+  function invoiceStyles() { return '*{box-sizing:border-box;}body{margin:0;padding:40px 20px;background:#e6dfc9;color:#1B2620;font-family:"IBM Plex Sans",sans-serif;display:flex;justify-content:center;}.inv{width:460px;background:#F0EAD8;border:1.5px solid #1B2620;border-radius:4px;padding:36px 32px;}.i-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px;}.i-mark{width:40px;height:40px;border-radius:50%;border:1.5px solid #1B2620;overflow:hidden;flex-shrink:0;background:#1B2620;}.i-mark img{width:100%;height:100%;object-fit:contain;}.i-name{font-family:"Oswald",sans-serif;font-weight:600;font-size:1.2rem;}.i-meta{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:#4A5A52;line-height:1.6;margin-top:2px;}.i-title{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:#B8321F;font-weight:500;border-top:1.5px solid #1B2620;border-bottom:1px dashed rgba(27,38,32,0.16);padding:14px 0 8px;margin-bottom:14px;}.i-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.88rem;border-bottom:1px dashed rgba(27,38,32,0.16);}.i-row span{color:#4A5A52;font-family:"IBM Plex Mono",monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;}.i-row strong{font-weight:600;}.i-section{margin:18px 0;}.i-total-block{margin-top:10px;padding:16px 20px;background:#1B2620;color:#F0EAD8;border-radius:4px;display:flex;justify-content:space-between;align-items:center;}.i-total-label{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8;}.i-total-value{font-family:"Oswald",sans-serif;font-size:1.5rem;font-weight:700;}.flag{background:#E8B93D;border:1px solid #1B2620;color:#1B2620;padding:10px 12px;font-size:.78rem;line-height:1.5;margin-top:20px;border-radius:4px;}.flag.neutral{background:#e6dfc9;border:1px dashed #4A5A52;}@media print{body{background:#fff;padding:0;}.inv{border:none;margin:0 auto;}}'; }
+  async function createBooking(payload) { return rpc('create_booking', { p_name: payload.name, p_phone: payload.phone, p_pickup: payload.pickup, p_dropoff: payload.dropoff, p_details: payload.details, p_pickup_time: payload.time, p_member_number: payload.memberNumber || null }); }
+  function getMemberSummary(phone, memberNumber) { return rpc('get_member_summary', { p_phone: phone, p_member_number: memberNumber }); }
+  function registerMember(input) { return rpc('register_member', { p_name: input.name, p_phone: input.phone, p_email: input.email || null }); }
+  function addTransaction(input) { return rpc('add_transaction', { p_member_ref: input.memberRef, p_amount: input.amount, p_type: input.type, p_confirmed_member_id: input.confirmedMemberId || null }); }
+  function loadI18n() { if (global.LueriI18n) { global.LueriI18n.init(); return; } if (document.querySelector('script[data-lueri-i18n]')) return; const script = document.createElement('script'); script.src = 'lueri-i18n.js'; script.async = false; script.dataset.lueriI18n = 'true'; script.onerror = () => console.warn('Lueri i18n layer could not be loaded.'); document.head.appendChild(script); }
+  function boot() { document.documentElement.classList.add('js'); bootTheme(); initThemeToggle(document.getElementById('themeToggle')); initMenu(); initReveal(); loadI18n(); }
+  global.LUERI = LUERI; global.LUERI_TIERS = TIER_CATALOG; global.LUERI_PLANS = PURCHASE_TIERS; global.lueriBootTheme = bootTheme; global.lueriIsValidPhone = isValidPhone; global.lueriNormalizePhone = normalizePhone; global.lueriOpenWhatsApp = openWhatsApp; global.lueriCopyToClipboard = copyToClipboard;
+  global.lueri = { boot, supabase: () => supabase, rpc, fmt, escapeHTML, formatDateTime, formatKES, showToast, vatBreakdown, docs: { receiptHTML, invoiceHTML, openDoc }, booking: { create: createBooking }, rewards: { getMemberSummary, registerMember, addTransaction } };
 })(window);
