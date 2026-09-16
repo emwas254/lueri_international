@@ -44,3 +44,14 @@ The lifetime-spend-forever tier model (a VIP from years ago keeps 20% off foreve
 - **`tier_window_migration.sql`** — switches tier qualification from lifetime spend to a rolling 365-day window, so a VIP discount stops being permanent for a customer who's gone inactive. Needs a nightly `pg_cron` job (instructions in the file) to catch members whose spend ages out of the window even with no new transaction.
 - **`rewards-cloud.js`, `rewards.html`** — updated to use the rolling window once the DB provides it, with a safe fallback to the old lifetime-spend behavior until you deploy the SQL above. `rewards-staff-cloud.js` needed no change — it already just displays whatever tier the database hands it.
 - **Honeypot**: add `<input type="text" id="corpHoneypot" name="website" autocomplete="off" tabindex="-1" style="position:absolute; left:-9999px; opacity:0;" aria-hidden="true">` inside `<form id="corporateForm">` in `corporate.html` — the JS side is already live and waiting for this field to exist.
+
+## Final cheque-workflow completion — 2026-09-16
+
+- `corporate-signup.js` now exposes a corporate payment-method selector for the three purchasable business plans and collects cheque number, bank, date and optional notes.
+- Corporate cheque submission uses the production `submit_organization_cheque_payment` RPC. The browser never supplies an amount; the database remains authoritative for plan and price.
+- Because the production corporate cheque RPC requires an authenticated user whose email matches the organization's registered contact email, the frontend uses a Supabase email magic-link verification step before submitting the cheque. Pending cheque details are retained only in session storage until the verified session completes the RPC.
+- Corporate cheque submissions remain `pending_cheque`; the customer-facing flow does not claim activation.
+- `rewards-staff.html` now loads pending cheque payments through `staff_list_pending_cheques()` and provides staff-only Clear and Reject actions through `staff_clear_cheque(uuid)` and `staff_reject_cheque(uuid,text)`. Server-side `is_staff()` remains authoritative.
+- `rewards.js.bak` was removed after confirming it was an unused duplicate.
+- No real payment was performed and no production customer/organization payment record was created during implementation.
+- Browser/mobile runtime testing remains outstanding and must be performed before declaring the site fully production-verified.
