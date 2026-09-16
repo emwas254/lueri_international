@@ -1,7 +1,6 @@
 /* LUERI INTERNATIONAL — lightweight customer-facing language layer
    Languages: English, Kiswahili, French, Spanish, Arabic, Portuguese, Chinese (Simplified).
-   English remains the source language. This layer intentionally translates only
-   approved UI strings; payment amounts, account states and legal meaning are never inferred.
+   English remains the source language. Approved UI strings only.
 */
 (function(){'use strict';
   const LANGS={en:'English',sw:'Kiswahili',fr:'Français',es:'Español',ar:'العربية',pt:'Português',zh:'中文'};
@@ -15,7 +14,7 @@
     pt:{menu:'Menu',close:'Fechar',home:'Início',services:'Serviços',rewards:'Recompensas',corporate:'Empresas',careers:'Carreiras',book:'Agendar recolha',contact:'Contacto',language:'Idioma',back:'Voltar',submit:'Enviar',continue:'Continuar',pay:'Pagar agora',pending:'A aguardar verificação',secure:'Pagamento seguro',bank:'Transferência bancária',cheque:'Cheque',pesapal:'Pesapal',support:'Contactar suporte',sameDay:'Entrega no mesmo dia',courier:'Correio e entregas'},
     zh:{menu:'菜单',close:'关闭',home:'首页',services:'服务',rewards:'会员奖励',corporate:'企业服务',careers:'招聘',book:'预约取件',contact:'联系我们',language:'语言',back:'返回',submit:'提交',continue:'继续',pay:'立即支付',pending:'等待验证',secure:'安全结账',bank:'银行转账',cheque:'支票',pesapal:'Pesapal',support:'联系支持',sameDay:'当日配送',courier:'快递与配送'}
   };
-  const KEY= 'lueri-language';
+  const KEY='lueri-language';
   function get(){const saved=localStorage.getItem(KEY);return LANGS[saved]?saved:'en';}
   function set(lang){if(!LANGS[lang])return;localStorage.setItem(KEY,lang);apply(lang);}
   function apply(lang){
@@ -23,7 +22,7 @@
     document.documentElement.dir=RTL.has(lang)?'rtl':'ltr';
     document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(T[lang]&&T[lang][key])el.textContent=T[lang][key];});
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder');if(T[lang]&&T[lang][key])el.setAttribute('placeholder',T[lang][key]);});
-    document.querySelectorAll('[data-lueri-language]').forEach(el=>{el.value=lang;});
+    document.querySelectorAll('[data-lueri-language]').forEach(el=>el.value=lang);
   }
   function inject(){
     if(document.querySelector('.lueri-language-picker'))return;
