@@ -22,9 +22,9 @@
     --paper-rgb: 27,38,32;
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth; overflow-x:hidden;}
   body{
-    margin:0; background:var(--paper); color:var(--ink);
+    margin:0; background:var(--paper); color:var(--ink); overflow-x:hidden; max-width:100%;
     font-family:'IBM Plex Sans', sans-serif; line-height:1.5;
     transition: background-color 0.3s ease, color 0.3s ease;
     background-image:
@@ -44,13 +44,14 @@
     position:sticky; top:0; z-index:100; background: rgba(var(--paper-rgb), 0.85);
     border-bottom:1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   }
-  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; flex-wrap:wrap; gap:12px 16px; }
+  .brand{ min-width:0; }
   .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:0.03em; }
   .brand .mark-img{ height:34px; width:auto; display:block; }
   .brand .mark-dark-img{ display:none; }
   [data-theme="dark"] .brand .mark-light{ display:none; }
   [data-theme="dark"] .brand .mark-dark-img{ display:block; }
-  .nav-controls { display: flex; align-items: center; gap: 16px; }
+  .nav-controls { display: flex; align-items: center; gap: 16px; flex-wrap:wrap; }
   .theme-toggle {
     background: none; border: 1px solid var(--line); border-radius: 50%;
     width: 34px; height: 34px; cursor: pointer; color: var(--ink);
