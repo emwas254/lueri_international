@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Secure Checkout — Lueri International</title>
-<meta name="description" content="Lueri Rewards membership checkout — secure payment via Pesapal.">
+<meta name="description" content="Lueri Rewards membership checkout — secure payment via Pesapal, bank transfer or cheque.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -17,6 +17,7 @@
   .co-card{background:#fff;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;box-shadow:8px 8px 0 rgba(27,38,32,.08);} .co-head{padding:28px 24px 20px;border-bottom:1px dashed var(--line);text-align:center;} .co-head h1{font-size:1.5rem;line-height:1.15;margin-bottom:8px;} .co-head p{margin:0;color:var(--slate);font-size:.92rem;line-height:1.6;} .co-body{padding:28px 24px;}
   .co-summary{background:var(--paper);border:1px dashed var(--ink);border-radius:4px;padding:16px;margin-bottom:24px;font-size:.88rem;} .co-summary .row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;} .co-summary .row.total{border-top:1.5px solid var(--ink);margin-top:8px;padding-top:10px;font-weight:700;} .co-summary .mono{color:var(--slate);font-size:.78rem;}
   .co-pay{width:100%;padding:16px;font-size:1rem;} .co-secure{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--slate);margin-top:14px;letter-spacing:.04em;} .co-error{background:rgba(198,40,40,.08);border:1px solid rgba(198,40,40,.3);color:var(--error);padding:12px 16px;border-radius:4px;font-size:.88rem;margin-bottom:16px;display:none;} .co-note{font-size:.8rem;color:var(--slate);line-height:1.6;margin-top:18px;padding:12px 14px;border:1px dashed var(--line);border-radius:4px;} .co-done{text-align:center;padding:34px 12px;} .co-ref{font-family:'IBM Plex Mono',monospace;font-size:1rem;color:var(--route);margin:12px 0 18px;} .co-step{display:none;} .co-step.active{display:block;}
+  .bank-card{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:14px;margin:10px 0 18px;font-size:.86rem;line-height:1.55;} .bank-card strong{font-weight:700;} .bank-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding:6px 0;} .bank-row:last-child{border-bottom:0;} .bank-row span:first-child{color:var(--slate);}
 </style>
 </head>
 <body>
@@ -32,7 +33,20 @@
       <div class="form-group"><label class="form-label on-light" for="email">Email address</label><input class="input-light" type="email" id="email" autocomplete="email" placeholder="For your receipt"></div>
       <div class="form-group"><label class="form-label on-light" for="phone">Phone number</label><input class="input-light" type="tel" id="phone" inputmode="tel" placeholder="07xx xxx xxx — your Lueri Rewards number"></div>
       <input type="text" name="website" id="coHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
-      <div class="form-group" id="coPaymentMethodGroup"><label class="form-label on-light">Payment method</label><div style="display:flex;gap:16px;margin-top:4px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;"><input type="radio" name="coPaymentMethod" value="pesapal" checked> Pesapal (M-Pesa &amp; Cards)</label><label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;"><input type="radio" name="coPaymentMethod" value="cheque"> Cheque</label></div></div>
+      <div class="form-group" id="coPaymentMethodGroup"><label class="form-label on-light">Payment method</label><div style="display:flex;gap:16px;margin-top:4px;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;"><input type="radio" name="coPaymentMethod" value="pesapal" checked> Pesapal (M-Pesa &amp; Cards)</label><label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;"><input type="radio" name="coPaymentMethod" value="bank_transfer"> Bank transfer</label><label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;"><input type="radio" name="coPaymentMethod" value="cheque"> Cheque</label></div></div>
+      <div id="coBankTransferFields" style="display:none;">
+        <div class="bank-card" aria-label="Lueri bank transfer details">
+          <div class="bank-row"><span>Account name</span><strong>LUERI INTERNATIONAL</strong></div>
+          <div class="bank-row"><span>Bank</span><strong>NCBA BANK KENYA PLC</strong></div>
+          <div class="bank-row"><span>Branch</span><strong>Buru Buru</strong></div>
+          <div class="bank-row"><span>Currency</span><strong>KES</strong></div>
+          <div class="bank-row"><span>Account number</span><strong>1011828853</strong></div>
+          <div class="bank-row"><span>SWIFT</span><strong>CBAFKENX</strong></div>
+        </div>
+        <div class="form-group"><label class="form-label on-light" for="bankTransferReference">Bank transaction/reference number</label><input class="input-light" type="text" id="bankTransferReference" maxlength="120" autocomplete="off" placeholder="e.g. bank transfer confirmation/reference"></div>
+        <div class="form-group"><label class="form-label on-light" for="bankTransferNotes">Notes (optional)</label><input class="input-light" type="text" id="bankTransferNotes" maxlength="1000" placeholder="Optional payment note"></div>
+        <div class="co-note">Make the transfer for the exact membership amount shown above. Your payment remains <strong>pending verification</strong> until Lueri staff confirms the bank transaction. Do not send card details or passwords.</div>
+      </div>
       <div id="coChequeFields" style="display:none;">
         <div class="form-group"><label class="form-label on-light" for="chequeNumber">Cheque number</label><input class="input-light" type="text" id="chequeNumber" maxlength="64"></div>
         <div class="form-group"><label class="form-label on-light" for="chequeBank">Bank name</label><input class="input-light" type="text" id="chequeBank" maxlength="120"></div>
@@ -64,7 +78,9 @@
   };
   const normalizePhone = (phone) => { const value = String(phone || '').trim().replace(/\s+/g, ''); if (/^0(7|1)\d{8}$/.test(value)) return '254' + value.slice(1); if (/^\+254(7|1)\d{8}$/.test(value)) return value.slice(1); if (/^254(7|1)\d{8}$/.test(value)) return value; return null; };
   const getPaymentMethod = () => document.querySelector('input[name="coPaymentMethod"]:checked')?.value || 'pesapal';
-  const renderChequePending = (result) => { document.getElementById('doneBody').innerHTML = '<h2>Cheque submitted</h2><p>Your cheque payment has been recorded as <strong>pending verification</strong>.</p><p>Lueri must verify and clear the cheque before your membership is activated.</p>' + (result.internal_reference ? '<div class="co-ref">Ref: ' + lueri.escapeHTML(result.internal_reference) + '</div>' : '') + '<a class="btn btn-secondary" href="index.html">Back to site</a>'; showStep('stepDone'); };
+  const renderPending = (title, copy, reference) => { document.getElementById('doneBody').innerHTML = '<h2>' + lueri.escapeHTML(title) + '</h2><p>' + lueri.escapeHTML(copy) + '</p>' + (reference ? '<div class="co-ref">Ref: ' + lueri.escapeHTML(reference) + '</div>' : '') + '<a class="btn btn-secondary" href="index.html">Back to site</a>'; showStep('stepDone'); };
+  const renderChequePending = (result) => renderPending('Cheque submitted', 'Your cheque payment has been recorded as pending verification. Lueri must verify and clear the cheque before your membership is activated.', result.internal_reference);
+  const renderBankPending = (result) => renderPending('Bank transfer submitted', 'Your bank-transfer reference has been recorded as pending verification. Lueri must verify the transfer before your membership is activated.', result.internal_reference);
   const loadPlan = async () => {
     if (!planCode) { showError('No membership plan was selected.'); document.getElementById('payBtn').disabled = true; return; }
     const result = await lueri.rpc('get_plan', { p_code: planCode });
@@ -77,22 +93,29 @@
     document.getElementById('coTotal').textContent = lueri.fmt(plan.price);
     const date = document.getElementById('chequeDate'); if (date) date.max = new Date().toISOString().slice(0, 10);
   };
-  document.querySelectorAll('input[name="coPaymentMethod"]').forEach((radio) => radio.addEventListener('change', () => { const cheque = getPaymentMethod() === 'cheque'; document.getElementById('coChequeFields').style.display = cheque ? 'block' : 'none'; document.getElementById('payBtn').textContent = cheque ? 'Submit cheque details' : 'Pay now with Pesapal'; document.getElementById('coSecureLine').style.display = cheque ? 'none' : 'block'; }));
+  document.querySelectorAll('input[name="coPaymentMethod"]').forEach((radio) => radio.addEventListener('change', () => {
+    const method = getPaymentMethod();
+    const cheque = method === 'cheque'; const bank = method === 'bank_transfer';
+    document.getElementById('coChequeFields').style.display = cheque ? 'block' : 'none';
+    document.getElementById('coBankTransferFields').style.display = bank ? 'block' : 'none';
+    document.getElementById('payBtn').textContent = cheque ? 'Submit cheque details' : bank ? 'Submit bank transfer' : 'Pay now with Pesapal';
+    document.getElementById('coSecureLine').style.display = method === 'pesapal' ? 'block' : 'none';
+  }));
   document.getElementById('payBtn').addEventListener('click', async () => {
     hideError(); if (document.getElementById('coHoneypot').value) return;
     const first = document.getElementById('firstName').value.trim(); const last = document.getElementById('lastName').value.trim(); const email = document.getElementById('email').value.trim(); const phone = document.getElementById('phone').value.trim(); const method = getPaymentMethod();
     if (!first || !last) return showError('Enter your first and last name.');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Enter a valid email address.');
+    if (!/^\S+@\S+\.\S+$/.test(email)) return showError('Enter a valid email address.');
     const normalizedPhone = normalizePhone(phone); if (!normalizedPhone) return showError('Enter a valid Kenyan phone number (07… or 01…).');
-    let cheque = null;
+    let cheque = null; let bankTransfer = null;
     if (method === 'cheque') { cheque = { number: document.getElementById('chequeNumber').value.trim(), bank: document.getElementById('chequeBank').value.trim(), date: document.getElementById('chequeDate').value, notes: document.getElementById('chequeNotes').value.trim() }; if (cheque.number.length < 3) return showError('Enter the cheque number.'); if (cheque.bank.length < 2) return showError('Enter the bank name.'); if (!cheque.date) return showError('Enter the date on the cheque.'); if (cheque.date > new Date().toISOString().slice(0, 10)) return showError('The cheque date cannot be in the future.'); }
-    const btn = document.getElementById('payBtn'); btn.disabled = true; btn.textContent = method === 'cheque' ? 'Submitting cheque…' : 'Opening secure Pesapal…';
+    if (method === 'bank_transfer') { bankTransfer = { reference: document.getElementById('bankTransferReference').value.trim(), notes: document.getElementById('bankTransferNotes').value.trim() }; if (bankTransfer.reference.length < 3) return showError('Enter the bank transaction/reference number.'); }
+    const btn = document.getElementById('payBtn'); btn.disabled = true; btn.textContent = method === 'cheque' ? 'Submitting cheque…' : method === 'bank_transfer' ? 'Submitting transfer…' : 'Opening secure Pesapal…';
     try {
       let registration = await lueri.rpc('register_member', { p_name: first + ' ' + last, p_phone: normalizedPhone, p_email: email });
       if (registration?.success && registration.member) { member = registration.member; }
       else {
-        const errors = normalizeErrors(registration);
-        const duplicate = errors.some((e) => String(e?.code || '').toLowerCase() === 'duplicate_phone' || /already exists with this phone/i.test(String(e?.message || '')));
+        const errors = normalizeErrors(registration); const duplicate = errors.some((e) => String(e?.code || '').toLowerCase() === 'duplicate_phone' || /already exists with this phone/i.test(String(e?.message || '')));
         if (!duplicate) throw new Error(errors[0]?.message || 'Could not set up your Rewards account.');
         const lookup = await lueri.rpc('lookup_member', { p_phone: normalizedPhone });
         if (!lookup?.success || !lookup.member) throw new Error('A Rewards account already exists for this phone number, but we could not retrieve it. Please use the Rewards lookup page or contact Lueri support.');
@@ -103,13 +126,18 @@
         if (!result?.success) { const errors = normalizeErrors(result); throw new Error(errors[0]?.message || 'Could not submit cheque details.'); }
         renderChequePending(result); return;
       }
+      if (method === 'bank_transfer') {
+        const result = await lueri.rpc('submit_bank_transfer_payment', { p_member_id: member.id, p_plan_code: plan.code, p_transfer_reference: bankTransfer.reference, p_transfer_notes: bankTransfer.notes || null });
+        if (!result?.success) { const errors = normalizeErrors(result); throw new Error(errors[0]?.message || 'Could not submit the bank-transfer reference.'); }
+        renderBankPending(result); return;
+      }
       const headers = { 'Content-Type': 'application/json', apikey: LUERI.supabaseAnonKey };
       const session = await lueri.supabase().auth.getSession(); if (session?.data?.session?.access_token) headers.Authorization = 'Bearer ' + session.data.session.access_token;
       const response = await fetch(LUERI.supabaseUrl + '/functions/v1/pesapal-initiate', { method: 'POST', headers, body: JSON.stringify({ member_id: member.id, plan_code: plan.code }) });
       const payment = await response.json().catch(() => ({}));
       if (!response.ok || payment.error || !payment.redirect_url) throw new Error(payment.error || 'We could not start the secure Pesapal checkout.');
       window.location.assign(payment.redirect_url);
-    } catch (err) { console.error('Checkout failed:', err); btn.disabled = false; btn.textContent = method === 'cheque' ? 'Submit cheque details' : 'Pay now with Pesapal'; showError(err.message || 'We could not start your payment. Please try again.'); }
+    } catch (err) { console.error('Checkout failed:', err); btn.disabled = false; btn.textContent = method === 'cheque' ? 'Submit cheque details' : method === 'bank_transfer' ? 'Submit bank transfer' : 'Pay now with Pesapal'; showError(err.message || 'We could not start your payment. Please try again.'); }
   });
   loadPlan().catch((err) => { console.error('Plan load failed:', err); showError('We could not load this membership plan. Please return to Rewards and try again.'); });
 })();
