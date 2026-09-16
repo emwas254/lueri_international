@@ -3,336 +3,428 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lueri Rewards — Lueri International</title>
-<meta name="description" content="Join Lueri Rewards — earn points on every delivery, unlock free deliveries and priority dispatch as you climb Silver, Gold, Platinum and VIP tiers.">
+<title>Lueri Rewards — Earn on Every Delivery</title>
+<meta name="description" content="Join Lueri Rewards. Earn points on every Nairobi delivery, unlock discounts, free deliveries, and priority dispatch.">
 <link rel="canonical" href="https://lueriinternational.com/rewards.html">
-<meta property="og:title" content="Lueri Rewards — Lueri International">
-<meta property="og:description" content="Earn points on every delivery. Free to join.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://lueriinternational.com/rewards.html">
-<meta property="og:image" content="https://lueriinternational.com/assets/og-image.png">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="lueri-common.js"></script>
-<script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="assets/site.css">
+
 <style>
-  /* Page-specific shell overrides */
-  .navbar{max-width:900px; margin:0 auto;}
-  .navbar .brand img{height:30px;}
-  .back-link{font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75;}
-  .back-link:hover{opacity:1; color:var(--route);}
-  main{padding:56px 0 100px;}
-  .wrap{max-width:900px;}
-  .panel{box-shadow:8px 8px 0 rgba(27,38,32,0.08);}
+/* --- REWARDS PAGE SPECIFIC ENHANCEMENTS --- */
+
+/* 1. Tab Navigation for Cognitive Clarity (Krug) */
+.rewards-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 40px auto 32px;
+  max-width: 500px;
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 6px;
+}
+.rewards-tab {
+  flex: 1;
+  padding: 12px 16px;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.rewards-tab.active {
+  background: var(--route);
+  color: white;
+  font-weight: 600;
+}
+.rewards-tab:not(.active):hover {
+  background: var(--paper-dim);
+  color: var(--ink);
+}
+
+/* 2. Elevated Corporate Tile System (Kornilov Polish) */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.pricing-card {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 28px;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(27, 38, 32, 0.12), 0 4px 6px -2px rgba(27, 38, 32, 0.05);
+  border-color: var(--route);
+}
+
+/* Tier-Specific Top Accents */
+.pricing-card.tier-bronze { border-top: 3px solid #9c6644; }
+.pricing-card.tier-silver { border-top: 3px solid #7b8c84; }
+.pricing-card.tier-gold { border-top: 3px solid #b8860b; }
+.pricing-card.tier-platinum { border-top: 3px solid #58665f; }
+.pricing-card.tier-vip { border-top: 3px solid #274238; background: linear-gradient(180deg, var(--card-bg) 0%, rgba(39, 66, 56, 0.03) 100%); }
+
+/* Badge for Popular Tier */
+.tier-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: var(--route);
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+/* Typography Alignment with Corporate Page */
+.pricing-card .tier {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--route);
+  margin-bottom: 10px;
+}
+.pricing-card h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.pricing-card .price {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.8rem;
+  margin: 12px 0;
+  color: var(--ink);
+}
+.pricing-card .price span {
+  font-size: 0.9rem;
+  color: var(--slate);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+}
+.pricing-card p {
+  color: var(--slate);
+  font-size: 0.92rem;
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pricing-card ul li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: var(--slate);
+  line-height: 1.5;
+}
+.pricing-card ul li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--route);
+  font-weight: 700;
+}
+
+/* 3. Concierge & Auth Sections */
+.concierge-box {
+  margin-top: 48px;
+  padding: 28px;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+}
+.concierge-box h4 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.concierge-box p {
+  font-size: 0.92rem;
+  color: var(--slate);
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+@media (max-width: 700px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  .rewards-tabs { flex-direction: column; }
+}
 </style>
 </head>
 <body>
 
+<!-- Header (Simplified for Rewards Page Context) -->
 <header>
-  <div class="navbar">
+  <div class="navbar wrap">
     <a class="brand" href="index.html">
       <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
-      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
       <span>Lueri International</span>
     </a>
-    <div style="display:flex; align-items:center; gap:16px;">
-      <a class="back-link" href="index.html">&#8592; Main site</a>
-      <a class="back-link" href="careers.html">Careers</a>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-        <svg id="sunIcon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
+    <div class="nav-controls">
+      <a class="nav-cta" href="index.html#contact">Book a Pickup</a>
     </div>
   </div>
 </header>
 
 <main>
+  <!-- Hero Section -->
+  <section class="reveal" style="padding: 60px 0 20px;">
+    <div class="wrap" style="text-align: center; max-width: 800px; margin: 0 auto;">
+      <div class="eyebrow-mono" style="justify-content: center; margin-bottom: 16px;">Lueri Rewards Program</div>
+      <h1 style="font-family: 'Oswald', sans-serif; font-size: 3rem; text-transform: uppercase; margin: 0 0 16px; line-height: 1.1;">Every Delivery Brings You Closer to More.</h1>
+      <p style="font-size: 1.1rem; color: var(--slate); line-height: 1.6; margin-bottom: 32px;">
+        Join for free and earn points on every booking, or unlock instant premium benefits with a yearly membership. Your loyalty, rewarded.
+      </p>
+    </div>
+  </section>
+
+  <!-- Tabbed Navigation (Krug: Reduce Cognitive Load) -->
   <div class="wrap">
-    <div class="eyebrow-mono">Lueri Rewards</div>
-    <h1 class="title" style="font-size:clamp(2.2rem,6vw,3.4rem); line-height:1; margin:10px 0 12px;">Earn on every<br>delivery.</h1>
-    <p class="subtitle" style="max-width:560px; color:var(--slate); font-size:1.05rem; line-height:1.6;">Free to join. Every delivery earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch. Or skip the wait and buy your tier outright below.</p>
-
-    <div style="margin-top:40px;">
-      <div class="eyebrow-mono" style="margin-bottom:16px;">Earn it free — tiers by spend</div>
-      <div class="tier-cards" id="tierCards"></div>
-      <p class="tier-note">Your tier is based on your spend over the last 12 months. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
-    </div>
-
-    <div class="purchase-section" style="margin-top:56px;">
-      <div class="purchase-head">
-        <div>
-          <div class="eyebrow-mono" style="margin-bottom:4px;">Or buy it outright</div>
-          <h2 style="font-size:1.5rem;">Skip the wait — 1 year, instant</h2>
-        </div>
-      </div>
-      <div class="purchase-cards" id="purchaseCards"></div>
-      <p class="switch-link">Prefer to start without a paid membership? <a href="#" id="joinFreeLink">Join for Free</a></p>
-    </div>
-
-    <div class="panel" style="margin-top:36px;">
-      <div class="tabs" id="tabBar">
-        <button class="tab-btn active" data-tab="lookup">My Rewards</button>
-        <button class="tab-btn" data-tab="join">Join Now</button>
-      </div>
-
-      <!-- LOOKUP VIEW — fix N-01: phone AND member number required -->
-      <div class="view active" id="view-lookup">
-        <div id="lookupForm">
-          <p style="color:var(--slate); font-size:.92rem; margin:0 0 20px;">Enter the phone number <strong>and</strong> member number you registered with. Both are required to view your account — this protects your points and history.</p>
-          <div class="msg error" id="lookupMsg"></div>
-          <div class="form-row2">
-            <div class="form-group">
-              <label class="form-label on-light" for="lookupPhone">Phone number</label>
-              <input class="input-light" type="tel" id="lookupPhone" placeholder="07xx xxx xxx">
-            </div>
-            <div class="form-group">
-              <label class="form-label on-light" for="lookupMemberNumber">Member number</label>
-              <input class="input-light" type="text" id="lookupMemberNumber" placeholder="e.g. LR-1004" style="text-transform:uppercase;">
-            </div>
-          </div>
-          <button class="btn btn-primary btn-block" id="lookupBtn">View my rewards</button>
-          <p class="switch-link">Not a member yet? <a href="#" data-tab="join">Join Lueri Rewards</a></p>
-        </div>
-
-        <div class="member-card" id="memberCard">
-          <div class="tier-band">
-            <div>
-              <div class="points-label">Current tier</div>
-              <div class="tier-name"><span id="mTierName" class="signal">Bronze</span></div>
-            </div>
-            <div style="text-align:right;">
-              <div class="points-num" id="mPoints">0</div>
-              <div class="points-label">Points balance</div>
-            </div>
-          </div>
-          <div>
-            <div class="progress-track"><div class="progress-fill" id="mProgressFill" style="width:0%;"></div></div>
-            <div class="progress-note" id="mProgressNote"></div>
-          </div>
-          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Your benefits</h3>
-          <div class="benefit-grid" id="mBenefits"></div>
-          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Recent activity</h3>
-          <div id="mTxWrap"><p class="empty-note">No transactions yet.</p></div>
-          <button class="btn btn-secondary" style="margin-top:24px;" id="lookupAnother">Look up a different account</button>
-        </div>
-      </div>
-
-      <!-- JOIN VIEW -->
-      <div class="view" id="view-join">
-        <div class="plan-banner" id="planBanner">
-          <div>
-            <div class="pb-label">You're signing up for</div>
-            <div class="pb-tier" id="planBannerTier">Gold — KES 15,000/year</div>
-          </div>
-          <button type="button" class="pb-clear" id="planBannerClear">Change</button>
-        </div>
-        <div class="msg error" id="joinMsg"></div>
-        <div class="msg success" id="joinSuccessMsg"></div>
-        <div class="form-row2">
-          <div class="form-group">
-            <label class="form-label on-light" for="joinName">Full name</label>
-            <input class="input-light" type="text" id="joinName">
-          </div>
-          <div class="form-group">
-            <label class="form-label on-light" for="joinPhone">Phone number</label>
-            <input class="input-light" type="tel" id="joinPhone" placeholder="07xx xxx xxx">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label on-light" for="joinEmail">Email (optional)</label>
-          <input class="input-light" type="email" id="joinEmail">
-        </div>
-        <button class="btn btn-primary btn-block" id="joinBtn">Create my Rewards account</button>
-      </div>
-
-      <div class="disclosure">
-        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your membership is saved centrally, and your balance is viewable from any phone or browser using your registered number <em>and</em> member number. Points post when your delivery is logged by our team — after a delivery, message us on WhatsApp with your member number and we'll log the transaction.
-      </div>
+    <div class="rewards-tabs">
+      <button class="rewards-tab active" onclick="switchTab('free')">🎁 Earn Your Status (Free)</button>
+      <button class="rewards-tab" onclick="switchTab('paid')">👑 Instant Elite (Paid)</button>
     </div>
   </div>
+
+  <!-- FREE TIERS GRID (Using Corporate .pricing-card System) -->
+  <section class="reveal" id="free-tiers">
+    <div class="wrap">
+      <div class="pricing-grid">
+        
+        <!-- Bronze -->
+        <div class="pricing-card section-card-float tier-bronze">
+          <div class="tier">Starting Tier</div>
+          <h3>Bronze</h3>
+          <div class="price">Free <span>to join</span></div>
+          <p>Your journey starts here. Earn on every single booking.</p>
+          <ul>
+            <li>Earn 1 point per KES 50 spent</li>
+            <li>Points redeemable for delivery vouchers</li>
+            <li>Access to member-only WhatsApp support</li>
+          </ul>
+        </div>
+
+        <!-- Silver -->
+        <div class="pricing-card section-card-float tier-silver">
+          <div class="tier">Free Tier</div>
+          <h3>Silver</h3>
+          <div class="price">KES 5,000+ <span>annual spend</span></div>
+          <p>Unlock tangible savings on your regular Nairobi routes.</p>
+          <ul>
+            <li><strong>All Bronze benefits, PLUS:</strong></li>
+            <li>5% off priority same-day bookings</li>
+            <li>KES 200 free delivery credit monthly</li>
+          </ul>
+        </div>
+
+        <!-- Gold -->
+        <div class="pricing-card section-card-float tier-gold">
+          <div class="tier-badge">Most Popular</div>
+          <div class="tier">Free Tier</div>
+          <h3>Gold</h3>
+          <div class="price">KES 15,000+ <span>annual spend</span></div>
+          <p>The sweet spot for frequent senders and small businesses.</p>
+          <ul>
+            <li><strong>All Silver benefits, PLUS:</strong></li>
+            <li>10% off priority same-day bookings</li>
+            <li>1 free standard delivery every month</li>
+          </ul>
+        </div>
+
+        <!-- Platinum -->
+        <div class="pricing-card section-card-float tier-platinum">
+          <div class="tier">Premium</div>
+          <h3>Platinum</h3>
+          <div class="price">KES 35,000+ <span>annual spend</span></div>
+          <p>For high-volume operations that demand priority treatment.</p>
+          <ul>
+            <li><strong>All Gold benefits, PLUS:</strong></li>
+            <li>15% off priority same-day bookings</li>
+            <li>2 free standard deliveries every month</li>
+          </ul>
+        </div>
+
+        <!-- VIP -->
+        <div class="pricing-card section-card-float tier-vip" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto; text-align: center;">
+          <div class="tier">Elite</div>
+          <h3>VIP Status</h3>
+          <div class="price">KES 75,000+ <span>annual spend</span></div>
+          <p style="text-align: center; max-width: 400px; margin: 0 auto 16px;">The ultimate Lueri experience. Maximum savings and absolute priority.</p>
+          <ul style="text-align: left; max-width: 320px; margin: 0 auto;">
+            <li><strong>All Platinum benefits, PLUS:</strong></li>
+            <li>20% off ALL bookings</li>
+            <li>4 free standard deliveries every month</li>
+            <li>Dedicated priority dispatch queue</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PAID TIERS GRID (Hidden by default) -->
+  <section class="reveal" id="paid-tiers" style="display: none;">
+    <div class="wrap">
+      <div class="pricing-grid">
+        
+        <!-- Paid Silver -->
+        <div class="pricing-card section-card-float tier-silver">
+          <div class="tier">Instant Status</div>
+          <h3>Silver</h3>
+          <div class="price">KES 5,000 <span>/ year</span></div>
+          <p>Skip the spend requirement. Get Silver benefits immediately.</p>
+          <ul>
+            <li>All Bronze benefits</li>
+            <li>5% off priority same-day bookings</li>
+            <li>KES 200 free delivery credit monthly</li>
+          </ul>
+          <a href="#join" class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 20px;">Choose Silver</a>
+        </div>
+
+        <!-- Paid Gold -->
+        <div class="pricing-card section-card-float tier-gold">
+          <div class="tier-badge">Best Value</div>
+          <div class="tier">Instant Status</div>
+          <h3>Gold</h3>
+          <div class="price">KES 15,000 <span>/ year</span></div>
+          <p>Instant ROI for businesses that send 2+ parcels a week.</p>
+          <ul>
+            <li>All Silver benefits</li>
+            <li>10% off priority same-day bookings</li>
+            <li>1 free standard delivery every month</li>
+          </ul>
+          <a href="#join" class="btn btn-primary" style="width: 100%; text-align: center; margin-top: 20px;">Choose Gold</a>
+        </div>
+
+        <!-- Paid Platinum -->
+        <div class="pricing-card section-card-float tier-platinum">
+          <div class="tier">Instant Status</div>
+          <h3>Platinum</h3>
+          <div class="price">KES 35,000 <span>/ year</span></div>
+          <p>Guaranteed priority for growing e-commerce and retail.</p>
+          <ul>
+            <li>All Gold benefits</li>
+            <li>15% off priority same-day bookings</li>
+            <li>2 free standard deliveries every month</li>
+          </ul>
+          <a href="#join" class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 20px;">Choose Platinum</a>
+        </div>
+
+        <!-- Paid VIP -->
+        <div class="pricing-card section-card-float tier-vip">
+          <div class="tier">Instant Status</div>
+          <h3>VIP</h3>
+          <div class="price">KES 75,000 <span>/ year</span></div>
+          <p>White-glove logistics treatment from day one.</p>
+          <ul>
+            <li>All Platinum benefits</li>
+            <li>20% off ALL bookings</li>
+            <li>4 free standard deliveries every month</li>
+          </ul>
+          <a href="#join" class="btn btn-primary" style="width: 100%; text-align: center; margin-top: 20px; background: var(--ink);">Choose VIP</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Auth & Concierge Section -->
+  <section class="reveal" id="join" style="padding-bottom: 80px;">
+    <div class="wrap" style="max-width: 600px; margin: 0 auto;">
+      
+      <!-- Frictionless Login -->
+      <div class="pricing-card" style="text-align: center; margin-bottom: 32px;">
+        <div class="tier">Member Access</div>
+        <h3>Check Your Rewards Balance</h3>
+        <p>Enter your phone number. We'll send a secure 4-digit code to log you in instantly. No passwords needed.</p>
+        <form style="margin-top: 24px; text-align: left;">
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input class="form-input" type="tel" id="phone" placeholder="07xx xxx xxx" autocomplete="tel" required>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" style="margin-top: 16px;">Send Secure Code</button>
+        </form>
+        <p style="margin-top: 16px; font-size: 0.85rem;">
+          Not a member yet? <a href="#join-form" style="color: var(--route); font-weight: 600;">Join Lueri Rewards for free</a>
+        </p>
+      </div>
+
+      <!-- Concierge Reframe (Aaron Walter Emotional Design) -->
+      <div class="concierge-box">
+        <h4>🌟 Founding Member Concierge</h4>
+        <p>
+          As an early member of Lueri Rewards, you receive white-glove service. Your points are personally verified by our team to ensure 100% accuracy and security.
+        </p>
+        <p style="margin-bottom: 0;">
+          <strong>How to claim:</strong> Simply forward your delivery confirmation to our <a href="https://wa.link/qk7m3b" target="_blank" style="color: var(--route); font-weight: 600;">WhatsApp Concierge</a> with your member number, and we will instantly credit your account. 
+          <br><em style="font-size: 0.8rem; color: var(--slate);">(Fully automated, real-time point tracking is launching in Q4 2026.)</em>
+        </p>
+      </div>
+
+    </div>
+  </section>
 </main>
 
+<footer class="wrap">
+  <div class="footer-row" style="margin-top:40px; border-top: 1px solid var(--line); padding-top: 32px;">
+    <div class="mono" style="opacity:0.6;">&copy; 2026 Lueri International · Nairobi, Kenya</div>
+    <div class="social-links">
+      <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer">X</a>
+    </div>
+  </div>
+</footer>
+
 <script>
-(function () {
-  'use strict';
-  var esc = lueri.escapeHTML, fmt = lueri.fmt, formatDateTime = lueri.formatDateTime;
-
-  function showMsg(id, text) { var el = document.getElementById(id); el.textContent = text; el.classList.add('show'); }
-  function hideMsg(id) { document.getElementById(id).classList.remove('show'); }
-
-  /* ---- Tabs: wired FIRST so nothing decorative can take them down ---- */
-  function showTab(name) {
-    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('active', b.dataset.tab === name); });
-    document.getElementById('view-lookup').classList.toggle('active', name === 'lookup');
-    document.getElementById('view-join').classList.toggle('active', name === 'join');
-  }
-  document.querySelectorAll('[data-tab]').forEach(function (el) {
-    el.addEventListener('click', function (e) { e.preventDefault(); showTab(el.dataset.tab); });
-  });
-
-  /* ---- Tier explainer (decorative; wrapped) ---- */
-  try {
-    var lowToHigh = LUERI_TIERS.slice().reverse();
-    document.getElementById('tierCards').innerHTML = lowToHigh.map(function (tier) {
-      var spendLabel = tier.minSpend > 0 ? fmt(tier.minSpend) + '+ annual spend' : 'Starting tier';
-      var benefits = tier.benefits.slice(0, 3).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('');
-      return '<div class="tier-explain-card"><div class="tname">' + esc(tier.name) + '</div>' +
-        '<div class="tspend">' + esc(spendLabel) + '</div><ul>' + benefits + '</ul></div>';
-    }).join('');
-  } catch (err) { console.error('Tier explainer failed:', err); }
-
-  /* ---- Purchase cards (DISPLAY ONLY — server enforces real price) ---- */
-  var selectedPlan = null;
-  function renderPurchaseCards() {
-    var container = document.getElementById('purchaseCards');
-    container.innerHTML = LUERI_PLANS.map(function (tier) {
-      var full = LUERI_TIERS.find(function (t) { return t.code === tier.code; });
-      var benefits = (full ? full.benefits : []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('');
-      return '<div class="purchase-card"><div class="tname">' + esc(tier.name) + '</div>' +
-        '<div class="tprice">' + fmt(tier.price) + '</div><div class="tperiod">per year</div>' +
-        '<ul>' + benefits + '</ul>' +
-        '<button type="button" class="btn btn-primary" id="btn-' + tier.code + '" data-choose="' + tier.code + '">Choose ' + esc(tier.name) + '</button></div>';
-    }).join('');
-    container.querySelectorAll('[data-choose]').forEach(function (btn) {
-      btn.addEventListener('click', function () { choosePlan(btn.dataset.choose, btn); });
-    });
-  }
-  function choosePlan(code, btn) {
-    // Paid memberships complete on the branded checkout page (checkout.html)
-    window.location.href = 'checkout.html?plan=' + encodeURIComponent(code);
-  }
-  document.getElementById('planBannerClear').addEventListener('click', function () {
-    selectedPlan = null;
-    document.getElementById('planBanner').classList.remove('show');
-  });
-  document.getElementById('joinFreeLink').addEventListener('click', function (e) {
-    e.preventDefault();
-    selectedPlan = null;
-    document.getElementById('planBanner').classList.remove('show');
-    showTab('join');
-    document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('joinName').focus();
-  });
-
-  /* ---- Lookup (N-01: phone + member number) ---- */
-  document.getElementById('lookupBtn').addEventListener('click', async function () {
-    hideMsg('lookupMsg');
-    var btn = document.getElementById('lookupBtn');
-    var phone = document.getElementById('lookupPhone').value.trim();
-    var memberNumber = document.getElementById('lookupMemberNumber').value.trim().toUpperCase();
-    if (!phone || !memberNumber) return showMsg('lookupMsg', 'Enter both your phone number and member number.');
-    btn.disabled = true; btn.textContent = 'Looking up…';
-    var res = await lueri.rewards.getMemberSummary(phone, memberNumber);
-    btn.disabled = false; btn.textContent = 'View my rewards';
-    if (!res.success) {
-      var notFound = res.errors.some(function (e) { return e.code === 'not_found'; });
-      showMsg('lookupMsg', notFound
-        ? 'No account matches that phone number and member number together. Double-check both, or message us on WhatsApp and we\'ll help.'
-        : (res.errors[0] ? res.errors[0].message : 'Lookup failed. Please try again.'));
-      return;
-    }
-    renderMember(res.summary);
-  });
-
-  document.getElementById('lookupAnother').addEventListener('click', function () {
-    document.getElementById('memberCard').classList.remove('show');
-    document.getElementById('lookupForm').style.display = 'block';
-    document.getElementById('lookupPhone').value = '';
-    document.getElementById('lookupMemberNumber').value = '';
-  });
-
-  function renderMember(summary) {
-    document.getElementById('lookupForm').style.display = 'none';
-    document.getElementById('memberCard').classList.add('show');
-    document.getElementById('mTierName').textContent = summary.tier;
-    document.getElementById('mPoints').textContent = Number(summary.points || 0).toLocaleString();
-    document.getElementById('mProgressFill').style.width = Math.round((summary.tierProgress || 0) * 100) + '%';
-    document.getElementById('mProgressNote').textContent = summary.nextTier
-      ? fmt(summary.amountToNextTier) + ' more (in the last 12 months) to reach ' + summary.nextTier
-      : 'You\'ve reached our top tier — VIP.';
-
-    var benefitsEl = document.getElementById('mBenefits');
-    benefitsEl.innerHTML = '';
-    (summary.benefits || []).forEach(function (b) {
-      var div = document.createElement('div');
-      div.className = 'benefit-item';
-      div.textContent = b;
-      benefitsEl.appendChild(div);
-    });
-
-    var txWrap = document.getElementById('mTxWrap');
-    var txs = (summary.transactions || []).slice(0, 10);
-    if (!txs.length) {
-      txWrap.innerHTML = '<p class="empty-note">No transactions yet.</p>';
+  function switchTab(tab) {
+    const freeTiers = document.getElementById('free-tiers');
+    const paidTiers = document.getElementById('paid-tiers');
+    const tabs = document.querySelectorAll('.rewards-tab');
+    
+    tabs.forEach(t => t.classList.remove('active'));
+    
+    if (tab === 'free') {
+      freeTiers.style.display = 'block';
+      paidTiers.style.display = 'none';
+      tabs[0].classList.add('active');
     } else {
-      var html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th><th></th></tr></thead><tbody>';
-      txs.forEach(function (t) {
-        html += '<tr><td>' + esc(formatDateTime(t.date)) + '</td><td style="text-transform:capitalize;">' + esc(t.type) + '</td>' +
-          '<td>' + fmt(t.amount) + '</td><td>' + (t.points >= 0 ? '+' : '') + Number(t.points || 0) + '</td>' +
-          '<td><button class="receipt-link" data-txid="' + esc(t.id) + '">Receipt</button></td></tr>';
-      });
-      html += '</tbody></table>';
-      txWrap.innerHTML = html;
-      txWrap.querySelectorAll('.receipt-link').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var tx = txs.find(function (t) { return t.id === btn.dataset.txid; });
-          if (tx) lueri.docs.openDoc(lueri.docs.receiptHTML(tx, summary.member), 440, 720);
-        });
-      });
+      freeTiers.style.display = 'none';
+      paidTiers.style.display = 'block';
+      tabs[1].classList.add('active');
     }
   }
-
-  /* ---- Join (+ optional paid checkout, fix N-09) ---- */
-  document.getElementById('joinBtn').addEventListener('click', async function () {
-    hideMsg('joinMsg'); hideMsg('joinSuccessMsg');
-    var joinBtn = document.getElementById('joinBtn');
-    var input = {
-      name: document.getElementById('joinName').value.trim(),
-      phone: document.getElementById('joinPhone').value.trim(),
-      email: document.getElementById('joinEmail').value.trim(),
-    };
-    if (!input.name) return showMsg('joinMsg', 'Enter your full name.');
-    if (!lueriIsValidPhone(input.phone)) return showMsg('joinMsg', 'Enter a valid Kenyan phone number (07… or 01…).');
-
-    joinBtn.disabled = true;
-    joinBtn.textContent = 'Setting up your account…';
-    var result = await lueri.rewards.registerMember(input);
-    joinBtn.disabled = false;
-    joinBtn.textContent = 'Create my Rewards account';
-
-    if (!result.success) {
-      var dup = result.errors.some(function (e) { return e.code === 'duplicate_phone'; });
-      if (dup) {
-        showMsg('joinMsg', 'A rewards account already exists with this phone number. Use "My Rewards" with your member number, or WhatsApp us for help.');
-      } else {
-        showMsg('joinMsg', result.errors.map(function (e) { return e.message; }).join(' '));
-      }
-      return;
-    }
-
-    var member = result.member;
-
-    showMsg('joinSuccessMsg', 'Welcome, ' + member.name.split(' ')[0] + '! Your Rewards account is set up. Member No. ' + member.memberNumber + '. Save this number — you\'ll need it with your phone number to view your rewards.');
-    var continueBtn = document.createElement('button');
-    continueBtn.className = 'btn btn-secondary';
-    continueBtn.style.marginTop = '12px';
-    continueBtn.textContent = 'View my rewards \u2192';
-    continueBtn.addEventListener('click', function () {
-      continueBtn.remove();
-      showTab('lookup');
-      document.getElementById('lookupPhone').value = input.phone;
-      document.getElementById('lookupMemberNumber').value = member.memberNumber;
-      document.getElementById('lookupBtn').click();
-    }, { once: true });
-    document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
-  });
-
-  renderPurchaseCards();
-})();
 </script>
+<script src="lueri-common.js"></script>
 </body>
 </html>
