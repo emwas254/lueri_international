@@ -1,4 +1,4 @@
-  :root{
+:root{
     --ink:#1B2620;
     --paper:#F0EAD8;
     --paper-dim:#e6dfc9;
@@ -52,6 +52,11 @@
   [data-theme="dark"] .brand .mark-light{ display:none; }
   [data-theme="dark"] .brand .mark-dark-img{ display:block; }
   .nav-controls { display: flex; align-items: center; gap: 16px; flex-wrap:wrap; }
+  @media (max-width:480px){
+    .nav-controls{ width:100%; justify-content:space-between; gap:10px; }
+    .nav-cta{ padding:9px 14px; font-size:.76rem; }
+    .menu-trigger{ padding:8px 12px 8px 10px; font-size:.72rem; }
+  }
   .theme-toggle {
     background: none; border: 1px solid var(--line); border-radius: 50%;
     width: 34px; height: 34px; cursor: pointer; color: var(--ink);
