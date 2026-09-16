@@ -105,8 +105,7 @@
           <option value="pesapal">Pay online with Pesapal (M-Pesa &amp; Cards)</option>
           <option value="bank_transfer">Bank transfer</option>
           <option value="cheque">Pay by cheque</option>
-          <option value="whatsapp">Talk to Accounts on WhatsApp</option>
-        </select>
+                  </select>
         <p id="corpPaymentMethodHint" style="margin:6px 0 0;font-size:.78rem;opacity:.7;">Online payment opens the secure Pesapal checkout. The amount is verified server-side.</p>
       </div>
 
@@ -171,7 +170,7 @@
       const isPesapal = method && method.value === 'pesapal';
 
       if (!isPaidPlan && method) {
-        method.value = 'whatsapp';
+        method.value = 'pesapal';
         method.querySelector('option[value="pesapal"]')?.setAttribute('disabled', 'disabled');
         method.querySelector('option[value="bank_transfer"]')?.setAttribute('disabled', 'disabled');
         method.querySelector('option[value="cheque"]')?.setAttribute('disabled', 'disabled');
@@ -190,7 +189,7 @@
             ? 'Transfer to Lueri, enter the bank transaction reference, then wait for staff verification.'
             : isCheque
               ? 'Cheque remains pending until Lueri staff verifies and clears it.'
-              : 'Use WhatsApp for Enterprise/custom quotations or if you need Accounts Desk assistance.';
+              : 'Enterprise uses custom pricing. Submit the application and Lueri will review it before quoting.';
       }
     }
 
@@ -200,7 +199,7 @@
   }
 
   function getPaymentMethod() {
-    return document.getElementById('corpPaymentMethod')?.value || 'whatsapp';
+    return document.getElementById('corpPaymentMethod')?.value || 'pesapal';
   }
 
   function getChequeData() {
@@ -504,6 +503,11 @@
       if (!registration?.success) throw new Error(registration?.error || 'We could not securely save the corporate application.');
       const organizationId = registration.organization?.id;
       if (!organizationId) throw new Error('The corporate account was created but its organization ID was not returned.');
+
+      if (!CORPORATE_PLAN_CODES.includes(planCode)) {
+        setOverlay('Enterprise application received', 'Enterprise pricing is custom. Your application has been received for review. Lueri will contact you using the details provided.', null);
+        return;
+      }
 
       if (paymentMethod === 'pesapal') {
         await startPesapalPayment(organizationId, planCode);
