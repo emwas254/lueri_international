@@ -1,21 +1,11 @@
 // supabase/functions/pesapal-initiate/index.ts
 //
-// Called by rewards.html when a member clicks "Pay & Join" on a paid
-// tier. Never exposes PESAPAL_CONSUMER_KEY/SECRET to the browser — they
-// live here as Edge Function secrets only.
+// Creates a server-authoritative Pesapal order for either:
+//   - an individual Rewards member: { member_id, plan_code }
+//   - a corporate organization: { organization_id, plan_code }
 //
-// v10: FIX — plan.price_kes comes back from PostgREST as a STRING (numeric
-// columns are stringified to avoid JS float precision loss). Sending that
-// string straight into the Pesapal SubmitOrderRequest body meant Pesapal
-// couldn't parse it as an amount and silently treated it as 0.00, which
-// Pesapal then rejected with "Invalid Transaction Amount". Cast to Number()
-// at both the payments insert and the Pesapal request body.
-//
-// SECURITY: the client sends only { member_id, plan_code }. The price
-// charged is always membership_plans.price_kes, looked up here — the
-// client can never influence the amount. Phone/email/name used for
-// Pesapal's billing_address are also looked up server-side from the
-// members row, not trusted from the request body.
+// Corporate prices come from business_plans and the organization must already
+// have the requested plan registered. No client-supplied amount is accepted.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -37,7 +27,8 @@ const supabase = createClient(
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 function jsonError(message: string, status = 400) {
@@ -50,123 +41,260 @@ function jsonError(message: string, status = 400) {
 async function getAuthToken(): Promise<string> {
   const res = await fetch(`${BASE_URL}/Auth/RequestToken`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ consumer_key: CONSUMER_KEY, consumer_secret: CONSUMER_SECRET }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      consumer_key: CONSUMER_KEY,
+      consumer_secret: CONSUMER_SECRET,
+    }),
   });
   const data = await res.json();
-  if (!data.token) throw new Error(`Pesapal auth failed: ${JSON.stringify(data)}`);
+  if (!data.token) {
+    throw new Error(`Pesapal auth failed: ${JSON.stringify(data)}`);
+  }
   return data.token;
 }
 
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+function safeNameParts(fullName: string | null | undefined) {
+  const value = String(fullName ?? "").trim();
+  if (!value) return { first_name: "Customer", last_name: "" };
+  const parts = value.split(/\s+/);
+  return {
+    first_name: parts.shift() || "Customer",
+    last_name: parts.join(" "),
+  };
+}
 
-  let body: { member_id?: string; plan_code?: string };
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  let body: {
+    member_id?: string;
+    organization_id?: string;
+    plan_code?: string;
+  };
+
   try {
     body = await req.json();
   } catch {
     return jsonError("Invalid request body.");
   }
 
-  const { member_id, plan_code } = body;
-  if (!member_id || !plan_code) {
-    return jsonError("member_id and plan_code are required.");
+  const memberId = body.member_id?.trim();
+  const organizationId = body.organization_id?.trim();
+  const planCode = body.plan_code?.trim();
+
+  const isIndividual = Boolean(memberId);
+  const isBusiness = Boolean(organizationId);
+
+  if (isIndividual === isBusiness) {
+    return jsonError(
+      "Provide exactly one of member_id or organization_id.",
+    );
+  }
+
+  if (!planCode) {
+    return jsonError("plan_code is required.");
   }
 
   if (!CONSUMER_KEY || !CONSUMER_SECRET || !IPN_ID) {
-    console.error("Missing Pesapal secrets — PESAPAL_CONSUMER_KEY/SECRET/IPN_ID not set.");
-    return jsonError("Payments are not fully configured yet. Please contact Lueri International.", 500);
+    console.error(
+      "Missing Pesapal secrets — PESAPAL_CONSUMER_KEY/SECRET/IPN_ID not set.",
+    );
+    return jsonError(
+      "Payments are not fully configured yet. Please contact Lueri International.",
+      500,
+    );
   }
 
-  const { data: member, error: memberError } = await supabase
-    .from("members")
-    .select("id, phone, email, full_name")
-    .eq("id", member_id)
-    .is("deleted_at", null)
-    .maybeSingle();
+  let billingEmail = "no-reply@lueriinternational.com";
+  let billingPhone = "";
+  let billingName = "Customer";
+  let plan: { code: string; display_name: string; price_kes: number } | null =
+    null;
 
-  if (memberError || !member) {
-    console.error("pesapal-initiate: member lookup failed", memberError);
-    return jsonError("We couldn't find that Rewards account. Please join or look yourself up again.");
+  if (isIndividual) {
+    const { data: member, error: memberError } = await supabase
+      .from("members")
+      .select("id, phone, email, full_name")
+      .eq("id", memberId)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+    if (memberError || !member) {
+      console.error("pesapal-initiate: member lookup failed", memberError);
+      return jsonError(
+        "We couldn't find that Rewards account. Please join or look yourself up again.",
+      );
+    }
+
+    const { data: membershipPlan, error: planError } = await supabase
+      .from("membership_plans")
+      .select("code, display_name, price_kes")
+      .eq("code", planCode)
+      .maybeSingle();
+
+    if (planError || !membershipPlan || membershipPlan.price_kes === null) {
+      return jsonError(
+        "That membership plan isn't available for online purchase right now.",
+      );
+    }
+
+    plan = {
+      code: membershipPlan.code,
+      display_name: membershipPlan.display_name,
+      price_kes: Number(membershipPlan.price_kes),
+    };
+    billingEmail = member.email || billingEmail;
+    billingPhone = member.phone || "";
+    billingName = member.full_name || "Member";
+  } else {
+    const { data: organization, error: organizationError } = await supabase
+      .from("organizations")
+      .select(
+        "id, name, contact_phone, contact_email, contact_person_name, plan_code, deleted_at",
+      )
+      .eq("id", organizationId)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+    if (organizationError || !organization) {
+      console.error(
+        "pesapal-initiate: organization lookup failed",
+        organizationError,
+      );
+      return jsonError(
+        "We couldn't find that corporate application. Please submit the application again.",
+      );
+    }
+
+    if (!organization.plan_code || organization.plan_code !== planCode) {
+      return jsonError(
+        "The selected corporate plan does not match the registered application.",
+      );
+    }
+
+    const { data: businessPlan, error: businessPlanError } = await supabase
+      .from("business_plans")
+      .select("code, display_name, price_kes")
+      .eq("code", planCode)
+      .maybeSingle();
+
+    if (
+      businessPlanError ||
+      !businessPlan ||
+      businessPlan.price_kes === null
+    ) {
+      return jsonError(
+        "That corporate plan isn't available for online payment right now.",
+      );
+    }
+
+    plan = {
+      code: businessPlan.code,
+      display_name: businessPlan.display_name,
+      price_kes: Number(businessPlan.price_kes),
+    };
+    billingEmail = organization.contact_email || billingEmail;
+    billingPhone = organization.contact_phone || "";
+    billingName = organization.contact_person_name || organization.name;
   }
 
-  const { data: plan, error: planError } = await supabase
-    .from("membership_plans")
-    .select("code, display_name, price_kes")
-    .eq("code", plan_code)
-    .maybeSingle();
-
-  if (planError || !plan || plan.price_kes === null) {
-    return jsonError("That membership plan isn't available for online purchase right now.");
+  if (!plan || !Number.isFinite(plan.price_kes) || plan.price_kes <= 0) {
+    return jsonError(
+      "That plan's price is not configured correctly. Please contact Lueri International.",
+      500,
+    );
   }
 
-  // FIX: PostgREST returns numeric columns as strings. Without this cast,
-  // `plan.price_kes` is "15000" (a string), which Pesapal's API silently
-  // read as 0.00 instead of erroring — the exact bug reported in production.
-  const priceKes = Number(plan.price_kes);
-  if (!Number.isFinite(priceKes) || priceKes <= 0) {
-    console.error("pesapal-initiate: invalid plan price", plan.code, plan.price_kes);
-    return jsonError("That membership plan's price is not configured correctly. Please contact Lueri International.", 500);
-  }
+  const priceKes = plan.price_kes;
+  const internalReference = isBusiness
+    ? `LR-ORG-${plan.code}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`
+    : `LR-${plan.code}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 
-  const internalReference = `LR-${plan.code}-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
+  const paymentInsert = {
+    internal_reference: internalReference,
+    member_id: isIndividual ? memberId : null,
+    organization_id: isBusiness ? organizationId : null,
+    purpose: "membership",
+    plan_code: plan.code,
+    amount: priceKes,
+    currency: "KES",
+    status: "pending",
+    payment_method: "pesapal",
+  };
 
   const { data: paymentRow, error: paymentInsertError } = await supabase
     .from("payments")
-    .insert({
-      internal_reference: internalReference,
-      member_id: member.id,
-      purpose: "membership",
-      plan_code: plan.code,
-      amount: priceKes,
-      currency: "KES",
-      status: "pending",
-    })
+    .insert(paymentInsert)
     .select("id")
     .single();
 
   if (paymentInsertError || !paymentRow) {
-    console.error("pesapal-initiate: payment insert failed", paymentInsertError);
+    console.error(
+      "pesapal-initiate: payment insert failed",
+      paymentInsertError,
+    );
     return jsonError("Could not start your payment. Please try again.", 500);
   }
 
   try {
     const token = await getAuthToken();
+    const nameParts = safeNameParts(billingName);
 
-    const orderRes = await fetch(`${BASE_URL}/Transactions/SubmitOrderRequest`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        id: internalReference,
-        currency: "KES",
-        amount: priceKes,
-        description: `Lueri Rewards — ${plan.display_name} membership`,
-        callback_url: `${SITE_URL}/rewards.html?payment=complete`,
-        notification_id: IPN_ID,
-        billing_address: {
-          email_address: member.email || "no-reply@lueriinternational.com",
-          phone_number: member.phone,
-          country_code: "KE",
-          first_name: member.full_name || "Member",
-          last_name: "",
+    const callbackPath = isBusiness
+      ? "/corporate.html?payment=complete"
+      : "/rewards.html?payment=complete";
+
+    const orderRes = await fetch(
+      `${BASE_URL}/Transactions/SubmitOrderRequest`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      }),
-    });
+        body: JSON.stringify({
+          id: internalReference,
+          currency: "KES",
+          amount: priceKes,
+          description: `Lueri ${isBusiness ? "Business" : "Rewards"} — ${plan.display_name} membership`,
+          callback_url: `${SITE_URL}${callbackPath}`,
+          notification_id: IPN_ID,
+          billing_address: {
+            email_address: billingEmail,
+            phone_number: billingPhone,
+            country_code: "KE",
+            first_name: nameParts.first_name,
+            last_name: nameParts.last_name,
+          },
+        }),
+      },
+    );
 
     const order = await orderRes.json();
     if (!order.redirect_url || !order.order_tracking_id) {
-      throw new Error(`SubmitOrderRequest failed: ${JSON.stringify(order)}`);
+      throw new Error(
+        `SubmitOrderRequest failed: ${JSON.stringify(order)}`,
+      );
     }
 
     const { error: updateError } = await supabase
       .from("payments")
       .update({ pesapal_tracking_id: order.order_tracking_id })
       .eq("id", paymentRow.id);
-    if (updateError) console.error("pesapal-initiate: failed to save tracking id", updateError);
+
+    if (updateError) {
+      console.error(
+        "pesapal-initiate: failed to save tracking id",
+        updateError,
+      );
+    }
 
     return new Response(
       JSON.stringify({
@@ -176,15 +304,25 @@ Deno.serve(async (req) => {
         internal_reference: internalReference,
         plan_display_name: plan.display_name,
         amount: priceKes,
+        payment_type: isBusiness ? "organization" : "individual",
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (err) {
     console.error("pesapal-initiate: Pesapal call failed", err);
     await supabase
       .from("payments")
-      .update({ status: "failed", failure_reason: "pesapal_initiate_error" })
+      .update({
+        status: "failed",
+        failure_reason: "pesapal_initiate_error",
+      })
       .eq("id", paymentRow.id);
-    return jsonError("We couldn't start your payment. Please try again or contact Lueri International for assistance.", 502);
+
+    return jsonError(
+      "We couldn't start your payment. Please try again or contact Lueri International for assistance.",
+      502,
+    );
   }
 });
