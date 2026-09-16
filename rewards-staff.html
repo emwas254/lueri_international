@@ -103,6 +103,18 @@
           </div>
           <div class="disclosure">Member data is shared across every staff device via the Lueri Rewards database — the same one the customer rewards page uses.</div>
         </div>
+
+        <div class="staff-panel">
+          <h2>Pending cheque payments</h2>
+          <div class="msg error" id="chequeMsg"></div>
+          <div style="max-height:520px; overflow:auto;">
+            <table class="data-table">
+              <thead><tr><th>Ref</th><th>Member/Org</th><th>Plan</th><th>Amount</th><th>Cheque no.</th><th>Bank</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody id="chequeTbody"><tr><td colspan="8" style="text-align:center; color:var(--slate); padding:20px;">Loading…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="disclosure">Clearing a cheque activates membership through the same path a completed Pesapal payment uses. This cannot be undone by a customer — only staff can clear or reject.</div>
+        </div>
       </div>
     </div>
   </main>
@@ -124,8 +136,10 @@
      The client checks it too, but the RPCs re-check — never trust the UI. ---- */
   async function isApprovedStaff() {
     if (!sb) return false;
-    var res = await lueri.rpc('is_approved_staff', {});
-    return !!(res && res.success && res.approved);
+    // FIX: this called is_approved_staff (jsonb envelope) which doesn't
+    // exist live — only is_staff() does, and it returns a raw boolean.
+    var res = await lueri.rpc('is_staff', {});
+    return res === true;
   }
 
   async function tryLogin() {
@@ -167,7 +181,7 @@
   })();
 
   async function refreshStats() {
-    var res = await lueri.rpc('get_dashboard_stats', {});
+    var res = await lueri.rpc('staff_dashboard_stats', {});
     if (!res.success) return;
     var s = res.stats;
     document.getElementById('statGrid').innerHTML =
@@ -178,7 +192,7 @@
   }
 
   async function refreshMembers(query) {
-    var res = await lueri.rpc('search_members', { p_query: query || '' });
+    var res = await lueri.rpc('staff_search_members', { p_query: query || '' });
     var tbody = document.getElementById('memberTbody');
     if (!res.success || !res.members.length) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--slate); padding:20px;">No members yet.</td></tr>';

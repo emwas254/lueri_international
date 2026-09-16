@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="lueri-common.js"></script>
-<script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
+<script>lueri.boot();</script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 <style>
@@ -316,6 +316,7 @@
     var res = await lueri.rpc('get_payment_status', { p_payment_id: payment.payment_id, p_reference: payment.internal_reference });
     var row = res && res.success ? res.payment : null;
     if (!row) return;
+    var statusEl = document.getElementById('coStatus');
     var textEl = document.getElementById('coStatusText');
     if (row.status === 'successful') {
       clearInterval(poll); poll = null;

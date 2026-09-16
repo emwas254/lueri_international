@@ -55,7 +55,6 @@
   ]
 }
 </script>
-<base target="_blank">
 </head>
 <body>
 
@@ -273,9 +272,9 @@
           <div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp">
             <span class="copy-hint">Click to copy</span><div class="label">WhatsApp</div><div class="value">0713 261 719</div>
           </div>
-          <a class="contact-card" href="tel:+254713261719">
+          <div class="contact-card" data-href="tel:+254713261719">
             <div class="label">Call</div><div class="value">0713 261 719</div>
-          </a>
+          </div>
           <div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email">
             <span class="copy-hint">Click to copy</span><div class="label">Email</div><div class="value">info@lueriinternational.com</div>
           </div>
@@ -365,6 +364,9 @@
 
   document.querySelectorAll('[data-copy]').forEach(function (el) {
     el.addEventListener('click', function () { lueriCopyToClipboard(el.getAttribute('data-copy'), el.getAttribute('data-copy-label')); });
+  });
+  document.querySelectorAll('[data-href]').forEach(function (el) {
+    el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
   });
 
   var form = document.getElementById('bookingForm');
