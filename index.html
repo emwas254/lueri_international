@@ -71,6 +71,22 @@
 </style>
 </head>
 <body>
+
+<a class="skip-link" href="#contact">Skip to booking form</a>
+
+<div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div>
+    <div class="overlay-check">&#10003;</div>
+    <h2 id="successTitle" class="overlay-title">Booking received</h2>
+    <p id="successCopy" class="overlay-copy">Opening WhatsApp to confirm your dispatch…</p>
+    <p id="successRef" class="overlay-ref" style="display:none;"></p>
+    <p id="successFallback" style="display:none; margin-bottom:24px;">
+      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open WhatsApp</a>
+    </p>
+    <button type="button" id="successClose" class="btn btn-primary">Close</button>
+  </div>
+</div>
+
 <header>
   <div class="navbar wrap">
     <a class="brand" href="index.html"><img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International"><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span>Lueri International</span></a>
@@ -96,12 +112,182 @@
 <section class="hero reveal"><div class="wrap"><div class="docket"><div class="docket-row"><div class="eyebrow-mono">Dispatch / Nairobi &amp; environs</div><div class="waybill-no">WAYBILL NO. LI&#8211;2026</div></div><h1 class="title">We move it<br>across Nairobi<br>today.</h1><p class="subtitle">Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day across Nairobi.</p><span class="scope-tag">Nairobi last-mile · Not cross-border freight</span><span class="stamp">Same-day dispatch</span><div class="hero-route-visual" aria-label="Animated Lueri delivery route from pickup to drop-off"><div class="scene"><div class="pin-label left">Pickup · Nairobi</div><div class="pin-label right">Drop-off · Nairobi</div><div class="marker left"></div><div class="marker right"></div><div class="city-left"><div class="tower t1"></div><div class="tower t2"></div><div class="tower t3"></div><div class="tower t4"></div></div><div class="city-right"><div class="tower t2"></div><div class="tower t5"></div><div class="tower t1"></div><div class="tower t4"></div></div><div class="road"></div><div class="motion"></div><div class="truck-runner" aria-hidden="true"><div class="truck-body"></div><div class="truck-cab"></div><div class="truck-window"></div><div class="truck-wheel w1"></div><div class="truck-wheel w2"></div><div class="truck-logo">Lueri</div></div></div></div><div class="cta-row"><a href="#contact" class="btn btn-primary">Book a Pickup</a><a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">WhatsApp Us</a></div></div></div></section>
 <section id="services" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">01</span><h2>Services</h2></div><div class="grid3"><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg></div><h3>Parcel &amp; document delivery</h3><p>Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands.</p><a class="btn btn-secondary" href="#contact">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><h3>Business &amp; e-commerce dispatch</h3><p>Recurring pickup and delivery support for shops and online sellers who need reliable, repeat runs.</p><a class="btn btn-secondary" href="corporate.html">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><h3>On-demand courier</h3><p>Need something moved right now? Call or WhatsApp for a same-day pickup — no account required.</p><a class="btn btn-secondary" href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer">Learn more →</a></div></div></div></section>
 <section id="why" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">02</span><h2>Why Us</h2></div><ul class="why-list"><li><div class="n">01</div><div><h3>Reliable repeat dispatch</h3><p>For retailers, pharmacies, professional services and online sellers, Lueri provides dependable pickup and delivery support you can build into your daily operations.</p></div></li><li><div class="n">02</div><div><h3>Same-day when timing matters</h3><p>For urgent documents, customer orders, business stock and time-sensitive errands, we focus on clear pickup windows and direct communication.</p></div></li><li><div class="n">03</div><div><h3>Simple for the customer</h3><p>One booking request, clear route details and a straightforward handoff—without forcing every customer to learn a complicated logistics system.</p></div></li></ul></div></section>
-<section id="rewards" class="reveal"><div class="wrap"><div class="rewards-showcase"><div class="mini-head"><div><div class="section-head" style="margin-bottom:8px;"><span class="section-num">03</span><h2>Lueri Rewards</h2></div><p style="margin:0;color:var(--slate);max-width:620px;">More deliveries. More rewards. Earn 1 point for every KES 50 spent and unlock stronger benefits as your spend grows.</p></div><a href="rewards.html" class="btn btn-secondary">View Rewards</a></div><div class="tier-mini-grid"><div class="tier-mini"><div class="name">Silver</div><div class="price">KES 5,000</div><ul><li>5% off priority same-day bookings</li><li>KES 200 delivery credit monthly</li></ul><a href="checkout.html?plan=silver" class="btn btn-primary" style="margin-top:auto;">Choose Silver</a></div><div class="tier-mini gold"><div class="name">Gold</div><div class="price">KES 15,000</div><ul><li>10% off priority same-day bookings</li><li>1 free standard delivery monthly</li></ul><a href="checkout.html?plan=gold" class="btn btn-primary" style="margin-top:auto;">Choose Gold</a></div><div class="tier-mini"><div class="name">Platinum</div><div class="price">KES 35,000</div><ul><li>15% off priority same-day bookings</li><li>2 free standard deliveries monthly</li></ul><a href="checkout.html?plan=platinum" class="btn btn-primary" style="margin-top:auto;">Choose Platinum</a></div><div class="tier-mini"><div class="name">VIP</div><div class="price">KES 75,000</div><ul><li>20% off all bookings</li><li>4 free standard deliveries monthly</li></ul><a href="checkout.html?plan=vip" class="btn btn-primary" style="margin-top:auto;">Choose VIP</a></div></div></div></div></section>
+
 <section id="coverage" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">04</span><h2>Coverage</h2></div><div class="coverage-wrap"><div class="coverage-list"><div>Nairobi CBD</div><div>Westlands</div><div>Kilimani</div><div>Kasarani</div><div>South B / South C</div><div>Embakasi</div><div>Ngong Road</div><div>Thika Road</div></div><div class="coverage-note"><div class="eyebrow-mono">Not on this list?</div><p>Lueri runs delivery across Nairobi and its surrounding towns. If your point isn't listed, message us directly — most routes are covered.</p></div></div></div></section>
 <section id="pricing" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">05</span><h2>Pricing</h2></div><div class="pricing-grid"><div class="pricing-card section-card-float"><div class="tier">Standard</div><h3>Everyday delivery</h3><div class="price">From KES 350</div><p>Point-to-point courier service for regular parcels and documents.</p><ul><li>Same-day options</li><li>Clear pickup details</li><li>Proof of delivery</li></ul></div><div class="pricing-card section-card-float"><div class="tier">Priority</div><h3>Urgent same-day</h3><div class="price">Quoted</div><p>For time-sensitive deliveries that need faster handling.</p><ul><li>Priority dispatch</li><li>Direct communication</li><li>Route-based quote</li></ul></div><div class="pricing-card section-card-float"><div class="tier">Business</div><h3>Recurring dispatch</h3><div class="price">Quoted</div><p>Flexible arrangements for shops, e-commerce and organizations.</p><ul><li>Repeat pickup runs</li><li>Consolidated handling</li><li>Corporate support</li></ul></div></div><div style="margin-top:40px;padding:18px;border:1px dashed var(--line);border-radius:4px;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;">How quoting works</strong><br>Every job is quoted before pickup — no hidden fees. Send your pickup point, drop-off point, and parcel details on WhatsApp or via the booking form below. Payment accepted via M-Pesa.</div></div></section>
 <section id="faq" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">06</span><h2>FAQ</h2></div><div class="faq-list"><details open><summary>How do I book a delivery?</summary><p>Use the Book a Pickup form, or WhatsApp Lueri with your pickup location, drop-off location and parcel details.</p></details><details><summary>How quickly can you deliver?</summary><p>Same-day delivery is available for eligible Nairobi routes. Lueri confirms the route and pickup timing before dispatch.</p></details><details><summary>How is pricing calculated?</summary><p>Quotes depend on route, parcel details and urgency. Lueri confirms the price before pickup.</p></details><details><summary>Do I need a Rewards account?</summary><p>No. On-demand courier bookings do not require an account. Rewards members get additional benefits and points tracking.</p></details></div></div></section>
-<section id="contact" class="reveal"><div class="wrap"><div class="contact-shell"><div class="section-head"><span class="section-num">07</span><h2>Book a Pickup</h2></div><form id="bookingForm"><div class="form-row2"><div class="form-group"><label class="form-label" for="pickup">Pickup Location</label><input class="form-input" type="text" id="pickup" placeholder="e.g. Westlands, Nairobi" required></div><div class="form-group"><label class="form-label" for="dropoff">Drop-off Location</label><input class="form-input" type="text" id="dropoff" placeholder="e.g. CBD, Nairobi" required></div></div><div class="form-group"><label class="form-label" for="details">Parcel Details</label><textarea class="form-input" id="details" rows="4" placeholder="What are you sending? Include size/weight where relevant." required></textarea></div><div class="form-row2"><div class="form-group"><label class="form-label" for="name">Your Name</label><input class="form-input" type="text" id="name" placeholder="Full name" required></div><div class="form-group"><label class="form-label" for="phone">Phone</label><input class="form-input" type="tel" id="phone" placeholder="0712 345 678" required></div></div><div class="form-group"><label class="form-label" for="time">Preferred Pickup Time</label><input class="form-input" type="text" id="time" placeholder="e.g. Today at 2 PM" required></div><div class="cta-row"><button type="submit" class="btn btn-primary">Request Pickup</button><a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">WhatsApp Us</a></div></form></div></div></section>
+<section id="contact" class="reveal">
+    <div class="wrap">
+      <div class="contact-shell">
+        <div class="section-head"><span class="section-num">07</span><h2>Book a pickup</h2></div>
+        <div class="contact-grid">
+          <div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp">
+            <span class="copy-hint">Click to copy</span><div class="label">WhatsApp</div><div class="value">0713 261 719</div>
+          </div>
+          <div class="contact-card" data-href="tel:+254713261719">
+            <div class="label">Call</div><div class="value">0713 261 719</div>
+          </div>
+          <div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email">
+            <span class="copy-hint">Click to copy</span><div class="label">Email</div><div class="value">info@lueriinternational.com</div>
+          </div>
+        </div>
+
+        <form id="bookingForm" style="margin-top:40px;" novalidate>
+          <input type="text" name="website" id="bookingHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="pickup">Pickup Location</label>
+              <input class="form-input" type="text" id="pickup" placeholder="e.g. Westlands, Nairobi" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dropoff">Drop-off Location</label>
+              <input class="form-input" type="text" id="dropoff" placeholder="e.g. CBD, Nairobi" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="details">Parcel Details</label>
+            <textarea class="form-input" id="details" rows="2" placeholder="Describe the item(s), approx. size/weight..." required></textarea>
+          </div>
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="name">Your Name</label>
+              <input class="form-input" type="text" id="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number</label>
+              <input class="form-input" type="tel" id="phone" placeholder="07xx xxx xxx" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="time">Preferred Pickup Time</label>
+            <select class="form-input" id="time" required>
+              <option value="" disabled selected>Select time...</option>
+              <option value="asap">ASAP (Today)</option>
+              <option value="morning">This Morning</option>
+              <option value="afternoon">This Afternoon</option>
+              <option value="evening">This Evening</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="memberNumber">Lueri Rewards Member No. (optional)</label>
+            <input class="form-input" type="text" id="memberNumber" placeholder="e.g. LR-1004 — leave blank if you're not a member yet">
+          </div>
+          <button type="submit" id="bookingSubmit" class="btn btn-signal btn-block">Send Booking</button>
+          <p id="bookingError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:.9rem;"></p>
+          <p style="margin:16px 0 0; font-size:.82rem; opacity:0.65; line-height:1.5;">By booking, you agree to our <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;">Terms of Service</a> and <a href="privacy-policy.html" style="color:var(--signal); text-decoration:underline;">Privacy Policy</a>.</p>
+        </form>
+      </div>
+    </div>
+  </section>
 </main>
+
+<footer class="wrap">
+  <div class="legal-block">
+    <div><strong>Registered business</strong>Lueri International · Nairobi, Kenya<br>Founded 13 December 2023<br>Registration details available on request for B2B clients</div>
+    <div><strong>Contact</strong><a href="tel:+254713261719">+254 713 261 719</a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div>
+    <div><strong>Hours</strong>Mon–Fri, 8:00 AM – 5:00 PM<br>Sat, 8:00 AM – 3:00 PM<br>Closed Sunday</div>
+  </div>
+  <div class="footer-row" style="margin-top:40px;">
+    <div class="brand">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
+    </div>
+    <div class="mono" style="opacity:0.6;">&copy; 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;">Rewards</a> · <a href="careers.html" style="text-decoration:underline;">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a> · <a href="privacy-policy.html" style="text-decoration:underline;">Privacy</a></div>
+    <div class="social-links">
+      <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer">X</a>
+      <a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer">TikTok</a>
+    </div>
+    <div class="foot-stamp">DISPATCH READY</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var overlay = document.getElementById('successOverlay');
+  document.getElementById('successClose').addEventListener('click', function () {
+    overlay.classList.remove('active');
+    document.getElementById('successFallback').style.display = 'none';
+  });
+
+  document.querySelectorAll('[data-copy]').forEach(function (el) {
+    el.addEventListener('click', function () { lueriCopyToClipboard(el.getAttribute('data-copy'), el.getAttribute('data-copy-label')); });
+  });
+  document.querySelectorAll('[data-href]').forEach(function (el) {
+    el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
+  });
+
+  var form = document.getElementById('bookingForm');
+  var submitBtn = document.getElementById('bookingSubmit');
+  var bookingError = document.getElementById('bookingError');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    bookingError.style.display = 'none';
+
+    if (document.getElementById('bookingHoneypot').value) return; // spam trap
+
+    var data = {
+      pickup: document.getElementById('pickup').value.trim(),
+      dropoff: document.getElementById('dropoff').value.trim(),
+      details: document.getElementById('details').value.trim(),
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text,
+      memberNumber: document.getElementById('memberNumber').value.trim(),
+    };
+    if (!data.pickup || !data.dropoff || !data.details || !data.name || !data.time) {
+      bookingError.textContent = 'Please fill in all required fields.';
+      bookingError.style.display = 'block';
+      return;
+    }
+    if (!lueriIsValidPhone(data.phone)) {
+      bookingError.textContent = 'Enter a valid Kenyan phone number (07… or 01…).';
+      bookingError.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled = true; // fix V-07: no double submits
+    submitBtn.textContent = 'Sending…';
+
+    var reference = null;
+    try {
+      var res = await lueri.booking.create(data); // fix V-01: persist the booking
+      if (res && res.success) reference = res.reference;
+    } catch (err) {
+      console.error('Booking persistence failed, continuing to WhatsApp:', err);
+    }
+
+    var memberLine = data.memberNumber ? '\nRewards Member No.: ' + data.memberNumber : '';
+    var refLine = reference ? '\nBooking Ref: ' + reference : '';
+    var message = 'New pickup booking - Lueri website' + refLine +
+      '\nName: ' + data.name + '\nPhone: ' + data.phone +
+      '\nPickup: ' + data.pickup + '\nDrop-off: ' + data.dropoff +
+      '\nParcel details: ' + data.details + '\nPreferred time: ' + data.time + memberLine;
+    var result = lueriOpenWhatsApp(LUERI.whatsapp, message);
+
+    document.getElementById('successTitle').textContent = result.opened ? 'Booking received' : 'Booking received — one step left';
+    document.getElementById('successCopy').textContent = result.opened
+      ? 'Opening WhatsApp to confirm your dispatch…'
+      : 'Your browser blocked the popup. Tap the button below to open WhatsApp and confirm.';
+    var refEl = document.getElementById('successRef');
+    if (reference) { refEl.textContent = 'Booking ref: ' + reference; refEl.style.display = 'block'; }
+    var fallback = document.getElementById('successFallback');
+    document.getElementById('successWaLink').href = result.url;
+    fallback.style.display = result.opened ? 'none' : 'block';
+    overlay.classList.add('active');
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send Booking';
+    form.reset();
+  });
+})();
+</script>
+<script src="lucy.js" defer></script>
 <script>window.LueriI18n&&window.LueriI18n.init&&window.LueriI18n.init();</script>
 </body>
 </html>
