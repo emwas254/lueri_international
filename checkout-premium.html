@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review & Secure Checkout — Lueri International</title>
+<meta name="description" content="Review your Lueri Rewards membership before secure payment.">
+<link rel="icon" href="assets/favicon-32.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="lueri-common.js"></script>
+<link rel="stylesheet" href="assets/site.css">
+<style>
+:root{--checkout-max:980px}
+body{background:var(--paper-dim);min-height:100vh}.pc-wrap{max-width:var(--checkout-max);margin:0 auto;padding:28px 18px 72px}.pc-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}.pc-brand{display:flex;align-items:center;gap:10px;font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.04em}.pc-brand img{height:34px;width:auto}.pc-back{font-size:.82rem;text-decoration:underline}.pc-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.75fr);gap:22px;align-items:start}.pc-card{background:#fff;border:1.5px solid var(--ink);border-radius:10px;box-shadow:8px 8px 0 rgba(27,38,32,.07);overflow:hidden}.pc-pad{padding:30px}.pc-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;color:var(--slate);margin-bottom:9px}.pc-title{font-size:clamp(1.7rem,4vw,2.35rem);line-height:1.05;margin:0 0 10px}.pc-copy{color:var(--slate);line-height:1.65;margin:0}.pc-review{margin-top:25px;border-top:1px dashed var(--line)}.pc-row{display:flex;justify-content:space-between;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}.pc-row span{color:var(--slate);font-size:.9rem}.pc-row strong{text-align:right}.pc-total{padding-top:21px}.pc-total strong{font-size:1.45rem}.pc-side{position:sticky;top:18px}.pc-price{background:var(--paper);border:1px dashed var(--ink);border-radius:7px;padding:20px;margin-bottom:18px}.pc-price-label{font-size:.78rem;color:var(--slate);margin-bottom:5px}.pc-price-value{font-size:2rem;font-weight:800;letter-spacing:-.03em}.pc-price-note{font-size:.76rem;color:var(--slate);line-height:1.5;margin-top:6px}.pc-secure{display:flex;gap:12px;align-items:flex-start;padding:16px;border:1px solid var(--line);border-radius:7px;margin-bottom:18px}.pc-lock{font-size:1.15rem}.pc-secure strong{display:block;font-size:.86rem;margin-bottom:3px}.pc-secure span{display:block;color:var(--slate);font-size:.75rem;line-height:1.5}.pc-cta{width:100%;padding:16px;font-size:1rem}.pc-fine{font-size:.72rem;color:var(--slate);line-height:1.55;text-align:center;margin:12px 4px 0}.pc-loading{text-align:center;padding:50px 20px}.pc-error{display:none;background:rgba(198,40,40,.08);border:1px solid rgba(198,40,40,.3);padding:13px 15px;border-radius:7px;color:var(--error);margin-top:20px;font-size:.88rem}.pc-methods{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.pc-chip{border:1px solid var(--line);border-radius:99px;padding:6px 10px;font-size:.7rem;color:var(--slate)}@media(max-width:760px){.pc-wrap{padding:18px 14px 48px}.pc-top{margin-bottom:18px}.pc-grid{grid-template-columns:1fr}.pc-side{position:static}.pc-pad{padding:23px 19px}.pc-row{padding:13px 0}.pc-brand span{display:none}.pc-title{font-size:1.75rem}}
+</style>
+</head>
+<body>
+<div class="pc-wrap">
+<header class="pc-top"><div class="pc-brand"><img src="assets/logo-mark.png" alt="Lueri International"><span>LUERI INTERNATIONAL</span></div><a class="pc-back" href="rewards.html">← Back to Rewards</a></header>
+<div id="loading" class="pc-card pc-loading"><div class="pc-eyebrow">SECURE CHECKOUT</div><h1 class="pc-title">Preparing your checkout…</h1><p class="pc-copy">We're verifying the membership details before you continue.</p></div>
+<div id="content" class="pc-grid" hidden>
+<section class="pc-card"><div class="pc-pad"><div class="pc-eyebrow">STEP 1 · REVIEW</div><h1 class="pc-title" id="planName">Membership</h1><p class="pc-copy">Review your membership below. You'll enter your contact details and choose a payment method on the secure checkout page.</p><div class="pc-review"><div class="pc-row"><span>Membership</span><strong id="membershipLabel">—</strong></div><div class="pc-row"><span>Membership period</span><strong>12 months</strong></div><div class="pc-row"><span>Benefits</span><strong>Points, discounts &amp; priority dispatch</strong></div><div class="pc-row pc-total"><span>Total due today</span><strong id="total">—</strong></div></div><div class="pc-methods"><span class="pc-chip">Pesapal</span><span class="pc-chip">M-Pesa</span><span class="pc-chip">Cards</span><span class="pc-chip">Bank transfer</span><span class="pc-chip">Cheque</span></div></div></section>
+<aside class="pc-side"><div class="pc-card"><div class="pc-pad"><div class="pc-price"><div class="pc-price-label">YOUR TOTAL</div><div class="pc-price-value" id="price">—</div><div class="pc-price-note">Final payment amount is verified server-side at checkout.</div></div><div class="pc-secure"><div class="pc-lock">🔒</div><div><strong>Secure payment handoff</strong><span>When you continue, Lueri creates the payment securely and redirects you to Pesapal to complete payment.</span></div></div><button id="continue" class="btn btn-signal pc-cta" disabled>Continue to secure checkout →</button><p class="pc-fine">Your payment details are handled by the selected payment provider. Lueri does not receive your card PIN or password.</p><div id="error" class="pc-error" role="alert"></div></div></div></aside>
+</div>
+</div>
+<script>
+(async function(){'use strict';
+const params=new URLSearchParams(location.search), code=params.get('plan');
+const loading=document.getElementById('loading'),content=document.getElementById('content'),btn=document.getElementById('continue'),error=document.getElementById('error');
+try{
+ if(!code) throw new Error('No membership plan was selected.');
+ if(!window.lueri) throw new Error('Checkout services are unavailable.');
+ await lueri.boot();
+ const result=await lueri.rpc('get_plan',{p_code:code});
+ if(!result?.success||!result.plan) throw new Error('That membership plan is not available.');
+ const plan=result.plan, money=lueri.fmt(plan.price);
+ document.getElementById('planName').textContent=plan.name+' Membership';
+ document.getElementById('membershipLabel').textContent=plan.name+' Membership';
+ document.getElementById('total').textContent=money;
+ document.getElementById('price').textContent=money;
+ btn.disabled=false;
+ btn.addEventListener('click',()=>{btn.disabled=true;btn.textContent='Opening checkout…';location.href='checkout.html?plan='+encodeURIComponent(code);});
+ loading.hidden=true;content.hidden=false;
+}catch(e){loading.innerHTML='<div class="pc-eyebrow">CHECKOUT</div><h1 class="pc-title">We could not prepare checkout</h1><p class="pc-copy">'+lueri.escapeHTML(e.message||'Please try again.')+'</p><div style="margin-top:22px"><a class="btn btn-signal" href="rewards.html">Return to Rewards</a></div>';}
+})();
+</script>
+</body>
+</html>
