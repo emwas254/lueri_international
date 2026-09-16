@@ -12,303 +12,45 @@
 <script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
-<style>body{background:var(--paper-dim);}</style>
+<style>body{background:var(--paper-dim);}.cheque-actions{display:flex;gap:6px;flex-wrap:wrap}.cheque-actions button{padding:6px 9px;font-size:.72rem}.cheque-meta{font-size:.72rem;color:var(--slate);line-height:1.35}.cheque-clear{background:#2e7d32!important;color:#fff!important;border:0}.cheque-reject{background:#c62828!important;color:#fff!important;border:0}</style>
 </head>
 <body class="staff-shell">
-
-<div id="gate">
-  <div class="gate-box">
-    <h1>Staff Console</h1>
-    <p>Log in with your staff account to access Lueri Rewards management.</p>
-    <div id="loginForm">
-      <div class="form-group"><label class="form-label staff">Email</label><input type="email" class="input-staff" id="loginEmail"></div>
-      <div class="form-group"><label class="form-label staff">Password</label><input type="password" class="input-staff" id="loginPassword"></div>
-      <button id="gateBtn">Log in</button>
-      <div class="gate-error" id="gateError">Incorrect email or password.</div>
-    </div>
-    <p style="font-size:.75rem; color:var(--slate); margin:16px 0 0;">Access is by admin approval only. If your account is pending, ask an admin to activate it, then log in. <a href="index.html" style="text-decoration:underline;">&larr; Back to site</a></p>
-  </div>
+<div id="gate"><div class="gate-box"><h1>Staff Console</h1><p>Log in with your staff account to access Lueri Rewards management.</p><div id="loginForm"><div class="form-group"><label class="form-label staff">Email</label><input type="email" class="input-staff" id="loginEmail"></div><div class="form-group"><label class="form-label staff">Password</label><input type="password" class="input-staff" id="loginPassword"></div><button id="gateBtn">Log in</button><div class="gate-error" id="gateError">Incorrect email or password.</div></div><p style="font-size:.75rem; color:var(--slate); margin:16px 0 0;">Access is by admin approval only. If your account is pending, ask an admin to activate it, then log in. <a href="index.html" style="text-decoration:underline;">&larr; Back to site</a></p></div></div>
+<div id="console" style="display:none;"><header><div class="wrap"><h1>Lueri Rewards · Staff Console</h1><a class="exit" href="#" id="logoutBtn">Log out</a></div></header><main><div class="wrap"><div class="stat-grid" id="statGrid"></div><div class="panels">
+<div>
+<div class="staff-panel"><h2>Register a member</h2><div class="msg error" id="regMsg"></div><div class="msg success" id="regSuccessMsg"></div><div class="form-group"><label class="form-label staff">Full name</label><input class="input-staff" id="regName"></div><div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"><div class="form-group"><label class="form-label staff">Phone</label><input class="input-staff" id="regPhone" placeholder="07xx xxx xxx"></div><div class="form-group"><label class="form-label staff">Email (optional)</label><input class="input-staff" id="regEmail"></div></div><button class="btn-staff" id="regBtn">Register member</button></div>
+<div class="staff-panel"><h2>Log a transaction</h2><div class="msg error" id="txMsg"></div><div class="msg success" id="txSuccessMsg"></div><div class="form-group"><label class="form-label staff">Member phone or number</label><input class="input-staff" id="txMember" placeholder="07xx xxx xxx or member no."></div><div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"><div class="form-group"><label class="form-label staff">Amount (KES)</label><input class="input-staff" type="number" id="txAmount" min="0"></div><div class="form-group"><label class="form-label staff">Type</label><select class="input-staff" id="txType"><option value="sale">Sale</option><option value="refund">Refund</option><option value="adjustment">Adjustment</option></select></div></div><button class="btn-staff" id="txBtn">Add transaction</button><div class="receipt-box" id="receiptBox"><div class="receipt-preview" id="receiptPreview"></div><div class="receipt-actions"><button class="btn-staff btn-staff-outline" id="printReceiptBtn">Print / Save as PDF</button><button class="btn-staff" id="waReceiptBtn">Send via WhatsApp</button></div><div class="receipt-actions" style="margin-top:10px;"><button class="btn-staff btn-staff-outline" id="invoiceBtn">Generate Invoice (PDF)</button></div></div></div>
+<div class="staff-panel disabled-look"><h2>Redeem a voucher <span class="badge">Not yet live</span></h2><div class="msg error" id="voMsg"></div><div class="disclosure">There is no shared voucher database yet — nothing in the system currently issues real vouchers. Treat this panel as a placeholder until the voucher ledger ships.</div></div>
 </div>
-
-<div id="console" style="display:none;">
-  <header>
-    <div class="wrap">
-      <h1>Lueri Rewards · Staff Console</h1>
-      <a class="exit" href="#" id="logoutBtn">Log out</a>
-    </div>
-  </header>
-  <main>
-    <div class="wrap">
-      <div class="stat-grid" id="statGrid"></div>
-      <div class="panels">
-        <div>
-          <div class="staff-panel">
-            <h2>Register a member</h2>
-            <div class="msg error" id="regMsg"></div>
-            <div class="msg success" id="regSuccessMsg"></div>
-            <div class="form-group"><label class="form-label staff">Full name</label><input class="input-staff" id="regName"></div>
-            <div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <div class="form-group"><label class="form-label staff">Phone</label><input class="input-staff" id="regPhone" placeholder="07xx xxx xxx"></div>
-              <div class="form-group"><label class="form-label staff">Email (optional)</label><input class="input-staff" id="regEmail"></div>
-            </div>
-            <button class="btn-staff" id="regBtn">Register member</button>
-          </div>
-
-          <div class="staff-panel">
-            <h2>Log a transaction</h2>
-            <div class="msg error" id="txMsg"></div>
-            <div class="msg success" id="txSuccessMsg"></div>
-            <div class="form-group"><label class="form-label staff">Member phone or number</label><input class="input-staff" id="txMember" placeholder="07xx xxx xxx or member no."></div>
-            <div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <div class="form-group"><label class="form-label staff">Amount (KES)</label><input class="input-staff" type="number" id="txAmount" min="0"></div>
-              <div class="form-group">
-                <label class="form-label staff">Type</label>
-                <select class="input-staff" id="txType">
-                  <option value="sale">Sale</option>
-                  <option value="refund">Refund</option>
-                  <option value="adjustment">Adjustment</option>
-                </select>
-              </div>
-            </div>
-            <button class="btn-staff" id="txBtn">Add transaction</button>
-            <div class="receipt-box" id="receiptBox">
-              <div class="receipt-preview" id="receiptPreview"></div>
-              <div class="receipt-actions">
-                <button class="btn-staff btn-staff-outline" id="printReceiptBtn">Print / Save as PDF</button>
-                <button class="btn-staff" id="waReceiptBtn">Send via WhatsApp</button>
-              </div>
-              <div class="receipt-actions" style="margin-top:10px;">
-                <button class="btn-staff btn-staff-outline" id="invoiceBtn">Generate Invoice (PDF)</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="staff-panel disabled-look">
-            <h2>Redeem a voucher <span class="badge">Not yet live</span></h2>
-            <div class="msg error" id="voMsg"></div>
-            <div class="disclosure">There is no shared voucher database yet — nothing in the system currently issues real vouchers. Treat this panel as a placeholder until the voucher ledger ships.</div>
-          </div>
-        </div>
-
-        <div class="staff-panel">
-          <h2>Members</h2>
-          <div class="search-row">
-            <input class="input-staff" id="memberSearch" placeholder="Search by name, phone or member no.">
-          </div>
-          <div style="max-height:520px; overflow:auto;">
-            <table class="data-table">
-              <thead><tr><th>No.</th><th>Name</th><th>Phone</th><th>Tier</th><th>Points</th><th>Spend</th></tr></thead>
-              <tbody id="memberTbody"></tbody>
-            </table>
-          </div>
-          <div class="disclosure">Member data is shared across every staff device via the Lueri Rewards database — the same one the customer rewards page uses.</div>
-        </div>
-
-        <div class="staff-panel">
-          <h2>Pending cheque payments</h2>
-          <div class="msg error" id="chequeMsg"></div>
-          <div style="max-height:520px; overflow:auto;">
-            <table class="data-table">
-              <thead><tr><th>Ref</th><th>Member/Org</th><th>Plan</th><th>Amount</th><th>Cheque no.</th><th>Bank</th><th>Date</th><th>Actions</th></tr></thead>
-              <tbody id="chequeTbody"><tr><td colspan="8" style="text-align:center; color:var(--slate); padding:20px;">Loading…</td></tr></tbody>
-            </table>
-          </div>
-          <div class="disclosure">Clearing a cheque activates membership through the same path a completed Pesapal payment uses. This cannot be undone by a customer — only staff can clear or reject.</div>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
+<div class="staff-panel"><h2>Members</h2><div class="search-row"><input class="input-staff" id="memberSearch" placeholder="Search by name, phone or member no."></div><div style="max-height:520px; overflow:auto;"><table class="data-table"><thead><tr><th>No.</th><th>Name</th><th>Phone</th><th>Tier</th><th>Points</th><th>Spend</th></tr></thead><tbody id="memberTbody"></tbody></table></div><div class="disclosure">Member data is shared across every staff device via the Lueri Rewards database — the same one the customer rewards page uses.</div></div>
+<div class="staff-panel"><h2>Pending cheque payments</h2><div class="msg error" id="chequeMsg"></div><div style="max-height:520px; overflow:auto;"><table class="data-table"><thead><tr><th>Ref</th><th>Member/Org</th><th>Plan</th><th>Amount</th><th>Cheque no.</th><th>Bank</th><th>Date</th><th>Actions</th></tr></thead><tbody id="chequeTbody"><tr><td colspan="8" style="text-align:center; color:var(--slate); padding:20px;">Loading…</td></tr></tbody></table></div><div class="disclosure">Clearing a cheque activates membership through the same path a completed Pesapal payment uses. This cannot be undone by a customer — only staff can clear or reject.</div></div>
+</div></div></main></div>
 <script>
-(function () {
-  'use strict';
-  var esc = lueri.escapeHTML, fmt = lueri.fmt, formatDateTime = lueri.formatDateTime;
-  var sb = lueri.supabase();
-
-  function showMsg(id, text) {
-    var el = document.getElementById(id);
-    el.textContent = text; el.classList.add('show');
-    setTimeout(function () { el.classList.remove('show'); }, 4000);
-  }
-
-  /* ---- Auth: server enforces approval (staff_profiles.is_approved).
-     The client checks it too, but the RPCs re-check — never trust the UI. ---- */
-  async function isApprovedStaff() {
-    if (!sb) return false;
-    // FIX: this called is_approved_staff (jsonb envelope) which doesn't
-    // exist live — only is_staff() does, and it returns a raw boolean.
-    var res = await lueri.rpc('is_staff', {});
-    return res === true;
-  }
-
-  async function tryLogin() {
-    if (!sb) return;
-    var email = document.getElementById('loginEmail').value.trim();
-    var password = document.getElementById('loginPassword').value;
-    var err = document.getElementById('gateError');
-    var signIn = await sb.auth.signInWithPassword({ email: email, password: password });
-    if (signIn.error) { err.textContent = 'Incorrect email or password.'; err.classList.add('show'); return; }
-    if (!(await isApprovedStaff())) {
-      await sb.auth.signOut();
-      err.textContent = 'This account is pending admin approval. Ask an admin to activate it.';
-      err.classList.add('show');
-      return;
-    }
-    enterConsole();
-  }
-
-  document.getElementById('gateBtn').addEventListener('click', tryLogin);
-  document.getElementById('loginPassword').addEventListener('keydown', function (e) { if (e.key === 'Enter') tryLogin(); });
-
-  document.getElementById('logoutBtn').addEventListener('click', async function (e) {
-    e.preventDefault();
-    if (sb) await sb.auth.signOut();
-    document.getElementById('console').style.display = 'none';
-    document.getElementById('gate').style.display = 'flex';
-  });
-
-  function enterConsole() {
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('console').style.display = 'block';
-    refreshAll();
-  }
-
-  (async function () {
-    if (!sb) return;
-    var session = await sb.auth.getSession();
-    if (session.data.session && (await isApprovedStaff())) enterConsole();
-  })();
-
-  async function refreshStats() {
-    var res = await lueri.rpc('staff_dashboard_stats', {});
-    if (!res.success) return;
-    var s = res.stats;
-    document.getElementById('statGrid').innerHTML =
-      '<div class="stat-card"><div class="n">' + fmt(s.totalLifetimeSpend) + '</div><div class="l">Lifetime spend</div></div>' +
-      '<div class="stat-card"><div class="n">' + Number(s.totalMembers || 0) + '</div><div class="l">Members</div></div>' +
-      '<div class="stat-card"><div class="n">' + Number(s.totalPoints || 0).toLocaleString() + '</div><div class="l">Points outstanding</div></div>' +
-      '<div class="stat-card"><div class="n">' + Number(s.totalTransactions || 0) + '</div><div class="l">Transactions</div></div>';
-  }
-
-  async function refreshMembers(query) {
-    var res = await lueri.rpc('staff_search_members', { p_query: query || '' });
-    var tbody = document.getElementById('memberTbody');
-    if (!res.success || !res.members.length) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--slate); padding:20px;">No members yet.</td></tr>';
-      return;
-    }
-    tbody.innerHTML = res.members.map(function (m) {
-      return '<tr><td class="mono">' + esc(m.memberNumber) + '</td><td>' + esc(m.name) + '</td>' +
-        '<td class="mono">' + esc(m.phone) + '</td><td><span class="tier-pill">' + esc(m.tier) + '</span></td>' +
-        '<td>' + Number(m.points || 0).toLocaleString() + '</td><td>' + fmt(m.lifetimeSpend) + '</td></tr>';
-    }).join('');
-  }
-
-  async function refreshAll(query) {
-    await Promise.all([refreshStats(), refreshMembers(query)]);
-  }
-
-  var searchDebounce;
-  document.getElementById('memberSearch').addEventListener('input', function (e) {
-    clearTimeout(searchDebounce);
-    var value = e.target.value;
-    searchDebounce = setTimeout(function () { refreshMembers(value); }, 250);
-  });
-
-  document.getElementById('regBtn').addEventListener('click', async function () {
-    var res = await lueri.rewards.registerMember({
-      name: document.getElementById('regName').value.trim(),
-      phone: document.getElementById('regPhone').value.trim(),
-      email: document.getElementById('regEmail').value.trim(),
-    });
-    if (!res.success) { showMsg('regMsg', res.errors.map(function (e) { return e.message; }).join(' ')); return; }
-    showMsg('regSuccessMsg', 'Registered ' + res.member.name + ' — Member No. ' + res.member.memberNumber + '.');
-    document.getElementById('regName').value = '';
-    document.getElementById('regPhone').value = '';
-    document.getElementById('regEmail').value = '';
-    refreshAll();
-  });
-
-  var currentReceipt = null;
-
-  async function submitTransaction(confirmedMemberId) {
-    var res = await lueri.rewards.addTransaction({
-      memberRef: document.getElementById('txMember').value.trim(),
-      amount: document.getElementById('txAmount').value,
-      type: document.getElementById('txType').value,
-      confirmedMemberId: confirmedMemberId || null,
-    });
-
-    if (res.ambiguous) {
-      var proceed = window.confirm(
-        "This didn't match an exact phone number or member number. Closest match: " + res.member.name +
-        " (" + res.member.memberNumber + ", " + res.member.phone + ").\n\nLog this transaction against " + res.member.name + "?"
-      );
-      if (proceed) await submitTransaction(res.member.id);
-      return;
-    }
-    if (!res.success) { showMsg('txMsg', res.errors.map(function (e) { return e.message; }).join(' ')); return; }
-    showMsg('txSuccessMsg', 'Logged. ' + res.member.name + ' now has ' + res.member.points + ' points (' + res.member.tier + ').');
-    document.getElementById('txMember').value = '';
-    document.getElementById('txAmount').value = '';
-    refreshAll();
-    showReceipt(res.transaction, res.member);
-  }
-  document.getElementById('txBtn').addEventListener('click', function () { submitTransaction(); });
-
-  function showReceipt(tx, member) {
-    currentReceipt = { tx: tx, member: member };
-    var lines = [
-      ['Transaction No.', tx.transactionNumber || tx.id],
-      ['Date', formatDateTime(tx.date)],
-      ['Member', member.name + ' (No. ' + member.memberNumber + ')'],
-      ['Phone', member.phone],
-      ['Type', String(tx.type).charAt(0).toUpperCase() + String(tx.type).slice(1)],
-      ['Amount', fmt(tx.amount)],
-      ['Points earned', tx.points >= 0 ? '+' + tx.points : String(tx.points)],
-      ['---', ''],
-      ['New points balance', Number(member.points || 0).toLocaleString()],
-      ['Current tier', member.tier],
-    ];
-    document.getElementById('receiptPreview').innerHTML =
-      '<div class="rhead">Lueri International — Receipt</div>' +
-      lines.map(function (row) {
-        return row[0] === '---' ? '<hr>'
-          : '<div class="rline"><span>' + esc(row[0]) + '</span><strong>' + esc(String(row[1])) + '</strong></div>';
-      }).join('');
-    document.getElementById('receiptBox').classList.add('show');
-  }
-
-  document.getElementById('printReceiptBtn').addEventListener('click', function () {
-    if (!currentReceipt) return;
-    lueri.docs.openDoc(lueri.docs.receiptHTML(currentReceipt.tx, currentReceipt.member), 420, 720);
-  });
-
-  document.getElementById('invoiceBtn').addEventListener('click', function () {
-    if (!currentReceipt) return;
-    // Uses the transaction number as the invoice reference. The previous
-    // version called an RPC (next_invoice_number) that doesn't exist in
-    // schema.sql, and didn't await the call — so res was always a pending
-    // Promise and this silently fell back to a timestamp every time.
-    var no = 'INV-' + (currentReceipt.tx.transactionNumber || currentReceipt.tx.id);
-    lueri.docs.openDoc(lueri.docs.invoiceHTML(currentReceipt.tx, currentReceipt.member, no), 520, 760);
-  });
-
-  document.getElementById('waReceiptBtn').addEventListener('click', function () {
-    if (!currentReceipt) return;
-    var tx = currentReceipt.tx, member = currentReceipt.member;
-    var text = [
-      'Lueri International — Receipt',
-      'Txn No: ' + (tx.transactionNumber || tx.id),
-      'Date: ' + formatDateTime(tx.date),
-      'Amount: ' + fmt(tx.amount),
-      'Points earned: ' + (tx.points >= 0 ? '+' + tx.points : tx.points),
-      'New balance: ' + Number(member.points || 0).toLocaleString() + ' pts (' + member.tier + ')',
-      'Thank you for choosing Lueri International.',
-    ].join('\n');
-    lueriOpenWhatsApp(member.phone, text);
-  });
+(function(){'use strict';
+var esc=lueri.escapeHTML,fmt=lueri.fmt,formatDateTime=lueri.formatDateTime,sb=lueri.supabase();
+function showMsg(id,text){var el=document.getElementById(id);el.textContent=text;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},4000);}
+async function isApprovedStaff(){if(!sb)return false;var res=await lueri.rpc('is_staff',{});return res===true;}
+async function tryLogin(){if(!sb)return;var email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value,err=document.getElementById('gateError');var signIn=await sb.auth.signInWithPassword({email:email,password:password});if(signIn.error){err.textContent='Incorrect email or password.';err.classList.add('show');return;}if(!(await isApprovedStaff())){await sb.auth.signOut();err.textContent='This account is pending admin approval. Ask an admin to activate it.';err.classList.add('show');return;}enterConsole();}
+document.getElementById('gateBtn').addEventListener('click',tryLogin);document.getElementById('loginPassword').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+document.getElementById('logoutBtn').addEventListener('click',async function(e){e.preventDefault();if(sb)await sb.auth.signOut();document.getElementById('console').style.display='none';document.getElementById('gate').style.display='flex';});
+function enterConsole(){document.getElementById('gate').style.display='none';document.getElementById('console').style.display='block';refreshAll();}
+(async function(){if(!sb)return;var session=await sb.auth.getSession();if(session.data.session&&(await isApprovedStaff()))enterConsole();})();
+async function refreshStats(){var res=await lueri.rpc('staff_dashboard_stats',{});if(!res.success)return;var s=res.stats;document.getElementById('statGrid').innerHTML='<div class="stat-card"><div class="n">'+fmt(s.totalLifetimeSpend)+'</div><div class="l">Lifetime spend</div></div><div class="stat-card"><div class="n">'+Number(s.totalMembers||0)+'</div><div class="l">Members</div></div><div class="stat-card"><div class="n">'+Number(s.totalPoints||0).toLocaleString()+'</div><div class="l">Points outstanding</div></div><div class="stat-card"><div class="n">'+Number(s.totalTransactions||0)+'</div><div class="l">Transactions</div></div>';}
+async function refreshMembers(query){var res=await lueri.rpc('staff_search_members',{p_query:query||''}),tbody=document.getElementById('memberTbody');if(!res.success||!res.members.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center; color:var(--slate); padding:20px;">No members yet.</td></tr>';return;}tbody.innerHTML=res.members.map(function(m){return '<tr><td class="mono">'+esc(m.memberNumber)+'</td><td>'+esc(m.name)+'</td><td class="mono">'+esc(m.phone)+'</td><td><span class="tier-pill">'+esc(m.tier)+'</span></td><td>'+Number(m.points||0).toLocaleString()+'</td><td>'+fmt(m.lifetimeSpend)+'</td></tr>';}).join('');}
+function chequeErrorText(code){var map={forbidden:'You are not authorized to manage cheque payments.',unknown_payment:'The payment could not be found.',not_a_cheque_payment:'This payment is not a cheque payment.',not_pending:'This cheque is no longer pending.'};return map[code]||'The cheque action could not be completed. Please try again.';}
+async function refreshCheques(){var tbody=document.getElementById('chequeTbody');try{var res=await lueri.rpc('staff_list_pending_cheques',{});if(!res||!res.success){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--slate);padding:20px;">'+esc(chequeErrorText(res&&res.error))+'</td></tr>';return;}var items=Array.isArray(res.items)?res.items:[];if(!items.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--slate);padding:20px;">No pending cheque payments.</td></tr>';return;}tbody.innerHTML=items.map(function(p){var who=p.organization_name||p.member_name||'—',contact=p.member_phone?'<div class="cheque-meta">'+esc(p.member_phone)+'</div>':'',plan=p.plan_code||'—',amount=(p.currency||'KES')+' '+Number(p.amount||0).toLocaleString(),date=p.cheque_date?esc(p.cheque_date):'—',bank=p.cheque_bank||'—';return '<tr><td class="mono">'+esc(p.internal_reference||p.id)+'</td><td>'+esc(who)+contact+'</td><td>'+esc(plan)+'</td><td>'+esc(amount)+'</td><td class="mono">'+esc(p.cheque_number||'—')+'</td><td>'+esc(bank)+'</td><td>'+date+'</td><td><div class="cheque-actions"><button type="button" class="btn-staff cheque-clear" data-cheque-action="clear" data-payment-id="'+esc(p.id)+'">Clear</button><button type="button" class="btn-staff cheque-reject" data-cheque-action="reject" data-payment-id="'+esc(p.id)+'">Reject</button></div></td></tr>';}).join('');}catch(err){console.error('Pending cheque load failed:',err);tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--slate);padding:20px;">Unable to load pending cheques.</td></tr>';}}
+async function clearCheque(paymentId,button){if(!paymentId)return;if(!window.confirm('Clear this cheque and activate the associated membership? This action cannot be undone by the customer.'))return;button.disabled=true;button.textContent='Clearing…';try{var res=await lueri.rpc('staff_clear_cheque',{p_payment_id:paymentId});if(!res||!res.success){showMsg('chequeMsg',chequeErrorText(res&&res.error));return;}showMsg('chequeMsg','Cheque cleared and membership activation was processed.');await refreshCheques();}catch(err){console.error('Cheque clear failed:',err);showMsg('chequeMsg','Unable to clear this cheque. Please try again.');}finally{button.disabled=false;button.textContent='Clear';}}
+async function rejectCheque(paymentId,button){if(!paymentId)return;var reason=window.prompt('Reason for rejecting this cheque (optional):','');if(reason===null)return;reason=reason.trim();if(reason.length>1000){showMsg('chequeMsg','Rejection reason is too long.');return;}button.disabled=true;button.textContent='Rejecting…';try{var res=await lueri.rpc('staff_reject_cheque',{p_payment_id:paymentId,p_reason:reason||null});if(!res||!res.success){showMsg('chequeMsg',chequeErrorText(res&&res.error));return;}showMsg('chequeMsg','Cheque rejected.');await refreshCheques();}catch(err){console.error('Cheque rejection failed:',err);showMsg('chequeMsg','Unable to reject this cheque. Please try again.');}finally{button.disabled=false;button.textContent='Reject';}}
+document.getElementById('chequeTbody').addEventListener('click',function(e){var button=e.target.closest('button[data-cheque-action]');if(!button)return;var id=button.getAttribute('data-payment-id');if(button.getAttribute('data-cheque-action')==='clear')clearCheque(id,button);else rejectCheque(id,button);});
+async function refreshAll(query){await Promise.all([refreshStats(),refreshMembers(query),refreshCheques()]);}
+var searchDebounce;document.getElementById('memberSearch').addEventListener('input',function(e){clearTimeout(searchDebounce);var value=e.target.value;searchDebounce=setTimeout(function(){refreshMembers(value);},250);});
+document.getElementById('regBtn').addEventListener('click',async function(){var res=await lueri.rewards.registerMember({name:document.getElementById('regName').value.trim(),phone:document.getElementById('regPhone').value.trim(),email:document.getElementById('regEmail').value.trim()});if(!res.success){showMsg('regMsg',res.errors.map(function(e){return e.message;}).join(' '));return;}showMsg('regSuccessMsg','Registered '+res.member.name+' — Member No. '+res.member.memberNumber+'.');document.getElementById('regName').value='';document.getElementById('regPhone').value='';document.getElementById('regEmail').value='';refreshAll();});
+var currentReceipt=null;async function submitTransaction(confirmedMemberId){var res=await lueri.rewards.addTransaction({memberRef:document.getElementById('txMember').value.trim(),amount:document.getElementById('txAmount').value,type:document.getElementById('txType').value,confirmedMemberId:confirmedMemberId||null});if(res.ambiguous){var proceed=window.confirm("This didn't match an exact phone number or member number. Closest match: "+res.member.name+" ("+res.member.memberNumber+", "+res.member.phone+").\n\nLog this transaction against "+res.member.name+"?");if(proceed)await submitTransaction(res.member.id);return;}if(!res.success){showMsg('txMsg',res.errors.map(function(e){return e.message;}).join(' '));return;}showMsg('txSuccessMsg','Logged. '+res.member.name+' now has '+res.member.points+' points ('+res.member.tier+').');document.getElementById('txMember').value='';document.getElementById('txAmount').value='';refreshAll();showReceipt(res.transaction,res.member);}
+document.getElementById('txBtn').addEventListener('click',function(){submitTransaction();});
+function showReceipt(tx,member){currentReceipt={tx:tx,member:member};var lines=[['Transaction No.',tx.transactionNumber||tx.id],['Date',formatDateTime(tx.date)],['Member',member.name+' (No. '+member.memberNumber+')'],['Phone',member.phone],['Type',String(tx.type).charAt(0).toUpperCase()+String(tx.type).slice(1)],['Amount',fmt(tx.amount)],['Points earned',tx.points>=0?'+'+tx.points:String(tx.points)],['---',''],['New points balance',Number(member.points||0).toLocaleString()],['Current tier',member.tier]];document.getElementById('receiptPreview').innerHTML='<div class="rhead">Lueri International — Receipt</div>'+lines.map(function(row){return row[0]==='---'?'<hr>':'<div class="rline"><span>'+esc(row[0])+'</span><strong>'+esc(String(row[1]))+'</strong></div>';}).join('');document.getElementById('receiptBox').classList.add('show');}
+document.getElementById('printReceiptBtn').addEventListener('click',function(){if(!currentReceipt)return;lueri.docs.openDoc(lueri.docs.receiptHTML(currentReceipt.tx,currentReceipt.member),420,720);});
+document.getElementById('invoiceBtn').addEventListener('click',function(){if(!currentReceipt)return;var no='INV-'+(currentReceipt.tx.transactionNumber||currentReceipt.tx.id);lueri.docs.openDoc(lueri.docs.invoiceHTML(currentReceipt.tx,currentReceipt.member,no),520,760);});
+document.getElementById('waReceiptBtn').addEventListener('click',function(){if(!currentReceipt)return;var tx=currentReceipt.tx,member=currentReceipt.member;var text=['Lueri International — Receipt','Txn No: '+(tx.transactionNumber||tx.id),'Date: '+formatDateTime(tx.date),'Amount: '+fmt(tx.amount),'Points earned: '+(tx.points>=0?'+'+tx.points:tx.points),'New balance: '+Number(member.points||0).toLocaleString()+' pts ('+member.tier+')','Thank you for choosing Lueri International.'].join('\n');lueriOpenWhatsApp(member.phone,text);});
 })();
 </script>
 </body>
