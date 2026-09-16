@@ -4,142 +4,47 @@
 
   const WA = 'https://wa.link/qk7m3b';
   const CHAT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/lucy-chat';
+  const PAYMENT_ENDPOINT = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/delivery-payment-initiate';
   const LUCY_AVATAR = 'assets/lucy-avatar.webp';
   const LUCY_AVATAR_SMALL = 'assets/lucy-avatar-sm.webp';
   const RATE_LIMIT_MS = 2500;
   const MAX_HISTORY = 10;
-
-  const quickTopics = [
-    ['Book a pickup', 'booking'],
-    ['Delivery pricing', 'pricing'],
-    ['Corporate plans', 'corporate'],
-    ['Service areas', 'coverage'],
-    ['Opening hours', 'hours'],
-    ['Track a delivery', 'tracking']
-  ];
-
-  const quickAnswers = {
-    booking: 'Absolutely. You can start with the Book a Pickup form on this website, or WhatsApp Lueri with your pickup location, drop-off location and parcel details.',
-    pricing: 'Single deliveries start from KES 350. The final quote depends on zones and parcel size, and Lueri confirms the price before pickup.',
-    corporate: 'Lueri has Essential (KES 25,000/month), Professional (KES 45,000/month) and Elite (KES 75,000/month) corporate plans, with custom Enterprise agreements for higher volume.',
-    coverage: 'Lueri provides Nairobi last-mile delivery and covers Nairobi CBD, Westlands, Kilimani, Kasarani, South B/South C, Embakasi, Ngong Road, Thika Road and surrounding towns. Send the two locations to confirm a route.',
-    hours: 'Lueri is open Monday–Friday, 8:00 AM–5:00 PM and Saturday, 8:00 AM–3:00 PM. Sunday is closed.',
-    tracking: 'I cannot access customer orders, payment records or live delivery locations. For a specific delivery update, please WhatsApp Lueri directly.'
+  const SUPPORTED_LOCALES = ['en', 'sw', 'fr', 'es', 'ar', 'pt', 'zh'];
+  const UI = {
+    en:{status:'Online and ready to help',greeting:"Hi, I'm Lucy. 👋 I can help with Lueri’s services, pricing, coverage and business plans — or guide you toward a booking.",placeholder:'Ask Lucy anything…',send:'➤',close:'Close Lucy',typing:'Lucy is typing',booking:'Book a Pickup',whatsapp:'WhatsApp Lueri',privacy:'For privacy, Lucy does not access customer accounts, orders or payment records.',error:'I’m temporarily offline. Please WhatsApp Lueri and the team will assist you.',pay:'Proceed to Payment',processing:'Processing payment…',paymentOpened:'Secure Pesapal checkout opened. Complete the payment to finish your booking.',paymentFailed:'Payment setup failed. Please try again.',topics:['Book a pickup','Delivery pricing','Corporate plans','Service areas','Opening hours','Track a delivery']},
+    sw:{status:'Mtandaoni na tayari kukusaidia',greeting:'Habari, mimi ni Lucy. 👋 Naweza kukusaidia kuelewa huduma, bei, maeneo ya huduma na mipango ya biashara ya Lueri — au kukuongoza kuweka oda.',placeholder:'Muulize Lucy chochote…',send:'➤',close:'Funga Lucy',typing:'Lucy anaandika',booking:'Weka Oda ya Pickup',whatsapp:'WhatsApp Lueri',privacy:'Kwa faragha, Lucy hawezi kufikia akaunti, oda au rekodi za malipo za wateja.',error:'Niko nje ya mtandao kwa muda. Tafadhali wasiliana na Lueri kupitia WhatsApp.',pay:'Endelea na Malipo',processing:'Tunachakata malipo…',paymentOpened:'Ukurasa salama wa Pesapal umefunguliwa. Kamilisha malipo ili kumaliza oda yako.',paymentFailed:'Malipo hayakuanzishwa. Tafadhali jaribu tena.',topics:['Weka oda ya pickup','Bei za usafirishaji','Mipango ya biashara','Maeneo ya huduma','Saa za kazi','Fuatilia delivery']},
+    fr:{status:'En ligne et prêt à aider',greeting:'Bonjour, je suis Lucy. 👋 Je peux vous aider avec les services, tarifs, zones et offres professionnelles de Lueri — ou vous guider pour une réservation.',placeholder:'Demandez quelque chose à Lucy…',send:'➤',close:'Fermer Lucy',typing:'Lucy écrit',booking:'Réserver un ramassage',whatsapp:'WhatsApp Lueri',privacy:'Pour votre confidentialité, Lucy n’accède pas aux comptes, commandes ou paiements des clients.',error:'Je suis temporairement hors ligne. Veuillez contacter Lueri par WhatsApp.',pay:'Procéder au paiement',processing:'Traitement du paiement…',paymentOpened:'Le paiement sécurisé Pesapal est ouvert. Terminez le paiement pour finaliser votre réservation.',paymentFailed:'Le paiement n’a pas pu être initialisé. Veuillez réessayer.',topics:['Réserver un ramassage','Tarifs de livraison','Plans d’entreprise','Zones de service','Heures d’ouverture','Suivre une livraison']},
+    es:{status:'En línea y listo para ayudar',greeting:'Hola, soy Lucy. 👋 Puedo ayudarte con los servicios, precios, zonas y planes empresariales de Lueri — o guiarte para hacer una reserva.',placeholder:'Pregúntale algo a Lucy…',send:'➤',close:'Cerrar Lucy',typing:'Lucy está escribiendo',booking:'Reservar recogida',whatsapp:'WhatsApp Lueri',privacy:'Por privacidad, Lucy no accede a cuentas, pedidos ni registros de pago de clientes.',error:'Estoy temporalmente fuera de línea. Contacta a Lueri por WhatsApp.',pay:'Proceder al pago',processing:'Procesando el pago…',paymentOpened:'Se abrió el pago seguro de Pesapal. Completa el pago para finalizar tu reserva.',paymentFailed:'No se pudo iniciar el pago. Inténtalo de nuevo.',topics:['Reservar recogida','Precios de entrega','Planes corporativos','Áreas de servicio','Horario de atención','Seguir una entrega']},
+    ar:{status:'متصل وجاهز للمساعدة',greeting:'مرحباً، أنا لوسي. 👋 يمكنني مساعدتك في خدمات لوري وأسعارها ومناطق التغطية وخطط الأعمال، أو إرشادك لإجراء حجز.',placeholder:'اسأل لوسي أي شيء…',send:'➤',close:'إغلاق لوسي',typing:'لوسي تكتب',booking:'حجز استلام',whatsapp:'واتساب لوري',privacy:'لخصوصيتك، لا تصل لوسي إلى حسابات العملاء أو طلباتهم أو سجلات الدفع.',error:'أنا غير متصلة مؤقتاً. يرجى التواصل مع لوري عبر واتساب.',pay:'المتابعة إلى الدفع',processing:'جارٍ معالجة الدفع…',paymentOpened:'تم فتح الدفع الآمن عبر Pesapal. أكمل الدفع لإنهاء الحجز.',paymentFailed:'تعذر بدء الدفع. يرجى المحاولة مرة أخرى.',topics:['حجز استلام','أسعار التوصيل','خطط الشركات','مناطق الخدمة','ساعات العمل','تتبع التوصيل']},
+    pt:{status:'Online e pronto para ajudar',greeting:'Olá, sou a Lucy. 👋 Posso ajudar com os serviços, preços, áreas e planos empresariais da Lueri — ou orientar você em uma reserva.',placeholder:'Pergunte algo à Lucy…',send:'➤',close:'Fechar Lucy',typing:'Lucy está digitando',booking:'Agendar coleta',whatsapp:'WhatsApp Lueri',privacy:'Por privacidade, Lucy não acessa contas, pedidos ou registros de pagamento dos clientes.',error:'Estou temporariamente offline. Fale com a Lueri pelo WhatsApp.',pay:'Prosseguir para o pagamento',processing:'Processando pagamento…',paymentOpened:'O checkout seguro da Pesapal foi aberto. Conclua o pagamento para finalizar a reserva.',paymentFailed:'Não foi possível iniciar o pagamento. Tente novamente.',topics:['Agendar coleta','Preços de entrega','Planos corporativos','Áreas de serviço','Horário de funcionamento','Rastrear entrega']},
+    zh:{status:'在线并准备提供帮助',greeting:'你好，我是Lucy。👋 我可以帮助你了解Lueri的服务、价格、覆盖区域和企业方案，也可以引导你完成预约。',placeholder:'问Lucy任何问题…',send:'➤',close:'关闭Lucy',typing:'Lucy正在输入',booking:'预订取件',whatsapp:'WhatsApp联系Lueri',privacy:'为了保护隐私，Lucy无法访问客户账户、订单或付款记录。',error:'我暂时离线。请通过WhatsApp联系Lueri。',pay:'继续付款',processing:'正在处理付款…',paymentOpened:'Pesapal安全付款页面已打开。完成付款即可完成预约。',paymentFailed:'无法启动付款，请重试。',topics:['预订取件','配送价格','企业方案','服务区域','营业时间','查询配送']}
   };
+  function locale(){const value=localStorage.getItem('lueri_lang');return SUPPORTED_LOCALES.includes(value)?value:'en';}
+  function ui(key){return UI[locale()][key]??UI.en[key]??'';}
 
   const style = document.createElement('style');
   style.textContent = `
-    .lucy-launch{position:fixed;right:22px;bottom:22px;z-index:1100;border:0;border-radius:999px;padding:9px 16px 9px 9px;background:linear-gradient(135deg,#1B2620,#34503E);color:#F0EAD8;font:700 14px system-ui,sans-serif;box-shadow:0 10px 28px #0005;cursor:pointer;display:flex;align-items:center;gap:9px;animation:lucyFloat 3s ease-in-out infinite;transition:transform .2s ease,box-shadow .2s ease}
-    .lucy-launch:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px #0006}
-    .lucy-launch .lucy-avatar{width:34px;height:34px;flex:0 0 34px;display:block;border-radius:50%;object-fit:cover;background:#F0EAD8;border:1px solid #F0EAD8;box-shadow:0 2px 8px #0003}
-    @keyframes lucyFloat{50%{transform:translateY(-5px)}}
-    .lucy-panel{position:fixed;right:22px;bottom:86px;z-index:1100;width:min(390px,calc(100vw - 24px));max-height:min(720px,calc(100vh - 105px));overflow:hidden;border-radius:20px;background:#F8F4E9;color:#1B2620;box-shadow:0 20px 55px #0005;transform-origin:bottom right;animation:lucyOpen .28s ease both;display:flex;flex-direction:column}
-    .lucy-panel[hidden]{display:none}
-    @keyframes lucyOpen{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
-    .lucy-header{padding:15px 17px;color:#F8F4E9;background:linear-gradient(135deg,#1B2620,#34503E);display:flex;align-items:center;gap:11px}
-    .lucy-header-avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:block;object-fit:cover;background:#F0EAD8;border:2px solid #F0EAD8;box-shadow:inset 0 0 0 1px #ffffff55,0 3px 10px #0003}
-    .lucy-header-copy{min-width:0;flex:1}.lucy-header h2{margin:0;font:700 17px system-ui,sans-serif}.lucy-status{margin:2px 0 0;font:12px system-ui,sans-serif;color:#cfe6d3}.lucy-status::before{content:'●';color:#79db8a;margin-right:5px}
-    .lucy-close{border:0;background:transparent;color:#fff;font-size:22px;line-height:1;cursor:pointer;padding:4px 7px;border-radius:8px}.lucy-close:hover{background:#ffffff18}
-    .lucy-body{padding:16px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
-    .lucy-message{max-width:89%;padding:11px 13px;margin:0 0 10px;border-radius:4px 15px 15px 15px;line-height:1.48;font:14px/1.48 system-ui,sans-serif;background:#e7ede5;animation:lucyMessage .25s ease both;white-space:pre-wrap;overflow-wrap:anywhere}
-    .lucy-message.user{margin-left:auto;border-radius:15px 4px 15px 15px;color:#fff;background:#B8321F}
-    .lucy-message a{color:inherit;font-weight:700}.lucy-message.user a{color:#fff}
-    @keyframes lucyMessage{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-    .lucy-options{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 16px}.lucy-options button{border:1px solid #34503E;border-radius:999px;padding:8px 11px;background:transparent;color:#1B2620;cursor:pointer;font:600 12px system-ui,sans-serif;transition:.18s ease}.lucy-options button:hover,.lucy-options button:focus-visible{background:#34503E;color:#fff;transform:translateY(-1px);outline:none}
-    .lucy-booking{display:flex;gap:7px;margin:0 0 14px}.lucy-booking a{flex:1;text-align:center;text-decoration:none;border-radius:10px;padding:10px 9px;font:700 12px system-ui,sans-serif}.lucy-booking-primary{background:#B8321F;color:#fff}.lucy-booking-secondary{background:#25D366;color:#fff}
-    .lucy-typing{display:none;padding:10px 13px;width:fit-content;border-radius:14px;background:#e7ede5}.lucy-typing.show{display:block}.lucy-typing span{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:#567060;animation:lucyTyping 1s infinite}.lucy-typing span:nth-child(2){animation-delay:.15s}.lucy-typing span:nth-child(3){animation-delay:.3s}@keyframes lucyTyping{50%{opacity:.3;transform:translateY(-3px)}}
-    .lucy-footer{display:flex;gap:8px;padding:12px;border-top:1px solid #ddd6c5;background:#F8F4E9}.lucy-footer input{min-width:0;flex:1;padding:11px 12px;border:1px solid #c8c0ae;border-radius:999px;outline:none;font:14px system-ui,sans-serif}.lucy-footer input:focus{border-color:#34503E;box-shadow:0 0 0 3px #34503e22}.lucy-send{border:0;border-radius:50%;width:42px;height:42px;background:#1B2620;color:#fff;cursor:pointer;font-size:17px}.lucy-send:disabled{opacity:.5;cursor:default}
-    .lucy-note{font:11px/1.4 system-ui,sans-serif;color:#6b6a62;text-align:center;padding:0 12px 10px;background:#F8F4E9}
-    @media (max-width:520px){.lucy-panel{right:12px;bottom:78px;width:calc(100vw - 24px);max-height:calc(100vh - 92px);border-radius:18px}.lucy-launch{right:14px;bottom:14px}.lucy-body{padding:13px}.lucy-message{max-width:92%}.lucy-booking a{padding:11px 7px}}
-    @media (prefers-reduced-motion:reduce){.lucy-launch,.lucy-panel,.lucy-message,.lucy-typing span{animation:none}}
+    .lucy-launch{position:fixed;right:22px;bottom:22px;z-index:1100;border:0;border-radius:999px;padding:9px 16px 9px 9px;background:linear-gradient(135deg,#1B2620,#34503E);color:#F0EAD8;font:700 14px system-ui,sans-serif;box-shadow:0 10px 28px #0005;cursor:pointer;display:flex;align-items:center;gap:9px;animation:lucyFloat 3s ease-in-out infinite;transition:transform .2s ease,box-shadow .2s ease}.lucy-launch:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px #0006}.lucy-launch .lucy-avatar{width:34px;height:34px;flex:0 0 34px;display:block;border-radius:50%;object-fit:cover;background:#F0EAD8;border:1px solid #F0EAD8;box-shadow:0 2px 8px #0003}@keyframes lucyFloat{50%{transform:translateY(-5px)}}
+    .lucy-panel{position:fixed;right:22px;bottom:86px;z-index:1100;width:min(390px,calc(100vw - 24px));max-height:min(720px,calc(100vh - 105px));overflow:hidden;border-radius:20px;background:#F8F4E9;color:#1B2620;box-shadow:0 20px 55px #0005;transform-origin:bottom right;animation:lucyOpen .28s ease both;display:flex;flex-direction:column}.lucy-panel[hidden]{display:none}@keyframes lucyOpen{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .lucy-header{padding:15px 17px;color:#F8F4E9;background:linear-gradient(135deg,#1B2620,#34503E);display:flex;align-items:center;gap:11px}.lucy-header-avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:block;object-fit:cover;background:#F0EAD8;border:2px solid #F0EAD8;box-shadow:inset 0 0 0 1px #ffffff55,0 3px 10px #0003}.lucy-header-copy{min-width:0;flex:1}.lucy-header h2{margin:0;font:700 17px system-ui,sans-serif}.lucy-status{margin:2px 0 0;font:12px system-ui,sans-serif;color:#cfe6d3}.lucy-status::before{content:'●';color:#79db8a;margin-right:5px}.lucy-close{border:0;background:transparent;color:#fff;font-size:22px;line-height:1;cursor:pointer;padding:4px 7px;border-radius:8px}.lucy-close:hover{background:#ffffff18}.lucy-body{padding:16px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}.lucy-message{max-width:89%;padding:11px 13px;margin:0 0 10px;border-radius:4px 15px 15px 15px;line-height:1.48;font:14px/1.48 system-ui,sans-serif;background:#e7ede5;animation:lucyMessage .25s ease both;white-space:pre-wrap;overflow-wrap:anywhere}.lucy-message.user{margin-left:auto;border-radius:15px 4px 15px 15px;color:#fff;background:#B8321F}@keyframes lucyMessage{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+    .lucy-options{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 16px}.lucy-options button,.lucy-pay{border:1px solid #34503E;border-radius:999px;padding:8px 11px;background:transparent;color:#1B2620;cursor:pointer;font:600 12px system-ui,sans-serif;transition:.18s ease}.lucy-options button:hover,.lucy-options button:focus-visible,.lucy-pay:hover{background:#34503E;color:#fff;transform:translateY(-1px);outline:none}.lucy-pay{display:block;width:100%;margin:8px 0 14px;background:#B8321F;border-color:#B8321F;color:#fff}.lucy-pay:disabled{opacity:.55;cursor:wait;transform:none}.lucy-booking{display:flex;gap:7px;margin:0 0 14px}.lucy-booking a{flex:1;text-align:center;text-decoration:none;border-radius:10px;padding:10px 9px;font:700 12px system-ui,sans-serif}.lucy-booking-primary{background:#B8321F;color:#fff}.lucy-booking-secondary{background:#25D366;color:#fff}.lucy-typing{display:none;padding:10px 13px;width:fit-content;border-radius:14px;background:#e7ede5}.lucy-typing.show{display:block}.lucy-typing span{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:#567060;animation:lucyTyping 1s infinite}.lucy-typing span:nth-child(2){animation-delay:.15s}.lucy-typing span:nth-child(3){animation-delay:.3s}@keyframes lucyTyping{50%{opacity:.3;transform:translateY(-3px)}}.lucy-footer{display:flex;gap:8px;padding:12px;border-top:1px solid #ddd6c5;background:#F8F4E9}.lucy-footer input{min-width:0;flex:1;padding:11px 12px;border:1px solid #c8c0ae;border-radius:999px;outline:none;font:14px system-ui,sans-serif}.lucy-footer input:focus{border-color:#34503E;box-shadow:0 0 0 3px #34503e22}.lucy-send{border:0;border-radius:50%;width:42px;height:42px;background:#1B2620;color:#fff;cursor:pointer;font-size:17px}.lucy-send:disabled{opacity:.5;cursor:default}.lucy-note{font:11px/1.4 system-ui,sans-serif;color:#6b6a62;text-align:center;padding:0 12px 10px;background:#F8F4E9}.lucy-payment-modal{position:fixed;inset:0;z-index:1300;background:#0008;display:flex;align-items:center;justify-content:center;padding:12px}.lucy-payment-modal[hidden]{display:none}.lucy-payment-dialog{position:relative;width:min(560px,100%);height:min(760px,92vh);background:#F8F4E9;border-radius:16px;overflow:hidden;box-shadow:0 24px 70px #0007}.lucy-payment-dialog iframe{width:100%;height:100%;border:0}.lucy-payment-close{position:absolute;right:10px;top:10px;z-index:2;border:0;border-radius:50%;width:36px;height:36px;background:#1B2620;color:#fff;font-size:20px;cursor:pointer}@media (max-width:520px){.lucy-panel{right:12px;bottom:78px;width:calc(100vw - 24px);max-height:calc(100vh - 92px);border-radius:18px}.lucy-launch{right:14px;bottom:14px}.lucy-body{padding:13px}.lucy-message{max-width:92%}.lucy-booking a{padding:11px 7px}}@media (prefers-reduced-motion:reduce){.lucy-launch,.lucy-panel,.lucy-message,.lucy-typing span{animation:none}}
   `;
   document.head.appendChild(style);
 
   const panel = document.createElement('aside');
-  panel.className = 'lucy-panel';
-  panel.hidden = true;
-  panel.setAttribute('aria-label','Lucy support chat');
-  panel.innerHTML = `
-    <div class="lucy-header">
-      <img class="lucy-header-avatar" src="${LUCY_AVATAR}" alt="Lucy — Lueri Digital Assistant" width="46" height="46">
-      <div class="lucy-header-copy"><h2>Lucy</h2><p class="lucy-status">Lueri Digital Assistant</p></div>
-      <button class="lucy-close" type="button" aria-label="Close Lucy">×</button>
-    </div>
-    <div class="lucy-body">
-      <div class="lucy-message">Hi, I’m Lucy. 👋 I can help you understand Lueri’s services, pricing, coverage and business plans — or guide you toward a booking.</div>
-      <div class="lucy-options"></div>
-      <div class="lucy-booking">
-        <a class="lucy-booking-primary" href="#contact">Book a Pickup</a>
-        <a class="lucy-booking-secondary" href="${WA}" target="_blank" rel="noopener noreferrer">WhatsApp Lueri</a>
-      </div>
-      <div class="lucy-typing" aria-label="Lucy is typing"><span></span><span></span><span></span></div>
-    </div>
-    <div class="lucy-footer"><input type="text" maxlength="500" placeholder="Ask Lucy anything…" aria-label="Ask Lucy"><button class="lucy-send" type="button" aria-label="Send message">➤</button></div>
-    <div class="lucy-note">For privacy, Lucy does not access customer accounts, orders or payment records.</div>
-  `;
+  panel.className='lucy-panel'; panel.hidden=true; panel.setAttribute('aria-label','Lucy support chat');
+  panel.innerHTML=`<div class="lucy-header"><img class="lucy-header-avatar" src="${LUCY_AVATAR}" alt="Lucy — Lueri Digital Assistant" width="46" height="46"><div class="lucy-header-copy"><h2>Lucy</h2><p class="lucy-status"></p></div><button class="lucy-close" type="button"></button></div><div class="lucy-body"><div class="lucy-message lucy-greeting"></div><div class="lucy-options"></div><div class="lucy-booking"><a class="lucy-booking-primary" href="#contact"></a><a class="lucy-booking-secondary" href="${WA}" target="_blank" rel="noopener noreferrer"></a></div><div class="lucy-typing" aria-live="polite"><span></span><span></span><span></span></div></div><div class="lucy-footer"><input type="text" maxlength="500"><button class="lucy-send" type="button"></button></div><div class="lucy-note"></div></div>`;
 
-  const body = panel.querySelector('.lucy-body');
-  const options = panel.querySelector('.lucy-options');
-  const input = panel.querySelector('input');
-  const send = panel.querySelector('.lucy-send');
-  const typing = panel.querySelector('.lucy-typing');
-  const close = panel.querySelector('.lucy-close');
-  const history = [];
-  let lastCall = 0;
-  let failures = 0;
-  let llmDisabled = false;
-
-  function scrollToBottom(){ body.scrollTop = body.scrollHeight; }
-  function addMessage(text,isUser){
-    const message=document.createElement('div');
-    message.className=`lucy-message${isUser?' user':''}`;
-    message.textContent=String(text);
-    body.insertBefore(message,typing);
-    scrollToBottom();
-  }
-  function respond(text){
-    typing.classList.add('show'); scrollToBottom();
-    window.setTimeout(()=>{typing.classList.remove('show');addMessage(text,false)},450);
-  }
-  function pushHistory(role,content){
-    history.push({role,content});
-    if(history.length>MAX_HISTORY) history.splice(0,history.length-MAX_HISTORY);
-  }
-
-  quickTopics.forEach(([label,key])=>{
-    const button=document.createElement('button');button.type='button';button.textContent=label;
-    button.addEventListener('click',()=>{addMessage(label,true);pushHistory('user',label);pushHistory('assistant',quickAnswers[key]);respond(quickAnswers[key])});
-    options.appendChild(button);
-  });
-
-  async function askLucy(){
-    const question=input.value.trim(); if(!question||input.disabled)return;
-    const now=Date.now();
-    if(llmDisabled){addMessage(question,true);input.value='';respond('I’m temporarily resting. Please WhatsApp Lueri directly and the team will help you.');return;}
-    if(now-lastCall<RATE_LIMIT_MS){addMessage(question,true);input.value='';respond('Give me a moment, or choose one of the quick topics above.');return;}
-    lastCall=now;
-    addMessage(question,true);pushHistory('user',question);input.value='';input.disabled=true;send.disabled=true;typing.classList.add('show');scrollToBottom();
-    try{
-      const response=await fetch(CHAT_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:question,history:history.slice(0,-1)})});
-      if(!response.ok)throw new Error('HTTP '+response.status);
-      const data=await response.json();
-      typing.classList.remove('show');
-      const reply=data.reply||'I’m not certain about that. Please WhatsApp Lueri for help.';
-      addMessage(reply,false);pushHistory('assistant',reply);failures=0;
-    }catch(error){
-      console.error('Lucy chat error',error);typing.classList.remove('show');failures++;if(failures>=3)llmDisabled=true;
-      addMessage('I’m temporarily offline. Please WhatsApp Lueri and the team will assist you.',false);
-    }finally{input.disabled=false;send.disabled=false;input.focus()}
-  }
-
-  send.addEventListener('click',askLucy);
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askLucy()}});
-  close.addEventListener('click',()=>{panel.hidden=true;launch.setAttribute('aria-expanded','false')});
-
-  const launch=document.createElement('button');
-  launch.type='button';launch.className='lucy-launch';launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','lucy-panel');
-  launch.innerHTML=`<img class="lucy-avatar" src="${LUCY_AVATAR_SMALL}" alt="Lucy" width="34" height="34"><span>Chat with Lucy</span>`;
-  panel.id='lucy-panel';
-  launch.addEventListener('click',()=>{panel.hidden=!panel.hidden;launch.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)input.focus()});
-  document.body.append(panel,launch);
+  const body=panel.querySelector('.lucy-body'), options=panel.querySelector('.lucy-options'), input=panel.querySelector('input'), send=panel.querySelector('.lucy-send'), typing=panel.querySelector('.lucy-typing'), close=panel.querySelector('.lucy-close');
+  const history=[]; let currentDeliveryState=null; let lastCall=0; let failures=0; let llmDisabled=false;
+  function scrollToBottom(){body.scrollTop=body.scrollHeight;}
+  function addMessage(text,isUser){const message=document.createElement('div');message.className=`lucy-message${isUser?' user':''}`;message.textContent=String(text);body.insertBefore(message,typing);scrollToBottom();}
+  function pushHistory(role,content){history.push({role,content});if(history.length>MAX_HISTORY)history.splice(0,history.length-MAX_HISTORY);}
+  function applyLucyUI(){const dict=UI[locale()];panel.querySelector('.lucy-status').textContent=dict.status;panel.querySelector('.lucy-greeting').textContent=dict.greeting;input.placeholder=dict.placeholder;input.setAttribute('aria-label',dict.placeholder);send.textContent=dict.send;send.setAttribute('aria-label',dict.send);close.textContent='×';close.setAttribute('aria-label',dict.close);typing.setAttribute('aria-label',dict.typing);panel.querySelector('.lucy-booking-primary').textContent=dict.booking;panel.querySelector('.lucy-booking-secondary').textContent=dict.whatsapp;panel.querySelector('.lucy-note').textContent=dict.privacy;document.documentElement.dir=locale()==='ar'?'rtl':'ltr';options.innerHTML='';dict.topics.forEach((label,index)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.addEventListener('click',()=>{if(index===0){input.value='Book a pickup';askLucy();}else{addMessage(label,true);pushHistory('user',label);const answer=UI.en.topics[index];pushHistory('assistant',answer);}});options.appendChild(button);});}
+  function ensurePaymentModal(){let modal=document.getElementById('lucy-payment-modal');if(modal)return modal;modal=document.createElement('div');modal.id='lucy-payment-modal';modal.className='lucy-payment-modal';modal.hidden=true;modal.innerHTML='<div class="lucy-payment-dialog"><button class="lucy-payment-close" type="button">×</button><iframe title="Pesapal secure checkout" src="about:blank"></iframe></div>';document.body.appendChild(modal);modal.querySelector('.lucy-payment-close').addEventListener('click',()=>{modal.hidden=true;modal.querySelector('iframe').src='about:blank';});return modal;}
+  async function startPayment(bookingData,button){button.disabled=true;button.textContent=ui('processing');try{const res=await fetch(PAYMENT_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bookingData)});const result=await res.json();if(!res.ok||!result.success||!result.redirectUrl)throw new Error(result.error||result.message||'Payment initiation failed');const modal=ensurePaymentModal();modal.querySelector('iframe').src=result.redirectUrl;modal.hidden=false;addMessage(ui('paymentOpened'),false);button.remove();}catch(error){console.error('Lucy payment initiation error',error);addMessage(ui('paymentFailed'),false);button.disabled=false;button.textContent=ui('pay');}}
+  function showPaymentButton(payload){const button=document.createElement('button');button.type='button';button.className='lucy-pay';button.textContent=ui('pay');button.addEventListener('click',()=>startPayment(payload,button));body.insertBefore(button,typing);scrollToBottom();}
+  async function askLucy(){const question=input.value.trim();if(!question||input.disabled)return;const now=Date.now();if(llmDisabled){addMessage(question,true);input.value='';addMessage(ui('error'),false);return;}if(now-lastCall<RATE_LIMIT_MS){addMessage(question,true);input.value='';return;}lastCall=now;addMessage(question,true);pushHistory('user',question);input.value='';input.disabled=true;send.disabled=true;typing.classList.add('show');scrollToBottom();try{const response=await fetch(CHAT_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:question,history:history.slice(0,-1),locale:locale(),delivery_state:currentDeliveryState||null})});if(!response.ok)throw new Error('HTTP '+response.status);const data=await response.json();typing.classList.remove('show');if(data.delivery_state)currentDeliveryState=data.delivery_state;const reply=data.reply||ui('error');addMessage(reply,false);pushHistory('assistant',reply);failures=0;if(data.action==='INITIATE_PAYMENT'&&data.payload)showPaymentButton(data.payload);}catch(error){console.error('Lucy chat error',error);typing.classList.remove('show');failures++;if(failures>=3)llmDisabled=true;addMessage(ui('error'),false);}finally{input.disabled=false;send.disabled=false;input.focus();}}
+  send.addEventListener('click',askLucy);input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();askLucy();}});close.addEventListener('click',()=>{panel.hidden=true;launch.setAttribute('aria-expanded','false');});
+  const launch=document.createElement('button');launch.type='button';launch.className='lucy-launch';launch.setAttribute('aria-expanded','false');launch.setAttribute('aria-controls','lucy-panel');launch.innerHTML=`<img class="lucy-avatar" src="${LUCY_AVATAR_SMALL}" alt="Lucy" width="34" height="34"><span>Chat with Lucy</span>`;panel.id='lucy-panel';launch.addEventListener('click',()=>{panel.hidden=!panel.hidden;launch.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)input.focus();});document.body.append(panel,launch);applyLucyUI();window.addEventListener('storage',e=>{if(e.key==='lueri_lang')applyLucyUI();});document.addEventListener('lueri:language-change',applyLucyUI);
 })();
