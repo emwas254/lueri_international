@@ -3,83 +3,174 @@
   'use strict';
 
   const WHATSAPP_NUMBER = (window.LUERI && window.LUERI.whatsapp) || '254713261719';
+  const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
+  const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || '';
   const KRA_PIN_PATTERN = /^[A-Za-z]\d{9}[A-Za-z]$/;
   const PHONE_PATTERN = /^(?:\+254|0)(7|1)\d{8}$/;
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const CORPORATE_PLAN_CODES = ['biz_gold', 'biz_platinum', 'biz_vip'];
+  const PAYMENT_STATE_KEY = 'lueri_corporate_pesapal_pending_v1';
+  const CHEQUE_STATE_KEY = 'lueri_corporate_cheque_pending_v1';
 
   const form = document.getElementById('corporateForm');
   if (!form) return;
   const errorBox = document.getElementById('corporateError');
 
-  const isValidPhone = typeof window.lueriIsValidPhone === 'function' ? window.lueriIsValidPhone : (phone) => PHONE_PATTERN.test(String(phone || '').trim());
-  const openWhatsApp = typeof window.lueriOpenWhatsApp === 'function' ? window.lueriOpenWhatsApp : (number, message) => {
-    const url = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+  const isValidPhone = typeof window.lueriIsValidPhone === 'function'
+    ? window.lueriIsValidPhone
+    : (phone) => PHONE_PATTERN.test(String(phone || '').trim());
+
+  const normalisePhone = typeof window.lueriNormalizePhone === 'function'
+    ? window.lueriNormalizePhone
+    : (raw) => {
+        const digits = String(raw || '').trim().replace(/\D/g, '');
+        if (digits.startsWith('254') && digits.length === 12) return digits;
+        if (digits.startsWith('0') && digits.length === 10) return '254' + digits.slice(1);
+        return digits;
+      };
+
+  const openWhatsApp = (message) => {
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
     const win = window.open(url, '_blank', 'noopener,noreferrer');
     return { opened: !!win, url };
   };
-  const normalisePhone = typeof window.lueriNormalizePhone === 'function' ? window.lueriNormalizePhone : (raw) => {
-    const trimmed = String(raw || '').trim().replace(/[^\d]/g, '');
-    if (trimmed.startsWith('254') && trimmed.length === 12) return trimmed;
-    if (trimmed.startsWith('0') && trimmed.length === 10) return '254' + trimmed.slice(1);
-    return trimmed;
+
+  const supabaseClient = () =>
+    window.lueri && typeof window.lueri.supabase === 'function' ? window.lueri.supabase() : null;
+
+  const rpc = (name, payload) => {
+    if (!window.lueri || typeof window.lueri.rpc !== 'function') {
+      throw new Error('Lueri secure services are unavailable. Please reload the page.');
+    }
+    return window.lueri.rpc(name, payload);
   };
 
-  function setFieldError(el, hasError) {
-    if (!el) return;
-    el.classList.toggle('invalid', hasError);
-    if (hasError) el.setAttribute('aria-invalid', 'true'); else el.removeAttribute('aria-invalid');
-  }
-  function showError(message) { errorBox.textContent = message; errorBox.style.display = 'block'; }
-  function hideError() { errorBox.style.display = 'none'; errorBox.textContent = ''; }
-  function escapeForWhatsApp(text) { return String(text).replace(/[\r\n]+/g, ' ').trim(); }
-  function supabaseClient() { return window.lueri && typeof window.lueri.supabase === 'function' ? window.lueri.supabase() : null; }
-  async function registerOrganizationRpc(payload) {
-    if (!window.lueri || typeof window.lueri.rpc !== 'function') throw new Error('lueri-common.js not loaded — cannot reach the server.');
-    return window.lueri.rpc('register_organization', payload);
+  function showError(message) {
+    if (!errorBox) return;
+    errorBox.textContent = message;
+    errorBox.style.display = 'block';
   }
 
-  function ensureChequeFields() {
+  function hideError() {
+    if (!errorBox) return;
+    errorBox.textContent = '';
+    errorBox.style.display = 'none';
+  }
+
+  function escapeText(text) {
+    return String(text || '').replace(/[\r\n]+/g, ' ').trim();
+  }
+
+  function setOverlay(title, copy, fallbackUrl) {
+    const overlay = document.getElementById('successOverlay');
+    if (!overlay) return;
+    const titleEl = document.getElementById('successTitle');
+    const copyEl = document.getElementById('successCopy');
+    const fallback = document.getElementById('successFallback');
+    const waLink = document.getElementById('successWaLink');
+    if (titleEl) titleEl.textContent = title;
+    if (copyEl) copyEl.textContent = copy;
+    if (fallback) fallback.style.display = fallbackUrl ? 'block' : 'none';
+    if (waLink && fallbackUrl) waLink.href = fallbackUrl;
+    overlay.classList.add('active');
+  }
+
+  function saveState(key, value) {
+    try { sessionStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
+  }
+
+  function readState(key) {
+    try { return JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (_) { return null; }
+  }
+
+  function clearState(key) {
+    try { sessionStorage.removeItem(key); } catch (_) {}
+  }
+
+  function ensurePaymentUI() {
     if (document.getElementById('corporatePaymentMethod')) return;
+
     const submitBtn = form.querySelector('button[type="submit"]');
     if (!submitBtn) return;
+
     const wrap = document.createElement('div');
     wrap.id = 'corporatePaymentMethod';
     wrap.style.cssText = 'margin:20px 0;padding:16px;border:1px solid var(--line, rgba(27,38,32,.16));border-radius:4px;background:rgba(255,255,255,.04);';
+
     wrap.innerHTML = `
       <div class="form-group" style="margin-bottom:12px;">
         <label class="form-label" for="corpPaymentMethod">Payment method</label>
-        <select class="input-light" id="corpPaymentMethod" name="payment_method">
-          <option value="whatsapp">Continue with WhatsApp</option>
+        <select class="form-input" id="corpPaymentMethod" name="payment_method">
+          <option value="pesapal">Pay online with Pesapal (M-Pesa &amp; Cards)</option>
           <option value="cheque">Pay by cheque</option>
+          <option value="whatsapp">Talk to Accounts on WhatsApp</option>
         </select>
-        <p style="margin:6px 0 0;font-size:.78rem;opacity:.7;">Cheque is available for Essential, Professional and Elite plans. The amount is determined by the server.</p>
+        <p id="corpPaymentMethodHint" style="margin:6px 0 0;font-size:.78rem;opacity:.7;">Online payment opens the secure Pesapal checkout. The amount is verified server-side.</p>
       </div>
+
       <div id="corporateChequeFields" style="display:none;">
-        <div class="row2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group"><label class="form-label" for="corpChequeNumber">Cheque number</label><input class="input-light" type="text" id="corpChequeNumber" maxlength="64" autocomplete="off"></div>
-          <div class="form-group"><label class="form-label" for="corpChequeBank">Bank</label><input class="input-light" type="text" id="corpChequeBank" maxlength="120" autocomplete="organization"></div>
+        <div class="form-row2">
+          <div class="form-group">
+            <label class="form-label" for="corpChequeNumber">Cheque number</label>
+            <input class="form-input" type="text" id="corpChequeNumber" maxlength="64" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="corpChequeBank">Bank</label>
+            <input class="form-input" type="text" id="corpChequeBank" maxlength="120" autocomplete="organization">
+          </div>
         </div>
-        <div class="form-group"><label class="form-label" for="corpChequeDate">Cheque date</label><input class="input-light" type="date" id="corpChequeDate"></div>
-        <div class="form-group"><label class="form-label" for="corpChequeNotes">Notes (optional)</label><textarea class="input-light" id="corpChequeNotes" maxlength="1000" rows="3" placeholder="Optional reference or note for our verification team"></textarea></div>
-        <div id="corporateChequeAuthNotice" style="font-size:.8rem;line-height:1.5;opacity:.78;">After submitting, Lueri will send a secure verification link to the company email above. Open it on this device to complete cheque submission. No cheque activates the account until a Lueri staff member verifies it.</div>
+        <div class="form-group">
+          <label class="form-label" for="corpChequeDate">Cheque date</label>
+          <input class="form-input" type="date" id="corpChequeDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="corpChequeNotes">Notes (optional)</label>
+          <textarea class="form-input" id="corpChequeNotes" maxlength="1000" rows="3" placeholder="Optional reference or note for our verification team"></textarea>
+        </div>
+        <div style="font-size:.8rem;line-height:1.55;opacity:.78;padding:10px 0;">Cheques are physical instruments and cannot be linked directly to a bank account from the website. Make the cheque payable to <strong>Lueri International</strong>. A Lueri staff member must verify and clear it before membership is activated. If you want a bank-transfer option, Lueri must publish the exact receiving bank details first.</div>
       </div>`;
+
     form.insertBefore(wrap, submitBtn);
+
+    const method = document.getElementById('corpPaymentMethod');
+    const plan = document.getElementById('plan');
+    const chequeFields = document.getElementById('corporateChequeFields');
+    const hint = document.getElementById('corpPaymentMethodHint');
     const date = document.getElementById('corpChequeDate');
     if (date) date.max = new Date().toISOString().slice(0, 10);
-    const method = document.getElementById('corpPaymentMethod');
-    const chequeFields = document.getElementById('corporateChequeFields');
-    const plan = document.getElementById('plan');
-    function syncChequeVisibility() {
-      const supported = plan && CORPORATE_PLAN_CODES.includes(plan.value);
+
+    function syncPaymentUI() {
+      const planCode = plan ? plan.value : '';
+      const isPaidPlan = CORPORATE_PLAN_CODES.includes(planCode);
       const isCheque = method && method.value === 'cheque';
-      if (!supported && method) { method.value = 'whatsapp'; method.querySelector('option[value="cheque"]')?.setAttribute('disabled', 'disabled'); }
-      else if (supported && method) method.querySelector('option[value="cheque"]')?.removeAttribute('disabled');
-      if (chequeFields) chequeFields.style.display = supported && isCheque ? 'block' : 'none';
+      const isPesapal = method && method.value === 'pesapal';
+
+      if (!isPaidPlan && method) {
+        method.value = 'whatsapp';
+        method.querySelector('option[value="pesapal"]')?.setAttribute('disabled', 'disabled');
+        method.querySelector('option[value="cheque"]')?.setAttribute('disabled', 'disabled');
+      } else if (isPaidPlan && method) {
+        method.querySelector('option[value="pesapal"]')?.removeAttribute('disabled');
+        method.querySelector('option[value="cheque"]')?.removeAttribute('disabled');
+      }
+
+      if (chequeFields) chequeFields.style.display = isPaidPlan && isCheque ? 'block' : 'none';
+      if (hint) {
+        hint.textContent = isPesapal
+          ? 'You will be taken directly to Pesapal for secure M-Pesa or card payment.'
+          : isCheque
+            ? 'Cheque remains pending until Lueri staff verifies and clears it.'
+            : 'Use WhatsApp for Enterprise/custom quotations or if you need Accounts Desk assistance.';
+      }
     }
-    method.addEventListener('change', syncChequeVisibility);
-    plan?.addEventListener('change', syncChequeVisibility);
-    syncChequeVisibility();
+
+    method?.addEventListener('change', syncPaymentUI);
+    plan?.addEventListener('change', syncPaymentUI);
+    syncPaymentUI();
+  }
+
+  function getPaymentMethod() {
+    return document.getElementById('corpPaymentMethod')?.value || 'whatsapp';
   }
 
   function getChequeData() {
@@ -90,21 +181,83 @@
       notes: document.getElementById('corpChequeNotes')?.value.trim() || '',
     };
   }
-  function getPaymentMethod() { return document.getElementById('corpPaymentMethod')?.value || 'whatsapp'; }
-  const pendingStateKey = () => 'lueri_corporate_cheque_pending_v1';
-  function saveChequePendingState(state) { sessionStorage.setItem(pendingStateKey(), JSON.stringify(state)); }
-  function readChequePendingState() { try { return JSON.parse(sessionStorage.getItem(pendingStateKey()) || 'null'); } catch (_) { return null; } }
-  function clearChequePendingState() { sessionStorage.removeItem(pendingStateKey()); }
 
-  async function submitCorporateCheque(state) {
+  async function startPesapalPayment(organizationId, planCode) {
+    const headers = { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY };
     const sb = supabaseClient();
-    if (!sb) throw new Error('Secure payment service is unavailable. Please reload and try again.');
+    const session = sb ? (await sb.auth.getSession())?.data?.session : null;
+    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-initiate`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ organization_id: organizationId, plan_code: planCode }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.error || !data.redirect_url) {
+      throw new Error(data.error || 'We could not start the secure Pesapal payment.');
+    }
+
+    saveState(PAYMENT_STATE_KEY, {
+      paymentId: data.payment_id,
+      internalReference: data.internal_reference,
+      organizationId,
+      planCode,
+      savedAt: Date.now(),
+    });
+
+    window.location.href = data.redirect_url;
+  }
+
+  async function pollCorporatePayment() {
+    const state = readState(PAYMENT_STATE_KEY);
+    if (!state?.paymentId || !state?.internalReference) return null;
+
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      try {
+        const result = await rpc('get_payment_status', { p_payment_id: state.paymentId, p_reference: state.internalReference });
+        const row = result?.payment || result;
+        const status = row?.status || row?.[0]?.status;
+        if (status === 'successful') { clearState(PAYMENT_STATE_KEY); return { status: 'successful', row }; }
+        if (['failed', 'cancelled', 'rejected'].includes(status)) { clearState(PAYMENT_STATE_KEY); return { status, row }; }
+      } catch (err) { console.warn('Corporate payment status check failed:', err); }
+      await new Promise((resolve) => setTimeout(resolve, 2500));
+    }
+    return { status: 'pending' };
+  }
+
+  async function handlePesapalReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') !== 'complete') return;
+
+    const state = readState(PAYMENT_STATE_KEY);
+    const reference = params.get('OrderMerchantReference') || state?.internalReference || 'your payment';
+    setOverlay('Confirming Pesapal payment', `Pesapal returned you to Lueri. We are checking payment reference ${reference}. Your corporate membership is activated only after the server confirms the payment.`, null);
+
+    const result = await pollCorporatePayment();
+    if (!result) return;
+
+    if (result.status === 'successful') {
+      setOverlay('Payment confirmed', 'Your corporate membership payment has been confirmed by Lueri. Your organization is now active under the selected plan.', null);
+    } else if (result.status === 'pending') {
+      setOverlay('Payment received — confirmation pending', 'Pesapal returned you to Lueri, but the server has not received the final confirmation yet. The membership will activate only after Pesapal confirmation.', null);
+    } else {
+      setOverlay('Payment not completed', 'Pesapal did not confirm a successful payment. No corporate membership was activated. You can return to the form and try again.', null);
+    }
+
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash || ''}`);
+  }
+
+  async function submitCheque(state) {
+    const sb = supabaseClient();
+    if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
     const sessionResult = await sb.auth.getSession();
     const session = sessionResult?.data?.session;
     const authEmail = session?.user?.email?.trim().toLowerCase() || '';
-    const expectedEmail = String(state.email || '').trim().toLowerCase();
-    if (!session || !authEmail || authEmail !== expectedEmail) throw new Error('The secure company-email verification session is missing or uses a different email address.');
-    const result = await window.lueri.rpc('submit_organization_cheque_payment', {
+    if (!session || authEmail !== state.email.toLowerCase()) throw new Error('Please open the secure verification link sent to the company email before completing the cheque submission.');
+
+    const result = await rpc('submit_organization_cheque_payment', {
       p_organization_id: state.organizationId,
       p_plan_code: state.planCode,
       p_cheque_number: state.cheque.number,
@@ -112,39 +265,41 @@
       p_cheque_date: state.cheque.date,
       p_cheque_notes: state.cheque.notes || null,
     });
-    if (!result || !result.success) {
-      const errors = {
-        authentication_required: 'Please open the verification link from your company email and try again.',
-        authenticated_email_required: 'Your company email could not be verified. Please restart the verification process.',
-        organization_access_denied: 'The verified email does not match the registered corporate account.',
-        unknown_organization: 'The corporate application could not be found. Please contact Lueri support.',
-        organization_plan_mismatch: 'The selected plan no longer matches the registered corporate account.',
-        invalid_business_plan: 'This corporate plan is not available for cheque payment.',
+
+    if (!result?.success) {
+      const messages = {
+        authentication_required: 'Please open the company-email verification link first.',
+        authenticated_email_required: 'The company email could not be verified.',
+        organization_access_denied: 'The verified email does not match the corporate account.',
+        unknown_organization: 'The corporate application could not be found.',
+        organization_plan_mismatch: 'The selected plan no longer matches the corporate account.',
+        invalid_business_plan: 'This plan is not available for cheque payment.',
         invalid_cheque_number: 'Please enter a valid cheque number.',
         invalid_cheque_bank: 'Please enter the bank name.',
         cheque_date_required: 'Please enter the cheque date.',
         cheque_date_in_future: 'The cheque date cannot be in the future.',
       };
-      throw new Error(errors[result?.error] || 'We could not submit the cheque details. Please try again.');
+      throw new Error(messages[result?.error] || 'We could not submit the cheque details.');
     }
-    clearChequePendingState();
+    clearState(CHEQUE_STATE_KEY);
     return result;
   }
 
-  async function startEmailVerification(state) {
+  async function sendChequeVerification(state) {
     const sb = supabaseClient();
-    if (!sb) throw new Error('Secure payment service is unavailable. Please reload and try again.');
+    if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
     const current = await sb.auth.getSession();
     const currentEmail = current?.data?.session?.user?.email?.trim().toLowerCase() || '';
-    if (currentEmail === state.email.toLowerCase()) return submitCorporateCheque(state);
-    if (currentEmail && currentEmail !== state.email.toLowerCase()) throw new Error('A different account is already signed in. Sign out of that account, then submit the corporate cheque again using the company email.');
-    const otp = await sb.auth.signInWithOtp({ email: state.email, options: { shouldCreateUser: true, emailRedirectTo: window.location.href } });
-    if (otp.error) throw new Error('We could not send the secure verification email. Please try again or contact Lueri support.');
+    if (currentEmail === state.email.toLowerCase()) return submitCheque(state);
+    if (currentEmail && currentEmail !== state.email.toLowerCase()) throw new Error('A different account is already signed in. Sign out, then retry using the company email.');
+
+    const result = await sb.auth.signInWithOtp({ email: state.email, options: { shouldCreateUser: true, emailRedirectTo: window.location.href } });
+    if (result.error) throw new Error('We could not send the company-email verification link. Please try again.');
     return null;
   }
 
-  async function resumePendingCheque() {
-    const state = readChequePendingState();
+  async function resumeCheque() {
+    const state = readState(CHEQUE_STATE_KEY);
     if (!state) return;
     const sb = supabaseClient();
     if (!sb) return;
@@ -152,110 +307,150 @@
     const session = sessionResult?.data?.session;
     const email = session?.user?.email?.trim().toLowerCase() || '';
     if (!session || email !== String(state.email || '').trim().toLowerCase()) return;
+
     try {
-      const result = await submitCorporateCheque(state);
-      showPendingSuccess(result, true);
-    } catch (err) { console.error('Corporate cheque resume failed:', err); showError(err.message || 'We could not complete the cheque submission.'); }
+      const result = await submitCheque(state);
+      setOverlay('Cheque submitted for verification', `The cheque has been recorded as pending verification. Reference: ${result.internal_reference}. Membership will not activate until Lueri staff clears the cheque.`, null);
+    } catch (err) {
+      console.error('Corporate cheque resume failed:', err);
+      showError(err.message || 'We could not complete the cheque submission.');
+    }
   }
 
-  function showPendingSuccess(result, resumed) {
-    const overlay = document.getElementById('successOverlay');
-    if (!overlay) return;
-    const ref = result.internal_reference || 'pending verification';
-    const amount = result.amount != null ? `KES ${Number(result.amount).toLocaleString()}` : '';
-    document.getElementById('successTitle').textContent = 'Cheque submitted for verification';
-    document.getElementById('successCopy').textContent = `${amount ? amount + ' · ' : ''}${result.plan_display_name || 'Corporate membership'} is pending staff verification. Reference: ${ref}. ${resumed ? 'Your secure email verification is complete.' : ''}`;
-    const fallback = document.getElementById('successFallback');
-    if (fallback) fallback.style.display = 'none';
-    overlay.classList.add('active');
+  function sendWhatsAppApplication(data) {
+    const planLabels = { biz_gold: 'Essential (KES 25,000/mo)', biz_platinum: 'Professional (KES 45,000/mo)', biz_vip: 'Elite (KES 75,000/mo)', enterprise: 'Enterprise — custom quote' };
+    const message =
+      'New corporate account application - Lueri website\n' +
+      `Company: ${escapeText(data.companyName)}\n` +
+      'KRA PIN: stored in the secure application record; do not request it over WhatsApp.\n' +
+      `Preferred plan: ${planLabels[data.plan] || 'Help me choose'}\n` +
+      `Address: ${escapeText(data.address)}\n` +
+      `Est. deliveries/week: ${data.volume}\n` +
+      `Contact: ${escapeText(data.contactName)}${data.jobTitle ? ` (${escapeText(data.jobTitle)})` : ''}\n` +
+      `Phone: ${data.contactPhone}\n` +
+      `Email: ${data.contactEmail}`;
+
+    const result = openWhatsApp(message);
+    setOverlay(result.opened ? 'Opening WhatsApp' : 'WhatsApp did not open', result.opened ? 'Confirm the application message in WhatsApp. Our Accounts Desk will review it.' : 'Your browser blocked the WhatsApp popup. Use the button below.', result.opened ? null : result.url);
   }
 
-  ensureChequeFields();
-  resumePendingCheque().catch((err) => console.error('Cheque resume check failed:', err));
+  function collectData() {
+    const ids = ['companyName', 'kraPin', 'volume', 'plan', 'address', 'contactName', 'jobTitle', 'contactPhone', 'contactEmail'];
+    const data = {};
+    ids.forEach((id) => { data[id] = document.getElementById(id)?.value.trim() || ''; });
+    return data;
+  }
 
-  form.addEventListener('submit', async (event) => {
+  function validate(data, paymentMethod) {
+    const invalid = [];
+    if (data.companyName.length < 2) invalid.push('Company Name');
+    if (!data.plan) invalid.push('Preferred Plan');
+    if (!KRA_PIN_PATTERN.test(data.kraPin)) invalid.push('KRA PIN');
+    if (!data.volume) invalid.push('Estimated Deliveries / Week');
+    if (data.address.length < 4) invalid.push('Billing / Physical Address');
+    if (data.contactName.length < 2) invalid.push('Contact Person');
+    if (!isValidPhone(data.contactPhone)) invalid.push('Phone Number');
+    if (!EMAIL_PATTERN.test(data.contactEmail)) invalid.push('Company Email');
+
+    if (paymentMethod === 'cheque') {
+      const cheque = getChequeData();
+      if (cheque.number.length < 3 || cheque.number.length > 64) invalid.push('Cheque Number');
+      if (cheque.bank.length < 2 || cheque.bank.length > 120) invalid.push('Cheque Bank');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(cheque.date)) invalid.push('Cheque Date');
+      if (cheque.date && cheque.date > new Date().toISOString().slice(0, 10)) invalid.push('Cheque Date');
+    }
+    return invalid;
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault();
     hideError();
-    const honeypot = document.getElementById('corpHoneypot');
-    if (honeypot && honeypot.value.trim() !== '') {
-      const overlay = document.getElementById('successOverlay');
-      if (overlay) { document.getElementById('successTitle').textContent = 'Application received'; document.getElementById('successCopy').textContent = 'Our team will review and activate your account within one working day.'; const fallback = document.getElementById('successFallback'); if (fallback) fallback.style.display = 'none'; overlay.classList.add('active'); }
-      return;
-    }
+    if (document.getElementById('corpHoneypot')?.value.trim()) return;
 
-    const fields = {
-      companyName: document.getElementById('companyName'), kraPin: document.getElementById('kraPin'), volume: document.getElementById('volume'), plan: document.getElementById('plan'),
-      address: document.getElementById('address'), contactName: document.getElementById('contactName'), jobTitle: document.getElementById('jobTitle'), contactPhone: document.getElementById('contactPhone'), contactEmail: document.getElementById('contactEmail'),
-    };
-    const data = {}; Object.keys(fields).forEach((key) => { data[key] = fields[key].value.trim(); });
-    const invalid = {
-      companyName: data.companyName.length < 2, plan: data.plan === '', kraPin: !KRA_PIN_PATTERN.test(data.kraPin), address: data.address.length < 4,
-      contactName: data.contactName.length < 2, contactPhone: !isValidPhone(data.contactPhone), contactEmail: !EMAIL_PATTERN.test(data.contactEmail), volume: data.volume === '',
-    };
-    const labels = { companyName: 'Company Name', plan: 'Preferred Plan', kraPin: 'KRA PIN', address: 'Billing / Physical Address', contactName: 'Contact Person', contactPhone: 'Phone Number', contactEmail: 'Company Email', volume: 'Est. Deliveries / Week' };
-    const rpcPlanCode = CORPORATE_PLAN_CODES.includes(data.plan) ? data.plan : null;
+    const data = collectData();
     const paymentMethod = getPaymentMethod();
-    const cheque = getChequeData();
+    const planCode = CORPORATE_PLAN_CODES.includes(data.plan) ? data.plan : null;
 
-    if (paymentMethod === 'cheque' && !rpcPlanCode) { showError('Cheque payment is available for Essential, Professional and Elite only. Please select one of those plans or continue with WhatsApp for Enterprise.'); return; }
-    if (paymentMethod === 'cheque') {
-      invalid.chequeNumber = cheque.number.length < 3 || cheque.number.length > 64;
-      invalid.chequeBank = cheque.bank.length < 2 || cheque.bank.length > 120;
-      invalid.chequeDate = !/^\d{4}-\d{2}-\d{2}$/.test(cheque.date) || cheque.date > new Date().toISOString().slice(0, 10);
-      labels.chequeNumber = 'Cheque Number'; labels.chequeBank = 'Cheque Bank'; labels.chequeDate = 'Cheque Date';
+    if (paymentMethod === 'pesapal' && !planCode) return showError('Pesapal payment is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
+    if (paymentMethod === 'cheque' && !planCode) return showError('Cheque payment is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
+
+    const invalid = validate(data, paymentMethod);
+    if (invalid.length) return showError(`Please check: ${invalid.join(', ')}.`);
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn?.textContent || 'Submit Application';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = paymentMethod === 'pesapal' ? 'Preparing secure Pesapal checkout…' : paymentMethod === 'cheque' ? 'Securing cheque submission…' : 'Submitting…';
     }
 
-    let hasError = false; const invalidLabels = [];
-    Object.keys(invalid).forEach((key) => {
-      const target = fields[key] || document.getElementById({ chequeNumber: 'corpChequeNumber', chequeBank: 'corpChequeBank', chequeDate: 'corpChequeDate' }[key]);
-      setFieldError(target, invalid[key]); if (invalid[key]) { hasError = true; invalidLabels.push(labels[key]); }
-    });
-    if (hasError) {
-      const list = invalidLabels.length <= 2 ? invalidLabels.join(' and ') : `${invalidLabels.slice(0, -1).join(', ')}, and ${invalidLabels[invalidLabels.length - 1]}`;
-      showError(`Please check: ${list}.`);
-      const firstInvalid = Object.keys(invalid).find((key) => invalid[key]);
-      (fields[firstInvalid] || document.getElementById({ chequeNumber: 'corpChequeNumber', chequeBank: 'corpChequeBank', chequeDate: 'corpChequeDate' }[firstInvalid]))?.focus();
-      return;
-    }
-
-    const submitBtn = form.querySelector('button[type="submit"]'); submitBtn.disabled = true; const originalLabel = submitBtn.textContent; submitBtn.textContent = paymentMethod === 'cheque' ? 'Securing cheque submission…' : 'Submitting…';
     try {
-      let dbOutcome;
-      try {
-        const rpcResult = await registerOrganizationRpc({ p_company_name: data.companyName, p_contact_person: data.contactName, p_role: data.jobTitle || null, p_phone: normalisePhone(data.contactPhone), p_email: data.contactEmail.toLowerCase(), p_kra_pin: data.kraPin.toUpperCase(), p_address: data.address, p_volume: data.volume, p_plan_code: rpcPlanCode });
-        if (!rpcResult || !rpcResult.success) { showError("We couldn't process this application. If your company already has an account with us, please contact us directly and we'll help you access it."); return; }
-        dbOutcome = rpcResult;
-      } catch (dbErr) { console.error('register_organization request failed:', dbErr); showError('We could not securely save the corporate application. Please try again.'); return; }
+      const registration = await rpc('register_organization', {
+        p_company_name: data.companyName,
+        p_contact_person: data.contactName,
+        p_role: data.jobTitle || null,
+        p_phone: normalisePhone(data.contactPhone),
+        p_email: data.contactEmail.toLowerCase(),
+        p_kra_pin: data.kraPin.toUpperCase(),
+        p_address: data.address,
+        p_volume: data.volume,
+        p_plan_code: planCode,
+      });
+
+      if (!registration?.success) throw new Error(registration?.error || 'We could not securely save the corporate application.');
+      const organizationId = registration.organization?.id;
+      if (!organizationId) throw new Error('The corporate account was created but its organization ID was not returned.');
+
+      if (paymentMethod === 'pesapal') {
+        await startPesapalPayment(organizationId, planCode);
+        return;
+      }
 
       if (paymentMethod === 'cheque') {
-        const organizationId = dbOutcome?.organization?.id;
-        if (!organizationId) throw new Error('The corporate account was created but its secure organization ID was not returned. Please contact Lueri support.');
-        const state = { organizationId, planCode: rpcPlanCode, email: data.contactEmail.toLowerCase(), cheque };
-        saveChequePendingState(state);
-        const immediateResult = await startEmailVerification(state);
-        if (immediateResult) showPendingSuccess(immediateResult, false);
-        else {
-          const overlay = document.getElementById('successOverlay');
-          if (overlay) { document.getElementById('successTitle').textContent = 'Check your company email'; document.getElementById('successCopy').textContent = 'We created the corporate application and sent a secure verification link to the company email. Open that link on this device to submit the cheque for staff verification. No membership has been activated yet.'; const fallback = document.getElementById('successFallback'); if (fallback) fallback.style.display = 'none'; overlay.classList.add('active'); }
+        const state = { organizationId, planCode, email: data.contactEmail.toLowerCase(), cheque: getChequeData(), savedAt: Date.now() };
+        saveState(CHEQUE_STATE_KEY, state);
+        const immediate = await sendChequeVerification(state);
+        if (immediate) {
+          setOverlay('Cheque submitted for verification', `Your cheque payment is pending staff verification. Reference: ${immediate.internal_reference}. No membership is activated until the cheque is cleared.`, null);
+        } else {
+          setOverlay('Check your company email', 'We created the corporate application and sent a secure verification link to the company email. Open that link on this device to complete cheque submission. No membership has been activated yet.', null);
         }
         return;
       }
 
-      const planLabels = { biz_gold: 'Essential (KES 25,000/mo)', biz_platinum: 'Professional (KES 45,000/mo)', biz_vip: 'Elite (KES 75,000/mo)', enterprise: 'Enterprise — custom quote' };
-      const message = 'New corporate account application - Lueri website\n' + `Company: ${escapeForWhatsApp(data.companyName)}\n` + 'KRA PIN: stored in the secure application record; do not request it over WhatsApp.\n' + `Preferred plan: ${planLabels[data.plan] || 'Help me choose'}\n` + `Address: ${escapeForWhatsApp(data.address)}\n` + `Est. deliveries/week: ${data.volume}\n` + `Contact: ${escapeForWhatsApp(data.contactName)}${data.jobTitle ? ' (' + escapeForWhatsApp(data.jobTitle) + ')' : ''}\n` + `Phone: ${data.contactPhone}\n` + `Email: ${data.contactEmail}`;
-      const result = openWhatsApp(WHATSAPP_NUMBER, message);
-      document.getElementById('successTitle').textContent = result.opened ? 'Opening WhatsApp' : 'WhatsApp did not open';
-      document.getElementById('successCopy').textContent = result.opened ? 'Confirm the message in WhatsApp — our team will review and activate your account within one working day.' : 'Your browser blocked the popup. Tap the button below to open WhatsApp.';
-      const fallback = document.getElementById('successFallback'); document.getElementById('successWaLink').href = result.url; fallback.style.display = result.opened ? 'none' : 'block';
-      const overlay = document.getElementById('successOverlay'); overlay.classList.add('active'); overlay.querySelector('button.btn')?.focus(); if (result.opened) setTimeout(() => form.reset(), 1500);
-    } catch (err) { console.error(err); showError(err.message || 'Something went wrong submitting this. Please try again.'); }
-    finally { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
-  });
+      sendWhatsAppApplication(data);
+    } catch (err) {
+      console.error('Corporate application failed:', err);
+      showError(err.message || 'We could not process this application. Please try again.');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    }
+  }
+
+  ensurePaymentUI();
+  handlePesapalReturn().catch((err) => console.error('Corporate Pesapal return check failed:', err));
+  resumeCheque().catch((err) => console.error('Corporate cheque resume check failed:', err));
+  form.addEventListener('submit', handleSubmit);
 
   document.querySelectorAll('.pricing-card[data-plan]').forEach((card) => {
-    card.style.cursor = 'pointer'; card.addEventListener('click', () => { const planSelect = document.getElementById('plan'); if (planSelect) planSelect.value = card.getAttribute('data-plan'); document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.getElementById('companyName')?.focus(); });
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      const plan = document.getElementById('plan');
+      if (plan) {
+        plan.value = card.getAttribute('data-plan');
+        plan.dispatchEvent(new Event('change'));
+      }
+      document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('companyName')?.focus();
+    });
   });
-  window.closeSuccess = function closeSuccess() { document.getElementById('successOverlay').classList.remove('active'); document.getElementById('successFallback').style.display = 'none'; form.querySelector('#companyName')?.focus(); };
-})();
 
-/* Corporate cheque submission uses the production RPC: submit_organization_cheque_payment(uuid,text,text,text,date,text). */
+  window.closeSuccess = function closeSuccess() {
+    document.getElementById('successOverlay')?.classList.remove('active');
+    document.getElementById('successFallback')?.style.setProperty('display', 'none');
+    form.querySelector('#companyName')?.focus();
+  };
+})();
