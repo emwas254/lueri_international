@@ -11,6 +11,7 @@
   const CORPORATE_PLAN_CODES = ['biz_gold', 'biz_platinum', 'biz_vip'];
   const PAYMENT_STATE_KEY = 'lueri_corporate_pesapal_pending_v1';
   const CHEQUE_STATE_KEY = 'lueri_corporate_cheque_pending_v1';
+  const BANK_TRANSFER_STATE_KEY = 'lueri_corporate_bank_transfer_pending_v1';
 
   const form = document.getElementById('corporateForm');
   if (!form) return;
@@ -102,10 +103,32 @@
         <label class="form-label" for="corpPaymentMethod">Payment method</label>
         <select class="form-input" id="corpPaymentMethod" name="payment_method">
           <option value="pesapal">Pay online with Pesapal (M-Pesa &amp; Cards)</option>
+          <option value="bank_transfer">Bank transfer</option>
           <option value="cheque">Pay by cheque</option>
           <option value="whatsapp">Talk to Accounts on WhatsApp</option>
         </select>
         <p id="corpPaymentMethodHint" style="margin:6px 0 0;font-size:.78rem;opacity:.7;">Online payment opens the secure Pesapal checkout. The amount is verified server-side.</p>
+      </div>
+
+      <div id="corporateBankTransferFields" style="display:none;">
+        <div style="font-size:.8rem;line-height:1.55;padding:12px 0 6px;"><strong>Bank transfer instructions</strong><br>Transfer the exact membership amount shown above, then enter the bank transaction/reference number below. Lueri staff will verify the transfer before activating membership.</div>
+        <div style="font-size:.8rem;line-height:1.55;opacity:.9;padding:8px 0;">
+          <div><strong>Account name:</strong> LUERI INTERNATIONAL</div>
+          <div><strong>Bank:</strong> NCBA BANK KENYA PLC</div>
+          <div><strong>Branch:</strong> Buru Buru</div>
+          <div><strong>Currency:</strong> KES</div>
+          <div><strong>Account number:</strong> 1011828853</div>
+          <div><strong>SWIFT:</strong> CBAFKENX</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="corpBankTransferReference">Bank transaction/reference number</label>
+          <input class="form-input" type="text" id="corpBankTransferReference" maxlength="120" autocomplete="off" placeholder="Bank transfer confirmation/reference">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="corpBankTransferNotes">Notes (optional)</label>
+          <textarea class="form-input" id="corpBankTransferNotes" maxlength="1000" rows="3" placeholder="Optional payment note"></textarea>
+        </div>
+        <div style="font-size:.8rem;line-height:1.55;opacity:.78;padding:4px 0 10px;">Do not send card numbers, passwords or banking login details. Only the bank transaction/reference number is required here.</div>
       </div>
 
       <div id="corporateChequeFields" style="display:none;">
@@ -127,7 +150,7 @@
           <label class="form-label" for="corpChequeNotes">Notes (optional)</label>
           <textarea class="form-input" id="corpChequeNotes" maxlength="1000" rows="3" placeholder="Optional reference or note for our verification team"></textarea>
         </div>
-        <div style="font-size:.8rem;line-height:1.55;opacity:.78;padding:10px 0;">Cheques are physical instruments and cannot be linked directly to a bank account from the website. Make the cheque payable to <strong>Lueri International</strong>. A Lueri staff member must verify and clear it before membership is activated. If you want a bank-transfer option, Lueri must publish the exact receiving bank details first.</div>
+        <div style="font-size:.8rem;line-height:1.55;opacity:.78;padding:10px 0;">Cheques are physical instruments and cannot be linked directly to a bank account from the website. Make the cheque payable to <strong>Lueri International</strong>. A Lueri staff member must verify and clear it before membership is activated.</div>
       </div>`;
 
     form.insertBefore(wrap, submitBtn);
@@ -135,6 +158,7 @@
     const method = document.getElementById('corpPaymentMethod');
     const plan = document.getElementById('plan');
     const chequeFields = document.getElementById('corporateChequeFields');
+    const bankFields = document.getElementById('corporateBankTransferFields');
     const hint = document.getElementById('corpPaymentMethodHint');
     const date = document.getElementById('corpChequeDate');
     if (date) date.max = new Date().toISOString().slice(0, 10);
@@ -143,24 +167,30 @@
       const planCode = plan ? plan.value : '';
       const isPaidPlan = CORPORATE_PLAN_CODES.includes(planCode);
       const isCheque = method && method.value === 'cheque';
+      const isBank = method && method.value === 'bank_transfer';
       const isPesapal = method && method.value === 'pesapal';
 
       if (!isPaidPlan && method) {
         method.value = 'whatsapp';
         method.querySelector('option[value="pesapal"]')?.setAttribute('disabled', 'disabled');
+        method.querySelector('option[value="bank_transfer"]')?.setAttribute('disabled', 'disabled');
         method.querySelector('option[value="cheque"]')?.setAttribute('disabled', 'disabled');
       } else if (isPaidPlan && method) {
         method.querySelector('option[value="pesapal"]')?.removeAttribute('disabled');
+        method.querySelector('option[value="bank_transfer"]')?.removeAttribute('disabled');
         method.querySelector('option[value="cheque"]')?.removeAttribute('disabled');
       }
 
       if (chequeFields) chequeFields.style.display = isPaidPlan && isCheque ? 'block' : 'none';
+      if (bankFields) bankFields.style.display = isPaidPlan && isBank ? 'block' : 'none';
       if (hint) {
         hint.textContent = isPesapal
           ? 'You will be taken directly to Pesapal for secure M-Pesa or card payment.'
-          : isCheque
-            ? 'Cheque remains pending until Lueri staff verifies and clears it.'
-            : 'Use WhatsApp for Enterprise/custom quotations or if you need Accounts Desk assistance.';
+          : isBank
+            ? 'Transfer to Lueri, enter the bank transaction reference, then wait for staff verification.'
+            : isCheque
+              ? 'Cheque remains pending until Lueri staff verifies and clears it.'
+              : 'Use WhatsApp for Enterprise/custom quotations or if you need Accounts Desk assistance.';
       }
     }
 
@@ -179,6 +209,13 @@
       bank: document.getElementById('corpChequeBank')?.value.trim() || '',
       date: document.getElementById('corpChequeDate')?.value || '',
       notes: document.getElementById('corpChequeNotes')?.value.trim() || '',
+    };
+  }
+
+  function getBankTransferData() {
+    return {
+      reference: document.getElementById('corpBankTransferReference')?.value.trim() || '',
+      notes: document.getElementById('corpBankTransferNotes')?.value.trim() || '',
     };
   }
 
@@ -285,12 +322,55 @@
     return result;
   }
 
+  async function submitBankTransfer(state) {
+    const sb = supabaseClient();
+    if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
+    const sessionResult = await sb.auth.getSession();
+    const session = sessionResult?.data?.session;
+    const authEmail = session?.user?.email?.trim().toLowerCase() || '';
+    if (!session || authEmail !== state.email.toLowerCase()) throw new Error('Please open the secure verification link sent to the company email before completing the bank-transfer submission.');
+
+    const result = await rpc('submit_organization_bank_transfer_payment', {
+      p_organization_id: state.organizationId,
+      p_plan_code: state.planCode,
+      p_transfer_reference: state.bankTransfer.reference,
+      p_transfer_notes: state.bankTransfer.notes || null,
+    });
+
+    if (!result?.success) {
+      const messages = {
+        authentication_required: 'Please open the company-email verification link first.',
+        organization_access_denied: 'The verified email does not match the corporate account.',
+        unknown_organization: 'The corporate application could not be found.',
+        organization_plan_mismatch: 'The selected plan no longer matches the corporate account.',
+        invalid_business_plan: 'This plan is not available for bank transfer.',
+        transfer_reference_required: 'Please enter the bank transaction/reference number.',
+      };
+      throw new Error(messages[result?.error] || 'We could not submit the bank-transfer reference.');
+    }
+    clearState(BANK_TRANSFER_STATE_KEY);
+    return result;
+  }
+
   async function sendChequeVerification(state) {
     const sb = supabaseClient();
     if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
     const current = await sb.auth.getSession();
     const currentEmail = current?.data?.session?.user?.email?.trim().toLowerCase() || '';
     if (currentEmail === state.email.toLowerCase()) return submitCheque(state);
+    if (currentEmail && currentEmail !== state.email.toLowerCase()) throw new Error('A different account is already signed in. Sign out, then retry using the company email.');
+
+    const result = await sb.auth.signInWithOtp({ email: state.email, options: { shouldCreateUser: true, emailRedirectTo: window.location.href } });
+    if (result.error) throw new Error('We could not send the company-email verification link. Please try again.');
+    return null;
+  }
+
+  async function sendBankTransferVerification(state) {
+    const sb = supabaseClient();
+    if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
+    const current = await sb.auth.getSession();
+    const currentEmail = current?.data?.session?.user?.email?.trim().toLowerCase() || '';
+    if (currentEmail === state.email.toLowerCase()) return submitBankTransfer(state);
     if (currentEmail && currentEmail !== state.email.toLowerCase()) throw new Error('A different account is already signed in. Sign out, then retry using the company email.');
 
     const result = await sb.auth.signInWithOtp({ email: state.email, options: { shouldCreateUser: true, emailRedirectTo: window.location.href } });
@@ -314,6 +394,25 @@
     } catch (err) {
       console.error('Corporate cheque resume failed:', err);
       showError(err.message || 'We could not complete the cheque submission.');
+    }
+  }
+
+  async function resumeBankTransfer() {
+    const state = readState(BANK_TRANSFER_STATE_KEY);
+    if (!state) return;
+    const sb = supabaseClient();
+    if (!sb) return;
+    const sessionResult = await sb.auth.getSession();
+    const session = sessionResult?.data?.session;
+    const email = session?.user?.email?.trim().toLowerCase() || '';
+    if (!session || email !== String(state.email || '').trim().toLowerCase()) return;
+
+    try {
+      const result = await submitBankTransfer(state);
+      setOverlay('Bank transfer submitted', `Your bank-transfer reference has been recorded as pending verification. Reference: ${result.internal_reference}. Membership will not activate until Lueri staff confirms the transfer.`, null);
+    } catch (err) {
+      console.error('Corporate bank transfer resume failed:', err);
+      showError(err.message || 'We could not complete the bank-transfer submission.');
     }
   }
 
@@ -359,6 +458,10 @@
       if (!/^\d{4}-\d{2}-\d{2}$/.test(cheque.date)) invalid.push('Cheque Date');
       if (cheque.date && cheque.date > new Date().toISOString().slice(0, 10)) invalid.push('Cheque Date');
     }
+    if (paymentMethod === 'bank_transfer') {
+      const bank = getBankTransferData();
+      if (bank.reference.length < 3 || bank.reference.length > 120) invalid.push('Bank Transaction/Reference Number');
+    }
     return invalid;
   }
 
@@ -372,6 +475,7 @@
     const planCode = CORPORATE_PLAN_CODES.includes(data.plan) ? data.plan : null;
 
     if (paymentMethod === 'pesapal' && !planCode) return showError('Pesapal payment is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
+    if (paymentMethod === 'bank_transfer' && !planCode) return showError('Bank transfer is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
     if (paymentMethod === 'cheque' && !planCode) return showError('Cheque payment is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
 
     const invalid = validate(data, paymentMethod);
@@ -381,7 +485,7 @@
     const originalText = submitBtn?.textContent || 'Submit Application';
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = paymentMethod === 'pesapal' ? 'Preparing secure Pesapal checkout…' : paymentMethod === 'cheque' ? 'Securing cheque submission…' : 'Submitting…';
+      submitBtn.textContent = paymentMethod === 'pesapal' ? 'Preparing secure Pesapal checkout…' : paymentMethod === 'bank_transfer' ? 'Securing bank-transfer submission…' : paymentMethod === 'cheque' ? 'Securing cheque submission…' : 'Submitting…';
     }
 
     try {
@@ -403,6 +507,18 @@
 
       if (paymentMethod === 'pesapal') {
         await startPesapalPayment(organizationId, planCode);
+        return;
+      }
+
+      if (paymentMethod === 'bank_transfer') {
+        const state = { organizationId, planCode, email: data.contactEmail.toLowerCase(), bankTransfer: getBankTransferData(), savedAt: Date.now() };
+        saveState(BANK_TRANSFER_STATE_KEY, state);
+        const immediate = await sendBankTransferVerification(state);
+        if (immediate) {
+          setOverlay('Bank transfer submitted', `Your bank-transfer reference is pending staff verification. Reference: ${immediate.internal_reference}. No membership is activated until Lueri confirms the transfer.`, null);
+        } else {
+          setOverlay('Check your company email', 'We created the corporate application and sent a secure verification link to the company email. Open that link on this device to complete bank-transfer submission. No membership has been activated yet.', null);
+        }
         return;
       }
 
@@ -433,6 +549,7 @@
   ensurePaymentUI();
   handlePesapalReturn().catch((err) => console.error('Corporate Pesapal return check failed:', err));
   resumeCheque().catch((err) => console.error('Corporate cheque resume check failed:', err));
+  resumeBankTransfer().catch((err) => console.error('Corporate bank transfer resume check failed:', err));
   form.addEventListener('submit', handleSubmit);
 
   document.querySelectorAll('.pricing-card[data-plan]').forEach((card) => {
