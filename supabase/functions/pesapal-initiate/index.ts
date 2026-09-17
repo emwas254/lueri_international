@@ -5,7 +5,18 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SITE_URL = Deno.env.get("SITE_URL") ?? "https://lueriinternational.com";
-const PESAPAL_ENV = Deno.env.get("PESAPAL_ENV") ?? (SITE_URL.includes("lueriinternational.com") ? "live" : "sandbox");
+
+function isProductionUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    const allowedHosts = ["lueriinternational.com", "www.lueriinternational.com"];
+    return allowedHosts.includes(urlObj.hostname);
+  } catch {
+    return false;
+  }
+}
+
+const PESAPAL_ENV = Deno.env.get("PESAPAL_ENV") ?? (isProductionUrl(SITE_URL) ? "live" : "sandbox");
 const BASE_URL = PESAPAL_ENV === "live"
   ? "https://pay.pesapal.com/v3/api"
   : "https://cybqa.pesapal.com/pesapalv3/api";
