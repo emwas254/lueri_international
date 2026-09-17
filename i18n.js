@@ -1,210 +1,217 @@
-/* Lueri International — native seven-language i18n bootstrap
-   Loads the existing translation engine and makes the selector readable,
-   native-language, RTL-aware, and compatible with Lueri light/dark themes.
-   NO Google Translate. NO third-party translation widget.
+/* Lueri International — strict native seven-language i18n bootstrap
+   English, 中文, Kiswahili, Français, Español, العربية, Português.
+   No Google Translate. No third-party translation widget.
 */
 (function () {
   'use strict';
 
   var NATIVE_NAMES = {
-    en: 'English',
-    zh: '中文',
-    sw: 'Kiswahili',
-    fr: 'Français',
-    es: 'Español',
-    ar: 'العربية',
-    pt: 'Português'
+    en: 'English', zh: '中文', sw: 'Kiswahili', fr: 'Français', es: 'Español', ar: 'العربية', pt: 'Português'
   };
-
-  var FLAGS = {
-    en: '🇬🇧',
-    zh: '🇨🇳',
-    sw: '🇰🇪',
-    fr: '🇫🇷',
-    es: '🇪🇸',
-    ar: '🇸🇦',
-    pt: '🇧🇷'
-  };
-
+  var FLAGS = { en:'🇬🇧', zh:'🇨🇳', sw:'🇰🇪', fr:'🇫🇷', es:'🇪🇸', ar:'🇸🇦', pt:'🇧🇷' };
   var RTL = { ar: true };
+
+  /* Keys that were present in the homepage but were not in the original
+     translation dictionary. These are deliberately defined here so a
+     non-English visitor never falls back to English in the pricing/SLA area. */
+  var EXTRA = {
+    en: {
+      'pricing.onDemand':'On-demand','pricing.single':'Single delivery','pricing.singleText':'One-off parcel or document run within Nairobi. Final price depends on pickup zone, drop-off zone, and parcel size.',
+      'pricing.business':'Business','pricing.daily':'Daily dispatch','pricing.dailyText':'Standing pickup arrangements for shops and online sellers with repeat daily or weekly runs. Volume pricing available.',
+      'pricing.urgent':'Urgent','pricing.priority':'Priority same-day','pricing.urgentText':'Time-sensitive documents or orders. Message pickup and drop-off on WhatsApp — we confirm price and ETA before dispatch.',
+      'pricing.quoteTitle':'How quoting works','pricing.quoteBody':'Every job is quoted before pickup — no hidden fees. Send your pickup point, drop-off point, and parcel details on WhatsApp or via the booking form below. Payment accepted via M-Pesa.',
+      'pricing.corporateTitle':'Corporate billing','pricing.corporateBody':'Repeat business clients can set up invoicing with bank transfer.','pricing.corporateCta':'Apply for a business account','pricing.corporateTail':'— we typically activate new accounts within one working day.',
+      'pricing.hoursTitle':'Operating hours','pricing.hoursBody':'Monday–Friday, 8:00 AM – 5:00 PM · Saturday, 8:00 AM – 3:00 PM · Closed Sundays. Orders placed after 5:00 PM (or outside these hours) are queued for next-business-day dispatch.',
+      'pricing.cutoffTitle':'Same-day cut-off','pricing.cutoffBody':'Bookings received before 5:00 PM on a working day are typically dispatched the same day, subject to route and traffic. Bookings placed after 5:00 PM, or on a Sunday, carry over to the next business day.',
+      'pricing.responseTitle':'Response time','pricing.responseBody':'WhatsApp and call enquiries answered during operating hours. Most quotes are confirmed promptly during business hours.',
+      'pricing.serviceTitle':'Service level','pricing.serviceBody':'Delivery timeframes are estimates, not guarantees. We communicate delays and route changes as soon as we know about them.'
+    },
+    zh: {
+      'pricing.onDemand':'按需配送','pricing.single':'单次配送','pricing.singleText':'内罗毕市内一次性包裹或文件配送。最终价格取决于取件区域、送达区域和包裹大小。',
+      'pricing.business':'企业服务','pricing.daily':'每日配送','pricing.dailyText':'为商店和网店提供固定取件安排，支持每日或每周重复配送，并可提供批量价格。',
+      'pricing.urgent':'紧急配送','pricing.priority':'优先当天配送','pricing.urgentText':'适用于时间紧迫的文件或订单。通过 WhatsApp 发送取件和送达信息，我们会在派送前确认价格和预计时间。',
+      'pricing.quoteTitle':'报价方式','pricing.quoteBody':'每项配送都会在取件前报价——无隐藏费用。请通过 WhatsApp 或下方预约表单发送取件点、送达点和包裹详情。支持通过 M-Pesa 付款。',
+      'pricing.corporateTitle':'企业结算','pricing.corporateBody':'长期合作的企业客户可以通过银行转账设置账单结算。','pricing.corporateCta':'申请企业账户','pricing.corporateTail':'— 我们通常会在一个工作日内启用新账户。',
+      'pricing.hoursTitle':'营业时间','pricing.hoursBody':'周一至周五 08:00–17:00 · 周六 08:00–15:00 · 周日休息。17:00 后或营业时间外提交的订单将排队至下一个工作日配送。',
+      'pricing.cutoffTitle':'当天配送截止时间','pricing.cutoffBody':'工作日 17:00 前收到的预约通常会在当天派送，具体取决于路线和交通。17:00 后或周日提交的预约将顺延至下一个工作日。',
+      'pricing.responseTitle':'响应时间','pricing.responseBody':'营业时间内回复 WhatsApp 和电话咨询。大多数报价会在营业时间内及时确认。',
+      'pricing.serviceTitle':'服务标准','pricing.serviceBody':'配送时间为预计时间，并非保证时间。我们一旦获知延误或路线变化，会及时通知您。'
+    },
+    sw: {
+      'pricing.onDemand':'Kwa Mahitaji','pricing.single':'Uwasilishaji Mmoja','pricing.singleText':'Usafirishaji wa kifurushi au nyaraka mara moja ndani ya Nairobi. Bei ya mwisho hutegemea eneo la kuchukua, eneo la kufikisha na ukubwa wa kifurushi.',
+      'pricing.business':'Biashara','pricing.daily':'Usafirishaji wa Kila Siku','pricing.dailyText':'Mipango ya kudumu ya kuchukua bidhaa kwa maduka na wauzaji mtandaoni, kwa safari za kila siku au kila wiki. Bei za kiasi zinapatikana.',
+      'pricing.urgent':'Haraka','pricing.priority':'Kipaumbele cha Siku Hiyo','pricing.urgentText':'Nyaraka au oda zinazohitaji haraka. Tuma mahali pa kuchukua na kufikisha kupitia WhatsApp — tutathibitisha bei na muda wa kufika kabla ya kuanza.',
+      'pricing.quoteTitle':'Jinsi Bei Inavyotolewa','pricing.quoteBody':'Kila kazi hupewa bei kabla ya kuchukua — hakuna gharama fiche. Tuma mahali pa kuchukua, kufikisha na maelezo ya kifurushi kupitia WhatsApp au fomu iliyo hapa chini. Malipo yanakubaliwa kupitia M-Pesa.',
+      'pricing.corporateTitle':'Malipo ya Kampuni','pricing.corporateBody':'Wateja wa biashara wanaorudia wanaweza kuweka mfumo wa ankara kwa uhamisho wa benki.','pricing.corporateCta':'Omba Akaunti ya Biashara','pricing.corporateTail':'— kwa kawaida tunawezesha akaunti mpya ndani ya siku moja ya kazi.',
+      'pricing.hoursTitle':'Saa za Huduma','pricing.hoursBody':'Jumatatu–Ijumaa, 08:00–17:00 · Jumamosi, 08:00–15:00 · Jumapili tumefungwa. Oda zinazowekwa baada ya 17:00 au nje ya saa hizi hupangwa kwa siku inayofuata ya kazi.',
+      'pricing.cutoffTitle':'Muda wa Mwisho wa Siku Hiyo','pricing.cutoffBody':'Maombi yanayopokelewa kabla ya 17:00 siku ya kazi kwa kawaida husafirishwa siku hiyo hiyo, kulingana na njia na msongamano wa magari. Maombi baada ya 17:00 au Jumapili huhamishiwa siku inayofuata ya kazi.',
+      'pricing.responseTitle':'Muda wa Kujibu','pricing.responseBody':'Maswali ya WhatsApp na simu hujibiwa wakati wa saa za huduma. Nukuu nyingi za bei huthibitishwa haraka wakati wa saa za kazi.',
+      'pricing.serviceTitle':'Kiwango cha Huduma','pricing.serviceBody':'Muda wa kufikisha ni makadirio, si dhamana. Tunawasiliana kuhusu ucheleweshaji na mabadiliko ya njia mara tu tunapoyajua.'
+    },
+    fr: {
+      'pricing.onDemand':'À la demande','pricing.single':'Livraison unique','pricing.singleText':'Livraison ponctuelle de colis ou de documents à Nairobi. Le prix final dépend de la zone de collecte, de la zone de livraison et de la taille du colis.',
+      'pricing.business':'Entreprises','pricing.daily':'Livraison quotidienne','pricing.dailyText':'Organisation de collectes régulières pour les boutiques et vendeurs en ligne, avec tournées quotidiennes ou hebdomadaires. Tarifs de volume disponibles.',
+      'pricing.urgent':'Urgent','pricing.priority':'Priorité le jour même','pricing.urgentText':'Documents ou commandes urgents. Envoyez les points de collecte et de livraison sur WhatsApp — nous confirmons le prix et le délai avant l’expédition.',
+      'pricing.quoteTitle':'Comment fonctionne le devis','pricing.quoteBody':'Chaque course est chiffrée avant la collecte — aucun frais caché. Envoyez les points de collecte et de livraison ainsi que les détails du colis sur WhatsApp ou via le formulaire ci-dessous. Paiement accepté par M-Pesa.',
+      'pricing.corporateTitle':'Facturation entreprise','pricing.corporateBody':'Les clients professionnels réguliers peuvent mettre en place une facturation par virement bancaire.','pricing.corporateCta':'Demander un compte professionnel','pricing.corporateTail':'— les nouveaux comptes sont généralement activés sous un jour ouvré.',
+      'pricing.hoursTitle':'Heures d’ouverture','pricing.hoursBody':'Lundi–vendredi, 08:00–17:00 · Samedi, 08:00–15:00 · Fermé le dimanche. Les commandes passées après 17:00 ou en dehors de ces horaires sont reportées au prochain jour ouvré.',
+      'pricing.cutoffTitle':'Heure limite pour le jour même','pricing.cutoffBody':'Les réservations reçues avant 17:00 un jour ouvré sont généralement expédiées le jour même, selon l’itinéraire et la circulation. Celles passées après 17:00 ou le dimanche sont reportées au prochain jour ouvré.',
+      'pricing.responseTitle':'Délai de réponse','pricing.responseBody':'Les demandes WhatsApp et téléphoniques reçoivent une réponse pendant les heures d’ouverture. La plupart des devis sont confirmés rapidement pendant les heures de bureau.',
+      'pricing.serviceTitle':'Niveau de service','pricing.serviceBody':'Les délais de livraison sont des estimations et non des garanties. Nous signalons les retards et changements d’itinéraire dès que nous en avons connaissance.'
+    },
+    es: {
+      'pricing.onDemand':'Bajo demanda','pricing.single':'Entrega única','pricing.singleText':'Entrega puntual de paquetes o documentos dentro de Nairobi. El precio final depende de la zona de recogida, la zona de destino y el tamaño del paquete.',
+      'pricing.business':'Empresas','pricing.daily':'Despacho diario','pricing.dailyText':'Recogidas programadas para tiendas y vendedores en línea, con recorridos diarios o semanales. Hay precios por volumen.',
+      'pricing.urgent':'Urgente','pricing.priority':'Prioridad el mismo día','pricing.urgentText':'Documentos o pedidos urgentes. Envíe los puntos de recogida y entrega por WhatsApp — confirmamos el precio y el tiempo estimado antes del despacho.',
+      'pricing.quoteTitle':'Cómo funcionan las cotizaciones','pricing.quoteBody':'Cada servicio se cotiza antes de la recogida — sin cargos ocultos. Envíe los puntos de recogida y entrega y los detalles del paquete por WhatsApp o mediante el formulario. Se acepta pago por M-Pesa.',
+      'pricing.corporateTitle':'Facturación corporativa','pricing.corporateBody':'Los clientes empresariales habituales pueden configurar la facturación mediante transferencia bancaria.','pricing.corporateCta':'Solicitar una cuenta empresarial','pricing.corporateTail':'— normalmente activamos las cuentas nuevas en un día laborable.',
+      'pricing.hoursTitle':'Horario de atención','pricing.hoursBody':'Lunes–viernes, 08:00–17:00 · Sábado, 08:00–15:00 · Cerrado los domingos. Los pedidos realizados después de las 17:00 o fuera de este horario se programan para el siguiente día laborable.',
+      'pricing.cutoffTitle':'Hora límite para el mismo día','pricing.cutoffBody':'Las reservas recibidas antes de las 17:00 en un día laborable normalmente se despachan ese mismo día, según la ruta y el tráfico. Las realizadas después de las 17:00 o el domingo pasan al siguiente día laborable.',
+      'pricing.responseTitle':'Tiempo de respuesta','pricing.responseBody':'Las consultas por WhatsApp y teléfono se responden durante el horario de atención. La mayoría de las cotizaciones se confirman rápidamente durante el horario laboral.',
+      'pricing.serviceTitle':'Nivel de servicio','pricing.serviceBody':'Los plazos de entrega son estimaciones, no garantías. Comunicamos los retrasos y cambios de ruta tan pronto como los conocemos.'
+    },
+    ar: {
+      'pricing.onDemand':'حسب الطلب','pricing.single':'توصيل واحد','pricing.singleText':'توصيل لمرة واحدة للطرود أو المستندات داخل نيروبي. يعتمد السعر النهائي على منطقة الاستلام ومنطقة التسليم وحجم الطرد.',
+      'pricing.business':'للشركات','pricing.daily':'توصيل يومي','pricing.dailyText':'ترتيبات استلام منتظمة للمتاجر والبائعين عبر الإنترنت مع رحلات يومية أو أسبوعية متكررة. تتوفر أسعار للكميات.',
+      'pricing.urgent':'عاجل','pricing.priority':'أولوية في اليوم نفسه','pricing.urgentText':'للمستندات أو الطلبات العاجلة. أرسل موقع الاستلام والتسليم عبر واتساب، وسنؤكد السعر ووقت الوصول المتوقع قبل التوصيل.',
+      'pricing.quoteTitle':'كيف تعمل التسعيرة','pricing.quoteBody':'يتم تحديد سعر كل طلب قبل الاستلام، من دون رسوم مخفية. أرسل نقطة الاستلام ونقطة التسليم وتفاصيل الطرد عبر واتساب أو نموذج الحجز أدناه. نقبل الدفع عبر إم-بيسا.',
+      'pricing.corporateTitle':'الفوترة للشركات','pricing.corporateBody':'يمكن للعملاء التجاريين المتكررين إعداد الفوترة عبر التحويل البنكي.','pricing.corporateCta':'تقديم طلب لحساب تجاري','pricing.corporateTail':'— نفعّل الحسابات الجديدة عادةً خلال يوم عمل واحد.',
+      'pricing.hoursTitle':'ساعات العمل','pricing.hoursBody':'الاثنين–الجمعة، 08:00–17:00 · السبت، 08:00–15:00 · مغلق يوم الأحد. الطلبات المقدمة بعد 17:00 أو خارج هذه الساعات تُرحّل إلى يوم العمل التالي.',
+      'pricing.cutoffTitle':'آخر موعد للتوصيل في اليوم نفسه','pricing.cutoffBody':'الطلبات المستلمة قبل 17:00 في يوم عمل تُرسل عادةً في اليوم نفسه، حسب المسار وحركة المرور. الطلبات بعد 17:00 أو يوم الأحد تُرحّل إلى يوم العمل التالي.',
+      'pricing.responseTitle':'وقت الاستجابة','pricing.responseBody':'يتم الرد على استفسارات واتساب والمكالمات خلال ساعات العمل. يتم تأكيد معظم عروض الأسعار بسرعة خلال ساعات العمل.',
+      'pricing.serviceTitle':'مستوى الخدمة','pricing.serviceBody':'أوقات التوصيل تقديرية وليست مضمونة. نبلغكم بالتأخيرات وتغييرات المسار فور معرفتنا بها.'
+    },
+    pt: {
+      'pricing.onDemand':'Sob demanda','pricing.single':'Entrega única','pricing.singleText':'Entrega pontual de encomendas ou documentos em Nairobi. O preço final depende da zona de recolha, zona de entrega e tamanho da encomenda.',
+      'pricing.business':'Empresas','pricing.daily':'Despacho diário','pricing.dailyText':'Recolhas programadas para lojas e vendedores online, com rotas diárias ou semanais. Estão disponíveis preços por volume.',
+      'pricing.urgent':'Urgente','pricing.priority':'Prioridade no mesmo dia','pricing.urgentText':'Para documentos ou pedidos urgentes. Envie os pontos de recolha e entrega pelo WhatsApp — confirmamos o preço e o prazo estimado antes do despacho.',
+      'pricing.quoteTitle':'Como funciona o orçamento','pricing.quoteBody':'Cada serviço é orçamentado antes da recolha — sem taxas ocultas. Envie os pontos de recolha e entrega e os detalhes da encomenda pelo WhatsApp ou pelo formulário abaixo. Aceitamos pagamentos por M-Pesa.',
+      'pricing.corporateTitle':'Faturação empresarial','pricing.corporateBody':'Clientes empresariais recorrentes podem configurar faturação por transferência bancária.','pricing.corporateCta':'Solicitar uma conta empresarial','pricing.corporateTail':'— normalmente ativamos novas contas num dia útil.',
+      'pricing.hoursTitle':'Horário de funcionamento','pricing.hoursBody':'Segunda–sexta, 08:00–17:00 · Sábado, 08:00–15:00 · Fechado aos domingos. Pedidos feitos depois das 17:00 ou fora deste horário são encaminhados para o próximo dia útil.',
+      'pricing.cutoffTitle':'Hora limite para o mesmo dia','pricing.cutoffBody':'Reservas recebidas antes das 17:00 num dia útil são normalmente despachadas no mesmo dia, dependendo da rota e do trânsito. Reservas após as 17:00 ou no domingo passam para o próximo dia útil.',
+      'pricing.responseTitle':'Tempo de resposta','pricing.responseBody':'Consultas por WhatsApp e telefone são respondidas durante o horário de funcionamento. A maioria dos orçamentos é confirmada rapidamente durante o horário comercial.',
+      'pricing.serviceTitle':'Nível de serviço','pricing.serviceBody':'Os prazos de entrega são estimativas, não garantias. Comunicamos atrasos e alterações de rota assim que tomamos conhecimento.'
+    }
+  };
+
+  var MENU_TAGS = {
+    en:['SVC','PRC','BIZ','CVG','WHY','FAQ','RWD','CAR','BK'],
+    zh:['服务','价格','企业','范围','优势','问题','奖励','招聘','预约'],
+    sw:['HUD','BEI','BIZ','MAE','WHY','MAS','ZAW','AJI','AGZ'],
+    fr:['SRV','PRX','ENT','ZNE','WHY','FAQ','RCL','EMP','RSP'],
+    es:['SRV','PRC','EMP','ZNA','POR','FAQ','PRE','EMP','RES'],
+    ar:['خدم','سعر','أعمال','نطاق','لماذا','أسئلة','مكافآت','وظائف','حجز'],
+    pt:['SRV','PRE','EMP','ZON','POR','FAQ','PRM','CAR','AGD']
+  };
+
+  var PRICE_TEXT = {
+    en:['From KES 350','Custom rates','Quoted live'],
+    zh:['起价 KES 350','自定义价格','即时报价'],
+    sw:['Kuanzia KES 350','Bei maalum','Bei ya moja kwa moja'],
+    fr:['À partir de KES 350','Tarifs personnalisés','Devis en direct'],
+    es:['Desde KES 350','Tarifas personalizadas','Cotización en directo'],
+    ar:['يبدأ من KES 350','أسعار مخصصة','عرض سعر مباشر'],
+    pt:['A partir de KES 350','Preços personalizados','Orçamento imediato']
+  };
 
   function addLocaleStyles() {
     if (document.getElementById('lueri-i18n-locale-styles')) return;
-
     var style = document.createElement('style');
     style.id = 'lueri-i18n-locale-styles';
     style.textContent = `
-      /* ================================================================
-         LUERI NATIVE LANGUAGE SELECTOR
-         Theme-aware, high-contrast, flag-preserving.
-         ================================================================ */
-      #languageSelector,
-      .language-selector,
-      .language-selector-native {
-        appearance: auto;
-        -webkit-appearance: auto;
-        min-width: 126px;
-        min-height: 40px;
-        padding: 7px 30px 7px 10px !important;
-        border: 1.5px solid var(--ink, #1b2620) !important;
-        border-radius: 8px !important;
-        background-color: var(--paper, #f4efe4) !important;
-        color: var(--ink, #1b2620) !important;
-        font-family: 'IBM Plex Sans', 'Noto Sans', Arial, sans-serif !important;
-        font-size: .84rem !important;
-        font-weight: 700 !important;
-        line-height: 1.2 !important;
-        letter-spacing: .01em;
-        cursor: pointer;
-        opacity: 1 !important;
-        color-scheme: light;
-        transition: color .2s ease, background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
-      }
-
-      #languageSelector:hover,
-      .language-selector:hover,
-      .language-selector-native:hover {
-        border-color: var(--route, #b8321f) !important;
-        box-shadow: 0 0 0 2px rgba(184,50,31,.12);
-      }
-
-      #languageSelector:focus-visible,
-      .language-selector:focus-visible,
-      .language-selector-native:focus-visible {
-        outline: 3px solid var(--signal, #d6a91a);
-        outline-offset: 2px;
-      }
-
-      #languageSelector option,
-      .language-selector option,
-      .language-selector-native option {
-        background: #f4efe4 !important;
-        color: #1b2620 !important;
-        font-family: 'IBM Plex Sans', 'Noto Sans', Arial, sans-serif !important;
-        font-size: .95rem !important;
-        font-weight: 700 !important;
-      }
-
-      [data-theme='dark'] #languageSelector,
-      [data-theme='dark'] .language-selector,
-      [data-theme='dark'] .language-selector-native {
-        background-color: var(--paper, #1b2620) !important;
-        color: var(--ink, #f0ead8) !important;
-        border-color: var(--ink, #f0ead8) !important;
-        color-scheme: dark;
-      }
-
-      [data-theme='dark'] #languageSelector option,
-      [data-theme='dark'] .language-selector option,
-      [data-theme='dark'] .language-selector-native option {
-        background: #1b2620 !important;
-        color: #f0ead8 !important;
-      }
-
-      /* Native-script font support. */
-      html:lang(zh), html:lang(zh) body {
-        font-family: 'Noto Sans SC', 'Noto Sans CJK SC', 'Microsoft YaHei', Arial, sans-serif;
-      }
-      html:lang(ar), html:lang(ar) body {
-        font-family: 'Noto Sans Arabic', 'Noto Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
-      }
-      html:lang(ar) #languageSelector,
-      html:lang(ar) .language-selector,
-      html:lang(ar) .language-selector-native,
-      html:lang(ar) #languageSelector option,
-      html:lang(ar) .language-selector option,
-      html:lang(ar) .language-selector-native option {
-        font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif !important;
-      }
-
-      /* RTL is a layout change, not merely a text translation. */
-      html[dir='rtl'] body { direction: rtl; }
-      html[dir='rtl'] .nav-controls,
-      html[dir='rtl'] .cta-row,
-      html[dir='rtl'] .form-actions { direction: rtl; }
-      html[dir='rtl'] input,
-      html[dir='rtl'] textarea,
-      html[dir='rtl'] select { text-align: right; }
-      html[dir='rtl'] #languageSelector,
-      html[dir='rtl'] .language-selector,
-      html[dir='rtl'] .language-selector-native {
-        padding-left: 30px !important;
-        padding-right: 10px !important;
-      }
-
-      /* Keep translated copy readable when scripts become visually denser. */
-      html[lang='zh'] body,
-      html[lang='ar'] body { line-height: 1.7; }
-      html[lang='zh'] h1,
-      html[lang='zh'] h2,
-      html[lang='zh'] h3,
-      html[lang='ar'] h1,
-      html[lang='ar'] h2,
-      html[lang='ar'] h3 { line-height: 1.35; }
-
-      @media (max-width: 480px) {
-        #languageSelector,
-        .language-selector,
-        .language-selector-native {
-          min-width: 116px;
-          min-height: 38px;
-          font-size: .8rem !important;
-        }
-      }
+      #languageSelector,.language-selector,.language-selector-native{appearance:auto;-webkit-appearance:auto;min-width:126px;min-height:40px;padding:7px 30px 7px 10px!important;border:1.5px solid var(--ink,#1b2620)!important;border-radius:8px!important;background-color:var(--paper,#f4efe4)!important;color:var(--ink,#1b2620)!important;font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif!important;font-size:.84rem!important;font-weight:700!important;line-height:1.2!important;letter-spacing:.01em;cursor:pointer;opacity:1!important;color-scheme:light;}
+      #languageSelector:hover,.language-selector:hover,.language-selector-native:hover{border-color:var(--route,#b8321f)!important;box-shadow:0 0 0 2px rgba(184,50,31,.12)}
+      #languageSelector:focus-visible,.language-selector:focus-visible,.language-selector-native:focus-visible{outline:3px solid var(--signal,#d6a91a);outline-offset:2px}
+      #languageSelector option,.language-selector option,.language-selector-native option{background:#f4efe4!important;color:#1b2620!important;font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif!important;font-size:.95rem!important;font-weight:700!important}
+      [data-theme='dark'] #languageSelector,[data-theme='dark'] .language-selector,[data-theme='dark'] .language-selector-native{background-color:var(--paper,#1b2620)!important;color:var(--ink,#f0ead8)!important;border-color:var(--ink,#f0ead8)!important;color-scheme:dark}
+      [data-theme='dark'] #languageSelector option,[data-theme='dark'] .language-selector option,[data-theme='dark'] .language-selector-native option{background:#1b2620!important;color:#f0ead8!important}
+      html:lang(zh),html:lang(zh) body{font-family:'Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',Arial,sans-serif}
+      html:lang(ar),html:lang(ar) body{font-family:'Noto Sans Arabic','Noto Sans','Segoe UI',Tahoma,Arial,sans-serif}
+      html:lang(ar) #languageSelector,html:lang(ar) .language-selector,html:lang(ar) .language-selector-native,html:lang(ar) #languageSelector option,html:lang(ar) .language-selector option,html:lang(ar) .language-selector-native option{font-family:'Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif!important}
+      html[dir='rtl'] body{direction:rtl}
+      html[dir='rtl'] .nav-controls,html[dir='rtl'] .cta-row,html[dir='rtl'] .form-actions{direction:rtl}
+      html[dir='rtl'] input,html[dir='rtl'] textarea,html[dir='rtl'] select{text-align:right}
+      html[dir='rtl'] #languageSelector,html[dir='rtl'] .language-selector,html[dir='rtl'] .language-selector-native{padding-left:30px!important;padding-right:10px!important}
+      html[lang='zh'] body,html[lang='ar'] body{line-height:1.7}
+      html[lang='zh'] h1,html[lang='zh'] h2,html[lang='zh'] h3,html[lang='ar'] h1,html[lang='ar'] h2,html[lang='ar'] h3{line-height:1.35}
+      html[lang='ar'] .menu-link-tag{font-family:'Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif;letter-spacing:0}
+      html[lang='zh'] .menu-link-tag{letter-spacing:0}
+      @media(max-width:480px){#languageSelector,.language-selector,.language-selector-native{min-width:116px;min-height:38px;font-size:.8rem!important}}
     `;
     document.head.appendChild(style);
   }
 
   function labelSelector() {
-    var selector = document.getElementById('languageSelector');
-    if (!selector) return;
+    var selector=document.getElementById('languageSelector'); if(!selector)return;
+    Object.keys(NATIVE_NAMES).forEach(function(code){var o=selector.querySelector('option[value="'+code+'"]');if(o)o.textContent=FLAGS[code]+' '+NATIVE_NAMES[code];});
+  }
 
-    Object.keys(NATIVE_NAMES).forEach(function (code) {
-      var option = selector.querySelector('option[value="' + code + '"]');
-      if (option) {
-        option.textContent = FLAGS[code] + ' ' + NATIVE_NAMES[code];
-      }
+  function setMeta(locale) {
+    var titles={en:'Lueri International — Nairobi Delivery & Courier',zh:'Lueri International — 内罗毕配送与快递',sw:'Lueri International — Usafirishaji na Courier Nairobi',fr:'Lueri International — Livraison et coursier à Nairobi',es:'Lueri International — Entrega y mensajería en Nairobi',ar:'Lueri International — التوصيل وخدمات البريد في نيروبي',pt:'Lueri International — Entregas e serviços de estafeta em Nairobi'};
+    document.title=titles[locale]||titles.en;
+    var desc={en:'Reliable last-mile delivery and courier dispatch across Nairobi.',zh:'在内罗毕提供可靠的最后一公里配送与快递服务。',sw:'Huduma ya kuaminika ya usafirishaji wa mwisho na courier Nairobi.',fr:'Service fiable de livraison du dernier kilomètre et de coursier à Nairobi.',es:'Servicio fiable de entrega de última milla y mensajería en Nairobi.',ar:'خدمة موثوقة للتوصيل في الميل الأخير وخدمات البريد داخل نيروبي.',pt:'Serviço fiável de entrega de última milha e estafeta em Nairobi.'};
+    var m=document.querySelector('meta[name="description"]'); if(m)m.setAttribute('content',desc[locale]||desc.en);
+    var og=document.querySelector('meta[property="og:locale"]'); if(og)og.setAttribute('content',{en:'en_KE',zh:'zh_CN',sw:'sw_KE',fr:'fr_FR',es:'es_ES',ar:'ar_SA',pt:'pt_BR'}[locale]||'en_KE');
+  }
+
+  function applyExtra(locale) {
+    var dict=EXTRA[locale]||EXTRA.en;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key=el.getAttribute('data-i18n');
+      if(Object.prototype.hasOwnProperty.call(dict,key)) el.textContent=dict[key];
     });
+
+    var prices=document.querySelectorAll('.pricing-card .price');
+    var priceList=PRICE_TEXT[locale]||PRICE_TEXT.en;
+    prices.forEach(function(el,i){if(priceList[i])el.textContent=priceList[i];});
+
+    var tags=document.querySelectorAll('.menu-link-tag');
+    var tagList=MENU_TAGS[locale]||MENU_TAGS.en;
+    tags.forEach(function(el,i){if(tagList[i])el.textContent=tagList[i];});
+
+    /* These are deliberate brand/proper-name tokens, not untranslated UI copy. */
+    document.querySelectorAll('[data-i18n]').forEach(function(el){el.setAttribute('lang',locale);});
   }
 
   function syncDocumentLocale(locale) {
-    if (!NATIVE_NAMES[locale]) locale = 'en';
-    document.documentElement.setAttribute('lang', locale);
-    document.documentElement.setAttribute('dir', RTL[locale] ? 'rtl' : 'ltr');
-    document.body.classList.toggle('rtl', !!RTL[locale]);
+    if(!NATIVE_NAMES[locale])locale='en';
+    document.documentElement.setAttribute('lang',locale);
+    document.documentElement.setAttribute('dir',RTL[locale]?'rtl':'ltr');
+    document.body.classList.toggle('rtl',!!RTL[locale]);
+    setMeta(locale);
     labelSelector();
+    applyExtra(locale);
   }
 
-  function wireSelector() {
-    var selector = document.getElementById('languageSelector');
-    if (!selector || selector.dataset.lueriNativeWired === 'true') return;
-    selector.dataset.lueriNativeWired = 'true';
-
-    selector.addEventListener('change', function (event) {
-      var locale = event.target.value;
-      syncDocumentLocale(locale);
-      if (typeof window.lueriSetLocale === 'function') {
-        window.lueriSetLocale(locale);
-      }
-    });
-
-    var initial = selector.value || localStorage.getItem('lueri_language') || 'en';
-    syncDocumentLocale(initial);
+  function installStrictLocale() {
+    var original=window.lueriSetLocale;
+    if(typeof original==='function' && !original.__lueriStrict){
+      var wrapped=function(locale){
+        original(locale);
+        window.setTimeout(function(){syncDocumentLocale(locale);},0);
+      };
+      wrapped.__lueriStrict=true;
+      window.lueriSetLocale=wrapped;
+    }
+    var selector=document.getElementById('languageSelector');
+    if(selector && selector.dataset.lueriStrictWired!=='true'){
+      selector.dataset.lueriStrictWired='true';
+      selector.addEventListener('change',function(e){syncDocumentLocale(e.target.value);});
+    }
   }
 
   addLocaleStyles();
-
-  /* Load the full translation engine synchronously while the page is parsing.
-     This preserves the engine's existing DOMContentLoaded behaviour. */
   document.write('<script src="i18n-engine.js"><\\/script>');
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      labelSelector();
-      wireSelector();
-    }, { once: true });
-  } else {
+  function bootStrict(){
     labelSelector();
-    wireSelector();
+    installStrictLocale();
+    var selector=document.getElementById('languageSelector');
+    var saved=localStorage.getItem('lueri_language')||localStorage.getItem('lueri_locale');
+    var initial=(selector&&selector.value)||saved||'en';
+    syncDocumentLocale(initial);
+    window.setTimeout(function(){syncDocumentLocale(initial);},50);
   }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootStrict,{once:true});else bootStrict();
 })();
