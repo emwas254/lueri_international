@@ -93,7 +93,6 @@
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
       var value = window.i18next.t(key, { lng:locale, defaultValue:'' });
-      if (!value || value === key) value = window.i18next.t(key, { lng:'en', defaultValue:key });
       if (value && value !== key) el.textContent = value;
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
@@ -124,7 +123,7 @@
 
     window.i18next.init({
       lng:requested,
-      fallbackLng:'en',
+      fallbackLng:false,
       supportedLngs:LANGS,
       resources:resources,
       interpolation:{ escapeValue:false },
