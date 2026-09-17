@@ -35,7 +35,7 @@
   }
 
   /* Load the existing full translation engine without replacing it. */
-  document.write('<script src="i18n-engine.js"><\\/script>');
+  document.write('<script src="i18n-engine.js"><\/script>');
   labelOptions();
   document.addEventListener('DOMContentLoaded', labelOptions, { once: true });
 })();
