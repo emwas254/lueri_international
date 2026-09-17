@@ -34,15 +34,8 @@
     });
   }
 
-  var engine = document.createElement('script');
-  engine.src = 'i18n-engine.js';
-  engine.defer = true;
-  engine.onload = labelOptions;
-  document.head.appendChild(engine);
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', labelOptions, { once: true });
-  } else {
-    labelOptions();
-  }
+  /* Load the existing full translation engine without replacing it. */
+  document.write('<script src="i18n-engine.js"><\\/script>');
+  labelOptions();
+  document.addEventListener('DOMContentLoaded', labelOptions, { once: true });
 })();
