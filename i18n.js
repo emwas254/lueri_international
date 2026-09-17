@@ -1,6 +1,7 @@
-/* Lueri International — native seven-language bootstrap
-   Full base translations: i18n-engine.js
-   Strict completion translations: i18n-strict.js
+/* Lueri International — i18next-powered seven-language bootstrap
+   Uses i18next as the translation runtime with the existing Lueri resource dictionaries.
+   This site is static HTML, not React, so react-i18next is intentionally NOT loaded:
+   react-i18next is a React binding and would add an unused React runtime here.
    No Google Translate. No third-party translation widget.
 */
 (function () {
@@ -15,11 +16,13 @@
     ar: { flag:'🇸🇦', name:'العربية' },
     pt: { flag:'🇧🇷', name:'Português' }
   };
+  var LANGS = Object.keys(NATIVE);
+  var STORAGE_KEY = 'lueri_language';
 
   function themeStyles() {
-    if (document.getElementById('lueri-native-language-styles')) return;
+    if (document.getElementById('lueri-i18next-styles')) return;
     var s = document.createElement('style');
-    s.id = 'lueri-native-language-styles';
+    s.id = 'lueri-i18next-styles';
     s.textContent = `
       #languageSelector {
         min-width:128px !important;
@@ -68,46 +71,98 @@
   function labelSelector() {
     var select = document.getElementById('languageSelector');
     if (!select) return;
-    Object.keys(NATIVE).forEach(function (code) {
+    LANGS.forEach(function (code) {
       var option = select.querySelector('option[value="' + code + '"]');
       if (option) option.textContent = NATIVE[code].flag + ' ' + NATIVE[code].name;
     });
   }
 
-  function syncLocale(locale) {
-    if (!NATIVE[locale]) locale = 'en';
+  function syncDocument(locale) {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
     if (document.body) document.body.classList.toggle('rtl', locale === 'ar');
     labelSelector();
   }
 
-  themeStyles();
+  function flatten(obj, prefix, out) {
+    out = out || {};
+    Object.keys(obj || {}).forEach(function (key) {
+      var value = obj[key];
+      var full = prefix ? prefix + '.' + key : key;
+      if (value && typeof value === 'object' && !Array.isArray(value)) flatten(value, full, out);
+      else out[full] = value;
+    });
+    return out;
+  }
 
-  /* Synchronous loading keeps the existing engine's DOMContentLoaded flow intact. */
+  function applyI18next(locale) {
+    if (!window.i18next || !window.LueriI18n || !window.LueriI18n.translations) return;
+    var dict = window.LueriI18n.translations[locale] || window.LueriI18n.translations.en;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      var value = window.i18next.t(key, { lng: locale });
+      if (value === key) value = flatten(dict)[key] || window.i18next.t(key, { lng:'en' });
+      if (value !== key) el.textContent = value;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      var value = window.i18next.t(key, { lng: locale });
+      if (value !== key) el.setAttribute('placeholder', value);
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-aria');
+      var value = window.i18next.t(key, { lng: locale });
+      if (value !== key) el.setAttribute('aria-label', value);
+    });
+    syncDocument(locale);
+  }
+
+  function start() {
+    themeStyles();
+    labelSelector();
+
+    var translations = window.LueriI18n && window.LueriI18n.translations;
+    if (!window.i18next || !translations) return;
+
+    var resources = {};
+    LANGS.forEach(function (code) {
+      resources[code] = { translation: flatten(translations[code]) };
+    });
+
+    window.i18next.init({
+      lng: localStorage.getItem(STORAGE_KEY) || 'en',
+      fallbackLng: 'en',
+      resources: resources,
+      interpolation: { escapeValue: false }
+    }).then(function () {
+      var locale = LANGS.indexOf(window.i18next.language) >= 0 ? window.i18next.language : 'en';
+      var select = document.getElementById('languageSelector');
+      if (select) select.value = locale;
+      applyI18next(locale);
+
+      if (select && select.dataset.i18nextWired !== 'true') {
+        select.dataset.i18nextWired = 'true';
+        select.addEventListener('change', function () {
+          var next = LANGS.indexOf(this.value) >= 0 ? this.value : 'en';
+          window.i18next.changeLanguage(next).then(function () {
+            localStorage.setItem(STORAGE_KEY, next);
+            applyI18next(next);
+            if (typeof window.lueriSetLocale === 'function') window.lueriSetLocale(next);
+            window.dispatchEvent(new CustomEvent('lueri:languagechange', { detail:{ language:next } }));
+          });
+        });
+      }
+    });
+  }
+
+  /* Load i18next first, then the existing resource/strict layers. */
+  document.write('<script src="https://cdn.jsdelivr.net/npm/i18next@25.6.0/dist/umd/i18next.min.js"><\\/script>');
   document.write('<script src="i18n-engine.js"><\\/script>');
   document.write('<script src="i18n-strict.js"><\\/script>');
 
-  function wireSelector() {
-    var select = document.getElementById('languageSelector');
-    if (!select || select.dataset.lueriWired === 'true') return;
-    select.dataset.lueriWired = 'true';
-    select.addEventListener('change', function () {
-      var locale = this.value;
-      syncLocale(locale);
-      localStorage.setItem('lueri_language', locale);
-      if (typeof window.lueriSetLocale === 'function') window.lueriSetLocale(locale);
-    });
-    syncLocale(select.value || localStorage.getItem('lueri_language') || 'en');
-  }
-
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      wireSelector();
-      labelSelector();
-    }, { once:true });
+    document.addEventListener('DOMContentLoaded', start, { once:true });
   } else {
-    wireSelector();
-    labelSelector();
+    start();
   }
 })();
