@@ -3,366 +3,646 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lueri International — Nairobi Delivery & Courier</title>
-<meta name="description" content="Lueri International — Nairobi last-mile delivery and courier dispatch. Same-day pickup, quoted rates, proof of delivery. Book by WhatsApp, call, or form.">
-<meta property="og:title" content="Lueri International — Nairobi Delivery & Courier">
-<meta property="og:description" content="Reliable last-mile delivery and courier dispatch across Nairobi. Same-day pickup for individuals and businesses.">
+<title>Lueri Rewards — Lueri International</title>
+<meta name="description" content="Join Lueri Rewards — earn points on every delivery, unlock free deliveries and priority dispatch as you climb Silver, Gold, Platinum and VIP tiers.">
+<meta property="og:title" content="Lueri Rewards — Lueri International">
+<meta property="og:description" content="Earn points on every delivery. Free to join.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://lueriinternational.com/">
-<meta property="og:site_name" content="Lueri International">
-<meta property="og:locale" content="en_KE">
+<meta property="og:url" content="https://lueriinternational.com/rewards.html">
 <meta property="og:image" content="https://lueriinternational.com/assets/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Lueri International — Nairobi Delivery & Courier">
-<meta name="twitter:description" content="Reliable last-mile delivery and courier dispatch across Nairobi. Same-day pickup for individuals and businesses.">
-<meta name="twitter:image" content="https://lueriinternational.com/assets/og-image.png">
-<link rel="canonical" href="https://lueriinternational.com/">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="lueri-common.js"></script>
-<!-- i18n Engine -->
-<script src="lueri-i18n.js"></script>
-<script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="assets/site.css">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* --- UX DIRECTOR CSS OVERRIDES & i18n STYLES --- */
+  :root{
+    --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52;
+    --signal:#E8B93D; --line: rgba(27,38,32,0.16); --success:#2e7d32; --error:#c62828;
+    --card-bg: var(--paper); --paper-rgb: 240,234,216; --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  [data-theme="dark"] {
+    --ink:#F0EAD8; --paper:#1B2620; --paper-dim:#24312a; --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16); --card-bg:#24312a; --paper-rgb:27,38,32;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5; transition: background-color .3s ease, color .3s ease;
+  }
+  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; transition: var(--transition); }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 24px; }
+  header{ position:sticky; top:0; z-index:100; background:rgba(var(--paper-rgb),.85);
+    border-bottom:1px solid var(--line); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:900px; margin:0 auto; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; }
+  .brand img{ height:30px; }
+  .back-link{ font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75; }
+  .back-link:hover{ opacity:1; color:var(--route); }
+  .theme-toggle{ background:none; border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
+    cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center; }
+  main{ padding:56px 0 100px; }
+  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:.75rem; letter-spacing:.1em; color:var(--slate); text-transform:uppercase; }
+  h1.title{ font-size:clamp(2.2rem, 6vw, 3.4rem); line-height:1; margin:10px 0 12px; }
+  .subtitle{ max-width:560px; color:var(--slate); font-size:1.05rem; line-height:1.6; }
+  .panel{
+    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:32px;
+    margin-top:36px; box-shadow:8px 8px 0 rgba(27,38,32,0.08);
+  }
+  .tabs{ display:flex; gap:8px; margin-bottom:28px; border-bottom:1px solid var(--line); }
+  .tab-btn{
+    background:none; border:none; padding:10px 4px; margin-right:20px; font-family:'IBM Plex Mono', monospace;
+    font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:var(--slate); cursor:pointer;
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .tab-btn.active{ color:var(--route); border-bottom-color:var(--route); }
+  .view{ display:none; }
+  .view.active{ display:block; }
+  .form-group{ margin-bottom:20px; }
+  .form-label{ display:block; margin-bottom:6px; color:var(--slate); font-family:'IBM Plex Mono', monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+  .form-input{
+    width:100%; padding:13px; border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem;
+  }
+  .form-input:focus{ outline:none; border-color:var(--route); }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:600px){ .form-row2{ grid-template-columns:1fr; } }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 24px;
+    font-size:.85rem; text-transform:uppercase; letter-spacing:.05em; border-radius:4px; font-weight:700;
+    cursor:pointer; border:none; transition:var(--transition); width:100%;
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); }
+  .btn-primary:hover{ filter:brightness(1.1); }
+  .btn-secondary{ background:transparent; border:1.5px solid var(--ink); color:var(--ink); }
+  .msg{ padding:12px 16px; border-radius:4px; font-size:.88rem; margin-bottom:16px; display:none; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(198,40,40,0.1); color:var(--error); border:1px solid rgba(198,40,40,0.3); }
+  .msg.success{ background:rgba(46,125,50,0.1); color:var(--success); border:1px solid rgba(46,125,50,0.3); }
+  .disclosure{
+    margin-top:28px; padding:16px 18px; border:1px dashed var(--line); border-radius:4px;
+    font-size:.82rem; color:var(--slate); line-height:1.6;
+  }
+  .member-card{ display:none; }
+  .member-card.show{ display:block; }
+  .tier-band{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+    background:var(--ink); color:var(--paper); padding:28px; border-radius:4px; margin-bottom:24px;
+  }
+  .tier-name{ font-family:'Oswald', sans-serif; font-size:1.6rem; text-transform:uppercase; }
+  .tier-name .signal{ color:var(--signal); }
+  .points-num{ font-family:'IBM Plex Mono', monospace; font-size:2rem; font-weight:600; }
+  .points-label{ font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; opacity:.7; }
+  .progress-track{ height:8px; background:rgba(240,234,216,0.15); border-radius:8px; margin-top:14px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--signal); border-radius:8px; transition:width .4s ease; }
+  .progress-note{ font-size:.78rem; opacity:.75; margin-top:8px; }
+  .benefit-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:20px 0; }
+  @media (max-width:600px){ .benefit-grid{ grid-template-columns:1fr; } }
+  .benefit-item{ font-size:.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:4px; }
+  .benefit-item::before{ content:"✓ "; color:var(--route); font-weight:700; }
+  table.tx-table{ width:100%; border-collapse:collapse; font-size:.88rem; margin-top:12px; }
+  table.tx-table th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:.7rem; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--slate); padding:8px 6px; border-bottom:1px solid var(--line); }
+  table.tx-table td{ padding:10px 6px; border-bottom:1px solid var(--line); }
+  .empty-note{ color:var(--slate); font-size:.9rem; padding:20px 0; }
+  .switch-link{ text-align:center; margin-top:16px; font-size:.85rem; color:var(--slate); }
+  .switch-link a{ color:var(--route); text-decoration:underline; font-weight:600; }
+  .receipt-link{
+    background:none; border:1px solid var(--line); border-radius:3px; padding:4px 10px;
+    font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--route);
+    cursor:pointer; font-family:'IBM Plex Mono', monospace;
+  }
+  .receipt-link:hover{ border-color:var(--route); }
 
-/* Language Selector Styling */
-#langSelector {
-  background: transparent;
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.85rem;
-  padding: 6px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-}
-#langSelector:hover { border-color: var(--route); }
-#langSelector:focus { border-color: var(--route); box-shadow: 0 0 0 2px rgba(184,50,31,0.15); }
+  .tier-explainer{ margin-top:40px; }
+  .tier-cards{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
+  @media (max-width:900px){ .tier-cards{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .tier-cards{ grid-template-columns:1fr; } }
+  .tier-explain-card{
+    background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:18px;
+    transition: var(--transition);
+  }
+  .tier-explain-card:hover{ border-color:var(--route); transform:translateY(-2px); }
+  .tier-explain-card .tname{
+    font-family:'Oswald', sans-serif; font-size:1.05rem; text-transform:uppercase; letter-spacing:.02em;
+    color:var(--route); margin-bottom:4px;
+  }
+  .tier-explain-card .tspend{
+    font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--slate);
+    text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;
+  }
+  .tier-explain-card ul{ margin:0; padding-left:16px; font-size:.82rem; color:var(--slate); line-height:1.7; }
+  .tier-explain-card ul li::marker{ color:var(--route); }
+  .tier-note{ font-size:.85rem; color:var(--slate); line-height:1.6; margin:20px 0 0; max-width:640px; }
 
-/* Premium Micro-interactions */
-.section-card-float{transition:transform .3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow .3s ease;}
-.section-card-float:hover{
-    transform:translateY(-4px);
-    box-shadow:0 12px 24px -8px rgba(27,38,32,.12), 0 4px 6px -2px rgba(27,38,32,.05);
-}
-.section-card-float:focus-within{transform:translateY(-4px);box-shadow:0 12px 24px -8px rgba(27,38,32,.12), 0 4px 6px -2px rgba(27,38,32,.05);}
+  .purchase-section{ margin-top:56px; }
+  .purchase-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+  .purchase-head h2{ font-size:1.5rem; }
+  .purchase-cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  @media (max-width:900px){ .purchase-cards{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .purchase-cards{ grid-template-columns:1fr; } }
+  .purchase-card{
+    background:var(--card-bg); border:1.5px solid var(--ink); border-radius:4px; padding:20px;
+    display:flex; flex-direction:column; box-shadow:5px 5px 0 rgba(27,38,32,0.06); transition:var(--transition);
+  }
+  .purchase-card:hover{ transform:translate(-2px,-2px); box-shadow:7px 7px 0 rgba(27,38,32,0.09); }
+  .purchase-card .tname{ font-family:'Oswald', sans-serif; font-size:1.15rem; text-transform:uppercase; color:var(--route); margin-bottom:2px; }
+  .purchase-card .tprice{ font-family:'IBM Plex Mono', monospace; font-size:1.3rem; font-weight:600; margin-bottom:2px; }
+  .purchase-card .tperiod{ font-family:'IBM Plex Mono', monospace; font-size:.68rem; color:var(--slate); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+  .purchase-card ul{ margin:0 0 18px; padding-left:16px; font-size:.8rem; color:var(--slate); line-height:1.65; flex-grow:1; }
+  .purchase-card ul li::marker{ color:var(--route); }
+  .purchase-card .btn{ margin-top:auto; }
 
-/* Mobile Menu Cleanup */
-.menu-link-tag { display: none; } 
-.menu-link-body { display: flex; flex-direction: column; }
-.menu-link-title { font-family: 'Oswald', sans-serif; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
-.menu-link-caption { font-size: 0.85rem; opacity: 0.7; margin-top: 2px; }
-
-/* Success Overlay Refinement */
-.success-overlay {
-    position: fixed; inset: 0; background: rgba(27,38,32,0.85); backdrop-filter: blur(8px);
-    display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
-}
-.success-overlay.active { display: flex; }
-.success-overlay > div {
-    background: var(--paper); padding: 40px; border-radius: 8px; max-width: 480px; width: 100%;
-    text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--line);
-}
-.overlay-check {
-    width: 64px; height: 64px; background: var(--route); color: white; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px;
-}
-.overlay-title { font-family: 'Oswald', sans-serif; font-size: 1.8rem; margin-bottom: 12px; text-transform: uppercase; }
-.overlay-copy { color: var(--slate); margin-bottom: 24px; line-height: 1.6; }
-.overlay-ref { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; background: var(--paper-dim); padding: 8px; border-radius: 4px; margin-bottom: 24px; display: inline-block;}
-
-/* Hero & Route visual preserved */
-.hero-route-visual{margin:34px 0 8px;position:relative;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,var(--paper) 0%,var(--paper-dim) 100%);border-radius:4px;padding:18px 14px 22px;box-shadow:8px 8px 0 rgba(27,38,32,.06)}
-.hero-route-visual .scene{position:relative;height:118px;overflow:hidden}
-.hero-route-visual .city-left,.hero-route-visual .city-right{position:absolute;bottom:28px;opacity:.3;display:flex;align-items:flex-end;gap:6px}
-.hero-route-visual .city-left{left:2%;}.hero-route-visual .city-right{right:2%;}
-.hero-route-visual .tower{width:18px;background:linear-gradient(180deg,#7b8c84,#58665f);border-radius:2px 2px 0 0}.hero-route-visual .tower.t1{height:28px}.hero-route-visual .tower.t2{height:44px}.hero-route-visual .tower.t3{height:62px;width:24px}.hero-route-visual .tower.t4{height:34px}.hero-route-visual .tower.t5{height:52px;width:28px}.hero-route-visual .road{position:absolute;left:3%;right:3%;bottom:22px;height:8px;border-top:3px dashed var(--ink);opacity:.7}
-.hero-route-visual .pin-label{position:absolute;top:2px;z-index:3;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border:1px dashed var(--line);padding:7px 10px;background:rgba(var(--paper-rgb),.92)}
-.hero-route-visual .pin-label.left{left:0}.hero-route-visual .pin-label.right{right:0}
-.hero-route-visual .marker{position:absolute;top:32px;width:12px;height:12px;border:3px solid var(--route);border-radius:50%;background:var(--paper);z-index:3}.hero-route-visual .marker.left{left:7%}.hero-route-visual .marker.right{right:7%}
-.hero-route-visual .truck-runner{position:absolute;left:7%;bottom:17px;width:92px;height:46px;z-index:4;animation:lueriTruckJourney 7.5s cubic-bezier(.45,.08,.4,.92) infinite}
-.hero-route-visual .truck-body{position:absolute;left:0;bottom:9px;width:64px;height:26px;border:2px solid var(--ink);background:var(--paper);border-radius:3px}.hero-route-visual .truck-cab{position:absolute;right:0;bottom:9px;width:24px;height:21px;background:#274238;border:2px solid var(--ink);border-left:0;border-radius:0 4px 3px 0}.hero-route-visual .truck-window{position:absolute;right:4px;bottom:23px;width:12px;height:7px;background:#dbe7e0;border:1px solid var(--ink);border-radius:1px}.hero-route-visual .truck-wheel{position:absolute;bottom:2px;width:13px;height:13px;background:var(--ink);border:3px solid var(--paper);border-radius:50%}.hero-route-visual .truck-wheel.w1{left:10px}.hero-route-visual .truck-wheel.w2{left:57px}.hero-route-visual .truck-logo{position:absolute;left:7px;bottom:17px;font-size:.48rem;font-weight:700;color:var(--ink);line-height:1}
-.hero-route-visual .motion{position:absolute;left:-20px;top:11px;width:28px;height:2px;background:var(--route);box-shadow:0 7px 0 rgba(184,50,31,.45),0 14px 0 rgba(184,50,31,.25);animation:lueriMotion 7.5s cubic-bezier(.45,.08,.4,.92) infinite;z-index:3}
-@keyframes lueriTruckJourney{0%,8%{left:7%;transform:translateY(0) scaleX(1)}45%{left:47%;transform:translateY(-2px) scaleX(1)}88%,92%{left:84%;transform:translateY(0) scaleX(1)}100%{left:7%;transform:translateY(0) scaleX(1)}}
-@keyframes lueriMotion{0%,8%{opacity:0;left:4%}18%,78%{opacity:1}92%,100%{opacity:0;left:82%}}
-@media(max-width:560px){.hero-route-visual .scene{height:104px}.hero-route-visual .truck-runner{width:78px;transform:scale(.88);transform-origin:left bottom}.hero-route-visual .pin-label{font-size:.6rem;padding:6px 8px}.hero-route-visual .city-left,.hero-route-visual .city-right{opacity:.22}}
-@media(prefers-reduced-motion:reduce){.hero-route-visual .truck-runner,.hero-route-visual .motion{animation:none}.hero-route-visual .truck-runner{left:46%}.hero-route-visual .motion{display:none}}
-
-.rewards-showcase{background:var(--paper);border:1px solid var(--line);padding:28px;border-radius:4px;box-shadow:8px 8px 0 rgba(27,38,32,.06)}
-.rewards-showcase .mini-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:20px}
-.rewards-showcase .tier-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.rewards-showcase .tier-mini{border:1px solid var(--line);padding:18px;background:var(--card-bg);border-radius:4px;display:flex;flex-direction:column;min-height:210px;transition:transform .25s ease,box-shadow .25s ease}
-.rewards-showcase .tier-mini:hover,.rewards-showcase .tier-mini:focus-within{transform:translateY(-4px);box-shadow:0 12px 24px -8px rgba(27,38,32,.12)}
-.rewards-showcase .tier-mini.gold{border-top:3px solid var(--route)}
-.rewards-showcase .tier-mini .name{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:1.1rem}.rewards-showcase .tier-mini .price{font-family:'Oswald',sans-serif;font-size:1.55rem;color:var(--route);margin:7px 0}.rewards-showcase .tier-mini ul{padding-left:16px;color:var(--slate);font-size:.8rem;line-height:1.5;flex:1}
-@media(max-width:860px){.rewards-showcase .tier-mini-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.rewards-showcase .tier-mini-grid{grid-template-columns:1fr}.rewards-showcase{padding:20px}}
-
-#services .section-head{margin-bottom:38px}
-#services .grid3{align-items:stretch}
-#services .card{position:relative;min-height:390px;padding:28px;display:flex;flex-direction:column;overflow:hidden}
-#services .card::after{content:"";position:absolute;inset:auto 0 0 0;height:3px;background:linear-gradient(90deg,transparent,var(--route),transparent);transform:scaleX(0);transform-origin:center;transition:transform .35s ease}
-#services .card:hover::after,#services .card:focus-within::after{transform:scaleX(1)}
-#services .card h3{margin-top:22px}
-#services .card p{max-width:34rem}
-#services .card .btn{margin-top:auto;align-self:flex-start}
-@media(max-width:700px){#services .card{min-height:0;padding:24px}}
-
-/* Form enhancements */
-.form-input:focus { border-color: var(--route); box-shadow: 0 0 0 3px rgba(184,50,31,0.15); }
-.honeypot { position: absolute; left: -9999px; }
+  .plan-banner{
+    display:none; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    background:var(--ink); color:var(--paper); padding:14px 18px; border-radius:4px; margin-bottom:24px;
+  }
+  .plan-banner.show{ display:flex; }
+  .plan-banner .pb-label{ font-family:'IBM Plex Mono', monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; opacity:.75; }
+  .plan-banner .pb-tier{ font-family:'Oswald', sans-serif; font-size:1.1rem; text-transform:uppercase; color:var(--signal); }
+  .plan-banner .pb-clear{ background:none; border:1px solid rgba(240,234,216,0.4); color:var(--paper); border-radius:3px;
+    padding:5px 10px; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; cursor:pointer; font-family:'IBM Plex Mono', monospace; }
+  .plan-banner .pb-clear:hover{ border-color:var(--signal); color:var(--signal); }
 </style>
 </head>
 <body>
 
-<a class="skip-link" href="#contact">Skip to booking form</a>
-
-<!-- REFACTORED SUCCESS OVERLAY -->
-<div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
-  <div>
-    <div class="overlay-check">&#10003;</div>
-    <h2 id="successTitle" class="overlay-title" data-i18n="overlay_title">Step 1 Complete: Route Saved</h2>
-    <p id="successCopy" class="overlay-copy" data-i18n="overlay_copy">Your booking request is secured. To dispatch your rider, please confirm the final details via WhatsApp.</p>
-    <p id="successRef" class="overlay-ref" style="display:none;"></p>
-    <p id="successFallback" style="margin-bottom:24px;">
-      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-block" style="width:100%; text-align:center;" data-i18n="overlay_whatsapp_btn">Confirm on WhatsApp</a>
-    </p>
-    <button type="button" id="successClose" class="btn btn-secondary" style="width:100%; text-align:center; margin-top:10px;" data-i18n="overlay_close_btn">Close & Book Another</button>
-  </div>
-</div>
-
 <header>
-  <div class="navbar wrap">
-    <a class="brand" href="index.html"><img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International"><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span>Lueri International</span></a>
-    <div class="nav-controls">
-      <!-- GLOBAL LANGUAGE SELECTOR -->
-      <select id="langSelector" aria-label="Select Language">
-        <option value="en">English</option>
-        <option value="sw">Kiswahili</option>
-        <option value="fr">Français</option>
-        <option value="es">Español</option>
-        <option value="ar">العربية</option>
-        <option value="pt">Português</option>
-        <option value="zh">中文</option>
-      </select>
-      
-      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel"><span class="menu-trigger-bars"><span></span><span></span><span></span></span><span id="menuTriggerLabel">Menu</span></button>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"><svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="4.22" x2="19.79" y2="5.64"></line></svg><svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></button>
-      <a class="nav-cta" href="#contact" data-i18n="nav_book">Book Pickup</a>
+  <div class="navbar">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-mark.png" alt="Lueri International">
+      <span>Lueri International</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <a class="back-link" href="index.html">← Main site</a>
+      <a class="back-link" href="careers.html">Careers</a>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
     </div>
   </div>
-  
-  <!-- REFACTORED MOBILE MENU -->
-  <div class="menu-panel" id="menuPanel"><div class="menu-panel-inner"><div class="menu-panel-eyebrow">Where to next</div><div class="menu-panel-grid">
-    <a href="#services" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_services">Services</span><span class="menu-link-caption">What we carry, and how fast</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="#pricing" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_pricing">Pricing</span><span class="menu-link-caption">Quoted rates, no hidden fees</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="corporate.html" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_business">Business</span><span class="menu-link-caption">Set up a corporate account</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="#coverage" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_coverage">Coverage</span><span class="menu-link-caption">Where we deliver in Nairobi</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="#why" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_why">Why Us</span><span class="menu-link-caption">What makes Lueri different</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="#faq" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_faq">FAQ</span><span class="menu-link-caption">Common questions, answered</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="rewards.html" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_rewards">Rewards</span><span class="menu-link-caption">Earn points on every delivery</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="careers.html" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_careers">Careers</span><span class="menu-link-caption">Future roles at Lueri</span></span><span class="menu-link-arrow">&#8594;</span></a>
-    <a href="#contact" class="menu-link" data-close-menu><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav_book">Book a Pickup</span><span class="menu-link-caption">Send a request now</span></span><span class="menu-link-arrow">&#8594;</span></a>
-  </div></div></div>
 </header>
 
 <main>
-<section class="hero reveal"><div class="wrap"><div class="docket"><div class="docket-row"><div class="eyebrow-mono" data-i18n="hero_eyebrow">Dispatch / Nairobi & environs</div><div class="waybill-no">STATUS: READY FOR DISPATCH</div></div><h1 class="title" data-i18n="hero_title">We move it across Nairobi today.</h1><p class="subtitle" data-i18n="hero_subtitle">Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day across Nairobi.</p><span class="scope-tag">Nairobi last-mile · Not cross-border freight</span><span class="stamp">Same-day dispatch</span><div class="hero-route-visual" aria-label="Animated Lueri delivery route from pickup to drop-off"><div class="scene"><div class="pin-label left">Pickup · Nairobi</div><div class="pin-label right">Drop-off · Nairobi</div><div class="marker left"></div><div class="marker right"></div><div class="city-left"><div class="tower t1"></div><div class="tower t2"></div><div class="tower t3"></div><div class="tower t4"></div></div><div class="city-right"><div class="tower t2"></div><div class="tower t5"></div><div class="tower t1"></div><div class="tower t4"></div></div><div class="road"></div><div class="motion"></div><div class="truck-runner" aria-hidden="true"><div class="truck-body"></div><div class="truck-cab"></div><div class="truck-window"></div><div class="truck-wheel w1"></div><div class="truck-wheel w2"></div><div class="truck-logo">Lueri</div></div></div></div><div class="cta-row"><a href="#contact" class="btn btn-primary" data-i18n="hero_cta_primary">Book a Pickup</a><a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-i18n="hero_cta_secondary">WhatsApp Us</a></div></div></div></section>
+  <div class="wrap">
+    <div class="eyebrow-mono">Lueri Rewards</div>
+    <h1 class="title">Earn on every<br>delivery.</h1>
+    <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch. Or skip the wait and buy your tier outright below.</p>
 
-<section id="services" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">01</span><h2 data-i18n="nav_services">Services</h2></div><div class="grid3"><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg></div><h3 data-i18n="srv_parcel_title">Parcel & document delivery</h3><p data-i18n="srv_parcel_desc">Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands.</p><a class="btn btn-secondary" href="#contact" data-i18n="btn_learn_more">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><h3 data-i18n="srv_biz_title">Business & e-commerce dispatch</h3><p data-i18n="srv_biz_desc">Recurring pickup and delivery support for shops and online sellers who need reliable, repeat runs.</p><a class="btn btn-secondary" href="corporate.html" data-i18n="btn_learn_more">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><h3 data-i18n="srv_ondemand_title">On-demand courier</h3><p data-i18n="srv_ondemand_desc">Need something moved right now? Call or WhatsApp for a same-day pickup — no account required.</p><a class="btn btn-secondary" href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" data-i18n="btn_learn_more">Learn more →</a></div></div></div></section>
+    <div class="tier-explainer" id="tierExplainer">
+      <div class="eyebrow-mono" style="margin-bottom:16px;">Earn it free — tiers by spend</div>
+      <div class="tier-cards" id="tierCards"></div>
+      <p class="tier-note">Your tier is based on your spend over the last 12 months, so it reflects your recent activity with us. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
+    </div>
 
-<section id="why" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">02</span><h2 data-i18n="nav_why">Why Us</h2></div><ul class="why-list"><li><div class="n">01</div><div><h3 data-i18n="why_1_title">Reliable repeat dispatch</h3><p data-i18n="why_1_desc">For retailers, pharmacies, professional services and online sellers, Lueri provides dependable pickup and delivery support you can build into your daily operations.</p></div></li><li><div class="n">02</div><div><h3 data-i18n="why_2_title">Same-day when timing matters</h3><p data-i18n="why_2_desc">For urgent documents, customer orders, business stock and time-sensitive errands, we focus on clear pickup windows and direct communication.</p></div></li><li><div class="n">03</div><div><h3 data-i18n="why_3_title">Simple for the customer</h3><p data-i18n="why_3_desc">One booking request, clear route details and a straightforward handoff—without forcing every customer to learn a complicated logistics system.</p></div></li></ul></div></section>
+    <div class="purchase-section" id="purchaseSection">
+      <div class="purchase-head">
+        <div>
+          <div class="eyebrow-mono" style="margin-bottom:4px;">Or buy it outright</div>
+          <h2>Skip the wait — 1 year, instant</h2>
+        </div>
+      </div>
+      <div class="purchase-cards" id="purchaseCards"></div>
+      <p class="switch-link">Prefer to start without a paid membership? <a href="#" id="joinFreeLink">Join for Free</a></p>
+    </div>
 
-<section id="coverage" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">04</span><h2 data-i18n="nav_coverage">Coverage</h2></div><div class="coverage-wrap"><div class="coverage-list"><div>Nairobi CBD</div><div>Westlands</div><div>Kilimani</div><div>Kasarani</div><div>South B / South C</div><div>Embakasi</div><div>Ngong Road</div><div>Thika Road</div></div><div class="coverage-note"><div class="eyebrow-mono" data-i18n="cov_not_listed">Not on this list?</div><p data-i18n="cov_desc">Lueri runs delivery across all of Greater Nairobi and its surrounding towns. If your point isn't listed, message us directly — most routes are covered.</p></div></div></div></section>
+    <div class="panel">
+      <div class="tabs" id="tabBar" role="tablist">
+        <button class="tab-btn active" data-tab="lookup" role="tab" aria-selected="true">My Rewards</button>
+        <button class="tab-btn" data-tab="join" role="tab" aria-selected="false">Join Now</button>
+      </div>
 
-<section id="pricing" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">05</span><h2 data-i18n="nav_pricing">Pricing</h2></div><div class="pricing-grid"><div class="pricing-card section-card-float"><div class="tier" data-i18n="price_std_tier">Standard</div><h3 data-i18n="price_std_title">Everyday delivery</h3><div class="price" data-i18n="price_std_amt">From KES 350</div><p data-i18n="price_std_desc">Point-to-point courier service for regular parcels and documents.</p><ul><li data-i18n="price_std_f1">Same-day options</li><li data-i18n="price_std_f2">Clear pickup details</li><li data-i18n="price_std_f3">Proof of delivery</li></ul></div><div class="pricing-card section-card-float"><div class="tier" data-i18n="price_pri_tier">Priority</div><h3 data-i18n="price_pri_title">Urgent same-day</h3><div class="price" data-i18n="price_pri_amt">Quoted</div><p data-i18n="price_pri_desc">For time-sensitive deliveries that need faster handling.</p><ul><li data-i18n="price_pri_f1">Priority dispatch</li><li data-i18n="price_pri_f2">Direct communication</li><li data-i18n="price_pri_f3">Route-based quote</li></ul></div><div class="pricing-card section-card-float"><div class="tier" data-i18n="price_biz_tier">Business</div><h3 data-i18n="price_biz_title">Recurring dispatch</h3><div class="price" data-i18n="price_biz_amt">Quoted</div><p data-i18n="price_biz_desc">Flexible arrangements for shops, e-commerce and organizations.</p><ul><li data-i18n="price_biz_f1">Repeat pickup runs</li><li data-i18n="price_biz_f2">Consolidated handling</li><li data-i18n="price_biz_f3">Corporate support</li></ul></div></div><div style="margin-top:40px;padding:18px;border:1px dashed var(--line);border-radius:4px;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;" data-i18n="price_how_title">How quoting works</strong><br><span data-i18n="price_how_desc">Every job is quoted before pickup — no hidden fees. Send your pickup point, drop-off point, and parcel details on WhatsApp or via the booking form below. Payment accepted via M-Pesa.</span></div></div></section>
-
-<section id="faq" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">06</span><h2 data-i18n="nav_faq">FAQ</h2></div><div class="faq-list"><details open><summary data-i18n="faq_1_q">How do I book a delivery?</summary><p data-i18n="faq_1_a">Use the Book a Pickup form, or WhatsApp Lueri with your pickup location, drop-off location and parcel details.</p></details><details><summary data-i18n="faq_2_q">How quickly can you deliver?</summary><p data-i18n="faq_2_a">Same-day delivery is available for eligible Nairobi routes. Lueri confirms the route and pickup timing before dispatch.</p></details><details><summary data-i18n="faq_3_q">How is pricing calculated?</summary><p data-i18n="faq_3_a">Quotes depend on route, parcel details and urgency. Lueri confirms the price before pickup.</p></details><details><summary data-i18n="faq_4_q">Do I need a Rewards account?</summary><p data-i18n="faq_4_a">No. On-demand courier bookings do not require an account. Rewards members get additional benefits and points tracking.</p></details></div></div></section>
-
-<!-- REFACTORED BOOKING FORM -->
-<section id="contact" class="reveal">
-    <div class="wrap">
-      <div class="contact-shell">
-        <div class="section-head"><span class="section-num">07</span><h2 data-i18n="nav_book">Book a pickup</h2></div>
-        <div class="contact-grid">
-          <div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp">
-            <span class="copy-hint">Click to copy</span><div class="label">WhatsApp</div><div class="value">0713 261 719</div>
+      <!-- LOOKUP VIEW -->
+      <div class="view active" id="view-lookup" role="tabpanel">
+        <div id="lookupForm">
+          <p style="color:var(--slate); font-size:.92rem; margin:0 0 20px;">Enter the phone number you registered with to view your points and tier.</p>
+          <div class="msg error" id="lookupMsg"></div>
+          <div class="form-group">
+            <label class="form-label" for="lookupPhone">Phone number</label>
+            <input class="form-input" type="tel" id="lookupPhone" placeholder="07xx xxx xxx">
           </div>
-          <div class="contact-card" data-href="tel:+254713261719">
-            <div class="label">Call</div><div class="value">0713 261 719</div>
-          </div>
-          <div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email">
-            <span class="copy-hint">Click to copy</span><div class="label">Email</div><div class="value">info@lueriinternational.com</div>
-          </div>
+          <button class="btn btn-primary" id="lookupBtn">View my rewards</button>
+          <p class="switch-link">Not a member yet? <a href="#" data-tab="join">Join Lueri Rewards</a></p>
         </div>
 
-        <form id="bookingForm" style="margin-top:40px;" novalidate>
-          <input type="text" name="website" id="bookingHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
-          <div class="form-row2">
-            <div class="form-group">
-              <label class="form-label" for="pickup" data-i18n="form_pickup">Pickup Location</label>
-              <input class="form-input" type="text" id="pickup" data-i18n-placeholder="ph_pickup" placeholder="e.g. Westlands, Nairobi" autocomplete="street-address" required>
+        <div class="member-card" id="memberCard">
+          <div class="tier-band">
+            <div>
+              <div class="points-label">Current tier</div>
+              <div class="tier-name"><span id="mTierName" class="signal">Bronze</span></div>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="dropoff" data-i18n="form_dropoff">Drop-off Location</label>
-              <input class="form-input" type="text" id="dropoff" data-i18n-placeholder="ph_dropoff" placeholder="e.g. CBD, Nairobi" autocomplete="street-address" required>
+            <div style="text-align:right;">
+              <div class="points-num" id="mPoints">0</div>
+              <div class="points-label">Points balance</div>
             </div>
+          </div>
+          <div>
+            <div class="progress-track"><div class="progress-fill" id="mProgressFill" style="width:0%;"></div></div>
+            <div class="progress-note" id="mProgressNote"></div>
+          </div>
+
+          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Your benefits</h3>
+          <div class="benefit-grid" id="mBenefits"></div>
+
+          <h3 style="font-size:1rem; text-transform:none; margin:28px 0 4px;">Recent activity</h3>
+          <div id="mTxWrap"><p class="empty-note">No transactions yet.</p></div>
+
+          <button class="btn btn-secondary" style="margin-top:24px;" id="lookupAnother">Look up a different number</button>
+        </div>
+      </div>
+
+      <!-- JOIN VIEW -->
+      <div class="view" id="view-join" role="tabpanel">
+        <div class="plan-banner" id="planBanner">
+          <div>
+            <div class="pb-label">You're signing up for</div>
+            <div class="pb-tier" id="planBannerTier">Gold — KES 15,000/year</div>
+          </div>
+          <button class="pb-clear" id="planBannerClear">Clear &amp; Join Free</button>
+        </div>
+        <div class="msg error" id="joinMsg"></div>
+        <div class="msg success" id="joinSuccessMsg"></div>
+        <div class="form-row2">
+          <div class="form-group">
+            <label class="form-label" for="joinName">Full name</label>
+            <input class="form-input" type="text" id="joinName" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="details" data-i18n="form_details">Parcel Details</label>
-            <textarea class="form-input" id="details" rows="2" data-i18n-placeholder="ph_details" placeholder="Describe the item(s), approx. size/weight..." required></textarea>
+            <label class="form-label" for="joinPhone">Phone number</label>
+            <input class="form-input" type="tel" id="joinPhone" placeholder="07xx xxx xxx" required>
           </div>
-          <div class="form-row2">
-            <div class="form-group">
-              <label class="form-label" for="name" data-i18n="form_name">Your Name</label>
-              <input class="form-input" type="text" id="name" autocomplete="name" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="phone" data-i18n="form_phone">Phone Number</label>
-              <input class="form-input" type="tel" id="phone" data-i18n-placeholder="ph_phone" placeholder="07xx xxx xxx" autocomplete="tel" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="time" data-i18n="form_time">Preferred Pickup Window</label>
-            <select class="form-input" id="time" required>
-              <option value="" disabled selected data-i18n="ph_time">Select time window...</option>
-              <option value="asap" data-i18n="time_asap">ASAP (Next available rider)</option>
-              <option value="morning" data-i18n="time_morning">Morning Window (8 AM - 11 AM)</option>
-              <option value="afternoon" data-i18n="time_afternoon">Afternoon Window (11 AM - 3 PM)</option>
-              <option value="evening" data-i18n="time_evening">Evening Window (3 PM - 6 PM)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="memberNumber" data-i18n="form_member">Lueri Rewards Member No. (optional)</label>
-            <input class="form-input" type="text" id="memberNumber" data-i18n-placeholder="ph_member" placeholder="e.g. LR-1004 — leave blank if you're not a member yet">
-          </div>
-          <button type="submit" id="bookingSubmit" class="btn btn-signal btn-block" data-i18n="form_submit">Send Booking Request</button>
-          <p id="bookingError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:.9rem;"></p>
-          <p style="margin:16px 0 0; font-size:.82rem; opacity:0.65; line-height:1.5;"><span data-i18n="form_terms">By booking, you agree to our</span> <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;" data-i18n="nav_terms">Terms of Service</a> <span data-i18n="form_and">and</span> <a href="privacy-policy.html" style="color:var(--signal); text-decoration:underline;" data-i18n="nav_privacy">Privacy Policy</a>.</p>
-        </form>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="joinEmail">Email (optional)</label>
+          <input class="form-input" type="email" id="joinEmail">
+        </div>
+        <button class="btn btn-primary" id="joinBtn">Create my Rewards account</button>
+      </div>
+
+      <div class="disclosure">
+        <strong style="color:var(--ink);">How this works right now:</strong> Lueri Rewards is in early rollout. Your membership is saved centrally, so you can look up your account from any phone or browser using your registered number. Points aren't posted automatically yet — after a delivery, message us on WhatsApp with your registered number and our team will log the transaction on their end.
       </div>
     </div>
-  </section>
+  </div>
 </main>
 
-<footer class="wrap">
-  <div class="legal-block">
-    <div><strong data-i18n="foot_reg_title">Registered business</strong><br>Lueri International · Nairobi, Kenya<br>Founded 13 December 2023<br><span data-i18n="foot_reg_desc">Registration details available on request for B2B clients</span></div>
-    <div><strong data-i18n="foot_contact_title">Contact</strong><br><a href="tel:+254713261719">+254 713 261 719</a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div>
-    <div><strong data-i18n="foot_hours_title">Hours</strong><br>Mon–Fri, 8:00 AM – 5:00 PM<br>Sat, 8:00 AM – 3:00 PM<br>Closed Sunday</div>
-  </div>
-  <div class="footer-row" style="margin-top:40px;">
-    <div class="brand">
-      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
-      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
-      <span>Lueri International</span>
-    </div>
-    <div class="mono" style="opacity:0.6;">&copy; 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;" data-i18n="nav_rewards">Rewards</a> · <a href="careers.html" style="text-decoration:underline;" data-i18n="nav_careers">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;" data-i18n="nav_terms">Terms</a> · <a href="privacy-policy.html" style="text-decoration:underline;" data-i18n="nav_privacy">Privacy</a></div>
-    <div class="social-links">
-      <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer">Facebook</a>
-      <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer">Instagram</a>
-      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer">X</a>
-      <a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer">TikTok</a>
-    </div>
-    <div class="foot-stamp" data-i18n="footer_dispatch">DISPATCH READY</div>
-  </div>
-</footer>
-
-<!-- REFACTORED FORM LOGIC -->
+<script src="rewards-cloud.js"></script>
 <script>
-(function () {
-  'use strict';
-  var overlay = document.getElementById('successOverlay');
-  document.getElementById('successClose').addEventListener('click', function () {
-    overlay.classList.remove('active');
+  // Global Helpers
+  function fmt(n) {
+    return 'KES ' + Number(n || 0).toLocaleString();
+  }
+
+  function formatDate(value) {
+    const d = new Date(value);
+    if (isNaN(d)) return '';
+    return d.toLocaleString('en-KE', {
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: 'numeric', minute: '2-digit',
+    });
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function showMsg(id, text) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.classList.add('show');
+  }
+
+  function hideMsg(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  // Navigation & Tabs
+  function showTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      const active = b.dataset.tab === name;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active);
+    });
+    document.getElementById('view-lookup').classList.toggle('active', name === 'lookup');
+    document.getElementById('view-join').classList.toggle('active', name === 'join');
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(el => {
+    el.addEventListener('click', (e) => { e.preventDefault(); showTab(el.dataset.tab); });
   });
 
-  document.querySelectorAll('[data-copy]').forEach(function (el) {
-    el.addEventListener('click', function () { lueriCopyToClipboard(el.getAttribute('data-copy'), el.getAttribute('data-copy-label')); });
-  });
-  document.querySelectorAll('[data-href]').forEach(function (el) {
-    el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
-  });
+  // Selected Plan state
+  let selectedPlan = null;
 
-  var form = document.getElementById('bookingForm');
-  var submitBtn = document.getElementById('bookingSubmit');
-  var bookingError = document.getElementById('bookingError');
+  function setSelectedPlan(plan) {
+    selectedPlan = plan;
+    const banner = document.getElementById('planBanner');
+    const bannerTier = document.getElementById('planBannerTier');
+    const joinBtn = document.getElementById('joinBtn');
 
-  form.addEventListener('submit', async function (e) {
+    if (plan) {
+      bannerTier.textContent = `${plan.name} — ${fmt(plan.price)}/year`;
+      banner.classList.add('show');
+      joinBtn.textContent = `Proceed to Payment (${fmt(plan.price)})`;
+    } else {
+      banner.classList.remove('show');
+      joinBtn.textContent = 'Create my Rewards account';
+    }
+  }
+
+  document.getElementById('planBannerClear').addEventListener('click', () => setSelectedPlan(null));
+  document.getElementById('joinFreeLink').addEventListener('click', (e) => {
     e.preventDefault();
-    bookingError.style.display = 'none';
-
-    if (document.getElementById('bookingHoneypot').value) return; 
-
-    var data = {
-      pickup: document.getElementById('pickup').value.trim(),
-      dropoff: document.getElementById('dropoff').value.trim(),
-      details: document.getElementById('details').value.trim(),
-      name: document.getElementById('name').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text,
-      memberNumber: document.getElementById('memberNumber').value.trim(),
-    };
-    if (!data.pickup || !data.dropoff || !data.details || !data.name || !data.time) {
-      bookingError.textContent = 'Please fill in all required fields.';
-      bookingError.style.display = 'block';
-      return;
-    }
-    if (!lueriIsValidPhone(data.phone)) {
-      bookingError.textContent = 'Enter a valid Kenyan phone number (07… or 01…).';
-      bookingError.style.display = 'block';
-      return;
-    }
-
-    submitBtn.disabled = true; 
-    submitBtn.textContent = 'Saving Route...';
-
-    var reference = null;
-    try {
-      var res = await lueri.booking.create(data); 
-      if (res && res.success) reference = res.reference;
-    } catch (err) {
-      console.error('Booking persistence failed:', err);
-    }
-
-    var memberLine = data.memberNumber ? '\nRewards Member No.: ' + data.memberNumber : '';
-    var refLine = reference ? '\nBooking Ref: ' + reference : '';
-    var message = 'New pickup booking - Lueri website' + refLine +
-      '\nName: ' + data.name + '\nPhone: ' + data.phone +
-      '\nPickup: ' + data.pickup + '\nDrop-off: ' + data.dropoff +
-      '\nParcel details: ' + data.details + '\nPreferred time: ' + data.time + memberLine;
-    
-    var waUrl = "https://wa.me/" + LUERI.whatsapp + "?text=" + encodeURIComponent(message);
-
-    document.getElementById('successTitle').textContent = 'Step 1 Complete: Route Saved';
-    document.getElementById('successCopy').textContent = 'Your booking request is secured. To dispatch your rider, please confirm the final details via WhatsApp.';
-    
-    var refEl = document.getElementById('successRef');
-    if (reference) { refEl.textContent = 'Reference: ' + reference; refEl.style.display = 'inline-block'; }
-    
-    document.getElementById('successWaLink').href = waUrl;
-    document.getElementById('successFallback').style.display = 'block';
-    
-    overlay.classList.add('active');
-
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Send Booking Request';
-    form.reset();
+    setSelectedPlan(null);
+    showTab('join');
   });
-})();
+
+  // Form Processing
+  document.getElementById('lookupBtn').addEventListener('click', async () => {
+    hideMsg('lookupMsg');
+    const phone = document.getElementById('lookupPhone').value.trim();
+    if (!phone) { showMsg('lookupMsg', 'Enter your phone number.'); return; }
+    
+    if (typeof getMemberSummary === 'function') {
+      const summary = await getMemberSummary(phone);
+      if (!summary) {
+        showMsg('lookupMsg', "We couldn't find a Rewards account with that number. Double-check the number, or message us on WhatsApp and we'll help.");
+        return;
+      }
+      renderMember(summary);
+    } else {
+      showMsg('lookupMsg', "Unable to fetch account details right now. Please try again later.");
+    }
+  });
+
+  document.getElementById('lookupAnother').addEventListener('click', () => {
+    document.getElementById('memberCard').classList.remove('show');
+    document.getElementById('lookupForm').style.display = 'block';
+    document.getElementById('lookupPhone').value = '';
+  });
+
+  document.getElementById('joinBtn').addEventListener('click', async () => {
+    hideMsg('joinMsg');
+    hideMsg('joinSuccessMsg');
+
+    const name = document.getElementById('joinName').value.trim();
+    const phone = document.getElementById('joinPhone').value.trim();
+    const email = document.getElementById('joinEmail').value.trim();
+
+    if (!name || !phone) {
+      showMsg('joinMsg', 'Full name and phone number are required.');
+      return;
+    }
+
+    if (selectedPlan) {
+      showMsg('joinSuccessMsg', `Redirecting to secure payment for ${selectedPlan.name} tier...`);
+      // Trigger checkout or backend API call here
+    } else {
+      showMsg('joinSuccessMsg', 'Account created successfully! You are now enrolled in Lueri Rewards.');
+    }
+  });
+
+  // Render Member View
+  function renderMember(summary) {
+    document.getElementById('lookupForm').style.display = 'none';
+    document.getElementById('memberCard').classList.add('show');
+    document.getElementById('mTierName').textContent = summary.tier;
+    document.getElementById('mPoints').textContent = summary.points.toLocaleString();
+
+    const progressPct = Math.round((summary.tierProgress || 0) * 100);
+    document.getElementById('mProgressFill').style.width = progressPct + '%';
+    document.getElementById('mProgressNote').textContent = summary.nextTier
+      ? `KES ${summary.amountToNextTier.toLocaleString()} more (in the last 12 months) to reach ${summary.nextTier}`
+      : `You've reached our top tier — VIP.`;
+
+    const benefitsEl = document.getElementById('mBenefits');
+    benefitsEl.innerHTML = '';
+    (summary.benefits || []).forEach(b => {
+      const div = document.createElement('div');
+      div.className = 'benefit-item';
+      div.textContent = b;
+      benefitsEl.appendChild(div);
+    });
+
+    const txWrap = document.getElementById('mTxWrap');
+    const txs = (typeof getMemberTransactions === 'function' ? getMemberTransactions(summary.member.id) : []).slice(0, 10);
+    if (!txs.length) {
+      txWrap.innerHTML = '<p class="empty-note">No transactions yet.</p>';
+    } else {
+      let html = '<table class="tx-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Points</th><th></th></tr></thead><tbody>';
+      txs.forEach(t => {
+        html += `<tr><td>${formatDate(t.date)}</td><td style="text-transform:capitalize;">${escapeHTML(t.type)}</td><td>${fmt(t.amount)}</td><td>${t.points >= 0 ? '+' : ''}${t.points || 0}</td><td><button class="receipt-link" data-txid="${t.id}">Receipt</button></td></tr>`;
+      });
+      html += '</tbody></table>';
+      txWrap.innerHTML = html;
+      txWrap.querySelectorAll('.receipt-link').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tx = txs.find(t => t.id === btn.dataset.txid);
+          if (tx) openMemberReceipt(tx, summary.member);
+        });
+      });
+    }
+  }
+
+  // Printable Receipt Window
+  function openMemberReceipt(tx, member) {
+    const c = (window.LUERI_REWARDS && window.LUERI_REWARDS.company) || { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '' };
+    const vatOn = !!c.vatRegistered;
+    const vatAmt = vatOn ? tx.amount * c.vatRate / (1 + c.vatRate) : 0;
+    const subtotal = vatOn ? tx.amount - vatAmt : tx.amount;
+    const serviceLabel = tx.type.charAt(0).toUpperCase() + tx.type.slice(1);
+    const logo = `${location.origin}/assets/logo-mark.png`;
+
+    const win = window.open('', '_blank', 'width=440,height=720');
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${escapeHTML(tx.transactionNumber || tx.id)}</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+      <style>
+        :root{ --ink:#1B2620; --paper:#F0EAD8; --paper-dim:#e6dfc9; --route:#B8321F; --slate:#4A5A52; --signal:#E8B93D; --line:rgba(27,38,32,0.16); --success:#2e7d32; }
+        *{box-sizing:border-box;}
+        body{ margin:0; padding:32px 16px 60px; background:var(--paper-dim); color:var(--ink); font-family:'IBM Plex Sans', sans-serif; }
+        .mono{ font-family:'IBM Plex Mono', monospace; }
+        .wrap{ max-width:400px; margin:0 auto; }
+        .receipt{ background:var(--paper); border:1px solid var(--line); border-radius:6px; overflow:hidden; box-shadow:0 18px 40px rgba(27,38,32,0.12); }
+        .perf{ height:12px; width:100%; background-image:radial-gradient(circle at 6px 6px, var(--paper-dim) 3.5px, transparent 4px); background-size:12px 12px; background-repeat:repeat-x; }
+        .rhead{ padding:22px 24px 16px; border-bottom:1px dashed var(--line); }
+        .brandrow{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+        .logo{ width:40px; height:40px; border-radius:50%; border:1px solid var(--ink); overflow:hidden; flex-shrink:0; background:var(--ink); }
+        .logo img{ width:100%; height:100%; object-fit:contain; }
+        .bname{ font-family:'Oswald', sans-serif; font-weight:700; font-size:1.1rem; margin:2px 0 2px; }
+        .btag{ font-size:.7rem; color:var(--slate); }
+        .tier-badge{ display:flex; align-items:center; gap:5px; background:var(--ink); color:var(--signal); font-family:'Oswald', sans-serif; font-size:.62rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:5px 10px; border-radius:3px; white-space:nowrap; border:1px solid var(--signal); }
+        .rstatus{ display:flex; align-items:center; justify-content:space-between; margin-top:18px; }
+        .paid-stamp{ display:inline-flex; align-items:center; gap:6px; border:2px solid var(--success); color:var(--success); font-family:'Oswald', sans-serif; font-weight:700; font-size:.8rem; letter-spacing:.1em; padding:4px 11px; border-radius:4px; transform:rotate(-3deg); text-transform:uppercase; }
+        .rno{ text-align:right; }
+        .rno .lbl{ font-size:.6rem; color:var(--slate); text-transform:uppercase; letter-spacing:.07em; }
+        .rno .val{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:.82rem; }
+        .rbody{ padding:18px 24px 6px; }
+        .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; margin-bottom:18px; }
+        .field .lbl{ font-size:.6rem; color:var(--slate); text-transform:uppercase; letter-spacing:.07em; margin-bottom:2px; }
+        .field .val{ font-size:.85rem; font-weight:500; }
+        table.charges{ width:100%; border-collapse:collapse; font-size:.82rem; margin-bottom:4px; }
+        table.charges td{ padding:7px 0; }
+        table.charges tr{ border-bottom:1px solid var(--line); }
+        table.charges tr:last-of-type{ border-bottom:none; }
+        .charges .amt{ text-align:right; font-family:'IBM Plex Mono', monospace; }
+        .charges .lbl-sub{ color:var(--slate); font-size:.7rem; }
+        .total-row td{ padding-top:12px; border-top:1.5px solid var(--ink); border-bottom:none !important; }
+        .total-row .amt{ font-family:'Oswald', sans-serif; font-weight:700; font-size:1.2rem; }
+        .total-row .lbl{ font-family:'Oswald', sans-serif; font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
+        .points-row{ display:flex; align-items:center; gap:8px; margin:14px 0 4px; }
+        .points-pill{ display:inline-flex; align-items:center; gap:5px; background:var(--paper-dim); border-radius:20px; padding:4px 11px; font-size:.75rem; font-weight:500; }
+        .rfoot{ border-top:1px dashed var(--line); padding:16px 24px 22px; }
+        .thanks{ font-family:'Oswald', sans-serif; font-size:.88rem; font-weight:500; margin:0 0 10px; }
+        .contact-cols{ font-size:.7rem; color:var(--slate); line-height:1.6; }
+        .contact-cols .hd{ font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink); font-weight:600; margin-bottom:3px; }
+        @media print{ body{ background:#fff; padding:0; } .receipt{ box-shadow:none; border:none; } }
+      </style></head><body>
+      <div class="wrap"><div class="receipt">
+        <div class="perf"></div>
+        <div class="rhead">
+          <div class="brandrow">
+            <div style="display:flex; gap:10px; align-items:center;">
+              <div class="logo"><img src="${logo}" alt=""></div>
+              <div>
+                <p class="bname">${escapeHTML(c.name)}</p>
+                <p class="btag">Same-day courier &middot; Nairobi</p>
+              </div>
+            </div>
+            <div class="tier-badge">${escapeHTML(member.tier)} member</div>
+          </div>
+          <div class="rstatus">
+            <div class="paid-stamp">Paid</div>
+            <div class="rno">
+              <div class="lbl">Receipt no.</div>
+              <div class="val">${escapeHTML(tx.transactionNumber || tx.id)}</div>
+            </div>
+          </div>
+        </div>
+        <div class="rbody">
+          <div class="field-grid">
+            <div class="field"><div class="lbl">Date &amp; time</div><div class="val">${formatDate(tx.date)}</div></div>
+            <div class="field"><div class="lbl">Member</div><div class="val">${escapeHTML(member.name)}</div></div>
+            <div class="field"><div class="lbl">Member no.</div><div class="val mono">${escapeHTML(member.memberNumber)}</div></div>
+            <div class="field"><div class="lbl">Phone</div><div class="val mono">${escapeHTML(member.phone)}</div></div>
+          </div>
+          <table class="charges">
+            <tr><td>${serviceLabel}${tx.reference ? `<br><span class="lbl-sub">Ref: ${escapeHTML(tx.reference)}</span>` : ''}</td><td class="amt">${fmt(subtotal)}</td></tr>
+            ${vatOn ? `<tr><td>VAT (${Math.round(c.vatRate*100)}%)</td><td class="amt">${fmt(vatAmt)}</td></tr>` : ''}
+            <tr class="total-row"><td class="lbl">Total</td><td class="amt">${fmt(tx.amount)}</td></tr>
+          </table>
+          <div class="points-row">
+            <span class="points-pill">${tx.points >= 0 ? '+' + tx.points : tx.points} pts earned</span>
+            <span style="font-size:.78rem; color:var(--slate);">New balance: ${member.points.toLocaleString()} pts</span>
+          </div>
+        </div>
+        <div class="rfoot">
+          <p class="thanks">Thank you for choosing ${escapeHTML(c.name)}.</p>
+          <div class="contact-cols">
+            <div class="hd">${escapeHTML(c.name)}</div>
+            ${escapeHTML(c.address)}<br>${escapeHTML(c.phone)}${c.kraPin ? '<br>KRA PIN: ' + escapeHTML(c.kraPin) : ''}
+          </div>
+        </div>
+      </div></div>
+      <script>window.onload = () => window.print();<\/script>
+      </body></html>`);
+    win.document.close();
+  }
+
+  // Populate Dynamic Sections
+  function renderTiersAndPurchases() {
+    const tierData = [
+      { name: 'Bronze', spend: 'KES 0 / yr', benefits: ['Earn 1 pt / KES 100', 'Standard dispatch'] },
+      { name: 'Silver', spend: 'KES 25,000 / yr', benefits: ['1.2x points multiplier', 'Priority support'] },
+      { name: 'Gold', spend: 'KES 75,000 / yr', benefits: ['1.5x points multiplier', '1 Free delivery / mo'] },
+      { name: 'Platinum', spend: 'KES 200,000 / yr', benefits: ['2x points multiplier', 'Priority dispatch'] },
+      { name: 'VIP', spend: 'KES 500,000 / yr', benefits: ['3x points multiplier', 'Dedicated manager'] }
+    ];
+
+    const purchaseData = [
+      { id: 'silver_year', name: 'Silver Tier', price: 5000, benefits: ['Instant Silver status', 'Valid for 1 full year', 'Priority support'] },
+      { id: 'gold_year', name: 'Gold Tier', price: 15000, benefits: ['Instant Gold status', 'Valid for 1 full year', '1 Free delivery / mo'] },
+      { id: 'plat_year', name: 'Platinum Tier', price: 35000, benefits: ['Instant Platinum status', 'Valid for 1 full year', 'Priority dispatch'] },
+      { id: 'vip_year', name: 'VIP Tier', price: 75000, benefits: ['Instant VIP status', 'Valid for 1 full year', 'Dedicated manager'] }
+    ];
+
+    const tierCardsEl = document.getElementById('tierCards');
+    if (tierCardsEl) {
+      tierCardsEl.innerHTML = tierData.map(t => `
+        <div class="tier-explain-card">
+          <div class="tname">${escapeHTML(t.name)}</div>
+          <div class="tspend">${escapeHTML(t.spend)}</div>
+          <ul>${t.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>
+        </div>
+      `).join('');
+    }
+
+    const purchaseCardsEl = document.getElementById('purchaseCards');
+    if (purchaseCardsEl) {
+      purchaseCardsEl.innerHTML = purchaseData.map(p => `
+        <div class="purchase-card">
+          <div class="tname">${escapeHTML(p.name)}</div>
+          <div class="tprice">${fmt(p.price)}</div>
+          <div class="tperiod">1 Year Pass</div>
+          <ul>${p.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>
+          <button class="btn btn-primary buy-btn" data-id="${p.id}" data-name="${escapeHTML(p.name)}" data-price="${p.price}">Select Plan</button>
+        </div>
+      `).join('');
+
+      purchaseCardsEl.querySelectorAll('.buy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setSelectedPlan({
+            id: btn.dataset.id,
+            name: btn.dataset.name,
+            price: Number(btn.dataset.price)
+          });
+          showTab('join');
+        });
+      });
+    }
+  }
+
+  // Theme Toggle Logic
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+
+  function setTheme(dark) {
+    if (dark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    setTheme(!isDark);
+  });
+
+  // Initialization
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    setTheme(savedTheme === 'dark');
+    renderTiersAndPurchases();
+  });
 </script>
-<script src="lucy.js" defer></script>
 </body>
 </html>
