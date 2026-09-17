@@ -1,211 +1,48 @@
-/* Lueri International — seven-language client-side i18n
-   Languages: English, Simplified Chinese, Kiswahili, French, Spanish, Arabic, Portuguese.
+/* Lueri International — native i18n loader + language-name presentation.
+   The full translation engine lives in i18n-engine.js.
    No Google Translate or third-party translation widget is used.
 */
 (function () {
   'use strict';
 
-  const LANGS = ['en', 'zh', 'sw', 'fr', 'es', 'ar', 'pt'];
-  const STORAGE_KEY = 'lueri_language';
-
-  const languageMeta = {
-    en: { native: 'English', code: 'EN', flag: '🇬🇧', dir: 'ltr' },
-    zh: { native: '中文', code: 'ZH', flag: '🇨🇳', dir: 'ltr' },
-    sw: { native: 'Kiswahili', code: 'SW', flag: '🇰🇪', dir: 'ltr' },
-    fr: { native: 'Français', code: 'FR', flag: '🇫🇷', dir: 'ltr' },
-    es: { native: 'Español', code: 'ES', flag: '🇪🇸', dir: 'ltr' },
-    ar: { native: 'العربية', code: 'AR', flag: '🇸🇦', dir: 'rtl' },
-    pt: { native: 'Português', code: 'PT', flag: '🇧🇷', dir: 'ltr' }
+  var nativeNames = {
+    en: 'English',
+    zh: '中文',
+    sw: 'Kiswahili',
+    fr: 'Français',
+    es: 'Español',
+    ar: 'العربية',
+    pt: 'Português'
   };
 
-  const translations = {
-    en: {
-      nav: { book:'Book Pickup', services:'Services', pricing:'Pricing', business:'Business', coverage:'Coverage', why:'Why Us', faq:'FAQ', rewards:'Rewards', careers:'Careers', menu:'Menu', where:'Where to next', servicesCaption:'What we carry, and how fast', pricingCaption:'Quoted rates, no hidden fees', businessCaption:'Set up a corporate account', coverageCaption:'Where we deliver in Nairobi', whyCaption:'What makes Lueri different', faqCaption:'Common questions, answered', rewardsCaption:'Earn points on every delivery', careersCaption:'Future roles at Lueri', bookCaption:'Send a pickup request now' },
-      hero: { dispatch:'Dispatch / Nairobi & environs', waybill:'WAYBILL NO. LI–2026', title:'We move it\nacross Nairobi\ntoday.', subtitle:'Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day across Nairobi.', scope:'Nairobi last-mile · Not cross-border freight', stamp:'Same-day dispatch', pickup:'PICKUP', dropoff:'DROP-OFF', bookBtn:'Book a Pickup', whatsappBtn:'WhatsApp Us' },
-      booking: { heading:'Book a Delivery', intro:'Tell us what needs moving and where it should go. We will confirm the dispatch details with you.', pickup:'Pickup Location', pickupPlaceholder:'Enter pickup location', dropoff:'Drop-off Location', dropoffPlaceholder:'Enter destination', name:'Your Name', namePlaceholder:'Enter your full name', phone:'Phone Number', phonePlaceholder:'e.g. 0712 345 678', email:'Email Address', emailPlaceholder:'you@example.com', item:'What are you sending?', itemPlaceholder:'Parcel, document, gift, etc.', notes:'Additional Notes', notesPlaceholder:'Special instructions, landmark, recipient details…', submit:'Request Pickup', submitting:'Sending request…', success:'Booking received', successCopy:'Opening WhatsApp to confirm your dispatch…', openWhatsapp:'Open WhatsApp', close:'Close' },
-      common: { learnMore:'Learn more', getQuote:'Get a Quote', sameDay:'Same-day delivery', secure:'Secure & reliable', support:'Customer support' },
-      services: { title:'Services', subtitle:'Practical delivery services built around speed, reliability, and clear communication.', parcelTitle:'Parcel & document delivery', parcelText:'Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands.', ecommerceTitle:'E-commerce delivery', ecommerceText:'Last-mile fulfilment for online sellers, including pickup, dispatch, and customer delivery.', businessTitle:'Business & corporate runs', businessText:'Scheduled and on-demand deliveries for offices, retailers, teams, and recurring business needs.', urgentTitle:'Urgent dispatch', urgentText:'Time-sensitive deliveries when the usual turnaround is not enough.', proofTitle:'Proof of delivery', proofText:'Delivery confirmation helps you know when and where the item was received.' },
-      coverage: { title:'Coverage', subtitle:'Nairobi and surrounding areas, with dispatch planned around the route and service requirements.', body:'We focus on Nairobi last-mile delivery and nearby environs. For locations outside our standard operating area, contact us before booking so we can confirm availability.' },
-      pricing: { title:'Pricing', subtitle:'Clear quoted rates with no hidden fees.', body:'Your delivery price depends on route, distance, parcel requirements, urgency, and any special handling. Request a quote before dispatch and we will confirm the amount with you.', note:'No hidden fees · Confirmed before dispatch' },
-      why: { title:'Why Lueri', subtitle:'A straightforward delivery service built for people and businesses that value reliability.', oneTitle:'Clear communication', oneText:'We keep you informed about pickup, dispatch, and delivery status.', twoTitle:'Same-day focus', twoText:'We are built around practical same-day Nairobi delivery.', threeTitle:'Proof of delivery', threeText:'Completion is supported by delivery confirmation.', fourTitle:'Business-ready', fourText:'Recurring delivery needs can be structured around a corporate account.' },
-      pod: { title:'Proof of Delivery', subtitle:'Visibility from dispatch to handover.', body:'We provide delivery confirmation so you have a clear record that the item reached the intended recipient.' },
-      rewards: { title:'Rewards', subtitle:'Earn points as you deliver more with Lueri.', body:'Eligible customers can earn points and unlock Lueri membership benefits over time.', cta:'Explore Rewards' },
-      faq: { title:'Frequently Asked Questions', q1:'What areas do you deliver to?', a1:'We primarily serve Nairobi and surrounding areas. Contact us for a location check before dispatch.', q2:'Do you offer same-day delivery?', a2:'Yes. Same-day delivery is a core service for eligible Nairobi routes and bookings.', q3:'How much does delivery cost?', a3:'Rates vary by route, distance, urgency, and parcel requirements. We quote before dispatch.', q4:'Can businesses use Lueri for recurring deliveries?', a4:'Yes. Businesses can discuss recurring delivery requirements and corporate account options with us.', q5:'How do I book a pickup?', a5:'Use the booking form, WhatsApp, or the contact channels provided on the site.', q6:'Can I send fragile or important documents?', a6:'Tell us what you are sending when booking so the dispatch requirements can be confirmed.', q7:'How do I know my delivery was completed?', a7:'Delivery completion is supported by proof-of-delivery confirmation.', q8:'Can I contact someone directly?', a8:'Yes. Use WhatsApp or the contact details provided on the site.' },
-      footer: { about:'Nairobi last-mile delivery and courier dispatch for individuals and businesses.', links:'Quick Links', contact:'Contact', hours:'Hours', hoursValue:'Mon–Fri 08:00–17:00 · Sat 08:00–15:00', rights:'All rights reserved.' },
-      form: { required:'Required', optional:'Optional' }
-    },
-    zh: {
-      nav: { book:'预约取件', services:'服务', pricing:'价格', business:'企业服务', coverage:'配送范围', why:'为何选择我们', faq:'常见问题', rewards:'奖励', careers:'招聘', menu:'菜单', where:'下一站', servicesCaption:'我们运输什么，以及多快', pricingCaption:'透明报价，无隐藏费用', businessCaption:'建立企业账户', coverageCaption:'内罗毕配送范围', whyCaption:'Lueri 的不同之处', faqCaption:'常见问题解答', rewardsCaption:'每次配送都可赚取积分', careersCaption:'Lueri 招聘机会', bookCaption:'立即提交取件请求' },
-      hero: { dispatch:'配送 / 内罗毕及周边', waybill:'运单号 LI–2026', title:'今天，\n我们把它\n送遍内罗毕。', subtitle:'Lueri International 为个人和企业提供最后一公里配送与快递服务——包裹、文件和电商订单，可在内罗毕当天取件并送达。', scope:'内罗毕最后一公里 · 不提供跨境货运', stamp:'当天配送', pickup:'取件', dropoff:'送达', bookBtn:'预约取件', whatsappBtn:'WhatsApp 联系我们' },
-      booking: { heading:'预约配送', intro:'告诉我们要运送什么以及目的地，我们会与您确认配送详情。', pickup:'取件地点', pickupPlaceholder:'输入取件地点', dropoff:'送达地点', dropoffPlaceholder:'输入目的地', name:'您的姓名', namePlaceholder:'输入姓名', phone:'电话号码', phonePlaceholder:'例如 0712 345 678', email:'电子邮箱', emailPlaceholder:'you@example.com', item:'您要发送什么？', itemPlaceholder:'包裹、文件、礼物等', notes:'补充说明', notesPlaceholder:'特殊要求、地标、收件人信息……', submit:'提交取件请求', submitting:'正在发送请求……', success:'已收到预约', successCopy:'正在打开 WhatsApp 以确认配送……', openWhatsapp:'打开 WhatsApp', close:'关闭' },
-      common:{ learnMore:'了解更多', getQuote:'获取报价', sameDay:'当天配送', secure:'安全可靠', support:'客户支持' },
-      services:{title:'服务',subtitle:'围绕速度、可靠性和清晰沟通打造的实用配送服务。',parcelTitle:'包裹与文件配送',parcelText:'覆盖内罗毕的点对点配送，适用于包裹、文件、礼物和个人事务。',ecommerceTitle:'电商配送',ecommerceText:'为网店提供最后一公里履约，包括取件、派送和客户交付。',businessTitle:'企业与商务配送',businessText:'为办公室、零售商、团队和长期业务需求提供计划或按需配送。',urgentTitle:'紧急配送',urgentText:'适合时间敏感型配送。',proofTitle:'配送证明',proofText:'提供配送确认，让您知道物品何时何地被接收。'},
-      coverage:{title:'配送范围',subtitle:'内罗毕及周边地区，根据路线和服务要求安排配送。',body:'我们专注于内罗毕最后一公里配送及周边地区。如目的地超出常规服务范围，请在预约前联系我们确认。'},
-      pricing:{title:'价格',subtitle:'透明报价，无隐藏费用。',body:'价格取决于路线、距离、包裹要求、时效和特殊处理。请在派送前索取报价，我们会确认最终金额。',note:'无隐藏费用 · 派送前确认'},
-      why:{title:'为何选择 Lueri',subtitle:'为重视可靠性的个人和企业打造的直接、高效配送服务。',oneTitle:'清晰沟通',oneText:'我们及时告知您取件、派送和交付状态。',twoTitle:'专注当天配送',twoText:'我们围绕内罗毕实用的当天配送服务构建。',threeTitle:'配送证明',threeText:'以配送确认支持任务完成。',fourTitle:'企业友好',fourText:'可围绕企业账户安排长期配送需求。'},
-      pod:{title:'配送证明',subtitle:'从派送到交接，全程可追踪。',body:'我们提供配送确认，让您清楚知道物品已送达指定收件人。'},
-      rewards:{title:'奖励',subtitle:'使用 Lueri 越多，积分越多。',body:'符合条件的客户可赚取积分，并逐步解锁会员权益。',cta:'查看奖励'},
-      faq:{title:'常见问题',q1:'你们配送到哪些地区？',a1:'我们主要服务内罗毕及周边地区。派送前可联系我们确认具体地点。',q2:'提供当天配送吗？',a2:'是的。当天配送是符合条件的内罗毕路线和预约的核心服务。',q3:'配送费用是多少？',a3:'费用取决于路线、距离、时效和包裹要求。派送前会先报价。',q4:'企业可以使用 Lueri 做长期配送吗？',a4:'可以。企业可与我们讨论长期配送需求及企业账户方案。',q5:'如何预约取件？',a5:'可使用网站表单、WhatsApp 或网站上的联系方式。',q6:'可以寄送易碎品或重要文件吗？',a6:'预约时请说明物品类型，我们会确认配送要求。',q7:'如何确认配送完成？',a7:'配送完成后会提供配送确认。',q8:'可以直接联系工作人员吗？',a8:'可以。请使用 WhatsApp 或网站上的联系方式。'},
-      footer:{about:'为个人和企业提供内罗毕最后一公里配送与快递服务。',links:'快速链接',contact:'联系',hours:'营业时间',hoursValue:'周一至周五 08:00–17:00 · 周六 08:00–15:00',rights:'版权所有。'}
-    },
-    sw: {
-      nav:{book:'Agiza Kuchukuliwa',services:'Huduma',pricing:'Bei',business:'Biashara',coverage:'Maeneo Tunayofikisha',why:'Kwa Nini Sisi',faq:'Maswali',rewards:'Zawadi',careers:'Ajira',menu:'Menyu',where:'Uende Wapi',servicesCaption:'Tunabeba nini na kwa kasi gani',pricingCaption:'Bei iliyonukuliwa, hakuna gharama fiche',businessCaption:'Fungua akaunti ya kampuni',coverageCaption:'Maeneo tunayofikisha Nairobi',whyCaption:'Kinachotutofautisha',faqCaption:'Maswali ya kawaida yamejibiwa',rewardsCaption:'Pata pointi kwa kila uwasilishaji',careersCaption:'Nafasi za baadaye Lueri',bookCaption:'Tuma ombi la kuchukuliwa sasa'},
-      hero:{dispatch:'Usafirishaji / Nairobi na viunga',waybill:'NAMBA YA WAYBILL LI–2026',title:'Tunaisafirisha\nNairobi nzima\nleo.',subtitle:'Lueri International hutoa huduma za last-mile delivery na courier kwa watu binafsi na biashara — vifurushi, nyaraka na oda za biashara mtandaoni, vikichukuliwa na kufikishwa siku hiyo hiyo Nairobi.',scope:'Last-mile Nairobi · Sio usafirishaji wa mipakani',stamp:'Usafirishaji wa siku hiyo',pickup:'KUCHUKUA',dropoff:'KUFIKISHA',bookBtn:'Agiza Kuchukuliwa',whatsappBtn:'Tupigie WhatsApp'},
-      booking:{heading:'Agiza Uwasilishaji',intro:'Tuambie kinachohitaji kusafirishwa na kinakoenda. Tutathibitisha maelezo ya uwasilishaji nawe.',pickup:'Mahali pa Kuchukua',pickupPlaceholder:'Weka mahali pa kuchukua',dropoff:'Mahali pa Kufikisha',dropoffPlaceholder:'Weka unakoenda',name:'Jina Lako',namePlaceholder:'Weka jina lako kamili',phone:'Nambari ya Simu',phonePlaceholder:'mf. 0712 345 678',email:'Barua Pepe',emailPlaceholder:'you@example.com',item:'Unatuma Nini?',itemPlaceholder:'Kifurushi, nyaraka, zawadi, n.k.',notes:'Maelezo ya Ziada',notesPlaceholder:'Maelekezo maalum, alama ya eneo, maelezo ya mpokeaji…',submit:'Omba Kuchukuliwa',submitting:'Inatuma ombi…',success:'Ombi limepokelewa',successCopy:'Tunafungua WhatsApp kuthibitisha uwasilishaji…',openWhatsapp:'Fungua WhatsApp',close:'Funga'},
-      common:{learnMore:'Jifunze zaidi',getQuote:'Pata Bei',sameDay:'Uwasilishaji siku hiyo hiyo',secure:'Salama na ya kuaminika',support:'Huduma kwa wateja'},
-      services:{title:'Huduma',subtitle:'Huduma za usafirishaji zinazolenga kasi, uaminifu na mawasiliano wazi.',parcelTitle:'Uwasilishaji wa vifurushi na nyaraka',parcelText:'Uwasilishaji wa kutoka hatua moja hadi nyingine Nairobi kwa watu binafsi — vifurushi, nyaraka, zawadi na shughuli binafsi.',ecommerceTitle:'Uwasilishaji wa biashara mtandaoni',ecommerceText:'Huduma ya last-mile kwa wauzaji wa mtandaoni, ikijumuisha kuchukua, kusafirisha na kumfikishia mteja.',businessTitle:'Usafirishaji wa biashara na kampuni',businessText:'Uwasilishaji uliopangwa na wa mahitaji kwa ofisi, wauzaji, timu na mahitaji ya biashara ya mara kwa mara.',urgentTitle:'Usafirishaji wa haraka',urgentText:'Uwasilishaji unaohitaji muda mfupi wakati muda wa kawaida hautoshi.',proofTitle:'Uthibitisho wa uwasilishaji',proofText:'Uthibitisho hukusaidia kujua lini na wapi bidhaa ilipokelewa.'},
-      coverage:{title:'Maeneo Tunayofikisha',subtitle:'Nairobi na maeneo yanayozunguka, kwa mipango ya njia kulingana na mahitaji ya huduma.',body:'Tunaangazia last-mile delivery Nairobi na viunga vyake. Kwa maeneo nje ya eneo letu la kawaida, wasiliana nasi kabla ya kuagiza ili kuthibitisha upatikanaji.'},
-      pricing:{title:'Bei',subtitle:'Bei zilizonukuliwa wazi bila gharama fiche.',body:'Bei ya uwasilishaji hutegemea njia, umbali, mahitaji ya kifurushi, uharaka na utunzaji maalum. Omba bei kabla ya dispatch na tutathibitisha kiasi.',note:'Hakuna gharama fiche · Thibitishwa kabla ya dispatch'},
-      why:{title:'Kwa Nini Lueri',subtitle:'Huduma ya moja kwa moja ya uwasilishaji kwa watu na biashara zinazothamini uaminifu.',oneTitle:'Mawasiliano wazi',oneText:'Tunakujulisha kuhusu kuchukua, dispatch na hali ya uwasilishaji.',twoTitle:'Tunazingatia siku hiyo hiyo',twoText:'Tumejengwa kwa uwasilishaji wa vitendo wa siku hiyo hiyo Nairobi.',threeTitle:'Uthibitisho wa uwasilishaji',threeText:'Kukamilika kwa kazi kunaungwa mkono na uthibitisho wa uwasilishaji.',fourTitle:'Tayari kwa biashara',fourText:'Mahitaji ya uwasilishaji ya mara kwa mara yanaweza kupangwa kupitia akaunti ya kampuni.'},
-      pod:{title:'Uthibitisho wa Uwasilishaji',subtitle:'Mwonekano kutoka dispatch hadi makabidhiano.',body:'Tunatoa uthibitisho wa uwasilishaji ili uwe na rekodi wazi kwamba bidhaa ilimfikia mpokeaji aliyelengwa.'},
-      rewards:{title:'Zawadi',subtitle:'Pata pointi kadri unavyotumia Lueri zaidi.',body:'Wateja wanaostahiki wanaweza kupata pointi na kufungua manufaa ya uanachama wa Lueri kadri muda unavyopita.',cta:'Tazama Zawadi'},
-      faq:{title:'Maswali Yanayoulizwa Mara kwa Mara',q1:'Mnapeleka maeneo gani?',a1:'Tunatumikia zaidi Nairobi na maeneo yanayozunguka. Wasiliana nasi kuthibitisha eneo kabla ya dispatch.',q2:'Mna uwasilishaji wa siku hiyo hiyo?',a2:'Ndiyo. Uwasilishaji wa siku hiyo hiyo ni huduma kuu kwa njia na oda zinazostahiki Nairobi.',q3:'Uwasilishaji unagharimu kiasi gani?',a3:'Bei hutofautiana kulingana na njia, umbali, uharaka na mahitaji ya kifurushi. Tunatoa bei kabla ya dispatch.',q4:'Biashara zinaweza kutumia Lueri kwa uwasilishaji wa mara kwa mara?',a4:'Ndiyo. Biashara zinaweza kujadili mahitaji ya uwasilishaji wa mara kwa mara na chaguo za akaunti ya kampuni.',q5:'Ninaagizaje pickup?',a5:'Tumia booking form, WhatsApp au njia za mawasiliano zilizo kwenye tovuti.',q6:'Naweza kutuma vitu vinavyoweza kuharibika au nyaraka muhimu?',a6:'Tuambie unachotuma wakati wa kuagiza ili mahitaji ya dispatch yathibitishwe.',q7:'Nitajuaje kuwa uwasilishaji umekamilika?',a7:'Kukamilika kwa uwasilishaji kunaungwa mkono na uthibitisho wa uwasilishaji.',q8:'Naweza kuwasiliana na mtu moja kwa moja?',a8:'Ndiyo. Tumia WhatsApp au maelezo ya mawasiliano yaliyo kwenye tovuti.'},
-      footer:{about:'Uwasilishaji wa last-mile na courier Nairobi kwa watu binafsi na biashara.',links:'Viungo vya Haraka',contact:'Mawasiliano',hours:'Saa',hoursValue:'Jumatatu–Ijumaa 08:00–17:00 · Jumamosi 08:00–15:00',rights:'Haki zote zimehifadhiwa.'}
-    },
-    fr: {
-      nav:{book:'Réserver un enlèvement',services:'Services',pricing:'Tarifs',business:'Entreprise',coverage:'Couverture',why:'Pourquoi Lueri',faq:'FAQ',rewards:'Récompenses',careers:'Carrières',menu:'Menu',where:'Où aller ensuite',servicesCaption:'Ce que nous transportons et à quelle vitesse',pricingCaption:'Tarifs indiqués, sans frais cachés',businessCaption:'Créer un compte entreprise',coverageCaption:'Où nous livrons à Nairobi',whyCaption:'Ce qui distingue Lueri',faqCaption:'Questions fréquentes, réponses',rewardsCaption:'Gagnez des points à chaque livraison',careersCaption:'Opportunités chez Lueri',bookCaption:'Envoyer une demande d’enlèvement' },
-      hero:{dispatch:'Expédition / Nairobi et environs',waybill:'BON DE LIVRAISON LI–2026',title:'Nous livrons\ndans tout Nairobi\naujourd’hui.',subtitle:'Lueri International assure la livraison du dernier kilomètre et le transport de courrier pour les particuliers et les entreprises — colis, documents et commandes e-commerce, retirés et livrés le jour même à Nairobi.',scope:'Dernier kilomètre Nairobi · Pas de fret transfrontalier',stamp:'Livraison le jour même',pickup:'ENLÈVEMENT',dropoff:'LIVRAISON',bookBtn:'Réserver un enlèvement',whatsappBtn:'Nous écrire sur WhatsApp'},
-      booking:{heading:'Réserver une livraison',intro:'Indiquez ce qui doit être transporté et sa destination. Nous confirmerons les détails avec vous.',pickup:'Lieu d’enlèvement',pickupPlaceholder:'Saisissez le lieu d’enlèvement',dropoff:'Lieu de livraison',dropoffPlaceholder:'Saisissez la destination',name:'Votre nom',namePlaceholder:'Saisissez votre nom complet',phone:'Numéro de téléphone',phonePlaceholder:'ex. 0712 345 678',email:'Adresse e-mail',emailPlaceholder:'vous@exemple.com',item:'Que souhaitez-vous envoyer ?',itemPlaceholder:'Colis, document, cadeau, etc.',notes:'Informations complémentaires',notesPlaceholder:'Instructions spéciales, repère, informations du destinataire…',submit:'Demander un enlèvement',submitting:'Envoi de la demande…',success:'Demande reçue',successCopy:'Ouverture de WhatsApp pour confirmer votre livraison…',openWhatsapp:'Ouvrir WhatsApp',close:'Fermer'},
-      common:{learnMore:'En savoir plus',getQuote:'Obtenir un devis',sameDay:'Livraison le jour même',secure:'Sûr et fiable',support:'Service client'},
-      services:{title:'Services',subtitle:'Des services de livraison pratiques axés sur la rapidité, la fiabilité et une communication claire.',parcelTitle:'Livraison de colis et documents',parcelText:'Livraison de point à point à Nairobi pour les particuliers — colis, documents, cadeaux et courses personnelles.',ecommerceTitle:'Livraison e-commerce',ecommerceText:'Exécution du dernier kilomètre pour les vendeurs en ligne, avec enlèvement, expédition et livraison client.',businessTitle:'Courses professionnelles et entreprises',businessText:'Livraisons planifiées et à la demande pour bureaux, commerces, équipes et besoins récurrents.',urgentTitle:'Expédition urgente',urgentText:'Livraisons sensibles au temps lorsque le délai habituel ne suffit pas.',proofTitle:'Preuve de livraison',proofText:'La confirmation de livraison vous permet de savoir quand et où l’article a été reçu.'},
-      coverage:{title:'Couverture',subtitle:'Nairobi et ses environs, avec des trajets planifiés selon les besoins du service.',body:'Nous nous concentrons sur la livraison du dernier kilomètre à Nairobi et dans les environs. Pour les zones hors de notre périmètre habituel, contactez-nous avant de réserver.'},
-      pricing:{title:'Tarifs',subtitle:'Des tarifs clairs, sans frais cachés.',body:'Le prix dépend de l’itinéraire, de la distance, des exigences du colis, de l’urgence et de toute manutention spéciale. Demandez un devis avant l’expédition.',note:'Aucun frais caché · Confirmé avant l’expédition'},
-      why:{title:'Pourquoi Lueri',subtitle:'Un service de livraison direct pour les personnes et entreprises qui privilégient la fiabilité.',oneTitle:'Communication claire',oneText:'Nous vous tenons informé de l’enlèvement, de l’expédition et du statut de livraison.',twoTitle:'Priorité au jour même',twoText:'Nous sommes structurés autour de livraisons pratiques le jour même à Nairobi.',threeTitle:'Preuve de livraison',threeText:'La finalisation est accompagnée d’une confirmation de livraison.',fourTitle:'Prêt pour les entreprises',fourText:'Les besoins récurrents peuvent être organisés via un compte entreprise.'},
-      pod:{title:'Preuve de livraison',subtitle:'Visibilité de l’expédition à la remise.',body:'Nous fournissons une confirmation de livraison afin que vous disposiez d’une trace claire de la remise au destinataire prévu.'},
-      rewards:{title:'Récompenses',subtitle:'Gagnez des points en utilisant davantage Lueri.',body:'Les clients éligibles peuvent gagner des points et débloquer progressivement des avantages de membre.',cta:'Découvrir les récompenses'},
-      faq:{title:'Questions fréquemment posées',q1:'Quelles zones desservez-vous ?',a1:'Nous desservons principalement Nairobi et les environs. Contactez-nous pour vérifier une zone avant l’expédition.',q2:'Proposez-vous la livraison le jour même ?',a2:'Oui. La livraison le jour même est un service central pour les itinéraires et réservations éligibles à Nairobi.',q3:'Combien coûte la livraison ?',a3:'Les tarifs varient selon l’itinéraire, la distance, l’urgence et le colis. Nous faisons un devis avant l’expédition.',q4:'Les entreprises peuvent-elles utiliser Lueri pour des livraisons récurrentes ?',a4:'Oui. Les entreprises peuvent discuter de leurs besoins récurrents et des options de compte entreprise.',q5:'Comment réserver un enlèvement ?',a5:'Utilisez le formulaire de réservation, WhatsApp ou les coordonnées du site.',q6:'Puis-je envoyer des objets fragiles ou des documents importants ?',a6:'Indiquez ce que vous envoyez lors de la réservation afin que les exigences soient confirmées.',q7:'Comment savoir si la livraison est terminée ?',a7:'La livraison est confirmée par une preuve de livraison.',q8:'Puis-je parler directement à quelqu’un ?',a8:'Oui. Utilisez WhatsApp ou les coordonnées affichées sur le site.'},
-      footer:{about:'Livraison du dernier kilomètre et courrier à Nairobi pour particuliers et entreprises.',links:'Liens rapides',contact:'Contact',hours:'Horaires',hoursValue:'Lun–Ven 08:00–17:00 · Sam 08:00–15:00',rights:'Tous droits réservés.'}
-    },
-    es: {
-      nav:{book:'Reservar recogida',services:'Servicios',pricing:'Precios',business:'Empresas',coverage:'Cobertura',why:'Por qué Lueri',faq:'Preguntas frecuentes',rewards:'Recompensas',careers:'Empleo',menu:'Menú',where:'Siguiente destino',servicesCaption:'Qué transportamos y a qué velocidad',pricingCaption:'Tarifas cotizadas, sin cargos ocultos',businessCaption:'Crear una cuenta empresarial',coverageCaption:'Dónde entregamos en Nairobi',whyCaption:'Qué diferencia a Lueri',faqCaption:'Preguntas comunes, respuestas',rewardsCaption:'Gana puntos en cada entrega',careersCaption:'Oportunidades en Lueri',bookCaption:'Enviar solicitud de recogida'},
-      hero:{dispatch:'Envío / Nairobi y alrededores',waybill:'ALBARÁN LI–2026',title:'Lo llevamos\npor todo Nairobi\nhoy.',subtitle:'Lueri International gestiona la entrega de última milla y el servicio de mensajería para particulares y empresas — paquetes, documentos y pedidos de comercio electrónico, recogidos y entregados el mismo día en Nairobi.',scope:'Última milla Nairobi · No transporte transfronterizo',stamp:'Entrega el mismo día',pickup:'RECOGIDA',dropoff:'ENTREGA',bookBtn:'Reservar recogida',whatsappBtn:'Escríbenos por WhatsApp'},
-      booking:{heading:'Reservar una entrega',intro:'Indica qué hay que mover y a dónde. Confirmaremos contigo los detalles del envío.',pickup:'Lugar de recogida',pickupPlaceholder:'Introduce el lugar de recogida',dropoff:'Lugar de entrega',dropoffPlaceholder:'Introduce el destino',name:'Tu nombre',namePlaceholder:'Introduce tu nombre completo',phone:'Número de teléfono',phonePlaceholder:'p. ej. 0712 345 678',email:'Correo electrónico',emailPlaceholder:'tu@ejemplo.com',item:'¿Qué estás enviando?',itemPlaceholder:'Paquete, documento, regalo, etc.',notes:'Notas adicionales',notesPlaceholder:'Instrucciones especiales, punto de referencia, datos del destinatario…',submit:'Solicitar recogida',submitting:'Enviando solicitud…',success:'Solicitud recibida',successCopy:'Abriendo WhatsApp para confirmar la entrega…',openWhatsapp:'Abrir WhatsApp',close:'Cerrar'},
-      common:{learnMore:'Más información',getQuote:'Solicitar presupuesto',sameDay:'Entrega el mismo día',secure:'Seguro y fiable',support:'Atención al cliente'},
-      services:{title:'Servicios',subtitle:'Servicios de entrega prácticos centrados en velocidad, fiabilidad y comunicación clara.',parcelTitle:'Entrega de paquetes y documentos',parcelText:'Entrega punto a punto en Nairobi para particulares — paquetes, documentos, regalos y recados personales.',ecommerceTitle:'Entrega de comercio electrónico',ecommerceText:'Logística de última milla para vendedores online, incluida recogida, despacho y entrega al cliente.',businessTitle:'Envíos empresariales y corporativos',businessText:'Entregas programadas y bajo demanda para oficinas, comercios, equipos y necesidades recurrentes.',urgentTitle:'Envío urgente',urgentText:'Entregas sensibles al tiempo cuando el plazo habitual no es suficiente.',proofTitle:'Prueba de entrega',proofText:'La confirmación de entrega permite saber cuándo y dónde se recibió el artículo.'},
-      coverage:{title:'Cobertura',subtitle:'Nairobi y zonas cercanas, con rutas planificadas según las necesidades del servicio.',body:'Nos centramos en la entrega de última milla en Nairobi y alrededores. Para lugares fuera de nuestra zona habitual, contáctanos antes de reservar.'},
-      pricing:{title:'Precios',subtitle:'Tarifas claras y sin cargos ocultos.',body:'El precio depende de la ruta, distancia, requisitos del paquete, urgencia y manejo especial. Solicita un presupuesto antes del despacho.',note:'Sin cargos ocultos · Confirmado antes del despacho'},
-      why:{title:'Por qué Lueri',subtitle:'Un servicio de entrega directo para personas y empresas que valoran la fiabilidad.',oneTitle:'Comunicación clara',oneText:'Te mantenemos informado sobre recogida, despacho y estado de entrega.',twoTitle:'Enfoque en el mismo día',twoText:'Estamos diseñados para entregas prácticas el mismo día en Nairobi.',threeTitle:'Prueba de entrega',threeText:'La finalización cuenta con confirmación de entrega.',fourTitle:'Preparado para empresas',fourText:'Las necesidades recurrentes pueden organizarse mediante una cuenta empresarial.'},
-      pod:{title:'Prueba de entrega',subtitle:'Visibilidad desde el despacho hasta la entrega.',body:'Proporcionamos confirmación de entrega para que tengas un registro claro de que el artículo llegó al destinatario.'},
-      rewards:{title:'Recompensas',subtitle:'Gana puntos cuanto más uses Lueri.',body:'Los clientes elegibles pueden ganar puntos y desbloquear beneficios de membresía con el tiempo.',cta:'Explorar recompensas'},
-      faq:{title:'Preguntas frecuentes',q1:'¿A qué zonas entregan?',a1:'Servimos principalmente Nairobi y alrededores. Contáctanos para comprobar una ubicación antes del despacho.',q2:'¿Ofrecen entrega el mismo día?',a2:'Sí. Es un servicio central para rutas y reservas elegibles en Nairobi.',q3:'¿Cuánto cuesta una entrega?',a3:'Las tarifas varían según ruta, distancia, urgencia y requisitos del paquete. Cotizamos antes del despacho.',q4:'¿Pueden las empresas usar Lueri para entregas recurrentes?',a4:'Sí. Las empresas pueden hablar con nosotros sobre necesidades recurrentes y cuentas corporativas.',q5:'¿Cómo reservo una recogida?',a5:'Usa el formulario de reserva, WhatsApp o los datos de contacto del sitio.',q6:'¿Puedo enviar artículos frágiles o documentos importantes?',a6:'Indica qué envías al reservar para confirmar los requisitos de despacho.',q7:'¿Cómo sé que se completó la entrega?',a7:'La finalización está respaldada por una confirmación de entrega.',q8:'¿Puedo contactar directamente con alguien?',a8:'Sí. Usa WhatsApp o los datos de contacto del sitio.'},
-      footer:{about:'Entrega de última milla y mensajería en Nairobi para particulares y empresas.',links:'Enlaces rápidos',contact:'Contacto',hours:'Horario',hoursValue:'Lun–Vie 08:00–17:00 · Sáb 08:00–15:00',rights:'Todos los derechos reservados.'}
-    },
-    ar: {
-      nav:{book:'حجز الاستلام',services:'الخدمات',pricing:'الأسعار',business:'الأعمال',coverage:'التغطية',why:'لماذا لوري',faq:'الأسئلة الشائعة',rewards:'المكافآت',careers:'الوظائف',menu:'القائمة',where:'إلى أين الآن؟',servicesCaption:'ما ننقله ومدى سرعتنا',pricingCaption:'أسعار واضحة بلا رسوم خفية',businessCaption:'إنشاء حساب للشركات',coverageCaption:'مناطق التوصيل في نيروبي',whyCaption:'ما يميز لوري',faqCaption:'أسئلة شائعة وإجاباتها',rewardsCaption:'اكسب نقاطًا مع كل عملية توصيل',careersCaption:'فرص العمل في لوري',bookCaption:'إرسال طلب استلام الآن'},
-      hero:{dispatch:'التوزيع / نيروبي والمناطق المحيطة',waybill:'رقم بوليصة الشحن LI–2026',title:'ننقلها\nعبر نيروبي\nاليوم.',subtitle:'تقدم Lueri International خدمات التوصيل للميل الأخير والبريد السريع للأفراد والشركات — الطرود والمستندات وطلبات التجارة الإلكترونية، مع الاستلام والتسليم في اليوم نفسه داخل نيروبي.',scope:'التوصيل للميل الأخير في نيروبي · لا نقدم شحنًا عابرًا للحدود',stamp:'توصيل في اليوم نفسه',pickup:'الاستلام',dropoff:'التسليم',bookBtn:'حجز الاستلام',whatsappBtn:'تواصل عبر واتساب'},
-      booking:{heading:'حجز توصيل',intro:'أخبرنا بما تريد نقله وإلى أين. سنؤكد معك تفاصيل التوصيل.',pickup:'موقع الاستلام',pickupPlaceholder:'أدخل موقع الاستلام',dropoff:'موقع التسليم',dropoffPlaceholder:'أدخل الوجهة',name:'اسمك',namePlaceholder:'أدخل اسمك الكامل',phone:'رقم الهاتف',phonePlaceholder:'مثال: 0712 345 678',email:'البريد الإلكتروني',emailPlaceholder:'you@example.com',item:'ماذا ترسل؟',itemPlaceholder:'طرد، مستند، هدية، إلخ.',notes:'ملاحظات إضافية',notesPlaceholder:'تعليمات خاصة، معلم قريب، بيانات المستلم…',submit:'طلب الاستلام',submitting:'جارٍ إرسال الطلب…',success:'تم استلام الحجز',successCopy:'جارٍ فتح واتساب لتأكيد التوصيل…',openWhatsapp:'فتح واتساب',close:'إغلاق'},
-      common:{learnMore:'اعرف المزيد',getQuote:'اطلب عرض سعر',sameDay:'توصيل في اليوم نفسه',secure:'آمن وموثوق',support:'خدمة العملاء'},
-      services:{title:'الخدمات',subtitle:'خدمات توصيل عملية تركز على السرعة والموثوقية والتواصل الواضح.',parcelTitle:'توصيل الطرود والمستندات',parcelText:'توصيل من نقطة إلى نقطة داخل نيروبي للأفراد — الطرود والمستندات والهدايا والمهام الشخصية.',ecommerceTitle:'توصيل التجارة الإلكترونية',ecommerceText:'تنفيذ توصيل الميل الأخير للبائعين عبر الإنترنت، بما يشمل الاستلام والتوزيع والتسليم للعميل.',businessTitle:'شحنات الأعمال والشركات',businessText:'توصيلات مجدولة وعند الطلب للمكاتب والمتاجر والفرق واحتياجات الأعمال المتكررة.',urgentTitle:'توصيل عاجل',urgentText:'توصيلات حساسة للوقت عندما لا يكفي وقت التسليم المعتاد.',proofTitle:'إثبات التسليم',proofText:'يمنحك تأكيد التسليم معرفة بوقت ومكان استلام الشحنة.'},
-      coverage:{title:'التغطية',subtitle:'نيروبي والمناطق المحيطة، مع تخطيط التوزيع وفق المسار ومتطلبات الخدمة.',body:'نركز على التوصيل للميل الأخير داخل نيروبي والمناطق القريبة. للمواقع خارج نطاقنا المعتاد، تواصل معنا قبل الحجز لتأكيد التوفر.'},
-      pricing:{title:'الأسعار',subtitle:'أسعار واضحة ومحددة مسبقًا دون رسوم خفية.',body:'يعتمد السعر على المسار والمسافة ومتطلبات الطرد ودرجة الاستعجال وأي مناولة خاصة. اطلب السعر قبل التوزيع وسنؤكده لك.',note:'لا رسوم خفية · يتم التأكيد قبل التوزيع'},
-      why:{title:'لماذا Lueri',subtitle:'خدمة توصيل مباشرة للأفراد والشركات الذين يقدرون الموثوقية.',oneTitle:'تواصل واضح',oneText:'نبقيك على اطلاع بشأن الاستلام والتوزيع وحالة التسليم.',twoTitle:'تركيز على التوصيل في اليوم نفسه',twoText:'صُممت خدمتنا للتوصيل العملي في اليوم نفسه داخل نيروبي.',threeTitle:'إثبات التسليم',threeText:'يتم دعم إتمام المهمة بتأكيد التسليم.',fourTitle:'جاهزون للأعمال',fourText:'يمكن تنظيم احتياجات التوصيل المتكررة عبر حساب شركة.'},
-      pod:{title:'إثبات التسليم',subtitle:'وضوح من التوزيع حتى التسليم.',body:'نوفر تأكيدًا للتسليم لتحتفظ بسجل واضح يفيد بوصول الشحنة إلى المستلم المقصود.'},
-      rewards:{title:'المكافآت',subtitle:'اكسب نقاطًا كلما استخدمت Lueri أكثر.',body:'يمكن للعملاء المؤهلين كسب النقاط وفتح مزايا العضوية تدريجيًا.',cta:'استكشف المكافآت'},
-      faq:{title:'الأسئلة الشائعة',q1:'ما المناطق التي توصلون إليها؟',a1:'نخدم بشكل أساسي نيروبي والمناطق المحيطة. تواصل معنا للتحقق من الموقع قبل التوزيع.',q2:'هل تقدمون التوصيل في اليوم نفسه؟',a2:'نعم. التوصيل في اليوم نفسه خدمة أساسية للمسارات والحجوزات المؤهلة في نيروبي.',q3:'كم تكلفة التوصيل؟',a3:'تختلف الأسعار حسب المسار والمسافة والاستعجال ومتطلبات الطرد. نقدم السعر قبل التوزيع.',q4:'هل يمكن للشركات استخدام Lueri للتوصيلات المتكررة؟',a4:'نعم. يمكن للشركات مناقشة متطلبات التوصيل المتكرر وخيارات حساب الشركة.',q5:'كيف أحجز استلامًا؟',a5:'استخدم نموذج الحجز أو واتساب أو بيانات الاتصال الموجودة على الموقع.',q6:'هل يمكنني إرسال مواد قابلة للكسر أو مستندات مهمة؟',a6:'اذكر ما ترسله عند الحجز حتى نؤكد متطلبات التوزيع.',q7:'كيف أعرف أن التوصيل اكتمل؟',a7:'يتم دعم إتمام التوصيل بتأكيد إثبات التسليم.',q8:'هل يمكنني التواصل مع شخص مباشرة؟',a8:'نعم. استخدم واتساب أو بيانات الاتصال الموجودة على الموقع.'},
-      footer:{about:'توصيل الميل الأخير والبريد السريع في نيروبي للأفراد والشركات.',links:'روابط سريعة',contact:'اتصل بنا',hours:'ساعات العمل',hoursValue:'الإثنين–الجمعة 08:00–17:00 · السبت 08:00–15:00',rights:'جميع الحقوق محفوظة.'}
-    },
-    pt: {
-      nav:{book:'Agendar coleta',services:'Serviços',pricing:'Preços',business:'Empresas',coverage:'Cobertura',why:'Por que a Lueri',faq:'Perguntas frequentes',rewards:'Recompensas',careers:'Carreiras',menu:'Menu',where:'Para onde agora',servicesCaption:'O que transportamos e com que rapidez',pricingCaption:'Preços cotados, sem taxas ocultas',businessCaption:'Criar conta empresarial',coverageCaption:'Onde entregamos em Nairóbi',whyCaption:'O que diferencia a Lueri',faqCaption:'Perguntas comuns, respostas',rewardsCaption:'Ganhe pontos em cada entrega',careersCaption:'Oportunidades na Lueri',bookCaption:'Enviar pedido de coleta'},
-      hero:{dispatch:'Distribuição / Nairóbi e arredores',waybill:'NOTA DE ENTREGA LI–2026',title:'Levamos\npor toda Nairóbi\nhoje.',subtitle:'A Lueri International cuida da entrega de última milha e do serviço de courier para pessoas e empresas — encomendas, documentos e pedidos de e-commerce, recolhidos e entregues no mesmo dia em Nairóbi.',scope:'Última milha Nairóbi · Não fazemos transporte transfronteiriço',stamp:'Entrega no mesmo dia',pickup:'COLETA',dropoff:'ENTREGA',bookBtn:'Agendar coleta',whatsappBtn:'Fale conosco no WhatsApp'},
-      booking:{heading:'Agendar entrega',intro:'Diga-nos o que precisa ser transportado e para onde. Confirmaremos os detalhes da entrega com você.',pickup:'Local de coleta',pickupPlaceholder:'Digite o local de coleta',dropoff:'Local de entrega',dropoffPlaceholder:'Digite o destino',name:'Seu nome',namePlaceholder:'Digite seu nome completo',phone:'Número de telefone',phonePlaceholder:'ex.: 0712 345 678',email:'Endereço de e-mail',emailPlaceholder:'voce@exemplo.com',item:'O que você está enviando?',itemPlaceholder:'Encomenda, documento, presente etc.',notes:'Observações adicionais',notesPlaceholder:'Instruções especiais, ponto de referência, dados do destinatário…',submit:'Solicitar coleta',submitting:'Enviando solicitação…',success:'Solicitação recebida',successCopy:'Abrindo o WhatsApp para confirmar a entrega…',openWhatsapp:'Abrir WhatsApp',close:'Fechar'},
-      common:{learnMore:'Saiba mais',getQuote:'Solicitar orçamento',sameDay:'Entrega no mesmo dia',secure:'Seguro e confiável',support:'Atendimento ao cliente'},
-      services:{title:'Serviços',subtitle:'Serviços de entrega práticos focados em velocidade, confiabilidade e comunicação clara.',parcelTitle:'Entrega de encomendas e documentos',parcelText:'Entrega ponto a ponto em Nairóbi para pessoas — encomendas, documentos, presentes e tarefas pessoais.',ecommerceTitle:'Entrega de e-commerce',ecommerceText:'Atendimento de última milha para vendedores online, incluindo coleta, despacho e entrega ao cliente.',businessTitle:'Entregas empresariais e corporativas',businessText:'Entregas programadas e sob demanda para escritórios, lojas, equipes e necessidades recorrentes.',urgentTitle:'Despacho urgente',urgentText:'Entregas urgentes quando o prazo habitual não é suficiente.',proofTitle:'Comprovativo de entrega',proofText:'A confirmação de entrega ajuda você a saber quando e onde o item foi recebido.'},
-      coverage:{title:'Cobertura',subtitle:'Nairóbi e áreas próximas, com o despacho planejado conforme a rota e os requisitos do serviço.',body:'Concentramos-nos na entrega de última milha em Nairóbi e arredores. Para locais fora da nossa área habitual, entre em contacto antes de reservar para confirmar disponibilidade.'},
-      pricing:{title:'Preços',subtitle:'Preços claros e cotados, sem taxas ocultas.',body:'O preço depende da rota, distância, requisitos da encomenda, urgência e qualquer manuseio especial. Peça um orçamento antes do despacho e confirmaremos o valor.',note:'Sem taxas ocultas · Confirmado antes do despacho'},
-      why:{title:'Por que a Lueri',subtitle:'Um serviço de entrega direto para pessoas e empresas que valorizam a confiabilidade.',oneTitle:'Comunicação clara',oneText:'Mantemos você informado sobre coleta, despacho e status da entrega.',twoTitle:'Foco no mesmo dia',twoText:'Somos estruturados para entregas práticas no mesmo dia em Nairóbi.',threeTitle:'Comprovativo de entrega',threeText:'A conclusão é acompanhada de uma confirmação de entrega.',fourTitle:'Pronta para empresas',fourText:'As necessidades recorrentes podem ser organizadas por meio de uma conta empresarial.'},
-      pod:{title:'Comprovativo de entrega',subtitle:'Visibilidade do despacho até a entrega.',body:'Fornecemos confirmação da entrega para que você tenha um registo claro de que o item chegou ao destinatário pretendido.'},
-      rewards:{title:'Recompensas',subtitle:'Ganhe pontos à medida que usa mais a Lueri.',body:'Clientes elegíveis podem ganhar pontos e desbloquear benefícios de associação com o tempo.',cta:'Explorar recompensas'},
-      faq:{title:'Perguntas frequentes',q1:'Para quais áreas vocês entregam?',a1:'Atendemos principalmente Nairóbi e arredores. Contacte-nos para verificar a localização antes do despacho.',q2:'Vocês oferecem entrega no mesmo dia?',a2:'Sim. A entrega no mesmo dia é um serviço central para rotas e reservas elegíveis em Nairóbi.',q3:'Quanto custa uma entrega?',a3:'Os preços variam conforme rota, distância, urgência e requisitos da encomenda. Fazemos a cotação antes do despacho.',q4:'Empresas podem usar a Lueri para entregas recorrentes?',a4:'Sim. As empresas podem discutir necessidades recorrentes e opções de conta empresarial connosco.',q5:'Como agendo uma coleta?',a5:'Use o formulário de reserva, WhatsApp ou os dados de contacto fornecidos no site.',q6:'Posso enviar itens frágeis ou documentos importantes?',a6:'Informe o que está a enviar durante a reserva para confirmarmos os requisitos de despacho.',q7:'Como sei que a entrega foi concluída?',a7:'A conclusão da entrega é apoiada por uma confirmação de entrega.',q8:'Posso falar diretamente com alguém?',a8:'Sim. Use o WhatsApp ou os contactos indicados no site.'},
-      footer:{about:'Entrega de última milha e courier em Nairóbi para pessoas e empresas.',links:'Links rápidos',contact:'Contacto',hours:'Horário',hoursValue:'Seg–Sex 08:00–17:00 · Sáb 08:00–15:00',rights:'Todos os direitos reservados.'}
-    }
+  var flags = {
+    en: '🇬🇧',
+    zh: '🇨🇳',
+    sw: '🇰🇪',
+    fr: '🇫🇷',
+    es: '🇪🇸',
+    ar: '🇸🇦',
+    pt: '🇧🇷'
   };
 
-  let currentLocale = 'en';
-
-  function getValue(obj, path) {
-    return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj);
-  }
-
-  function setElementValue(el, value) {
-    if (value === undefined || value === null) return;
-    if (el.matches('input[placeholder], textarea[placeholder]')) {
-      el.placeholder = value;
-      return;
-    }
-    if (el.matches('input, textarea') && !el.matches('[data-i18n-label]')) {
-      el.value = value;
-      return;
-    }
-    el.textContent = value;
-  }
-
-  window.lueriTranslate = function (key, locale) {
-    const loc = translations[locale || currentLocale] || translations.en;
-    return getValue(loc, key) ?? getValue(translations.en, key) ?? key;
-  };
-
-  function applyMeta(locale) {
-    const meta = languageMeta[locale];
-    document.documentElement.lang = locale === 'zh' ? 'zh-CN' : locale;
-    document.documentElement.dir = meta.dir;
-    document.body.classList.toggle('rtl', meta.dir === 'rtl');
-    document.body.dataset.locale = locale;
-  }
-
-  function applyTranslations(locale) {
-    document.querySelectorAll('[data-i18n]').forEach((el) => {
-      const key = el.getAttribute('data-i18n');
-      const value = window.lueriTranslate(key, locale);
-      setElementValue(el, value);
-    });
-
-    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-      const value = window.lueriTranslate(el.getAttribute('data-i18n-placeholder'), locale);
-      if ('placeholder' in el) el.placeholder = value;
-    });
-
-    document.querySelectorAll('[data-i18n-aria-label]').forEach((el) => {
-      const value = window.lueriTranslate(el.getAttribute('data-i18n-aria-label'), locale);
-      el.setAttribute('aria-label', value);
+  function labelOptions() {
+    var selector = document.getElementById('languageSelector');
+    if (!selector) return;
+    Object.keys(nativeNames).forEach(function (code) {
+      var option = selector.querySelector('option[value="' + code + '"]');
+      if (option) option.textContent = flags[code] + ' ' + nativeNames[code];
     });
   }
 
-  function decorateSelector(selector) {
-    selector.classList.add('language-selector-native');
-    selector.title = 'Choose language / Choisissez la langue / Elige idioma';
-    Object.keys(languageMeta).forEach((locale) => {
-      const option = selector.querySelector(`option[value="${locale}"]`);
-      if (option) {
-        const meta = languageMeta[locale];
-        option.textContent = `${meta.flag}  ${meta.native}`;
-        option.label = `${meta.flag} ${meta.native}`;
-      }
-    });
-    selector.value = currentLocale;
+  var engine = document.createElement('script');
+  engine.src = 'i18n-engine.js';
+  engine.defer = true;
+  engine.onload = labelOptions;
+  document.head.appendChild(engine);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', labelOptions, { once: true });
+  } else {
+    labelOptions();
   }
-
-  window.lueriSetLocale = function (locale) {
-    if (!LANGS.includes(locale)) locale = 'en';
-    currentLocale = locale;
-    localStorage.setItem(STORAGE_KEY, locale);
-    applyMeta(locale);
-    applyTranslations(locale);
-    const selector = document.getElementById('languageSelector');
-    if (selector) {
-      decorateSelector(selector);
-      selector.value = locale;
-    }
-    window.dispatchEvent(new CustomEvent('lueriLocaleChanged', { detail: { locale } }));
-  };
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    currentLocale = LANGS.includes(saved) ? saved : 'en';
-    const selector = document.getElementById('languageSelector');
-    if (selector) {
-      decorateSelector(selector);
-      selector.addEventListener('change', (event) => window.lueriSetLocale(event.target.value));
-    }
-    window.lueriSetLocale(currentLocale);
-  });
 })();
