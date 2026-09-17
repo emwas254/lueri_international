@@ -3,8 +3,9 @@
 // Lueri Rewards — Supabase-backed client.
 // Pesapal pricing, callback URL, and membership activation remain server-authoritative.
 
-const SUPABASE_URL = 'https://ylifvexqamxvwzvhmwex.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
+// FIX: Centralized config to match lueri-common.js and corporate-signup.js
+const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
+const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || '';
 
 const TIERS = [
   { name: 'VIP', min: 75000, benefits: ['Everything in Platinum','20% off all bookings','4 free standard deliveries every month','Personal account manager','Early access to new services & promotions','Invitations to exclusive Lueri events'] },
@@ -92,6 +93,11 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
   modal.setAttribute('role','dialog');
   modal.setAttribute('aria-modal','true');
   modal.setAttribute('aria-labelledby','lueriPesapalModalTitle');
+  
+  // FIX: Use safe DOM construction for iframe src to prevent XSS
+  const safeUrl = String(paymentUrl);
+  const safePlanName = (meta.planName || 'Lueri Rewards membership').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  
   modal.innerHTML = `
     <div class="pesapal-modal-content">
       <div class="pesapal-modal-header">
@@ -99,20 +105,20 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
           <img src="assets/logo-mark.png" alt="Lueri International">
           <div>
             <h3 id="lueriPesapalModalTitle" class="pesapal-modal-title">Secure Checkout</h3>
-            <p class="pesapal-modal-subtitle">${meta.planName || 'Lueri Rewards membership'}</p>
+            <p class="pesapal-modal-subtitle">${safePlanName}</p>
           </div>
         </div>
         <button type="button" class="pesapal-close" aria-label="Close payment window">&times;</button>
       </div>
       <div class="pesapal-modal-body">
         <div class="pesapal-loading">Loading secure payment gateway...</div>
-        <iframe title="Pesapal secure payment checkout" src="${String(paymentUrl).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" allow="payment *" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <iframe title="Pesapal secure payment checkout" allow="payment *" referrerpolicy="strict-origin-when-cross-origin"></iframe>
         <div class="pesapal-fallback" hidden>
           <div class="pesapal-fallback-card">
             <h3>Open secure checkout</h3>
             <p>Your browser or Pesapal may not allow this checkout to run inside the Lueri window. Continue to Pesapal's secure hosted checkout instead.</p>
             <div class="pesapal-actions">
-              <a class="btn btn-primary" href="${String(paymentUrl).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" target="_blank" rel="noopener noreferrer">Open Pesapal</a>
+              <a class="btn btn-primary" href="${safeUrl}" target="_blank" rel="noopener noreferrer">Open Pesapal</a>
               <button type="button" class="btn btn-secondary" data-pesapal-close>Cancel</button>
             </div>
           </div>
@@ -120,7 +126,10 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
       </div>
     </div>`;
 
+  // FIX: Set src via DOM API after creation
   const iframe = modal.querySelector('iframe');
+  iframe.src = safeUrl;
+
   const loading = modal.querySelector('.pesapal-loading');
   const fallback = modal.querySelector('.pesapal-fallback');
   iframe.addEventListener('load', () => loading.classList.add('hidden'), { once:true });
@@ -231,6 +240,8 @@ function tierProgress(tierName, windowSpend) {
   const into = windowSpend - currentMin;
   return { nextTier:next.name, remaining:Math.max(0,next.min-windowSpend), progress:range > 0 ? Math.min(1,Math.max(0,into/range)) : 1 };
 }
+
+// Renamed to prevent collision with lueri-common.js canonical function
 function _rewardsNormalizePhone(phone) {
   const value = String(phone || '').trim().replace(/[^\d]/g,'');
   if (value.startsWith('254') && value.length === 12) return value;
@@ -238,13 +249,17 @@ function _rewardsNormalizePhone(phone) {
   if (value.length === 9 && (value.startsWith('7') || value.startsWith('1'))) return '254' + value;
   return null;
 }
+
 function capitalizeTier(tier) { const value = String(tier || '').trim(); return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(); }
+
 async function rpcCall(fnName,payload) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, { method:'POST', headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }, body:JSON.stringify(payload) });
   if (!response.ok) throw new Error('Network error: ' + response.status);
   return response.json();
 }
+
 const _txCache = {};
+
 async function registerMember(input) {
   const phone = _rewardsNormalizePhone(input.phone);
   if (!phone) return {success:false,errors:['Enter a valid Kenyan phone number.'],member:null};
@@ -254,6 +269,7 @@ async function registerMember(input) {
     const member = result.member; member.tier = capitalizeTier(member.tier); return {success:true,errors:[],member};
   } catch (err) { return {success:false,errors:['Could not reach the rewards server. Check your connection and try again.'],member:null}; }
 }
+
 async function getMemberSummary(phone) {
   const normalized = _rewardsNormalizePhone(phone); if (!normalized) return null;
   let result; try { result = await rpcCall('lookup_member',{p_phone:normalized}); } catch (_) { return null; }
@@ -263,4 +279,5 @@ async function getMemberSummary(phone) {
   const progress=tierProgress(tierName,windowSpend); _txCache[member.id]=result.transactions||[];
   return {member,tier:tierName,benefits:getBenefits(tierName),points:Number(member.points)||0,lifetimeSpend:Number(member.lifetimeSpend)||0,nextTier:progress.nextTier,amountToNextTier:progress.remaining,tierProgress:progress.progress};
 }
+
 function getMemberTransactions(memberId) { return _txCache[memberId] || []; }
