@@ -27,14 +27,8 @@ html[dir="rtl"] .why-list li { text-align: right; }
   color-scheme: light dark;
   transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
-.language-selector:hover {
-  border-color: var(--route) !important;
-  box-shadow: 0 0 0 2px rgba(184, 50, 31, .12);
-}
-.language-selector:focus-visible {
-  outline: 3px solid var(--signal);
-  outline-offset: 2px;
-}
+.language-selector:hover { border-color: var(--route) !important; box-shadow: 0 0 0 2px rgba(184, 50, 31, .12); }
+.language-selector:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
 .language-selector option {
   color: var(--ink) !important;
   background-color: var(--paper) !important;
@@ -44,25 +38,59 @@ html[dir="rtl"] .why-list li { text-align: right; }
   padding: 6px 10px;
 }
 html[data-theme="dark"] .language-selector,
-body.dark .language-selector {
-  color: var(--paper) !important;
-  background-color: var(--ink) !important;
-  border-color: var(--paper) !important;
-}
+body.dark .language-selector { color: var(--paper) !important; background-color: var(--ink) !important; border-color: var(--paper) !important; }
 html[data-theme="dark"] .language-selector option,
-body.dark .language-selector option {
-  color: var(--paper) !important;
-  background-color: var(--ink) !important;
-}
-html[dir="rtl"] .language-selector {
-  padding-left: 30px !important;
-  padding-right: 10px !important;
-}
+body.dark .language-selector option { color: var(--paper) !important; background-color: var(--ink) !important; }
+html[dir="rtl"] .language-selector { padding-left: 30px !important; padding-right: 10px !important; }
 @media (max-width: 560px) {
-  .language-selector {
-    min-width: 118px;
-    min-height: 36px;
-    padding: 5px 25px 5px 8px !important;
-    font-size: .78rem !important;
-  }
+  .language-selector { min-width: 118px; min-height: 36px; padding: 5px 25px 5px 8px !important; font-size: .78rem !important; }
+}
+
+/* ==========================================================================\n   THEME-AWARE LUERI HERO ART\n   Night artwork is used for dark theme; daylight artwork is used for light.\n   The HTML controls/content remain live and accessible over the artwork.\n   ========================================================================== */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--paper);
+  background-image: url('assets/lueri-hero-day.jpg');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% auto;
+  min-height: 430px;
+  transition: background-image .35s ease, background-color .3s ease;
+}
+html[data-theme="dark"] .hero {
+  background-image: url('assets/lueri-hero-night.jpg');
+}
+
+/* Let the supplied hero artwork carry the visual field without the old paper card. */
+.hero .docket {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  min-height: 350px;
+  padding-top: 38px;
+  padding-bottom: 38px;
+}
+.hero .docket::before,
+.hero .docket::after { display: none; }
+.hero .scope-tag,
+.hero .stamp,
+.hero .route-track { display: none; }
+.hero .title { text-shadow: 0 2px 12px rgba(0,0,0,.18); }
+.hero .subtitle { text-shadow: 0 1px 8px rgba(0,0,0,.12); }
+
+/* Preserve the interactive booking CTA over the artwork. */
+.hero .cta-row { position: relative; z-index: 3; }
+
+/* Gentle entrance movement; respects reduced-motion preferences. */
+.hero .docket { animation: lueriHeroIn .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes lueriHeroIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .hero .docket { animation: none; }
+}
+
+/* On small screens, retain a usable hero crop rather than stretching the artwork. */
+@media (max-width: 700px) {
+  .hero { min-height: 500px; background-size: auto 500px; background-position: center top; }
+  .hero .docket { min-height: 460px; padding: 32px 24px; }
 }
