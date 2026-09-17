@@ -3,9 +3,10 @@
 // Lueri Rewards — Supabase-backed client.
 // Pesapal pricing, callback URL, and membership activation remain server-authoritative.
 
-// FIX: Centralized config to match lueri-common.js and corporate-signup.js
+// FIX: Centralized config. Added hardcoded fallback for Anon Key because
+// rewards.html does not load lueri-common.js, so window.LUERI is undefined.
 const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
-const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || '';
+const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5bGlmdmV4cWFteHZ3enZobXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw';
 
 const TIERS = [
   { name: 'VIP', min: 75000, benefits: ['Everything in Platinum','20% off all bookings','4 free standard deliveries every month','Personal account manager','Early access to new services & promotions','Invitations to exclusive Lueri events'] },
