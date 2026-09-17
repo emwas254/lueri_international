@@ -93,7 +93,6 @@
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
       var value = window.i18next.t(key, { lng:locale, defaultValue:'' });
-      if (!value || value === key) value = window.i18next.t(key, { lng:'en', defaultValue:key });
       if (value && value !== key) el.textContent = value;
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
@@ -124,7 +123,7 @@
 
     window.i18next.init({
       lng:requested,
-      fallbackLng:'en',
+      fallbackLng:false,
       supportedLngs:LANGS,
       resources:resources,
       interpolation:{ escapeValue:false },
@@ -154,6 +153,7 @@
   /* i18next UMD runtime + existing Lueri translation resources. */
   document.write('<script src="https://cdn.jsdelivr.net/npm/i18next@25.6.0/dist/umd/i18next.min.js"><\\/script>');
   document.write('<script src="i18n-engine.js"><\\/script>');
+  document.write('<script src="i18n-completion.js"><\\/script>');
   document.write('<script src="i18n-strict.js"><\\/script>');
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
