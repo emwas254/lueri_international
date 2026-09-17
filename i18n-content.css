@@ -1,0 +1,8 @@
+/* Native Lueri i18n helpers. No Google Translate. */
+html[dir="rtl"] .docket,
+html[dir="rtl"] .contact-shell,
+html[dir="rtl"] .menu-panel,
+html[dir="rtl"] .menu-panel-inner { direction: rtl; }
+html[dir="rtl"] .docket-row,
+html[dir="rtl"] .cta-row,
+html[dir="rtl"] .why-list li { text-align: right; }
