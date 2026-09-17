@@ -1,7 +1,6 @@
 /* Lueri International — i18next-powered seven-language bootstrap
    Uses i18next as the translation runtime with the existing Lueri resource dictionaries.
-   This site is static HTML, not React, so react-i18next is intentionally NOT loaded:
-   react-i18next is a React binding and would add an unused React runtime here.
+   Static HTML site: i18next is used directly; react-i18next is not loaded because React is not used.
    No Google Translate. No third-party translation widget.
 */
 (function () {
@@ -19,60 +18,49 @@
   var LANGS = Object.keys(NATIVE);
   var STORAGE_KEY = 'lueri_language';
 
-  function themeStyles() {
+  function installI18nextStyles() {
     if (document.getElementById('lueri-i18next-styles')) return;
     var s = document.createElement('style');
     s.id = 'lueri-i18next-styles';
     s.textContent = `
-      #languageSelector {
-        min-width:128px !important;
-        min-height:40px !important;
-        padding:7px 30px 7px 10px !important;
-        border:1.5px solid var(--ink,#1b2620) !important;
-        border-radius:8px !important;
-        background-color:var(--paper,#f4efe4) !important;
-        color:var(--ink,#1b2620) !important;
-        font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif !important;
-        font-size:.84rem !important;
-        font-weight:700 !important;
-        line-height:1.2 !important;
-        opacity:1 !important;
-        color-scheme:light;
-      }
-      #languageSelector option {
-        background:#f4efe4 !important;
-        color:#1b2620 !important;
-        font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif !important;
-        font-weight:700 !important;
-        font-size:.95rem !important;
-      }
-      [data-theme='dark'] #languageSelector {
-        background-color:var(--paper,#1b2620) !important;
-        color:var(--ink,#f0ead8) !important;
-        border-color:var(--ink,#f0ead8) !important;
-        color-scheme:dark;
-      }
-      [data-theme='dark'] #languageSelector option {
-        background:#1b2620 !important;
-        color:#f0ead8 !important;
-      }
-      html:lang(ar),html:lang(ar) body { font-family:'Noto Sans Arabic','Noto Sans','Segoe UI',Tahoma,Arial,sans-serif; }
-      html:lang(ar) body { direction:rtl; text-align:right; line-height:1.7; }
-      html:lang(ar) input,html:lang(ar) textarea,html:lang(ar) select { text-align:right; }
-      html:lang(ar) #languageSelector { font-family:'Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif !important; }
-      html:lang(zh) body { font-family:'Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',Arial,sans-serif; line-height:1.7; }
-      html:lang(zh) h1,html:lang(zh) h2,html:lang(zh) h3,html:lang(ar) h1,html:lang(ar) h2,html:lang(ar) h3 { line-height:1.35; }
-      html[dir='rtl'] .nav-controls,html[dir='rtl'] .cta-row,html[dir='rtl'] .form-actions { direction:rtl; }
-      @media(max-width:480px){#languageSelector{min-width:116px !important;font-size:.8rem !important;}}
+      #languageSelector{min-width:128px!important;min-height:40px!important;padding:7px 30px 7px 10px!important;border:1.5px solid var(--ink,#1b2620)!important;border-radius:8px!important;background:var(--paper,#f4efe4)!important;color:var(--ink,#1b2620)!important;font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif!important;font-size:.84rem!important;font-weight:700!important;line-height:1.2!important;opacity:1!important;color-scheme:light;}
+      #languageSelector option{background:#f4efe4!important;color:#1b2620!important;font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif!important;font-weight:700!important;font-size:.95rem!important;}
+      [data-theme='dark'] #languageSelector{background:var(--paper,#1b2620)!important;color:var(--ink,#f0ead8)!important;border-color:var(--ink,#f0ead8)!important;color-scheme:dark;}
+      [data-theme='dark'] #languageSelector option{background:#1b2620!important;color:#f0ead8!important;}
+      html:lang(ar),html:lang(ar) body,html:lang(ar) body *{font-family:'Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif!important;}
+      html:lang(ar) body{direction:rtl;text-align:right;line-height:1.75;}
+      html:lang(ar) h1,html:lang(ar) h2,html:lang(ar) h3{font-weight:800;line-height:1.45;}
+      html:lang(ar) input,html:lang(ar) textarea,html:lang(ar) select{text-align:right;}
+      html:lang(ar) .section-head{flex-direction:row-reverse;}
+      html:lang(ar) .pricing-grid{direction:rtl;}
+      html:lang(ar) .pricing-card,html:lang(ar) .pricing-note,html:lang(ar) .sla-item{text-align:right;}
+      html:lang(ar) .menu-panel-grid,html:lang(ar) .why-list{direction:rtl;}
+      html:lang(ar) .menu-link{flex-direction:row-reverse;}
+      html:lang(ar) .menu-link-body{text-align:right;}
+      html:lang(ar) .cta-row,html:lang(ar) .form-actions,html:lang(ar) .nav-controls{direction:rtl;}
+      html:lang(zh),html:lang(zh) body,html:lang(zh) body *{font-family:'Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',Arial,sans-serif!important;}
+      html:lang(zh) body{line-height:1.75;}
+      html:lang(zh) h1,html:lang(zh) h2,html:lang(zh) h3{line-height:1.4;}
+      html[lang='sw'] body,html[lang='fr'] body,html[lang='es'] body,html[lang='pt'] body{line-height:1.6;}
+      html[dir='rtl'] .pricing-card .tier{direction:rtl;}
+      #pricing .pricing-grid{margin-bottom:32px;}
+      #pricing .pricing-card{animation:lueriPricingIn .72s cubic-bezier(.2,.8,.2,1) both;will-change:transform,opacity;}
+      #pricing .pricing-card:nth-child(1){animation-delay:.04s;}
+      #pricing .pricing-card:nth-child(2){animation-delay:.12s;}
+      #pricing .pricing-card:nth-child(3){animation-delay:.2s;}
+      #pricing .pricing-card:hover{transform:translateY(-8px) scale(1.015);box-shadow:0 18px 36px rgba(0,0,0,.16);border-color:var(--route);}
+      @keyframes lueriPricingIn{from{opacity:0;transform:translateY(26px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+      @media (prefers-reduced-motion:reduce){#pricing .pricing-card{animation:none!important;transition:none!important;}}
+      @media(max-width:480px){#languageSelector{min-width:116px!important;min-height:38px!important;font-size:.8rem!important;}}
     `;
     document.head.appendChild(s);
   }
 
   function labelSelector() {
-    var select = document.getElementById('languageSelector');
-    if (!select) return;
+    var selector = document.getElementById('languageSelector');
+    if (!selector) return;
     LANGS.forEach(function (code) {
-      var option = select.querySelector('option[value="' + code + '"]');
+      var option = selector.querySelector('option[value="' + code + '"]');
       if (option) option.textContent = NATIVE[code].flag + ' ' + NATIVE[code].name;
     });
   }
@@ -97,72 +85,75 @@
 
   function applyI18next(locale) {
     if (!window.i18next || !window.LueriI18n || !window.LueriI18n.translations) return;
-    var dict = window.LueriI18n.translations[locale] || window.LueriI18n.translations.en;
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
-      var value = window.i18next.t(key, { lng: locale });
-      if (value === key) value = flatten(dict)[key] || window.i18next.t(key, { lng:'en' });
-      if (value !== key) el.textContent = value;
+      var value = window.i18next.t(key, { lng: locale, defaultValue: '' });
+      if (!value || value === key) value = window.i18next.t(key, { lng:'en', defaultValue:key });
+      if (value && value !== key) el.textContent = value;
     });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
       var key = el.getAttribute('data-i18n-placeholder');
-      var value = window.i18next.t(key, { lng: locale });
-      if (value !== key) el.setAttribute('placeholder', value);
+      var value = window.i18next.t(key, { lng: locale, defaultValue:key });
+      if (value && value !== key) el.setAttribute('placeholder', value);
     });
     document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
       var key = el.getAttribute('data-i18n-aria');
-      var value = window.i18next.t(key, { lng: locale });
-      if (value !== key) el.setAttribute('aria-label', value);
+      var value = window.i18next.t(key, { lng: locale, defaultValue:key });
+      if (value && value !== key) el.setAttribute('aria-label', value);
     });
     syncDocument(locale);
   }
 
   function start() {
-    themeStyles();
+    installI18nextStyles();
     labelSelector();
 
-    var translations = window.LueriI18n && window.LueriI18n.translations;
-    if (!window.i18next || !translations) return;
+    var translationData = window.LueriI18n && window.LueriI18n.translations;
+    if (!window.i18next || !translationData) return;
 
     var resources = {};
     LANGS.forEach(function (code) {
-      resources[code] = { translation: flatten(translations[code]) };
+      resources[code] = { translation: flatten(translationData[code]) };
     });
 
+    var requested = 'en';
+    try { requested = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (_) {}
+    if (LANGS.indexOf(requested) < 0) requested = 'en';
+
     window.i18next.init({
-      lng: localStorage.getItem(STORAGE_KEY) || 'en',
+      lng: requested,
       fallbackLng: 'en',
+      supportedLngs: LANGS,
       resources: resources,
-      interpolation: { escapeValue: false }
-    }).then(function () {
-      var locale = LANGS.indexOf(window.i18next.language) >= 0 ? window.i18next.language : 'en';
-      var select = document.getElementById('languageSelector');
-      if (select) select.value = locale;
+      interpolation: { escapeValue:false },
+      returnEmptyString:false,
+      initImmediate:false
+    }, function () {
+      var locale = LANGS.indexOf(window.i18next.language) >= 0 ? window.i18next.language : requested;
+      var selector = document.getElementById('languageSelector');
+      if (selector) selector.value = locale;
       applyI18next(locale);
 
-      if (select && select.dataset.i18nextWired !== 'true') {
-        select.dataset.i18nextWired = 'true';
-        select.addEventListener('change', function () {
+      if (selector && selector.dataset.i18nextWired !== 'true') {
+        selector.dataset.i18nextWired = 'true';
+        selector.addEventListener('change', function () {
           var next = LANGS.indexOf(this.value) >= 0 ? this.value : 'en';
-          window.i18next.changeLanguage(next).then(function () {
-            localStorage.setItem(STORAGE_KEY, next);
+          window.i18next.changeLanguage(next, function () {
+            try { localStorage.setItem(STORAGE_KEY, next); } catch (_) {}
             applyI18next(next);
             if (typeof window.lueriSetLocale === 'function') window.lueriSetLocale(next);
-            window.dispatchEvent(new CustomEvent('lueri:languagechange', { detail:{ language:next } }));
+            window.dispatchEvent(new CustomEvent('lueri:languagechange', { detail:{language:next} }));
           });
         });
       }
     });
   }
 
-  /* Load i18next first, then the existing resource/strict layers. */
+  /* i18next runtime + existing Lueri resource dictionaries. */
   document.write('<script src="https://cdn.jsdelivr.net/npm/i18next@25.6.0/dist/umd/i18next.min.js"><\\/script>');
   document.write('<script src="i18n-engine.js"><\\/script>');
   document.write('<script src="i18n-strict.js"><\\/script>');
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once:true });
-  } else {
-    start();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
+  else start();
 })();
