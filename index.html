@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Security: Defense in Depth -->
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+
 <title>Lueri International — Nairobi Delivery & Courier</title>
 <meta name="description" content="Lueri International — Nairobi last-mile delivery and courier dispatch. Same-day pickup, quoted rates, proof of delivery. Book by WhatsApp, call, or form.">
+
+<!-- Open Graph -->
 <meta property="og:title" content="Lueri International — Nairobi Delivery & Courier">
 <meta property="og:description" content="Reliable last-mile delivery and courier dispatch across Nairobi. Same-day pickup for individuals and businesses.">
 <meta property="og:type" content="website">
@@ -14,22 +20,37 @@
 <meta property="og:image" content="https://lueriinternational.com/assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+
+<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Lueri International — Nairobi Delivery & Courier">
 <meta name="twitter:description" content="Reliable last-mile delivery and courier dispatch across Nairobi. Same-day pickup for individuals and businesses.">
 <meta name="twitter:image" content="https://lueriinternational.com/assets/og-image.png">
+
 <link rel="canonical" href="https://lueriinternational.com/">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+<!-- Fonts: Optimized Preconnect -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="lueri-common.js"></script>
-<script src="lueri-i18n.js"></script>
-<script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); if (window.LueriI18n) LueriI18n.init(); });</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+
+<!-- Core Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+<script src="lueri-common.js"></script>
+<script src="lueri-i18n.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () { 
+    lueri.boot(); 
+    if (window.LueriI18n) LueriI18n.init(); 
+  });
+</script>
+
 <link rel="stylesheet" href="assets/site.css">
+
 <style>
 /* --- UX DIRECTOR CSS OVERRIDES --- */
 
@@ -42,7 +63,7 @@
 .section-card-float:focus-within{transform:translateY(-4px);box-shadow:0 12px 24px -8px rgba(27,38,32,.12), 0 4px 6px -2px rgba(27,38,32,.05);}
 
 /* 2. Mobile Menu Cleanup (Krug Usability) */
-.menu-link-tag { display: none; } /* Hides the confusing SVC/PRC tags to reduce cognitive load */
+.menu-link-tag { display: none; }
 .menu-link-body { display: flex; flex-direction: column; }
 .menu-link-title { font-family: 'Oswald', sans-serif; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .menu-link-caption { font-size: 0.85rem; opacity: 0.7; margin-top: 2px; }
@@ -65,22 +86,56 @@
 .overlay-copy { color: var(--slate); margin-bottom: 24px; line-height: 1.6; }
 .overlay-ref { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; background: var(--paper-dim); padding: 8px; border-radius: 4px; margin-bottom: 24px; display: inline-block;}
 
-/* Hero & Route visual preserved */
+/* Hero & Route visual preserved & enhanced */
 .hero-route-visual{margin:34px 0 8px;position:relative;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,var(--paper) 0%,var(--paper-dim) 100%);border-radius:4px;padding:18px 14px 22px;box-shadow:8px 8px 0 rgba(27,38,32,.06)}
 .hero-route-visual .scene{position:relative;height:118px;overflow:hidden}
 .hero-route-visual .city-left,.hero-route-visual .city-right{position:absolute;bottom:28px;opacity:.3;display:flex;align-items:flex-end;gap:6px}
 .hero-route-visual .city-left{left:2%;}.hero-route-visual .city-right{right:2%;}
-.hero-route-visual .tower{width:18px;background:linear-gradient(180deg,#7b8c84,#58665f);border-radius:2px 2px 0 0}.hero-route-visual .tower.t1{height:28px}.hero-route-visual .tower.t2{height:44px}.hero-route-visual .tower.t3{height:62px;width:24px}.hero-route-visual .tower.t4{height:34px}.hero-route-visual .tower.t5{height:52px;width:28px}.hero-route-visual .road{position:absolute;left:3%;right:3%;bottom:22px;height:8px;border-top:3px dashed var(--ink);opacity:.7}
+
+/* Building towers with relative positioning for windows */
+.hero-route-visual .tower{width:18px;background:linear-gradient(180deg,#7b8c84,#58665f);border-radius:2px 2px 0 0; position: relative;}
+.hero-route-visual .tower.t1{height:28px}.hero-route-visual .tower.t2{height:44px}.hero-route-visual .tower.t3{height:62px;width:24px}.hero-route-visual .tower.t4{height:34px}.hero-route-visual .tower.t5{height:52px;width:28px}
+
+/* CHANGE: Subtle window illumination (hidden in light mode) */
+.hero-route-visual .tower::before{
+  content:'';position:absolute;top:4px;left:3px;right:3px;bottom:4px;
+  background:radial-gradient(circle at 30% 30%, rgba(240,234,216,0.15) 2px, transparent 2px), 
+             radial-gradient(circle at 70% 50%, rgba(240,234,216,0.1) 1.5px, transparent 1.5px), 
+             radial-gradient(circle at 50% 75%, rgba(240,234,216,0.12) 1.5px, transparent 1.5px);
+  background-size:8px 12px;background-repeat:repeat;opacity:0;transition:opacity 0.5s ease;border-radius:1px;
+}
+
+/* CHANGE: Activate window lights in DARK MODE only */
+[data-theme="dark"] .hero-route-visual .tower::before{opacity:0.6;}
+[data-theme="dark"] .hero-route-visual .city-left,[data-theme="dark"] .hero-route-visual .city-right{opacity:0.4;}
+
+.hero-route-visual .road{position:absolute;left:3%;right:3%;bottom:22px;height:8px;border-top:3px dashed var(--ink);opacity:.7}
 .hero-route-visual .pin-label{position:absolute;top:2px;z-index:3;font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border:1px dashed var(--line);padding:7px 10px;background:rgba(var(--paper-rgb),.92)}
 .hero-route-visual .pin-label.left{left:0}.hero-route-visual .pin-label.right{right:0}
 .hero-route-visual .marker{position:absolute;top:32px;width:12px;height:12px;border:3px solid var(--route);border-radius:50%;background:var(--paper);z-index:3}.hero-route-visual .marker.left{left:7%}.hero-route-visual .marker.right{right:7%}
 .hero-route-visual .truck-runner{position:absolute;left:7%;bottom:17px;width:92px;height:46px;z-index:4;animation:lueriTruckJourney 7.5s cubic-bezier(.45,.08,.4,.92) infinite}
 .hero-route-visual .truck-body{position:absolute;left:0;bottom:9px;width:64px;height:26px;border:2px solid var(--ink);background:var(--paper);border-radius:3px}.hero-route-visual .truck-cab{position:absolute;right:0;bottom:9px;width:24px;height:21px;background:#274238;border:2px solid var(--ink);border-left:0;border-radius:0 4px 3px 0}.hero-route-visual .truck-window{position:absolute;right:4px;bottom:23px;width:12px;height:7px;background:#dbe7e0;border:1px solid var(--ink);border-radius:1px}.hero-route-visual .truck-wheel{position:absolute;bottom:2px;width:13px;height:13px;background:var(--ink);border:3px solid var(--paper);border-radius:50%}.hero-route-visual .truck-wheel.w1{left:10px}.hero-route-visual .truck-wheel.w2{left:57px}.hero-route-visual .truck-logo{position:absolute;left:7px;bottom:17px;font-size:.48rem;font-weight:700;color:var(--ink);line-height:1}
 .hero-route-visual .motion{position:absolute;left:-20px;top:11px;width:28px;height:2px;background:var(--route);box-shadow:0 7px 0 rgba(184,50,31,.45),0 14px 0 rgba(184,50,31,.25);animation:lueriMotion 7.5s cubic-bezier(.45,.08,.4,.92) infinite;z-index:3}
+
 @keyframes lueriTruckJourney{0%,8%{left:7%;transform:translateY(0) scaleX(1)}45%{left:47%;transform:translateY(-2px) scaleX(1)}88%,92%{left:84%;transform:translateY(0) scaleX(1)}100%{left:7%;transform:translateY(0) scaleX(1)}}
 @keyframes lueriMotion{0%,8%{opacity:0;left:4%}18%,78%{opacity:1}92%,100%{opacity:0;left:82%}}
-@media(max-width:560px){.hero-route-visual .scene{height:104px}.hero-route-visual .truck-runner{width:78px;transform:scale(.88);transform-origin:left bottom}.hero-route-visual .pin-label{font-size:.6rem;padding:6px 8px}.hero-route-visual .city-left,.hero-route-visual .city-right{opacity:.22}}
-@media(prefers-reduced-motion:reduce){.hero-route-visual .truck-runner,.hero-route-visual .motion{animation:none}.hero-route-visual .truck-runner{left:46%}.hero-route-visual .motion{display:none}}
+
+@media(max-width:560px){
+  .hero-route-visual .scene{height:104px}
+  .hero-route-visual .truck-runner{width:78px;transform:scale(.88);transform-origin:left bottom}
+  .hero-route-visual .pin-label{font-size:.6rem;padding:6px 8px}
+  .hero-route-visual .city-left,.hero-route-visual .city-right{opacity:.22}
+  /* Mobile window scaling */
+  .hero-route-visual .tower::before{background-size:6px 10px;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-route-visual .truck-runner,.hero-route-visual .motion{animation:none}
+  .hero-route-visual .truck-runner{left:46%}
+  .hero-route-visual .motion{display:none}
+  /* Ensure dark mode lights still work when motion is reduced */
+  [data-theme="dark"] .hero-route-visual .tower::before{opacity:0.6;}
+}
 
 .rewards-showcase{background:var(--paper);border:1px solid var(--line);padding:28px;border-radius:4px;box-shadow:8px 8px 0 rgba(27,38,32,.06)}
 .rewards-showcase .mini-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:20px}
@@ -150,195 +205,51 @@
 </header>
 
 <main>
-<section class="hero reveal"><div class="wrap"><div class="docket"><div class="docket-row"><div class="eyebrow-mono">Dispatch / Nairobi &amp; environs</div><div class="waybill-no">STATUS: READY FOR DISPATCH</div></div><h1 class="title">We move it<br>across Nairobi<br>today.</h1><p class="subtitle">Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day across Nairobi.</p><span class="scope-tag">Nairobi last-mile · Not cross-border freight</span><span class="stamp">Same-day dispatch</span><div class="hero-route-visual" aria-label="Animated Lueri delivery route from pickup to drop-off"><div class="scene"><div class="pin-label left">Pickup · Nairobi</div><div class="pin-label right">Drop-off · Nairobi</div><div class="marker left"></div><div class="marker right"></div><div class="city-left"><div class="tower t1"></div><div class="tower t2"></div><div class="tower t3"></div><div class="tower t4"></div></div><div class="city-right"><div class="tower t2"></div><div class="tower t5"></div><div class="tower t1"></div><div class="tower t4"></div></div><div class="road"></div><div class="motion"></div><div class="truck-runner" aria-hidden="true"><div class="truck-body"></div><div class="truck-cab"></div><div class="truck-window"></div><div class="truck-wheel w1"></div><div class="truck-wheel w2"></div><div class="truck-logo">Lueri</div></div></div></div><div class="cta-row"><a href="#contact" class="btn btn-primary">Book a Pickup</a><a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">WhatsApp Us</a></div></div></div></section>
+<section class="hero reveal"><div class="wrap"><div class="docket"><div class="docket-row"><div class="eyebrow-mono">Dispatch / Nairobi &amp; environs</div><div class="waybill-no">STATUS: READY FOR DISPATCH</div></div><h1 class="title">We move it<br>across Nairobi<br>today.</h1><p class="subtitle">Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day across Nairobi.</p>
+<!-- CHANGE: Added margin-left and inline-flex for visual separation -->
+<span class="scope-tag">Nairobi last-mile · Not cross-border freight</span>
+<span class="stamp" style="margin-left: 2rem; display: inline-flex;">Same-day dispatch</span>
 
-<section id="services" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">01</span><h2>Services</h2></div><div class="grid3"><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg></div><h3>Parcel &amp; document delivery</h3><p>Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands.</p><a class="btn btn-secondary" href="#contact">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><h3>Business &amp; e-commerce dispatch</h3><p>Recurring pickup and delivery support for shops and online sellers who need reliable, repeat runs.</p><a class="btn btn-secondary" href="corporate.html">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><h3>On-demand courier</h3><p>Need something moved right now? Call or WhatsApp for a same-day pickup — no account required.</p><a class="btn btn-secondary" href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer">Learn more →</a></div></div></div></section>
-
-<section id="why" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">02</span><h2>Why Us</h2></div><ul class="why-list"><li><div class="n">01</div><div><h3>Reliable repeat dispatch</h3><p>For retailers, pharmacies, professional services and online sellers, Lueri provides dependable pickup and delivery support you can build into your daily operations.</p></div></li><li><div class="n">02</div><div><h3>Same-day when timing matters</h3><p>For urgent documents, customer orders, business stock and time-sensitive errands, we focus on clear pickup windows and direct communication.</p></div></li><li><div class="n">03</div><div><h3>Simple for the customer</h3><p>One booking request, clear route details and a straightforward handoff—without forcing every customer to learn a complicated logistics system.</p></div></li></ul></div></section>
-
-<section id="coverage" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">04</span><h2>Coverage</h2></div><div class="coverage-wrap"><div class="coverage-list"><div>Nairobi CBD</div><div>Westlands</div><div>Kilimani</div><div>Kasarani</div><div>South B / South C</div><div>Embakasi</div><div>Ngong Road</div><div>Thika Road</div></div><div class="coverage-note"><div class="eyebrow-mono">Not on this list?</div><p>Lueri runs delivery across all of Greater Nairobi and its surrounding towns. If your point isn't listed, message us directly — most routes are covered.</p></div></div></div></section>
-
-<section id="pricing" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">05</span><h2>Pricing</h2></div><div class="pricing-grid"><div class="pricing-card section-card-float"><div class="tier">Standard</div><h3>Everyday delivery</h3><div class="price">From KES 350</div><p>Point-to-point courier service for regular parcels and documents.</p><ul><li>Same-day options</li><li>Clear pickup details</li><li>Proof of delivery</li></ul></div><div class="pricing-card section-card-float"><div class="tier">Priority</div><h3>Urgent same-day</h3><div class="price">Quoted</div><p>For time-sensitive deliveries that need faster handling.</p><ul><li>Priority dispatch</li><li>Direct communication</li><li>Route-based quote</li></ul></div><div class="pricing-card section-card-float"><div class="tier">Business</div><h3>Recurring dispatch</h3><div class="price">Quoted</div><p>Flexible arrangements for shops, e-commerce and organizations.</p><ul><li>Repeat pickup runs</li><li>Consolidated handling</li><li>Corporate support</li></ul></div></div><div style="margin-top:40px;padding:18px;border:1px dashed var(--line);border-radius:4px;"><strong style="font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;">How quoting works</strong><br>Every job is quoted before pickup — no hidden fees. Send your pickup point, drop-off point, and parcel details on WhatsApp or via the booking form below. Payment accepted via M-Pesa.</div></div></section>
-
-<section id="faq" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">06</span><h2>FAQ</h2></div><div class="faq-list"><details open><summary>How do I book a delivery?</summary><p>Use the Book a Pickup form, or WhatsApp Lueri with your pickup location, drop-off location and parcel details.</p></details><details><summary>How quickly can you deliver?</summary><p>Same-day delivery is available for eligible Nairobi routes. Lueri confirms the route and pickup timing before dispatch.</p></details><details><summary>How is pricing calculated?</summary><p>Quotes depend on route, parcel details and urgency. Lueri confirms the price before pickup.</p></details><details><summary>Do I need a Rewards account?</summary><p>No. On-demand courier bookings do not require an account. Rewards members get additional benefits and points tracking.</p></details></div></div></section>
-
-<!-- REFACTORED BOOKING FORM (Wroblewski Mobile-First & Krug Clarity) -->
-<section id="contact" class="reveal">
-    <div class="wrap">
-      <div class="contact-shell">
-        <div class="section-head"><span class="section-num">07</span><h2>Book a pickup</h2></div>
-        <div class="contact-grid">
-          <div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp">
-            <span class="copy-hint">Click to copy</span><div class="label">WhatsApp</div><div class="value">0713 261 719</div>
-          </div>
-          <div class="contact-card" data-href="tel:+254713261719">
-            <div class="label">Call</div><div class="value">0713 261 719</div>
-          </div>
-          <div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email">
-            <span class="copy-hint">Click to copy</span><div class="label">Email</div><div class="value">info@lueriinternational.com</div>
-          </div>
-        </div>
-
-        <form id="bookingForm" style="margin-top:40px;" novalidate>
-          <input type="text" name="website" id="bookingHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
-          <div class="form-row2">
-            <div class="form-group">
-              <label class="form-label" for="pickup">Pickup Location</label>
-              <input class="form-input" type="text" id="pickup" placeholder="e.g. Westlands, Nairobi" autocomplete="street-address" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="dropoff">Drop-off Location</label>
-              <input class="form-input" type="text" id="dropoff" placeholder="e.g. CBD, Nairobi" autocomplete="street-address" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="details">Parcel Details</label>
-            <textarea class="form-input" id="details" rows="2" placeholder="Describe the item(s), approx. size/weight..." required></textarea>
-          </div>
-          <div class="form-row2">
-            <div class="form-group">
-              <label class="form-label" for="name">Your Name</label>
-              <input class="form-input" type="text" id="name" autocomplete="name" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="phone">Phone Number</label>
-              <input class="form-input" type="tel" id="phone" placeholder="07xx xxx xxx" autocomplete="tel" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="time">Preferred Pickup Window</label>
-            <select class="form-input" id="time" required>
-              <option value="" disabled selected>Select time window...</option>
-              <option value="asap">ASAP (Next available rider)</option>
-              <option value="morning">Morning Window (8 AM - 11 AM)</option>
-              <option value="afternoon">Afternoon Window (11 AM - 3 PM)</option>
-              <option value="evening">Evening Window (3 PM - 6 PM)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="memberNumber">Lueri Rewards Member No. (optional)</label>
-            <input class="form-input" type="text" id="memberNumber" placeholder="e.g. LR-1004 — leave blank if you're not a member yet">
-          </div>
-          <button type="submit" id="bookingSubmit" class="btn btn-signal btn-block">Send Booking Request</button>
-          <p id="bookingError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:.9rem;"></p>
-          <p style="margin:16px 0 0; font-size:.82rem; opacity:0.65; line-height:1.5;">By booking, you agree to our <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;">Terms of Service</a> and <a href="privacy-policy.html" style="color:var(--signal); text-decoration:underline;">Privacy Policy</a>.</p>
-        </form>
-      </div>
+<div class="hero-route-visual" aria-label="Animated Lueri delivery route from pickup to drop-off">
+  <div class="scene">
+    <div class="pin-label left">Pickup · Nairobi</div>
+    <div class="pin-label right">Drop-off · Nairobi</div>
+    <div class="marker left"></div>
+    <div class="marker right"></div>
+    
+    <!-- Buildings with automatic window illumination in dark mode -->
+    <div class="city-left">
+      <div class="tower t1"></div>
+      <div class="tower t2"></div>
+      <div class="tower t3"></div>
+      <div class="tower t4"></div>
     </div>
-  </section>
-</main>
-
-<footer class="wrap">
-  <div class="legal-block">
-    <div><strong>Registered business</strong>Lueri International · Nairobi, Kenya<br>Founded 13 December 2023<br>Registration details available on request for B2B clients</div>
-    <div><strong>Contact</strong><a href="tel:+254713261719">+254 713 261 719</a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div>
-    <div><strong>Hours</strong>Mon–Fri, 8:00 AM – 5:00 PM<br>Sat, 8:00 AM – 3:00 PM<br>Closed Sunday</div>
+    <div class="city-right">
+      <div class="tower t2"></div>
+      <div class="tower t5"></div>
+      <div class="tower t1"></div>
+      <div class="tower t4"></div>
+    </div>
+    
+    <div class="road"></div>
+    <div class="motion"></div>
+    
+    <!-- Animated truck (animation handled in CSS) -->
+    <div class="truck-runner" aria-hidden="true">
+      <div class="truck-body"></div>
+      <div class="truck-cab"></div>
+      <div class="truck-window"></div>
+      <div class="truck-wheel w1"></div>
+      <div class="truck-wheel w2"></div>
+      <div class="truck-logo">Lueri</div>
+    </div>
   </div>
-  <div class="footer-row" style="margin-top:40px;">
-    <div class="brand">
-      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
-      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
-      <span>Lueri International</span>
-    </div>
-    <div class="mono" style="opacity:0.6;">&copy; 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;">Rewards</a> · <a href="careers.html" style="text-decoration:underline;">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a> · <a href="privacy-policy.html" style="text-decoration:underline;">Privacy</a></div>
-    <div class="social-links">
-      <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer">Facebook</a>
-      <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer">Instagram</a>
-      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer">X</a>
-      <a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer">TikTok</a>
-    </div>
-    <div class="foot-stamp">DISPATCH READY</div>
-  </div>
-</footer>
+</div>
 
-<!-- REFACTORED FORM LOGIC (Ethical UX Flow) -->
-<script>
-(function () {
-  'use strict';
-  var overlay = document.getElementById('successOverlay');
-  document.getElementById('successClose').addEventListener('click', function () {
-    overlay.classList.remove('active');
-  });
+<div class="cta-row">
+  <a href="#contact" class="btn btn-primary">Book a Pickup</a>
+  <a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">WhatsApp Us</a>
+</div>
+</div></div></section>
 
-  document.querySelectorAll('[data-copy]').forEach(function (el) {
-    el.addEventListener('click', function () { lueriCopyToClipboard(el.getAttribute('data-copy'), el.getAttribute('data-copy-label')); });
-  });
-  document.querySelectorAll('[data-href]').forEach(function (el) {
-    el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
-  });
-
-  var form = document.getElementById('bookingForm');
-  var submitBtn = document.getElementById('bookingSubmit');
-  var bookingError = document.getElementById('bookingError');
-
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    bookingError.style.display = 'none';
-
-    if (document.getElementById('bookingHoneypot').value) return; 
-
-    var data = {
-      pickup: document.getElementById('pickup').value.trim(),
-      dropoff: document.getElementById('dropoff').value.trim(),
-      details: document.getElementById('details').value.trim(),
-      name: document.getElementById('name').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      time: document.getElementById('time').options[document.getElementById('time').selectedIndex].text,
-      memberNumber: document.getElementById('memberNumber').value.trim(),
-    };
-    if (!data.pickup || !data.dropoff || !data.details || !data.name || !data.time) {
-      bookingError.textContent = 'Please fill in all required fields.';
-      bookingError.style.display = 'block';
-      return;
-    }
-    if (!lueriIsValidPhone(data.phone)) {
-      bookingError.textContent = 'Enter a valid Kenyan phone number (07… or 01…).';
-      bookingError.style.display = 'block';
-      return;
-    }
-
-    submitBtn.disabled = true; 
-    submitBtn.textContent = 'Saving Route...';
-
-    var reference = null;
-    try {
-      var res = await lueri.booking.create(data); 
-      if (res && res.success) reference = res.reference;
-    } catch (err) {
-      console.error('Booking persistence failed:', err);
-    }
-
-    var memberLine = data.memberNumber ? '\nRewards Member No.: ' + data.memberNumber : '';
-    var refLine = reference ? '\nBooking Ref: ' + reference : '';
-    var message = 'New pickup booking - Lueri website' + refLine +
-      '\nName: ' + data.name + '\nPhone: ' + data.phone +
-      '\nPickup: ' + data.pickup + '\nDrop-off: ' + data.dropoff +
-      '\nParcel details: ' + data.details + '\nPreferred time: ' + data.time + memberLine;
-    
-    // Generate the URL but DO NOT auto-open it to prevent jarring UX/blocked popups
-    var waUrl = "https://wa.me/" + LUERI.whatsapp + "?text=" + encodeURIComponent(message);
-
-    // Update Overlay UI for Step 2
-    document.getElementById('successTitle').textContent = 'Step 1 Complete: Route Saved';
-    document.getElementById('successCopy').textContent = 'Your booking request is secured. To dispatch your rider, please confirm the final details via WhatsApp.';
-    
-    var refEl = document.getElementById('successRef');
-    if (reference) { refEl.textContent = 'Reference: ' + reference; refEl.style.display = 'inline-block'; }
-    
-    // Set the explicit CTA button
-    document.getElementById('successWaLink').href = waUrl;
-    document.getElementById('successFallback').style.display = 'block';
-    
-    overlay.classList.add('active');
-
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Send Booking Request';
-    form.reset();
-  });
-})();
-</script>
-<script src="lucy.js" defer></script>
-<script>window.LueriI18n&&window.LueriI18n.init&&window.LueriI18n.init();</script>
-</body>
-</html>
+<section id="services" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">01</span><h2>Services</h2></div><div class="grid3"><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg></div><h3>Parcel &amp; document delivery</h3><p>Point-to-point delivery across Nairobi for individuals — parcels, documents, gifts, and personal errands.</p><a class="btn btn-secondary" href="#contact">Learn more →</a></div><div class="card section-card-float"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l
