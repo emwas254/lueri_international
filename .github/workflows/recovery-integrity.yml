@@ -1,0 +1,185 @@
+name: Recovery Integrity Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  recovery-integrity:
+    name: Recovery integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout with history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Detect changed files
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" | sort > /tmp/changed-files.txt
+          else
+            git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | sort > /tmp/changed-files.txt
+          fi
+          echo "Changed files:"
+          cat /tmp/changed-files.txt || true
+
+      - name: Protect frozen backend/payment/schema paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          forbidden_re='^(supabase/functions/lucy-chat/|supabase/functions/pesapal-initiate/|supabase/functions/pesapal-ipn/|supabase/functions/_shared/|supabase/migrations/|.*\.sql$)'
+          if grep -E "$forbidden_re" /tmp/changed-files.txt; then
+            echo "ERROR: frozen backend/payment/schema path changed. This must be a separate coordinated change."
+            exit 1
+          fi
+
+      - name: JavaScript syntax validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t js_files < <(git ls-files '*.js' | grep -vE '^(node_modules/|vendor/)' || true)
+          if (( ${#js_files[@]} == 0 )); then
+            echo "No tracked JavaScript files found."
+            exit 0
+          fi
+          for file in "${js_files[@]}"; do
+            echo "Checking $file"
+            node --check "$file"
+          done
+
+      - name: Required recovery markers
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          require_text() {
+            local file="$1"
+            local text="$2"
+            if [[ ! -f "$file" ]]; then
+              echo "ERROR: required file missing: $file"
+              exit 1
+            fi
+            if ! grep -Fq "$text" "$file"; then
+              echo "ERROR: required marker/reference missing: '$text' in $file"
+              exit 1
+            fi
+          }
+
+          # Shared-module/bootstrap markers.
+          require_text "lueri-common.js" "lueri.boot"
+          require_text "lueri-common.js" "initReveal"
+
+          # Shared stylesheet must remain present.
+          require_text "assets/site.css" "--ink"
+          require_text "assets/site.css" "--paper"
+          require_text "assets/site.css" "--route"
+
+          # Shared script references must remain present on the customer-facing pages.
+          require_text "index.html" "lueri-common.js"
+          require_text "corporate.html" "lueri-common.js"
+
+          # Lucy loader must exist; its page references must be versioned.
+          require_text "lucy.js" "lucy-ui.js"
+          require_text "index.html" "lucy.js?v="
+          require_text "corporate.html" "lucy.js?v="
+
+          echo "Required recovery markers are present."
+
+      - name: Versioned Lucy UI loader reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in index.html corporate.html; do
+            ref=$(grep -oE 'lucy\.js\?v=[0-9]{8}-[0-9]{2}' "$file" | head -n1 || true)
+            if [[ -z "$ref" ]]; then
+              echo "ERROR: $file does not contain a versioned lucy.js reference."
+              exit 1
+            fi
+            echo "$file: $ref"
+          done
+
+      - name: Local asset existence validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const files = fs.readdirSync('.', {withFileTypes:true})
+            .filter(e => e.isFile() && e.name.endsWith('.html'))
+            .map(e => e.name);
+
+          const localRefs = [];
+          const patterns = [
+            /<(?:script|link)\b[^>]*\bsrc=["']([^"']+)["']/gi,
+            /<(?:script|link)\b[^>]*\bhref=["']([^"']+)["']/gi,
+            /<img\b[^>]*\bsrc=["']([^"']+)["']/gi,
+          ];
+
+          for (const file of files) {
+            const html = fs.readFileSync(file, 'utf8');
+            for (const re of patterns) {
+              for (const match of html.matchAll(re)) {
+                const ref = match[1];
+                if (/^(https?:)?\/\//i.test(ref) || ref.startsWith('data:') || ref.startsWith('#') || ref.startsWith('mailto:') || ref.startsWith('tel:')) continue;
+                const clean = ref.split('?')[0].split('#')[0];
+                if (clean) localRefs.push({file, ref: clean});
+              }
+            }
+          }
+
+          const missing = [];
+          for (const {file, ref} of localRefs) {
+            const target = path.normalize(path.join(path.dirname(file), ref));
+            if (!fs.existsSync(target)) missing.push(`${file} -> ${ref}`);
+          }
+
+          if (missing.length) {
+            console.error('Missing local assets:');
+            for (const item of missing) console.error(`  ${item}`);
+            process.exit(1);
+          }
+          console.log(`Validated ${localRefs.length} local HTML asset references.`);
+          NODE
+
+      - name: Fully rewritten-file banner validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A fully rewritten recovery-sensitive file must carry explicit START/END banners.
+          # Existing files are not retrofitted merely by this gate; this check applies when
+          # the PR changes one of the protected implementation files.
+          protected=("lucy.js" "lucy-ui.js" "lueri-common.js" "assets/site.css")
+          for file in "${protected[@]}"; do
+            if grep -Fxq "$file" /tmp/changed-files.txt 2>/dev/null; then
+              grep -Fq "START — LUERI" "$file" || { echo "ERROR: $file missing START banner"; exit 1; }
+              grep -Fq "END — LUERI" "$file" || { echo "ERROR: $file missing END banner"; exit 1; }
+            fi
+          done
+
+      - name: Gate summary
+        shell: bash
+        run: |
+          echo "Recovery integrity gate passed."
+          echo "Protected backend/payment/schema paths: unchanged."
+          echo "JavaScript syntax: valid."
+          echo "Required markers: present."
+          echo "Versioned Lucy references: present."
+          echo "Local HTML assets: present."
+          echo "Rewrite banners: validated where applicable."
