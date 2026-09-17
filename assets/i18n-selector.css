@@ -1,0 +1,52 @@
+/* Lueri native language selector — readable, theme-aware, flag-preserving */
+.language-selector,
+.language-selector-native {
+  appearance: auto;
+  -webkit-appearance: auto;
+  color: var(--ink) !important;
+  background-color: var(--paper) !important;
+  border: 1.5px solid var(--ink) !important;
+  border-radius: 7px;
+  min-width: 104px;
+  min-height: 38px;
+  padding: 6px 28px 6px 10px !important;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .01em;
+  cursor: pointer;
+  color-scheme: light dark;
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.language-selector:hover,
+.language-selector-native:hover {
+  border-color: var(--route) !important;
+  box-shadow: 0 0 0 2px rgba(184,50,31,.12);
+}
+.language-selector:focus-visible,
+.language-selector-native:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+.language-selector option,
+.language-selector-native option {
+  color: var(--ink) !important;
+  background-color: var(--paper) !important;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+}
+html[dir='rtl'] .language-selector,
+html[dir='rtl'] .language-selector-native {
+  padding-left: 28px !important;
+  padding-right: 10px !important;
+}
+@media (max-width:480px){
+  .language-selector,
+  .language-selector-native {
+    min-width: 92px;
+    min-height: 36px;
+    font-size: .78rem;
+  }
+}
