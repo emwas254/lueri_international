@@ -1,9 +1,13 @@
 'use strict';
 
-// Lueri Rewards — Supabase-backed client.
+// Lueri Rewards — Supabase-backed client. v20260917-03
 // Pesapal pricing, callback URL, and membership activation remain server-authoritative.
+// CHANGELOG v20260917-03:
+//  - rpcCall/registerMember now surface the REAL HTTP error instead of a generic message.
+//  - startMembershipPurchase redirects to checkout.html (the single live checkout
+//    implementation with Pesapal / bank transfer / cheque), per CHANGES-SUMMARY.
 
-// FIX: Centralized config. Added hardcoded fallback for Anon Key because
+// FIX: Centralized config. Hardcoded fallback for Anon Key because
 // rewards.html does not load lueri-common.js, so window.LUERI is undefined.
 const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
 const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5bGlmdmV4cWFteHZ3enZobXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw';
@@ -83,6 +87,7 @@ function handlePesapalEscape(event) {
   if (event.key === 'Escape') closePesapalModal({keepMessage:true});
 }
 
+// Retained for compatibility (checkout.html or other pages may reference it).
 function openPesapalModal(paymentUrl, trackingId, meta = {}) {
   if (!paymentUrl) throw new Error('Payment URL is missing.');
   ensurePesapalModalStyles();
@@ -94,11 +99,10 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
   modal.setAttribute('role','dialog');
   modal.setAttribute('aria-modal','true');
   modal.setAttribute('aria-labelledby','lueriPesapalModalTitle');
-  
-  // FIX: Use safe DOM construction for iframe src to prevent XSS
+
   const safeUrl = String(paymentUrl);
-  const safePlanName = (meta.planName || 'Lueri Rewards membership').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  
+  const safePlanName = String(meta.planName || 'Lueri Rewards membership').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   modal.innerHTML = `
     <div class="pesapal-modal-content">
       <div class="pesapal-modal-header">
@@ -127,7 +131,6 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
       </div>
     </div>`;
 
-  // FIX: Set src via DOM API after creation
   const iframe = modal.querySelector('iframe');
   iframe.src = safeUrl;
 
@@ -152,34 +155,15 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
   return modal;
 }
 
+// CHANGED: paid memberships now go through checkout.html — the single live
+// checkout implementation that offers Pesapal, bank transfer AND cheque.
+// The browser never supplies an amount; the server verifies price at checkout.
 async function startMembershipPurchase(memberId, planCode) {
-  const joinBtn = document.getElementById('joinBtn');
-  if (joinBtn) { joinBtn.disabled = true; joinBtn.textContent = 'Preparing secure payment...'; }
-  try {
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-initiate`, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
-      body:JSON.stringify({ member_id: memberId, plan_code: planCode }),
-    });
-    let data = {};
-    try { data = await response.json(); } catch (_) {}
-    if (!response.ok || !data.redirect_url || !data.order_tracking_id) {
-      const message = data.error || 'Could not start payment. Please try again.';
-      if (typeof showMsg === 'function') showMsg('joinMsg', message);
-      else alert(message);
-      if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = 'Create my Rewards account'; }
-      return { success:false, error:message };
-    }
-    const result = openPesapalModal(data.redirect_url, data.order_tracking_id, { planName:data.plan_display_name, amount:data.amount });
-    if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = 'Create my Rewards account'; }
-    return { success:true, data, modal:result };
-  } catch (err) {
-    console.error('Payment initiation failed:', err);
-    const message = 'Could not start payment. Please try again or contact support.';
-    if (typeof showMsg === 'function') showMsg('joinMsg', message); else alert(message);
-    if (joinBtn) { joinBtn.disabled = false; joinBtn.textContent = 'Create my Rewards account'; }
-    return { success:false, error:message };
-  }
+  const params = new URLSearchParams();
+  params.set('plan', planCode || '');
+  if (memberId) params.set('member', String(memberId));
+  window.location.href = 'checkout.html?' + params.toString();
+  return { success: true, redirected: true };
 }
 
 async function checkPaymentStatus(trackingId, meta = {}) {
@@ -242,7 +226,7 @@ function tierProgress(tierName, windowSpend) {
   return { nextTier:next.name, remaining:Math.max(0,next.min-windowSpend), progress:range > 0 ? Math.min(1,Math.max(0,into/range)) : 1 };
 }
 
-// Renamed to prevent collision with lueri-common.js canonical function
+// Canonical Kenyan phone normalization (fails closed: returns null on bad input).
 function _rewardsNormalizePhone(phone) {
   const value = String(phone || '').trim().replace(/[^\d]/g,'');
   if (value.startsWith('254') && value.length === 12) return value;
@@ -253,14 +237,25 @@ function _rewardsNormalizePhone(phone) {
 
 function capitalizeTier(tier) { const value = String(tier || '').trim(); return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(); }
 
-async function rpcCall(fnName,payload) {
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, { method:'POST', headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` }, body:JSON.stringify(payload) });
-  if (!response.ok) throw new Error('Network error: ' + response.status);
+// CHANGED: surfaces the REAL HTTP status + Supabase error body instead of
+// swallowing it. This is what finally tells us why registration fails.
+async function rpcCall(fnName, payload) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+    body:JSON.stringify(payload)
+  });
+  if (!response.ok) {
+    let detail = '';
+    try { detail = (await response.text()).slice(0, 300); } catch (_) {}
+    throw new Error(`HTTP ${response.status} from Supabase on "${fnName}": ${detail}`);
+  }
   return response.json();
 }
 
 const _txCache = {};
 
+// CHANGED: on failure, shows the real server detail in the red error box.
 async function registerMember(input) {
   const phone = _rewardsNormalizePhone(input.phone);
   if (!phone) return {success:false,errors:['Enter a valid Kenyan phone number.'],member:null};
@@ -268,12 +263,21 @@ async function registerMember(input) {
     const result = await rpcCall('register_member',{p_name:input.name,p_phone:phone,p_email:input.email || null});
     if (!result.success) return {success:false,errors:[result.error],member:null};
     const member = result.member; member.tier = capitalizeTier(member.tier); return {success:true,errors:[],member};
-  } catch (err) { return {success:false,errors:['Could not reach the rewards server. Check your connection and try again.'],member:null}; }
+  } catch (err) {
+    console.error('register_member failed:', err);
+    return {success:false,errors:['Server detail: ' + (err && err.message ? err.message : 'unknown error')],member:null};
+  }
 }
 
 async function getMemberSummary(phone) {
   const normalized = _rewardsNormalizePhone(phone); if (!normalized) return null;
-  let result; try { result = await rpcCall('lookup_member',{p_phone:normalized}); } catch (_) { return null; }
+  let result;
+  try {
+    result = await rpcCall('lookup_member',{p_phone:normalized});
+  } catch (err) {
+    console.error('lookup_member failed:', err);
+    return null;
+  }
   if (!result.success || !result.member) return null;
   const member=result.member; const tierName=capitalizeTier(member.tier); member.tier=tierName;
   const windowSpend=member.tierWindowSpend !== undefined && member.tierWindowSpend !== null ? Number(member.tierWindowSpend) : Number(member.lifetimeSpend)||0;
