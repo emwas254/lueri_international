@@ -1,4 +1,4 @@
-/* Native Lueri i18n helpers. No Google Translate. */
+/* Lueri native i18n presentation — no Google Translate */
 html[dir="rtl"] .docket,
 html[dir="rtl"] .contact-shell,
 html[dir="rtl"] .menu-panel,
@@ -6,3 +6,63 @@ html[dir="rtl"] .menu-panel-inner { direction: rtl; }
 html[dir="rtl"] .docket-row,
 html[dir="rtl"] .cta-row,
 html[dir="rtl"] .why-list li { text-align: right; }
+
+/* Language selector: keep flags, use native language names, and inherit the active theme. */
+.language-selector {
+  appearance: auto;
+  -webkit-appearance: auto;
+  color: var(--ink) !important;
+  background-color: var(--paper) !important;
+  border: 1.5px solid var(--ink) !important;
+  border-radius: 7px !important;
+  min-width: 132px;
+  min-height: 38px;
+  padding: 6px 30px 6px 10px !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: .82rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2;
+  letter-spacing: .01em;
+  cursor: pointer;
+  color-scheme: light dark;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.language-selector:hover {
+  border-color: var(--route) !important;
+  box-shadow: 0 0 0 2px rgba(184, 50, 31, .12);
+}
+.language-selector:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+.language-selector option {
+  color: var(--ink) !important;
+  background-color: var(--paper) !important;
+  font-family: 'IBM Plex Sans', sans-serif !important;
+  font-size: .9rem !important;
+  font-weight: 600 !important;
+  padding: 6px 10px;
+}
+html[data-theme="dark"] .language-selector,
+body.dark .language-selector {
+  color: var(--paper) !important;
+  background-color: var(--ink) !important;
+  border-color: var(--paper) !important;
+}
+html[data-theme="dark"] .language-selector option,
+body.dark .language-selector option {
+  color: var(--paper) !important;
+  background-color: var(--ink) !important;
+}
+html[dir="rtl"] .language-selector {
+  padding-left: 30px !important;
+  padding-right: 10px !important;
+}
+@media (max-width: 560px) {
+  .language-selector {
+    min-width: 118px;
+    min-height: 36px;
+    padding: 5px 25px 5px 8px !important;
+    font-size: .78rem !important;
+  }
+}
