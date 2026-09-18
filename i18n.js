@@ -112,6 +112,7 @@
       if (value) el.setAttribute('aria-label', value);
     });
     setDocumentLocale(locale);
+    if (window.LueriI18nCompletion && typeof window.LueriI18nCompletion.apply === 'function') window.LueriI18nCompletion.apply(locale);
   }
 
   function start() {
