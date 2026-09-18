@@ -61,11 +61,29 @@
     const theme = saved || (global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
   }
+  function syncHeroArtwork() {
+    const image = document.querySelector('.hero-art-image[data-day-src][data-night-src]');
+    if (!image) return;
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const nextSrc = dark ? image.getAttribute('data-night-src') : image.getAttribute('data-day-src');
+    if (nextSrc && image.getAttribute('src') !== nextSrc) image.setAttribute('src', nextSrc);
+  }
+
   function initThemeToggle(button) {
     if (!button) return;
     const sun = document.getElementById('sunIcon'), moon = document.getElementById('moonIcon');
-    const paint = () => { const dark = document.documentElement.getAttribute('data-theme') === 'dark'; if (sun) sun.style.display = dark ? 'block' : 'none'; if (moon) moon.style.display = dark ? 'none' : 'block'; };
-    button.addEventListener('click', () => { const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); localStorage.setItem('theme', next); paint(); });
+    const paint = () => {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (sun) sun.style.display = dark ? 'block' : 'none';
+      if (moon) moon.style.display = dark ? 'none' : 'block';
+      syncHeroArtwork();
+    };
+    button.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      paint();
+    });
     paint();
   }
   function initMenu() {
