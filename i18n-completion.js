@@ -72,6 +72,23 @@ ar:{why:{reviewText:'نبني قاعدة تقييماتنا من خلال عمل
 pt:{why:{reviewText:'Estamos a construir a nossa base de avaliações com clientes reais. Se já utilizou a Lueri e teve uma boa experiência, agradecemos uma avaliação honesta no Facebook — isso ajuda outras empresas de Nairobi a encontrar um serviço de entregas fiável.'}}
 };
 Object.keys(finalMissing).forEach(function(l){merge(window.LueriI18n.translations[l],finalMissing[l]);});
-window.LueriI18nCompletion={apply:function(){if(!window.LueriI18n||!window.LueriI18n.translations)return;Object.keys(add).forEach(function(l){merge(window.LueriI18n.translations[l],add[l]);});}};
+function applyDom(locale){
+  if(!window.LueriI18n||!window.LueriI18n.translations)return;
+  var source=window.LueriI18n.translations[locale]||{};
+  function get(key){return key.split('.').reduce(function(o,k){return o&&o[k];},source)||'';}
+  document.querySelectorAll('[data-i18n]').forEach(function(el){var v=get(el.getAttribute('data-i18n'));if(v)el.textContent=v;});
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){var v=get(el.getAttribute('data-i18n-placeholder'));if(v)el.setAttribute('placeholder',v);});
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(el){var v=get(el.getAttribute('data-i18n-aria'));if(v)el.setAttribute('aria-label',v);});
+  var lang=fill[locale]||add[locale]||{};
+  var prices=(lang.prices||[]),tags=(lang.tags||[]);
+  document.querySelectorAll('.pricing-card .price').forEach(function(n,i){if(prices[i])n.textContent=prices[i];});
+  document.querySelectorAll('.menu-link-tag').forEach(function(n,i){if(tags[i])n.textContent=tags[i];});
+}
+window.LueriI18nCompletion={apply:function(locale){
+  if(!window.LueriI18n||!window.LueriI18n.translations)return;
+  Object.keys(add).forEach(function(l){merge(window.LueriI18n.translations[l],add[l]);});
+  Object.keys(finalMissing).forEach(function(l){merge(window.LueriI18n.translations[l],finalMissing[l]);});
+  applyDom(locale||document.documentElement.lang||'en');
+}};
 window.LueriI18nCompletion.apply();
 })();
