@@ -320,3 +320,39 @@
  .hero-polished .hero-copy .title{font-size:clamp(2.7rem,12vw,4.4rem);}
 }
 @media(prefers-reduced-motion:reduce){.hero-polished .hero-art-image{transition:none;}}
+
+/* MOBILE POLISH — prevent squeezed navigation and oversized hero typography */
+@media (max-width:700px){
+  .wrap{padding-left:16px;padding-right:16px;}
+  .navbar{padding:12px 16px;gap:10px;}
+  .brand{font-size:1rem;gap:8px;flex:1 1 100%;min-width:0;}
+  .brand .mark-img{height:30px;}
+  .nav-controls{width:100%;display:grid;grid-template-columns:auto auto minmax(112px,1fr) auto;align-items:center;gap:8px;}
+  .nav-cta{justify-content:center;white-space:nowrap;padding:9px 10px;font-size:.7rem;}
+  .menu-trigger{justify-content:center;padding:8px 9px;font-size:.68rem;}
+  .theme-toggle{width:36px;height:36px;}
+  .lueri-language-menu{width:100%;min-width:0;}
+  .lueri-language-trigger{width:100%;min-width:0;justify-content:space-between;}
+  .hero-polished .hero-copy{padding:32px 16px 0;}
+  .hero-polished .hero-copy .title{font-size:clamp(2.35rem,11.5vw,3.5rem);line-height:.96;letter-spacing:.01em;max-width:100%;overflow-wrap:anywhere;}
+  .hero-polished .hero-copy .subtitle{font-size:1rem;line-height:1.55;max-width:100%;}
+  .hero-polished .hero-copy-kicker{margin-bottom:16px;}
+  .hero-route-bar{padding:8px 12px;gap:8px;}
+  .hero-route-endpoint{min-width:0;flex:1;justify-content:center;padding:7px 8px;font-size:.58rem;}
+  .cta-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:24px;}
+  .cta-row .btn{width:100%;justify-content:center;}
+  section{padding:44px 0;}
+  .section-head{gap:10px;margin-bottom:28px;}
+  .section-head h2{font-size:2rem;}
+  .section-intro{font-size:.98rem;line-height:1.55;}
+  .pricing-card,.card{padding:22px;}
+  .pricing-card .price{font-size:1.55rem;overflow-wrap:anywhere;}
+  .pricing-note{padding:14px 16px;font-size:.86rem;}
+  .coverage-list{grid-template-columns:1fr;}
+  .contact-shell{padding:32px 18px;}
+}
+@media (max-width:380px){
+  .nav-controls{grid-template-columns:auto auto minmax(100px,1fr);}
+  .nav-cta{grid-column:1 / -1;}
+  .hero-polished .hero-copy .title{font-size:clamp(2.15rem,11.8vw,3rem);}
+}
