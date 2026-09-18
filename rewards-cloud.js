@@ -10,7 +10,7 @@
 // FIX: Centralized config. Hardcoded fallback for Anon Key because
 // rewards.html does not load lueri-common.js, so window.LUERI is undefined.
 const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
-const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5bGlmdmV4cWFteHZ3enZobXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw';
+const SUPABASE_PUBLISHABLE_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
 
 const TIERS = [
   { name: 'VIP', min: 75000, benefits: ['Everything in Platinum','20% off all bookings','4 free standard deliveries every month','Personal account manager','Early access to new services & promotions','Invitations to exclusive Lueri events'] },
@@ -170,7 +170,7 @@ async function checkPaymentStatus(trackingId, meta = {}) {
   if (!trackingId) return;
   try {
     const response = await fetch(`${SUPABASE_URL}/functions/v1/pesapal-status?order_tracking_id=${encodeURIComponent(trackingId)}`, {
-      headers:{ 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+      headers:{ 'apikey':SUPABASE_PUBLISHABLE_KEY },
     });
     if (!response.ok) return;
     const data = await response.json();
@@ -242,7 +242,7 @@ function capitalizeTier(tier) { const value = String(tier || '').trim(); return 
 async function rpcCall(fnName, payload) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
     method:'POST',
-    headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_ANON_KEY, 'Authorization':`Bearer ${SUPABASE_ANON_KEY}` },
+    headers:{ 'Content-Type':'application/json', 'apikey':SUPABASE_PUBLISHABLE_KEY },
     body:JSON.stringify(payload)
   });
   if (!response.ok) {
