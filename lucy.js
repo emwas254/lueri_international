@@ -12,7 +12,7 @@
     script.dataset.lucyUi = 'true';
     document.head.appendChild(script);
     const fix = document.createElement('script');
-    fix.src = 'lucy-fix.js?v=20260919-03';
+    fix.src = 'lucy-fix.js?v=20260919-04';
     fix.defer = true;
     fix.dataset.lucyFix = 'true';
     document.head.appendChild(fix);
