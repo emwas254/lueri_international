@@ -21,7 +21,7 @@
 
   let locale='en', deliveryState={step:'IDLE'}, history=[], isOpen=false, busy=false;
 
-  function currentLocale(){try{const c=[window.LueriI18n&&typeof window.LueriI18n.get==='function'?window.LueriI18n.get():null,localStorage.getItem('lueri-language'),localStorage.getItem('lueri_lang'),localStorage.getItem('lueri_locale')];return c.find(v=>SUPPORTED_LOCALES.includes(v))||'en';}catch(_){return'en';}}
+  function currentLocale(){try{const c=[window.LueriI18n&&typeof window.LueriI18n.get==='function'?window.LueriI18n.get():null,localStorage.getItem('lueri_language'),localStorage.getItem('lueri-language'),localStorage.getItem('lueri_lang'),localStorage.getItem('lueri_locale')];return c.find(v=>SUPPORTED_LOCALES.includes(v))||'en';}catch(_){return'en';}}
   function t(k){return(UI[locale]||UI.en)[k];}
 
   function injectStyles(){if(document.getElementById('lucy-restored-styles'))return;const s=document.createElement('style');s.id='lucy-restored-styles';s.textContent=`
@@ -45,8 +45,52 @@
     catch(err){typing?.remove();addMessage(locale==='zh'?'抱歉，Lucy 暂时无法连接。请稍后再试。':locale==='sw'?'Samahani, Lucy hawezi kuunganishwa kwa sasa. Jaribu tena baadaye.':locale==='fr'?'Désolée, Lucy ne peut pas se connecter pour le moment. Réessayez plus tard.':locale==='es'?'Lo siento, Lucy no puede conectarse ahora. Inténtalo de nuevo más tarde.':locale==='ar'?'عذراً، لا تستطيع لوسي الاتصال الآن. يرجى المحاولة لاحقاً.':locale==='pt'?'Desculpe, a Lucy não consegue conectar-se agora. Tente novamente mais tarde.':'Sorry, Lucy cannot connect right now. Please try again later.','bot');console.error('Lucy chat error',err);}
     finally{busy=false;if(send)send.disabled=false;}
   }
-  function bindLanguage(){const sync=()=>applyLocale(currentLocale());window.addEventListener('lueri-language-change',e=>sync(e?.detail?.locale));document.addEventListener('lueri-language-change',e=>sync(e?.detail?.locale));window.addEventListener('storage',e=>{if(['lueri-language','lueri_lang','lueri_locale'].includes(e.key))sync();});}
-  function init(){injectStyles();build();bindLanguage();}
+  function bindLanguage(){
+    const sync=(value)=>applyLocale(value && SUPPORTED_LOCALES.includes(value) ? value : currentLocale());
+    window.addEventListener('lueri:languagechange',e=>sync(e?.detail?.language));
+    document.addEventListener('lueri:languagechange',e=>sync(e?.detail?.language));
+    window.addEventListener('lueri-language-change',e=>sync(e?.detail?.locale));
+    document.addEventListener('lueri-language-change',e=>sync(e?.detail?.locale));
+    window.addEventListener('storage',e=>{if(['lueri_language','lueri-language','lueri_lang','lueri_locale'].includes(e.key))sync();});
+  }
+  function bindPaymentHandoff(){
+    if(window.__lueriLucyPaymentBound)return;
+    window.__lueriLucyPaymentBound=true;
+    window.addEventListener('lueri-lucy-payment-ready',async(e)=>{
+      const detail=e?.detail||{};
+      const payload=detail.payload||{};
+      const input=document.getElementById('lucy-input');
+      const send=document.getElementById('lucy-send');
+      try{
+        if(!payload.pickup||!payload.dropoff||!payload.customer_name||!payload.phone){
+          throw new Error('The booking details are incomplete. Please restart the booking.');
+        }
+        const res=await fetch(`${API_BASE.replace('/functions/v1','')}/functions/v1/delivery-payment-initiate`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            pickup:payload.pickup,
+            dropoff:payload.dropoff,
+            details:payload.details||'',
+            customer_name:payload.customer_name,
+            customer_phone:payload.phone,
+            customer_email:payload.customer_email||'',
+            preferred_time:payload.preferred_time||'',
+            member_id:payload.member_id||null
+          })
+        });
+        const data=await res.json().catch(()=>({}));
+        if(!res.ok||!data.redirectUrl)throw new Error(data.error||'We could not open the secure payment page.');
+        addMessage(locale==='zh'?'正在打开安全付款页面…':locale==='sw'?'Tunafungua ukurasa salama wa malipo…':locale==='fr'?'Ouverture de la page de paiement sécurisée…':locale==='es'?'Abriendo la página de pago seguro…':locale==='ar'?'جارٍ فتح صفحة الدفع الآمنة…':locale==='pt'?'A abrir a página de pagamento segura…':'Opening the secure payment page…','bot');
+        window.location.href=data.redirectUrl;
+      }catch(err){
+        console.error('Lucy payment handoff failed',err);
+        addMessage(locale==='zh'?'无法打开付款页面，请稍后再试。':locale==='sw'?'Hatukuweza kufungua ukurasa wa malipo. Tafadhali jaribu tena.':locale==='fr'?'Impossible d’ouvrir la page de paiement. Veuillez réessayer.':locale==='es'?'No pudimos abrir la página de pago. Inténtalo de nuevo.':locale==='ar'?'تعذر فتح صفحة الدفع. يرجى المحاولة مرة أخرى.':locale==='pt'?'Não foi possível abrir a página de pagamento. Tente novamente.':'We could not open the payment page. Please try again.','bot');
+        if(input)input.focus();
+      }finally{if(send)send.disabled=false;}
+    });
+  }
+  function init(){injectStyles();build();bindLanguage();bindPaymentHandoff();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
   window.LucyChatbot={setLanguage:applyLocale,open:()=>{isOpen=true;document.getElementById('lucy-panel')?.classList.add('is-open');},close:()=>{isOpen=false;document.getElementById('lucy-panel')?.classList.remove('is-open');}};
 })();
