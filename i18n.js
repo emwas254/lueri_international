@@ -174,11 +174,7 @@
     }
   }
 
-  /* Native Lueri translation runtime — no external translation widget/CDN dependency. */
-  document.write('<script src="i18n-translations.js"><\\/script>');
-  document.write('<script src="i18n-completion.js"><\\/script>');
-  document.write('<script src="i18n-strict.js"><\\/script>');
-
+  /* Translation dependencies are loaded explicitly before this runtime by the page. */
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();
