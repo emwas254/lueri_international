@@ -243,7 +243,20 @@
       savedAt: Date.now(),
     });
 
-    window.location.href = data.redirect_url;
+    const panel = document.getElementById('lueriPaymentPanel');
+    const frame = document.getElementById('lueriPaymentFrame');
+    const loading = document.getElementById('lueriPaymentLoading');
+    const status = document.getElementById('lueriPaymentStatus');
+    const planLabel = document.getElementById('lueriPaymentPlan');
+    if (!panel || !frame) throw new Error('The secure payment panel could not be loaded.');
+    if (planLabel) planLabel.textContent = (planCode === 'biz_gold' ? 'Essential' : planCode === 'biz_platinum' ? 'Professional' : 'Elite') + ' corporate membership';
+    if (loading) loading.classList.remove('hidden');
+    if (status) status.textContent = 'Your secure payment is loading…';
+    panel.classList.add('active');
+    panel.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    frame.src = data.redirect_url;
+    frame.addEventListener('load', () => loading?.classList.add('hidden'), { once: true });
   }
 
   async function pollCorporatePayment() {
@@ -262,6 +275,32 @@
     }
     return { status: 'pending' };
   }
+
+
+  window.addEventListener('message', async (event) => {
+    if (event.origin !== window.location.origin || !event.data || event.data.type !== 'lueri-pesapal-callback') return;
+    const state = readState(PAYMENT_STATE_KEY);
+    if (!state || (event.data.reference && state.internalReference && event.data.reference !== state.internalReference)) return;
+    const statusEl = document.getElementById('lueriPaymentStatus');
+    if (statusEl) statusEl.textContent = 'Payment received. Confirming securely with Lueri…';
+    const result = await pollCorporatePayment();
+    const panel = document.getElementById('lueriPaymentPanel');
+    if (result?.status === 'successful') {
+      if (statusEl) statusEl.innerHTML = '<strong>Payment confirmed.</strong> Your corporate membership is now active.';
+      panel?.classList.remove('active');
+      document.body.style.overflow = '';
+      setOverlay('Payment confirmed', 'Your corporate membership payment has been confirmed by Lueri. Your organization is now active under the selected plan.', null);
+    } else if (result?.status === 'pending') {
+      if (statusEl) statusEl.innerHTML = '<strong>Payment received.</strong> Final confirmation is still pending. You can safely close this panel; Lueri will activate the membership after Pesapal confirmation.';
+    } else {
+      if (statusEl) statusEl.innerHTML = '<strong>Payment not completed.</strong> No corporate membership was activated.';
+    }
+  });
+
+  document.getElementById('lueriPaymentClose')?.addEventListener('click', () => {
+    document.getElementById('lueriPaymentPanel')?.classList.remove('active');
+    document.body.style.overflow = '';
+  });
 
   async function handlePesapalReturn() {
     const params = new URLSearchParams(window.location.search);
