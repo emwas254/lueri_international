@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payment confirmation — Lueri International</title>
+<style>
+:root{--ink:#1B2620;--paper:#F0EAD8;--route:#B8321F;--slate:#4A5A52;--signal:#E8B93D}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--paper);color:var(--ink);font-family:Arial,sans-serif}
+.card{width:min(560px,100%);background:#fff;border:1px solid rgba(27,38,32,.16);border-radius:14px;padding:34px;box-shadow:0 20px 60px rgba(27,38,32,.12);text-align:center}
+.mark{width:54px;height:54px;border-radius:50%;margin:0 auto 18px;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:25px;font-weight:700}
+h1{margin:0 0 10px;font-size:1.45rem}p{margin:0;color:var(--slate);line-height:1.6}.ref{margin-top:18px;font:600 .78rem/1.4 monospace;color:var(--route);word-break:break-word}
+.small{margin-top:20px;font-size:.78rem;color:var(--slate)}
+</style>
+</head>
+<body>
+<main class="card" role="status" aria-live="polite">
+<div class="mark">✓</div>
+<h1 id="title">Payment received</h1>
+<p id="copy">Lueri is confirming your payment securely. You can close this window when the checkout confirms.</p>
+<div class="ref" id="ref"></div>
+<p class="small">Do not refresh the payment screen while confirmation is in progress.</p>
+</main>
+<script>
+(function(){
+ const params=new URLSearchParams(location.search);
+ const payload={
+   type:'lueri-pesapal-callback',
+   payment:'complete',
+   paymentType:params.get('type')||'membership',
+   trackingId:params.get('OrderTrackingId')||'',
+   reference:params.get('OrderMerchantReference')||''
+ };
+ document.getElementById('ref').textContent=payload.reference?'Reference: '+payload.reference:'';
+ try{
+   if(window.parent!==window){
+     window.parent.postMessage(payload, location.origin);
+   }
+ }catch(e){}
+})();
+</script>
+</body>
+</html>
