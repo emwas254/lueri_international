@@ -61,11 +61,17 @@
     const theme = saved || (global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
   }
+  /* Hero photography follows Nairobi local time, independently of the manual color-theme toggle. */
   function syncHeroArtwork() {
     const image = document.querySelector('.hero-art-image[data-day-src][data-night-src]');
     if (!image) return;
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const nextSrc = dark ? image.getAttribute('data-night-src') : image.getAttribute('data-day-src');
+    const hour = Number(new Intl.DateTimeFormat('en-KE', {
+      timeZone: 'Africa/Nairobi',
+      hour: 'numeric',
+      hour12: false
+    }).format(new Date()));
+    const isDaylight = hour >= 6 && hour < 18;
+    const nextSrc = isDaylight ? image.getAttribute('data-day-src') : image.getAttribute('data-night-src');
     if (nextSrc && image.getAttribute('src') !== nextSrc) image.setAttribute('src', nextSrc);
   }
 
@@ -85,6 +91,9 @@
       paint();
     });
     paint();
+    /* Re-check at the top of each minute so the correct day/night photo
+       appears even when the page remains open across 06:00 or 18:00 EAT. */
+    global.setInterval(syncHeroArtwork, 60000);
   }
   function initMenu() {
     const trigger = document.getElementById('menuTrigger'), panel = document.getElementById('menuPanel'), label = document.getElementById('menuTriggerLabel');
