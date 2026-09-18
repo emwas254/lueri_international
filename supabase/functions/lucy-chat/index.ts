@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
         return (x.role === "user" || x.role === "assistant") && typeof x.content === "string" && x.content.trim() && x.content.length <= MAX_MESSAGE_LEN;
       }).slice(-MAX_HISTORY_ITEMS).map((item: { role: "user" | "assistant"; content: string }) => ({ role: item.role, content: item.content }));
       const augmentedSystemPrompt = `${SYSTEM_PROMPT}\n\nLANGUAGE INSTRUCTION:\n${LOCALE_INSTRUCTIONS[validLocale]}`;
-      const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" }, body: JSON.stringify({ model: MODEL, max_tokens: 300, system: augmentedSystemPrompt,\n    messages: [...history, { role: "user", content: message }] }) });
+      const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" }, body: JSON.stringify({ model: MODEL, max_tokens: 300, system: augmentedSystemPrompt, messages: [...history, { role: "user", content: message }] }) });
       if (!res.ok) { console.error("Anthropic API error", res.status, await res.text()); return json({ reply: `Lucy is having trouble right now. Please WhatsApp Lueri directly: ${WA}`, delivery_state: state }); }
       const data = await res.json();
       reply = data?.content?.find((b: { type: string }) => b.type === "text")?.text?.trim() ?? `I’m not sure about that. Please WhatsApp Lueri directly: ${WA}`;
