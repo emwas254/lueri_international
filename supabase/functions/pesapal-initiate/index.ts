@@ -169,7 +169,7 @@ Deno.serve(async (req) => {
   try {
     const token = await getAuthToken();
     const nameParts = safeNameParts(billingName);
-    const callbackPath = `/payment-callback.html?payment=complete&type=${isBusiness ? "corporate" : "membership"}`;
+    const callbackPath = `/checkout.html?payment=complete&type=${isBusiness ? "corporate" : "membership"}`;
     const orderRes = await fetch(`${BASE_URL}/Transactions/SubmitOrderRequest`, {
       method: "POST",
       headers: {
@@ -182,6 +182,7 @@ Deno.serve(async (req) => {
         currency: "KES",
         amount: priceKes,
         description: `Lueri ${isBusiness ? "Business" : "Rewards"} — ${plan.display_name} membership`,
+        redirect_mode: "PARENT_WINDOW",
         callback_url: `${SITE_URL}${callbackPath}`,
         notification_id: IPN_ID,
         billing_address: {
