@@ -184,7 +184,7 @@
       if (bankFields) bankFields.style.display = isPaidPlan && isBank ? 'block' : 'none';
       if (hint) {
         hint.textContent = isPesapal
-          ? 'You will be taken directly to Pesapal for secure M-Pesa or card payment.'
+          ? 'A secure Pesapal payment panel opens here for M-Pesa or card payment. You stay on the Lueri checkout.'
           : isBank
             ? 'Transfer to Lueri, enter the bank transaction reference, then wait for staff verification.'
             : isCheque
