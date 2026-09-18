@@ -17,7 +17,9 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const PESAPAL_ENV = Deno.env.get("PESAPAL_ENV") ?? "sandbox";
+const SITE_URL = Deno.env.get("SITE_URL") ?? "https://lueriinternational.com";
+function isProductionUrl(url: string): boolean { try { return ["lueriinternational.com","www.lueriinternational.com"].includes(new URL(url).hostname); } catch { return false; } }
+const PESAPAL_ENV = Deno.env.get("PESAPAL_ENV") ?? (isProductionUrl(SITE_URL) ? "live" : "sandbox");
 const BASE_URL =
   PESAPAL_ENV === "live"
     ? "https://pay.pesapal.com/v3/api"
