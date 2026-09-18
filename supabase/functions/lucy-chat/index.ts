@@ -50,7 +50,7 @@ Pricing: Single delivery from KES 350. Final price depends on zones and parcel s
 Corporate: Essential KES 25,000/month (5 deliveries included, KES 600/delivery after); Professional KES 45,000/month (12 included, KES 550/delivery after); Elite KES 75,000/month (25 included, KES 500/delivery after). Custom Enterprise agreements available above Elite. Corporate applications are reviewed and activated within about one working day; activation is not automatic.
 Same-day delivery is an estimate, not a guarantee; traffic and weather can affect timing.
 Liability: lower of declared value or KES 5,000 per item unless otherwise agreed in writing.
-Booking: use the Book a Pickup form on the website, or WhatsApp Lueri with pickup location, drop-off location and parcel details.
+Booking: Lucy can guide a customer through pickup location, drop-off location, parcel details, preferred time, name, phone and email, then hand the completed booking to the secure delivery-payment flow. Customers may also use the Book a Pickup form or WhatsApp Lueri.
 Privacy: Lucy cannot access customer accounts, orders, delivery locations or payment records. Specific delivery/payment/account questions must go to WhatsApp.
 Rewards: free loyalty program; points are earned per delivery. Tiers: Bronze, Silver, Gold, Platinum and VIP.
 Membership payment methods: the current Lueri Rewards membership checkout offers Pesapal (M-Pesa and cards), bank transfer, and cheque. Bank-transfer and cheque submissions remain pending verification until Lueri staff confirms them. Do not claim that a bank transfer or cheque has been verified or that membership is active unless the customer receives confirmation through the official Lueri process.`.trim();
