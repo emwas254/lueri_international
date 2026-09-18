@@ -562,22 +562,22 @@
     joinBtn.textContent = 'Setting up your account…';
     let result = await registerMember(input);
 
-    const alreadyMember = !result.success
-      && result.errors.length === 1
-      && result.errors[0] === 'A rewards member already exists with this phone number.';
+    const duplicatePhone = !result?.success
+      && /already exists with this phone number/i.test(String(result?.error || result?.errors?.[0]?.message || ''));
 
-    if (!result.success && selectedPurchasePlan && alreadyMember) {
+    if (duplicatePhone) {
       const summary = await getMemberSummary(input.phone);
-      if (summary) {
-        result = { success: true, errors: [], member: summary.member };
+      if (summary?.success && summary.member) {
+        result = { success: true, existing: true, errors: [], member: summary.member };
       }
     }
 
     joinBtn.disabled = false;
     joinBtn.textContent = 'Create my Rewards account';
 
-    if (!result.success) {
-      showMsg('joinMsg', result.errors.join(' '));
+    if (!result?.success) {
+      const message = result?.error || (Array.isArray(result?.errors) ? result.errors.map(e => e?.message || e).join(' ') : 'We could not create your Rewards account.');
+      showMsg('joinMsg', message);
       return;
     }
 
@@ -587,7 +587,11 @@
       return;
     }
 
-    showMsg('joinSuccessMsg', `Welcome, ${result.member.name.split(' ')[0]}! Your Rewards account is set up. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`);
+    const firstName = String(result.member.name || 'there').split(' ')[0];
+    const existingText = result.existing
+      ? `Welcome back, ${firstName}! We found your existing Rewards account. You are currently ${result.member.tier || 'Bronze'} and your existing points remain attached to your account.`
+      : `Welcome, ${firstName}! Your Rewards account is set up as Bronze. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`;
+    showMsg('joinSuccessMsg', existingText);
 
     const continueBtn = document.createElement('button');
     continueBtn.className = 'btn btn-secondary';
