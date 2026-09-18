@@ -169,7 +169,9 @@ Deno.serve(async (req) => {
   try {
     const token = await getAuthToken();
     const nameParts = safeNameParts(billingName);
-    const callbackPath = `/checkout.html?payment=complete&type=${isBusiness ? "corporate" : "membership"}`;
+    const callbackPath = isBusiness
+      ? `/payment-callback.html?payment=complete&type=corporate`
+      : `/checkout.html?payment=complete&type=membership&plan=${encodeURIComponent(plan.code)}`;
     const orderRes = await fetch(`${BASE_URL}/Transactions/SubmitOrderRequest`, {
       method: "POST",
       headers: {
