@@ -153,6 +153,7 @@
   /* i18next UMD runtime + existing Lueri translation resources. */
   document.write('<script src="https://cdn.jsdelivr.net/npm/i18next@25.6.0/dist/umd/i18next.min.js"><\\/script>');
   document.write('<script src="i18n-engine.js"><\\/script>');
+  document.write('<script src="i18n-translations.js"><\\/script>');
   document.write('<script src="i18n-completion.js"><\\/script>');
   document.write('<script src="i18n-strict.js"><\\/script>');
 
