@@ -21,7 +21,7 @@
   /* ---------------- 1. CONFIG ---------------- */
   const LUERI = {
     supabaseUrl: 'https://ylifvexqamxvwzvhmwex.supabase.co',
-    supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ5bGlmdmV4cWFteHZ3enZobXdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxODY0NTEsImV4cCI6MjEwMzc2MjQ1MX0.BqQ2vht0GOO3nlpYMdaTIz4q63XuzRH86N5L9QNaDKw',
+    supabaseAnonKey: 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F',
     whatsapp: '254713261719',
     whatsappDisplay: '0713 261 719',
     email: 'info@lueriinternational.com',
