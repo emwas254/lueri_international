@@ -6,9 +6,12 @@
   const LANG=['en','sw','fr','es','ar','pt','zh'];
   const KEY='lueri_language';
 
-  function locale(){
+  function locale(preferred){
     try{
-      const v=(window.LueriI18n&&typeof window.LueriI18n.get==='function'&&window.LueriI18n.get())
+      const v=preferred
+        || document.documentElement.dataset.lueriLanguage
+        || document.documentElement.dataset.lucyLanguage
+        || (window.LueriI18n&&typeof window.LueriI18n.get==='function'&&window.LueriI18n.get())
         || localStorage.getItem(KEY)
         || localStorage.getItem('lueri-language')
         || localStorage.getItem('lueri_lang')
@@ -18,8 +21,8 @@
     }catch(_){return'en';}
   }
 
-  function sync(){
-    const v=locale();
+  function sync(preferred){
+    const v=locale(preferred);
     document.documentElement.dataset.lueriLanguage=v;
     document.documentElement.lang=v==='zh'?'zh-CN':v;
     document.documentElement.dir=v==='ar'?'rtl':'ltr';
