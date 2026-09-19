@@ -35,7 +35,19 @@ function apply(loc){
  const w=a.why;set(q('#why-business h2'),w[0]);qa('#why-business li').forEach((li,i)=>{set(li.querySelector('h3'),w[1+i*2]);set(li.querySelector('p'),w[2+i*2])});
  const p=a.plans;set(q('#corporate-pricing h2'),p[0]);qa('.pricing-card').forEach((c,i)=>{const x=p[1+i];set(c.querySelector('.tier'),x[0]);set(c.querySelector('h3'),x[1]);set(c.querySelector('p'),x[2]);c.querySelectorAll('li').forEach((li,j)=>set(li,x[3+j]))});const notes=qa('#corporate-pricing .pricing-note');set(notes[0],p[4],1);set(notes[1].querySelector('strong'),p[5]);set(notes[1],linkify(p[6]),1);
  const f=a.form;set(q('#apply h2'),f[0]);const labs=qa('#corporateForm .form-label');for(let i=0;i<9;i++)set(labs[i],f[i+1]);if(q('#plan')){q('#plan').options[0].text=f[3];q('#plan').options[1].text=(loc==='en'?'Essential':loc==='zh'?'基础版':loc==='sw'?'Essential':loc==='fr'?'Essential':loc==='es'?'Essential':loc==='ar'?'Essential':'Essential')+' — KES 25,000/mo';q('#plan').options[2].text=(loc==='zh'?'专业版':loc==='sw'?'Professional':loc==='fr'?'Professional':loc==='es'?'Professional':loc==='ar'?'Professional':'Professional')+' — KES 45,000/mo';q('#plan').options[3].text=(loc==='zh'?'精英版':loc==='sw'?'Elite':loc==='fr'?'Elite':loc==='es'?'Elite':loc==='ar'?'Elite':'Elite')+' — KES 75,000/mo';q('#plan').options[4].text=f[4]}if(q('#volume')){q('#volume').options[0].text=f[8];q('#volume').options[1].text=loc==='zh'?'1–5':loc==='ar'?'١–٥':'1–5';q('#volume').options[2].text=loc==='zh'?'6–20':loc==='ar'?'٦–٢٠':'6–20';q('#volume').options[3].text=loc==='zh'?'21–50':loc==='ar'?'٢١–٥٠':'21–50';q('#volume').options[4].text=loc==='zh'?'50+':loc==='ar'?'٥٠+':'50+'}set(q('#kraPinHint'),f[6]);q('#jobTitle').placeholder=f[12];set(q('#corporateForm button[type=submit]'),f[15]);const ps=qa('#corporateForm>p');if(ps[1])set(ps[1],f[16]+' '+linkify(f[17]),1);
- const ft=a.footer,ld=qa('footer .legal-block>div');set(ld[0].querySelector('strong'),ft[0]);set(ld[0],'<strong>'+ft[0]+'</strong><br>'+ft[1]+'<br>'+ft[2]);set(ld[1].querySelector('strong'),ft[3]);set(ld[2],'<strong>'+ft[4]+'</strong><br>'+ft[5]+'<br>'+ft[6]+'<br>'+ft[7]);const links=qa('footer .footer-row .mono a');[ft[8],ft[9],ft[10],ft[11]].forEach((v,i)=>set(links[i],v));set(q('.foot-stamp'),ft[12]);
+ const ft=a.footer,ld=qa('footer .legal-block>div');
+ if(ld[0]){
+   ld[0].replaceChildren();
+   const s0=document.createElement('strong');s0.textContent=ft[0];ld[0].appendChild(s0);
+   ld[0].appendChild(document.createElement('br'));ld[0].appendChild(document.createTextNode(ft[1]));
+   ld[0].appendChild(document.createElement('br'));ld[0].appendChild(document.createTextNode(ft[2]));
+ }
+ if(ld[1]){const s1=ld[1].querySelector('strong');if(s1)s1.textContent=ft[3];}
+ if(ld[2]){
+   ld[2].replaceChildren();
+   const s2=document.createElement('strong');s2.textContent=ft[4];ld[2].appendChild(s2);
+   [ft[5],ft[6],ft[7]].forEach(function(v){ld[2].appendChild(document.createElement('br'));ld[2].appendChild(document.createTextNode(v));});
+ }const links=qa('footer .footer-row .mono a');[ft[8],ft[9],ft[10],ft[11]].forEach((v,i)=>set(links[i],v));set(q('.foot-stamp'),ft[12]);
  const pay=a.pay;set(q('#lueriPaymentTitle'),pay[0]);if(q('#lueriPaymentClose'))q('#lueriPaymentClose').setAttribute('aria-label',pay[1]);set(q('#lueriPaymentLoading'),pay[2]);set(q('#lueriPaymentStatus'),pay[3]);
  try{localStorage.setItem(K,loc)}catch(e){}window.dispatchEvent(new CustomEvent('lueri:languagechange',{detail:{language:loc}}))
 }
