@@ -85,7 +85,6 @@ Deno.serve(async (req) => {
   try {
     const rawLocale = String((await req.clone().json().catch(() => ({})))?.locale ?? "en");
     const validRequestLocale = SUPPORTED_LOCALES.includes(rawLocale) ? rawLocale : "en";
-    if (!ANTHROPIC_API_KEY) return json({ reply: fallback(validRequestLocale, "setup"), delivery_state: { step: "IDLE" } });
     const body = await req.json().catch(() => ({}));
     const message = String(body?.message ?? "").trim();
     if (!message) return json({ error: "Empty message" }, 400);
