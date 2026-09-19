@@ -133,14 +133,27 @@ Deno.serve(async (req) => {
       } else if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
         reply = fallback(validLocale, "api");
       } else {
-        const ref = encodeURIComponent(reference);
-        const url = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at,pickup,dropoff&or=(id.eq." + ref + ",pesapal_tracking_id.eq." + ref + ")&limit=1";
-        const lookup = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: "Bearer " + SUPABASE_SERVICE_ROLE_KEY } });
-        if (!lookup.ok) {
-          console.error("Lucy tracking lookup error", lookup.status, await lookup.text());
+        const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: "Bearer " + SUPABASE_SERVICE_ROLE_KEY };
+        let rows: unknown[] = [];
+        const trackingUrl = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at&pesapal_tracking_id=eq." + encodeURIComponent(reference) + "&limit=1";
+        const trackingLookup = await fetch(trackingUrl, { headers });
+        if (!trackingLookup.ok) {
+          console.error("Lucy tracking lookup error", trackingLookup.status, await trackingLookup.text());
           reply = fallback(validLocale, "api");
         } else {
-          const rows = await lookup.json().catch(() => []);
+          rows = await trackingLookup.json().catch(() => []);
+          if (!Array.isArray(rows) || rows.length === 0 && /^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(reference)) {
+            const idUrl = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at&id=eq." + encodeURIComponent(reference) + "&limit=1";
+            const idLookup = await fetch(idUrl, { headers });
+            if (!idLookup.ok) {
+              console.error("Lucy booking-id lookup error", idLookup.status, await idLookup.text());
+              reply = fallback(validLocale, "api");
+            } else {
+              rows = await idLookup.json().catch(() => []);
+            }
+          }
+        }
+        if (!reply) {
           const booking = Array.isArray(rows) ? rows[0] : null;
           if (!booking) {
             const notFound: Record<string,string> = {
