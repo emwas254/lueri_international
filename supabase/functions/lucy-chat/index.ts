@@ -2,6 +2,8 @@
 // Public-support assistant only: no private account/order/payment lookup or tool use.
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 // OpenAI GPT-5.6 Luna is used for cost-sensitive, high-volume customer support.
 const MODEL = "gpt-5.6-luna";
 const MAX_MESSAGE_LEN = 500;
@@ -10,7 +12,7 @@ const WA = "https://wa.link/qk7m3b";
 const SUPPORTED_LOCALES = ["en", "sw", "fr", "es", "ar", "pt", "zh"];
 
 type DeliveryState = {
-  step: "IDLE" | "PICKUP" | "DROPOFF" | "PARCEL" | "TIME" | "NAME" | "PHONE" | "EMAIL" | "REVIEW";
+  step: "IDLE" | "TRACKING" | "PICKUP" | "DROPOFF" | "PARCEL" | "TIME" | "NAME" | "PHONE" | "EMAIL" | "REVIEW";
   pickup?: string;
   dropoff?: string;
   details?: string;
@@ -76,6 +78,22 @@ function flow(locale: string, key: string) { return FLOW[locale]?.[key] ?? FLOW.
 function fill(template: string, state: DeliveryState) { return template.replace("{pickup}", state.pickup ?? "").replace("{dropoff}", state.dropoff ?? "").replace("{details}", state.details ?? "").replace("{time}", state.preferred_time ?? "").replace("{name}", state.customer_name ?? "").replace("{phone}", state.customer_phone ?? "").replace("{email}", state.customer_email ?? ""); }
 function isBookingIntent(message: string) { return /\b(book|booking|pickup|pick up|delivery|deliver|courier|oda|agiza|usafirishaji|réserver|livraison|reservar|entrega|حجز|توصيل|agendar|entrega|预订|取件|配送)\b/i.test(message); }
 function isYes(message: string) { return /\b(yes|yeah|yep|sure|okay|ok|proceed|ndiyo|ndio|oui|sí|si|sim|نعم|是|好的)\b/i.test(message.trim()); }
+function trackingStatus(locale: string, status: string) {
+  const s = String(status || "pending").toLowerCase();
+  const labels: Record<string, Record<string,string>> = {
+    en: { pending:"Pending", confirmed:"Confirmed", paid:"Payment confirmed", processing:"Processing", assigned:"Courier assigned", picked_up:"Picked up", in_transit:"In transit", delivered:"Delivered", cancelled:"Cancelled", failed:"Needs attention" },
+    sw: { pending:"Inasubiri", confirmed:"Imethibitishwa", paid:"Malipo yamethibitishwa", processing:"Inachakatwa", assigned:"Courier amepewa", picked_up:"Imechukuliwa", in_transit:"Iko njiani", delivered:"Imefikishwa", cancelled:"Imeghairiwa", failed:"Inahitaji uangalizi" },
+    fr: { pending:"En attente", confirmed:"Confirmée", paid:"Paiement confirmé", processing:"En traitement", assigned:"Coursier affecté", picked_up:"Collectée", in_transit:"En cours d’acheminement", delivered:"Livrée", cancelled:"Annulée", failed:"Nécessite une vérification" },
+    es: { pending:"Pendiente", confirmed:"Confirmada", paid:"Pago confirmado", processing:"En proceso", assigned:"Repartidor asignado", picked_up:"Recogida", in_transit:"En tránsito", delivered:"Entregada", cancelled:"Cancelada", failed:"Requiere atención" },
+    ar: { pending:"قيد الانتظار", confirmed:"تم التأكيد", paid:"تم تأكيد الدفع", processing:"قيد المعالجة", assigned:"تم تعيين مندوب", picked_up:"تم الاستلام", in_transit:"في الطريق", delivered:"تم التسليم", cancelled:"ملغاة", failed:"تحتاج إلى مراجعة" },
+    pt: { pending:"Pendente", confirmed:"Confirmada", paid:"Pagamento confirmado", processing:"Em processamento", assigned:"Estafeta atribuído", picked_up:"Recolhida", in_transit:"Em trânsito", delivered:"Entregue", cancelled:"Cancelada", failed:"Requer atenção" },
+    zh: { pending:"待处理", confirmed:"已确认", paid:"付款已确认", processing:"处理中", assigned:"已分配配送员", picked_up:"已取件", in_transit:"配送中", delivered:"已送达", cancelled:"已取消", failed:"需要处理" }
+  };
+  return labels[locale]?.[s] ?? labels.en[s] ?? status;
+}
+function isTrackingIntent(message: string) {
+  return /\b(track|tracking|track delivery|delivery status|where is my delivery|fuatilia|oda yangu iko wapi|suivre|suivi|rastrear|seguimiento|تتبع|حالة التوصيل|追踪|配送状态)\b/i.test(message);
+}
 
 Deno.serve(async (req) => {
   let requestLocale = "en";
@@ -99,14 +117,77 @@ Deno.serve(async (req) => {
 
     // Deterministic Lueri product/service answers: these do not depend on the AI provider.
     // This keeps Lucy useful for core product questions even if the AI layer is temporarily unavailable.
-    if (state.step === "IDLE") {
+    if (state.step === "TRACKING") {
+      const reference = message.trim().replace(/^#/, "");
+      if (!/^[A-Za-z0-9-]{6,80}$/.test(reference)) {
+        const prompts: Record<string,string> = {
+          en:"Please enter your Lueri tracking/reference number (for example, the reference shown on your booking or payment confirmation).",
+          sw:"Tafadhali weka nambari yako ya ufuatiliaji/rejea ya Lueri (kwa mfano, nambari iliyo kwenye uthibitisho wa oda au malipo).",
+          fr:"Veuillez saisir votre numéro de suivi/référence Lueri (par exemple, celui indiqué sur votre confirmation de réservation ou de paiement).",
+          es:"Introduce tu número de seguimiento/referencia de Lueri (por ejemplo, el que aparece en la confirmación de la reserva o del pago).",
+          ar:"يرجى إدخال رقم التتبع/المرجع الخاص بـ Lueri، مثل الرقم الموجود في تأكيد الحجز أو الدفع.",
+          pt:"Introduza o seu número de rastreio/referência Lueri, por exemplo o número indicado na confirmação da reserva ou pagamento.",
+          zh:"请输入您的 Lueri 跟踪/参考编号，例如预订或付款确认中的编号。"
+        };
+        reply = prompts[validLocale] ?? prompts.en;
+      } else if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+        reply = fallback(validLocale, "api");
+      } else {
+        const ref = encodeURIComponent(reference);
+        const url = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at,pickup,dropoff&or=(id.eq." + ref + ",pesapal_tracking_id.eq." + ref + ")&limit=1";
+        const lookup = await fetch(url, { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: "Bearer " + SUPABASE_SERVICE_ROLE_KEY } });
+        if (!lookup.ok) {
+          console.error("Lucy tracking lookup error", lookup.status, await lookup.text());
+          reply = fallback(validLocale, "api");
+        } else {
+          const rows = await lookup.json().catch(() => []);
+          const booking = Array.isArray(rows) ? rows[0] : null;
+          if (!booking) {
+            const notFound: Record<string,string> = {
+              en:"I couldn't find a delivery with that reference. Please check the number and try again. If it is correct and still cannot be found, WhatsApp Lueri for help.",
+              sw:"Sijaweza kupata delivery yenye nambari hiyo. Tafadhali kagua nambari na ujaribu tena. Ikiwa ni sahihi lakini bado haipatikani, wasiliana na Lueri kupitia WhatsApp.",
+              fr:"Je ne trouve aucune livraison avec cette référence. Vérifiez le numéro et réessayez. S’il est correct mais introuvable, contactez Lueri sur WhatsApp.",
+              es:"No encontré una entrega con esa referencia. Comprueba el número e inténtalo de nuevo. Si es correcto y no aparece, contacta con Lueri por WhatsApp.",
+              ar:"لم أجد عملية توصيل بهذا المرجع. يرجى التحقق من الرقم والمحاولة مرة أخرى. إذا كان صحيحاً ولم يظهر، تواصل مع Lueri عبر واتساب.",
+              pt:"Não encontrei uma entrega com essa referência. Verifique o número e tente novamente. Se estiver correto e continuar sem aparecer, fale com a Lueri pelo WhatsApp.",
+              zh:"我找不到与该参考编号对应的配送。请检查编号后重试。如果编号正确但仍找不到，请通过 WhatsApp 联系 Lueri。"
+            };
+            reply = notFound[validLocale] ?? notFound.en;
+          } else {
+            const status = trackingStatus(validLocale, String(booking.status ?? "pending"));
+            const labels: Record<string,{title:string;updated:string}> = {
+              en:{title:"Delivery status",updated:"Last update"}, sw:{title:"Hali ya delivery",updated:"Sasisho la mwisho"}, fr:{title:"Statut de la livraison",updated:"Dernière mise à jour"}, es:{title:"Estado de la entrega",updated:"Última actualización"}, ar:{title:"حالة التوصيل",updated:"آخر تحديث"}, pt:{title:"Estado da entrega",updated:"Última atualização"}, zh:{title:"配送状态",updated:"最后更新"}
+            };
+            const l=labels[validLocale]??labels.en;
+            const when=booking.created_at ? new Date(booking.created_at).toLocaleString(validLocale==="zh"?"zh-CN":validLocale) : "";
+            reply = l.title + ": " + status + "\n" + l.updated + ": " + when;
+          }
+        }
+        state = { step: "IDLE", member_id: state.member_id ?? null };
+      }
+    } else if (state.step === "IDLE") {
       const q = message.toLowerCase();
       const normalizedIntent = topicIntent || (
+        isTrackingIntent(message) ? "TRACK" :
         /^(corporate plans?|business plans?|planos empresariais|planes corporativos|خطط الشركات|企业计划)$/i.test(q) ? "CORPORATE" :
         /^(rewards membership|rewards|membresia rewards|membresía rewards|عضوية rewards|rewards 会员)$/i.test(q) ? "REWARDS" :
         /^(delivery pricing|preços de entrega|tarifs de livraison|precios de entrega|أسعار التوصيل|配送价格)$/i.test(q) ? "PRICING" :
         ""
       );
+      const asksTrack = normalizedIntent === "TRACK";
+      if (asksTrack) {
+        const prompts: Record<string,string> = {
+          en:"Sure — I can help track your Lueri delivery. Please enter your tracking/reference number.",
+          sw:"Sawa — naweza kukusaidia kufuatilia delivery yako ya Lueri. Tafadhali weka nambari ya ufuatiliaji/rejea.",
+          fr:"Bien sûr — je peux vous aider à suivre votre livraison Lueri. Veuillez saisir votre numéro de suivi/référence.",
+          es:"Claro — puedo ayudarte a rastrear tu entrega de Lueri. Introduce tu número de seguimiento/referencia.",
+          ar:"بالتأكيد — يمكنني مساعدتك في تتبع توصيل Lueri. يرجى إدخال رقم التتبع/المرجع.",
+          pt:"Claro — posso ajudar a rastrear a sua entrega Lueri. Introduza o número de rastreio/referência.",
+          zh:"当然可以——我可以帮您追踪 Lueri 配送。请输入您的跟踪/参考编号。"
+        };
+        state = { step: "TRACKING", member_id: state.member_id ?? null };
+        reply = prompts[validLocale] ?? prompts.en;
+      }
       const asksServices = normalizedIntent === "SERVICES" || /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
       const asksPrice = normalizedIntent === "PRICING" || /price|pricing|cost|how much|rate|rates|kes|350|quotation|quote|bei|gharama|prix|tarif|precio|costo|سعر|تكلفة|价格|费用/i.test(q);
       const asksCoverage = normalizedIntent === "COVERAGE" || /where|area|areas|coverage|deliver.*(nairobi|westlands|kilimani|kasarani|embakasi|thika|ngong)|nairobi|coverage|eneo|maeneo|zone|zones|où|couvre|zona|área|أين|مناطق|覆盖|区域/i.test(q);
@@ -172,7 +253,7 @@ Deno.serve(async (req) => {
            asksRewards ? "Lueri Rewards 是免费的忠诚计划，会员每次配送都可获得积分。等级包括 Bronze、Silver、Gold、Platinum 和 VIP；Rewards 结账页面还提供付费会员选项。" : ""
       };
       const knowledgeReply = answers[validLocale] || answers.en;
-      if (knowledgeReply) reply = knowledgeReply;
+      if (knowledgeReply && !reply) reply = knowledgeReply;
     }
 
     if (!reply && state.step === "IDLE" && isBookingIntent(message)) {
