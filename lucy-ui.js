@@ -34,7 +34,40 @@
   }
   function addMessage(text,role,typing){const box=document.getElementById('lucy-messages');if(!box)return null;const el=document.createElement('div');el.className=`lucy-message ${role}${typing?' lucy-typing':''}`;el.textContent=String(text??'');box.appendChild(el);box.scrollTop=box.scrollHeight;return el;}
   function renderTopics(){const box=document.getElementById('lucy-topics');if(!box)return;box.replaceChildren();(t('topics')||[]).forEach(topic=>{const b=document.createElement('button');b.type='button';b.className='lucy-topic-btn';b.textContent=topic;b.addEventListener('click',()=>sendMessage(topic));box.appendChild(b);});}
-  function applyLocale(next){locale=SUPPORTED_LOCALES.includes(next)?next:'en';document.documentElement.dir=locale==='ar'?'rtl':'ltr';document.documentElement.dataset.lucyLanguage=locale;const panel=document.getElementById('lucy-panel');if(!panel)return;panel.dir=locale==='ar'?'rtl':'ltr';const title=panel.querySelector('[data-lucy-title]'),status=panel.querySelector('[data-lucy-status]'),input=panel.querySelector('#lucy-input'),close=panel.querySelector('#lucy-close');if(title)title.textContent=t('name');if(status)status.textContent=t('status');const launcherTitle=document.querySelector('[data-lucy-launcher-title]');const launcherStatus=document.querySelector('[data-lucy-launcher-status]');if(launcherTitle)launcherTitle.textContent=locale==='ar'?'تحدث مع لوسي':locale==='zh'?'与露西聊天':locale==='sw'?'Zungumza na Lucy':locale==='fr'?'Discuter avec Lucy':locale==='es'?'Habla con Lucy':locale==='pt'?'Falar com a Lucy':'Chat with Lucy';if(launcherStatus)launcherStatus.textContent=locale==='ar'?'متصلة':locale==='zh'?'在线':locale==='sw'?'Mtandaoni':locale==='fr'?'En ligne':locale==='es'?'En línea':locale==='pt'?'Online':'Online';if(input){input.placeholder=t('placeholder');input.dir=panel.dir;}if(close)close.setAttribute('aria-label',t('close'));renderTopics();}
+  function applyLocale(next){
+    const previous=locale;
+    locale=SUPPORTED_LOCALES.includes(next)?next:currentLocale()||'en';
+    document.documentElement.dir=locale==='ar'?'rtl':'ltr';
+    document.documentElement.dataset.lucyLanguage=locale;
+    document.documentElement.lang=locale==='zh'?'zh-CN':locale;
+    const panel=document.getElementById('lucy-panel');
+    const launcher=document.getElementById('lucy-launcher');
+    if(panel){
+      panel.dir=locale==='ar'?'rtl':'ltr';
+      panel.lang=document.documentElement.lang;
+      const title=panel.querySelector('[data-lucy-title]'),status=panel.querySelector('[data-lucy-status]'),input=panel.querySelector('#lucy-input'),close=panel.querySelector('#lucy-close'),send=panel.querySelector('#lucy-send');
+      if(title)title.textContent=t('name');
+      if(status)status.textContent=t('status');
+      if(input){input.placeholder=t('placeholder');input.dir=panel.dir;}
+      if(close)close.setAttribute('aria-label',t('close'));
+      if(send)send.setAttribute('aria-label',t('send'));
+      const greeting=panel.querySelector('.lucy-message.bot');
+      const messages=panel.querySelector('#lucy-messages');
+      if(previous!==locale && messages && messages.children.length===1 && greeting){
+        greeting.textContent=t('greeting');
+      }
+    }
+    if(launcher){
+      launcher.setAttribute('aria-label',t('open'));
+      launcher.title=t('open');
+      launcher.dir='ltr';
+    }
+    const launcherTitle=document.querySelector('[data-lucy-launcher-title]');
+    const launcherStatus=document.querySelector('[data-lucy-launcher-status]');
+    if(launcherTitle)launcherTitle.textContent=locale==='ar'?'تحدث مع لوسي':locale==='zh'?'与露西聊天':locale==='sw'?'Zungumza na Lucy':locale==='fr'?'Discuter avec Lucy':locale==='es'?'Habla con Lucy':locale==='pt'?'Falar com a Lucy':'Chat with Lucy';
+    if(launcherStatus)launcherStatus.textContent=locale==='ar'?'متصلة':locale==='zh'?'在线':locale==='sw'?'Mtandaoni':locale==='fr'?'En ligne':locale==='es'?'En línea':locale==='pt'?'Online':'Online';
+    renderTopics();
+  }
 
   function build(){if(document.getElementById('lucy-panel'))return;const launcher=document.createElement('button');launcher.id='lucy-launcher';launcher.type='button';launcher.setAttribute('aria-label',UI.en.open);launcher.title=UI.en.open;launcher.innerHTML='<span class="lucy-launcher-avatar" aria-hidden="true"></span><span class="lucy-launcher-copy"><span class="lucy-launcher-title" data-lucy-launcher-title>Chat with Lucy</span><span class="lucy-launcher-status"><span class="lucy-online-dot"></span><span data-lucy-launcher-status>Online</span></span></span>';launcher.addEventListener('click',toggle);
     const panel=document.createElement('section');panel.id='lucy-panel';panel.setAttribute('aria-label','Lucy');
@@ -50,12 +83,26 @@
     finally{busy=false;if(send)send.disabled=false;}
   }
   function bindLanguage(){
-    const sync=(value)=>applyLocale(value && SUPPORTED_LOCALES.includes(value) ? value : currentLocale());
+    let last=currentLocale();
+    const sync=(value)=>{
+      const next=value && SUPPORTED_LOCALES.includes(value) ? value : currentLocale();
+      if(next!==locale || next!==last){last=next;applyLocale(next);}
+    };
     window.addEventListener('lueri:languagechange',e=>sync(e?.detail?.language));
     document.addEventListener('lueri:languagechange',e=>sync(e?.detail?.language));
     window.addEventListener('lueri-language-change',e=>sync(e?.detail?.locale));
     document.addEventListener('lueri-language-change',e=>sync(e?.detail?.locale));
-    window.addEventListener('storage',e=>{if(['lueri_language','lueri-language','lueri_lang','lueri_locale'].includes(e.key))sync();});
+    const selector=document.getElementById('languageSelector');
+    if(selector)selector.addEventListener('change',()=>sync(selector.value));
+    window.addEventListener('storage',e=>{if(['lueri_language','lueri-language','lueri_lang','lueri_locale'].includes(e.key))sync(e.newValue);});
+    if(document.documentElement){
+      const observer=new MutationObserver(()=>{
+        const next=document.documentElement.dataset.lueriLanguage||document.documentElement.dataset.lucyLanguage;
+        if(next&&SUPPORTED_LOCALES.includes(next))sync(next);
+      });
+      observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-lueri-language','data-lucy-language','lang','dir']});
+    }
+    sync(document.documentElement.dataset.lueriLanguage||currentLocale());
   }
   function bindPaymentHandoff(){
     if(window.__lueriLucyPaymentBound)return;
