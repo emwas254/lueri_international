@@ -117,7 +117,14 @@ Deno.serve(async (req) => {
 
     // Deterministic Lueri product/service answers: these do not depend on the AI provider.
     // This keeps Lucy useful for core product questions even if the AI layer is temporarily unavailable.
-    if (state.step === "TRACKING") {
+    // Transactional booking button: start the deterministic booking flow before FAQ/product classification.
+    // This prevents the word "delivery" in the button label from being mistaken for a services question.
+    if (state.step === "IDLE" && (topicIntent === "BOOK" || isBookingIntent(message))) {
+      state = { step: "PICKUP", member_id: state.member_id ?? null };
+      reply = flow(validLocale, "pickup");
+    }
+
+    if (!reply && state.step === "TRACKING") {
       const reference = message.trim().replace(/^#/, "");
       if (!/^[A-Za-z0-9-]{6,80}$/.test(reference)) {
         const prompts: Record<string,string> = {
@@ -178,7 +185,7 @@ Deno.serve(async (req) => {
         }
         state = { step: "IDLE", member_id: state.member_id ?? null };
       }
-    } else if (state.step === "IDLE") {
+    } else if (!reply && state.step === "IDLE") {
       const q = message.toLowerCase();
       const normalizedIntent = topicIntent || (
         isTrackingIntent(message) ? "TRACK" :
@@ -269,10 +276,7 @@ Deno.serve(async (req) => {
       if (knowledgeReply && !reply) reply = knowledgeReply;
     }
 
-    if (!reply && state.step === "IDLE" && isBookingIntent(message)) {
-      state = { step: "PICKUP", member_id: state.member_id ?? null };
-      reply = flow(validLocale, "pickup");
-    } else if (state.step !== "IDLE") {
+    if (!reply && state.step !== "IDLE") {
       switch (state.step) {
         case "PICKUP": state.pickup = message; state.step = "DROPOFF"; reply = flow(validLocale, "dropoff"); break;
         case "DROPOFF": state.dropoff = message; state.step = "PARCEL"; reply = flow(validLocale, "parcel"); break;
