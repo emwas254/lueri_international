@@ -609,13 +609,22 @@
   const menuTrigger = document.getElementById('menuTrigger');
   const menuPanel = document.getElementById('menuPanel');
   const menuTriggerLabel = document.getElementById('menuTriggerLabel');
+  function getMenuWord(word) {
+    const lang = document.documentElement.dataset.lueriLanguage || document.documentElement.lang || 'en';
+    const labels = {
+      en:{menu:'Menu',close:'Close'}, zh:{menu:'菜单',close:'关闭'}, sw:{menu:'Menyu',close:'Funga'},
+      fr:{menu:'Menu',close:'Fermer'}, es:{menu:'Menú',close:'Cerrar'}, ar:{menu:'القائمة',close:'إغلاق'},
+      pt:{menu:'Menu',close:'Fechar'}
+    };
+    return (labels[lang] || labels.en)[word];
+  }
   function closeMenu() {
     menuTrigger.classList.remove('open'); menuPanel.classList.remove('open');
-    menuTrigger.setAttribute('aria-expanded', 'false'); menuTriggerLabel.textContent = 'Menu';
+    menuTrigger.setAttribute('aria-expanded', 'false'); menuTriggerLabel.textContent = getMenuWord('menu');
   }
   function openMenu() {
     menuTrigger.classList.add('open'); menuPanel.classList.add('open');
-    menuTrigger.setAttribute('aria-expanded', 'true'); menuTriggerLabel.textContent = 'Close';
+    menuTrigger.setAttribute('aria-expanded', 'true'); menuTriggerLabel.textContent = getMenuWord('close');
   }
   menuTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
