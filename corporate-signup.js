@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const WHATSAPP_NUMBER = (window.LUERI && window.LUERI.whatsapp) || '254713261719';
+  const WHATSAPP_NUMBER = (window.LUERI && window.LUERI.whatsapp) || '254719261713';
   const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
   const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || '';
   const KRA_PIN_PATTERN = /^[A-Za-z]\d{9}[A-Za-z]$/;
