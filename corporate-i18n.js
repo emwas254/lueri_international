@@ -13,9 +13,10 @@ pt:{menu:['Onde ir a seguir','Serviços','O que transportamos e com que rapidez'
 };
 function q(s){return document.querySelector(s)} function qa(s){return [...document.querySelectorAll(s)]}
 function set(el,v,h){if(el)h?el.innerHTML=v:el.textContent=v} function linkify(v){return v.replaceAll('<u>','<a href="terms-of-service.html" style="color:var(--route);text-decoration:underline;font-weight:600">').replaceAll('</u>','</a>')}
+function footerCss(){if(q('#corpFooterLangCSS'))return;const s=document.createElement('style');s.id='corpFooterLangCSS';s.textContent=".legal-block{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(28px,5vw,72px);align-items:start}.footer-info-block{min-width:0;line-height:1.75;color:var(--muted,#b9c4bc)}.footer-info-heading{display:block;margin-bottom:9px;color:var(--paper,#f4efe4);font:700 .82rem/1.2 'IBM Plex Sans','Noto Sans',Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase}.footer-info-block br{line-height:1.8}html[dir=rtl] .legal-block{direction:rtl}html[dir=rtl] .footer-info-block{text-align:right}@media(max-width:700px){.legal-block{grid-template-columns:1fr;gap:24px}.footer-info-heading{margin-bottom:7px}}";document.head.appendChild(s)}
 function css(){if(q('#corpLangCSS'))return;const s=document.createElement('style');s.id='corpLangCSS';s.textContent=".language-selector-native{min-width:128px;min-height:38px;padding:7px 28px 7px 10px;border:1.5px solid var(--ink);border-radius:7px;background:var(--paper);color:var(--ink);font:700 .78rem/1.2 'IBM Plex Sans','Noto Sans',Arial,sans-serif;cursor:pointer}.language-selector-native option{background:#f4efe4;color:#1b2620;font-weight:700}html[dir=rtl] body{text-align:right}html[dir=rtl] .navbar,html[dir=rtl] .nav-controls,html[dir=rtl] .docket-row,html[dir=rtl] .form-row2{direction:rtl}html[dir=rtl] .menu-link{flex-direction:row-reverse}html[dir=rtl] .menu-link-body{text-align:right}html[dir=rtl] .section-head{flex-direction:row-reverse}html[dir=rtl] .why-list li{direction:rtl}@media(max-width:700px){.language-selector-native{min-width:112px;font-size:.72rem}}";document.head.appendChild(s)}
 function apply(loc){
- const a=T[loc]||T.en;document.documentElement.lang=loc==='zh'?'zh-CN':loc;document.documentElement.dir=loc==='ar'?'rtl':'ltr';document.documentElement.dataset.lueriLanguage=loc;css();
+ const a=T[loc]||T.en;document.documentElement.lang=loc==='zh'?'zh-CN':loc;document.documentElement.dir=loc==='ar'?'rtl':'ltr';document.documentElement.dataset.lueriLanguage=loc;css(); footerCss();
  const s=q('#languageSelector');if(s)s.value=loc;
  const m=a.menu;
  set(q('.menu-panel-eyebrow'),m[0]);
@@ -36,18 +37,18 @@ function apply(loc){
  const p=a.plans;set(q('#corporate-pricing h2'),p[0]);qa('.pricing-card').forEach((c,i)=>{const x=p[1+i];set(c.querySelector('.tier'),x[0]);set(c.querySelector('h3'),x[1]);set(c.querySelector('p'),x[2]);c.querySelectorAll('li').forEach((li,j)=>set(li,x[3+j]))});const notes=qa('#corporate-pricing .pricing-note');set(notes[0],p[4],1);set(notes[1].querySelector('strong'),p[5]);set(notes[1],linkify(p[6]),1);
  const f=a.form;set(q('#apply h2'),f[0]);const labs=qa('#corporateForm .form-label');for(let i=0;i<9;i++)set(labs[i],f[i+1]);if(q('#plan')){q('#plan').options[0].text=f[3];q('#plan').options[1].text=(loc==='en'?'Essential':loc==='zh'?'基础版':loc==='sw'?'Essential':loc==='fr'?'Essential':loc==='es'?'Essential':loc==='ar'?'Essential':'Essential')+' — KES 25,000/mo';q('#plan').options[2].text=(loc==='zh'?'专业版':loc==='sw'?'Professional':loc==='fr'?'Professional':loc==='es'?'Professional':loc==='ar'?'Professional':'Professional')+' — KES 45,000/mo';q('#plan').options[3].text=(loc==='zh'?'精英版':loc==='sw'?'Elite':loc==='fr'?'Elite':loc==='es'?'Elite':loc==='ar'?'Elite':'Elite')+' — KES 75,000/mo';q('#plan').options[4].text=f[4]}if(q('#volume')){q('#volume').options[0].text=f[8];q('#volume').options[1].text=loc==='zh'?'1–5':loc==='ar'?'١–٥':'1–5';q('#volume').options[2].text=loc==='zh'?'6–20':loc==='ar'?'٦–٢٠':'6–20';q('#volume').options[3].text=loc==='zh'?'21–50':loc==='ar'?'٢١–٥٠':'21–50';q('#volume').options[4].text=loc==='zh'?'50+':loc==='ar'?'٥٠+':'50+'}set(q('#kraPinHint'),f[6]);q('#jobTitle').placeholder=f[12];set(q('#corporateForm button[type=submit]'),f[15]);const ps=qa('#corporateForm>p');if(ps[1])set(ps[1],f[16]+' '+linkify(f[17]),1);
  const ft=a.footer,ld=qa('footer .legal-block>div');
- if(ld[0]){
-   ld[0].replaceChildren();
-   const s0=document.createElement('strong');s0.textContent=ft[0];ld[0].appendChild(s0);
-   ld[0].appendChild(document.createElement('br'));ld[0].appendChild(document.createTextNode(ft[1]));
-   ld[0].appendChild(document.createElement('br'));ld[0].appendChild(document.createTextNode(ft[2]));
- }
- if(ld[1]){const s1=ld[1].querySelector('strong');if(s1)s1.textContent=ft[3];}
- if(ld[2]){
-   ld[2].replaceChildren();
-   const s2=document.createElement('strong');s2.textContent=ft[4];ld[2].appendChild(s2);
-   [ft[5],ft[6],ft[7]].forEach(function(v){ld[2].appendChild(document.createElement('br'));ld[2].appendChild(document.createTextNode(v));});
- }const links=qa('footer .footer-row .mono a');[ft[8],ft[9],ft[10],ft[11]].forEach((v,i)=>set(links[i],v));set(q('.foot-stamp'),ft[12]);
+ const footerBlocks=[
+   {head:ft[0],lines:[ft[1],ft[2]]},
+   {head:ft[3],lines:[ft[4],ft[5]]},
+   {head:ft[6],lines:[ft[7],ft[8],ft[9]]}
+ ];
+ ld.forEach((block,i)=>{
+   const data=footerBlocks[i]; if(!block||!data)return;
+   block.replaceChildren();
+   block.classList.add('footer-info-block');
+   const heading=document.createElement('strong'); heading.className='footer-info-heading'; heading.textContent=data.head; block.appendChild(heading);
+   data.lines.forEach(v=>{block.appendChild(document.createElement('br'));block.appendChild(document.createTextNode(v));});
+ });const links=qa('footer .footer-row .mono a');[ft[8],ft[9],ft[10],ft[11]].forEach((v,i)=>set(links[i],v));set(q('.foot-stamp'),ft[12]);
  const pay=a.pay;set(q('#lueriPaymentTitle'),pay[0]);if(q('#lueriPaymentClose'))q('#lueriPaymentClose').setAttribute('aria-label',pay[1]);set(q('#lueriPaymentLoading'),pay[2]);set(q('#lueriPaymentStatus'),pay[3]);
  try{localStorage.setItem(K,loc)}catch(e){}window.dispatchEvent(new CustomEvent('lueri:languagechange',{detail:{language:loc}}))
 }
