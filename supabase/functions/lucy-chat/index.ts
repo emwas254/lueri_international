@@ -1,8 +1,9 @@
 // Lucy v3.2: multilingual Lueri support with deterministic delivery booking state.
 // Public-support assistant only: no private account/order/payment lookup or tool use.
 
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
-const MODEL = "claude-haiku-4-5-20251001";
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+// OpenAI GPT-5.6 Luna is used for cost-sensitive, high-volume customer support.
+const MODEL = "gpt-5.6-luna";
 const MAX_MESSAGE_LEN = 500;
 const MAX_HISTORY_ITEMS = 9;
 const WA = "https://wa.link/qk7m3b";
@@ -192,11 +193,34 @@ Deno.serve(async (req) => {
         const x = item as { role?: unknown; content?: unknown };
         return (x.role === "user" || x.role === "assistant") && typeof x.content === "string" && x.content.trim() && x.content.length <= MAX_MESSAGE_LEN;
       }).slice(-MAX_HISTORY_ITEMS).map((item: { role: "user" | "assistant"; content: string }) => ({ role: item.role, content: item.content }));
+      if (!OPENAI_API_KEY) {
+        return json({ reply: fallback(validLocale, "setup"), delivery_state: state });
+      }
       const augmentedSystemPrompt = `${SYSTEM_PROMPT}\n\nLANGUAGE INSTRUCTION:\n${LOCALE_INSTRUCTIONS[validLocale]}`;
-      const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" }, body: JSON.stringify({ model: MODEL, max_tokens: 300, system: augmentedSystemPrompt, messages: [...history, { role: "user", content: message }] }) });
-      if (!res.ok) { console.error("Anthropic API error", res.status, await res.text()); return json({ reply: fallback(validLocale, "api"), delivery_state: state }); }
+      const input = [
+        ...history.map((item) => ({ role: item.role, content: [{ type: "input_text", text: item.content }] })),
+        { role: "user", content: [{ type: "input_text", text: message }] }
+      ];
+      const res = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
+        body: JSON.stringify({
+          model: MODEL,
+          instructions: augmentedSystemPrompt,
+          input,
+          max_output_tokens: 350
+        })
+      });
+      if (!res.ok) {
+        console.error("OpenAI API error", res.status, await res.text());
+        return json({ reply: fallback(validLocale, "api"), delivery_state: state });
+      }
       const data = await res.json();
-      reply = data?.content?.find((b: { type: string }) => b.type === "text")?.text?.trim() ?? fallback(validLocale, "unknown");
+      reply = typeof data?.output_text === "string"
+        ? data.output_text.trim()
+        : data?.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? [])
+            ?.find((part: { type?: string; text?: string }) => part.type === "output_text")?.text?.trim()
+          ?? fallback(validLocale, "unknown");
     }
 
     return json({ reply, action, payload, delivery_state: state });
