@@ -34,7 +34,7 @@ const FALLBACK: Record<string, {setup:string; tooLong:string; api:string; unknow
   zh: { setup: `露西暂时无法使用。请直接通过 WhatsApp 联系 Lueri：${WA}`, tooLong: `这个问题有点长。请缩短问题，或通过 WhatsApp 联系 Lueri：${WA}`, api: `露西目前遇到了一点问题。请通过 WhatsApp 联系 Lueri：${WA}`, unknown: `我不确定这个信息。请通过 WhatsApp 联系 Lueri：${WA}`, error: `发生了一些问题。请通过 WhatsApp 联系 Lueri：${WA}`, method: "暂不支持此请求。请再试一次。", empty: `我不确定该如何回答。请通过 WhatsApp 联系 Lueri：${WA}` }
 };
 async function uploadParcelPhoto(dataUrl: string) {
-  const match = dataUrl.match(/^data:(image\\/(?:jpeg|png|webp));base64,(.+)$/);
+  const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);
   if (!match || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
   const mime = match[1];
   const base64 = match[2];
