@@ -77,6 +77,7 @@ function isBookingIntent(message: string) { return /\b(book|booking|pickup|pick 
 function isYes(message: string) { return /\b(yes|yeah|yep|sure|okay|ok|proceed|ndiyo|ndio|oui|sí|si|sim|نعم|是|好的)\b/i.test(message.trim()); }
 
 Deno.serve(async (req) => {
+  let requestLocale = "en";
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
@@ -89,6 +90,7 @@ Deno.serve(async (req) => {
     if (!message) return json({ error: "Empty message" }, 400);
     if (message.length > MAX_MESSAGE_LEN) return json({ reply: fallback(validLocale, "tooLong"), delivery_state: state });
     const validLocale = SUPPORTED_LOCALES.includes(String(body?.locale)) ? String(body.locale) : "en";
+    requestLocale = validLocale;
     let state: DeliveryState = body?.delivery_state && typeof body.delivery_state === "object" ? body.delivery_state : { step: "IDLE" };
     let reply = "";
     let action = "CHAT";
@@ -142,6 +144,6 @@ Deno.serve(async (req) => {
     return json({ reply, action, payload, delivery_state: state });
   } catch (err) {
     console.error("lucy-chat error", err);
-    return json({ reply: fallback("en", "error") });
+    return json({ reply: fallback(requestLocale, "error") });
   }
 });
