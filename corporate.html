@@ -294,6 +294,15 @@
       <span>Lueri International</span>
     </a>
     <div class="nav-controls">
+      <select id="languageSelector" class="language-selector-native" aria-label="Select Language">
+        <option value="en">🇬🇧 English</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="sw">🇰🇪 Kiswahili</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="pt">🇧🇷 Português</option>
+      </select>
       <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
         <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
         <span id="menuTriggerLabel">Menu</span>
@@ -617,7 +626,9 @@
     if (menuPanel.classList.contains('open') && !menuPanel.contains(e.target) && !menuTrigger.contains(e.target)) closeMenu();
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  window.addEventListener('pageshow', () => closeMenu());
 </script>
+<script src="corporate-i18n.js?v=20260919-01"></script>
 <script src="corporate-signup.js?v=20260916-02"></script>
 <script src="lucy.js" defer></script>
 </body>
