@@ -33,6 +33,29 @@ const FALLBACK: Record<string, {setup:string; tooLong:string; api:string; unknow
   pt: { setup: `A Lucy está temporariamente indisponível. Fale diretamente com a Lueri pelo WhatsApp: ${WA}`, tooLong: `Essa pergunta está um pouco longa. Encurte-a ou fale com a Lueri pelo WhatsApp: ${WA}`, api: `A Lucy está com um problema no momento. Fale com a Lueri pelo WhatsApp: ${WA}`, unknown: `Não tenho certeza sobre essa informação. Fale com a Lueri pelo WhatsApp: ${WA}`, error: `Ocorreu um erro. Fale com a Lueri pelo WhatsApp: ${WA}`, method: "Essa solicitação não é compatível. Tente novamente.", empty: `Não tenho certeza de como responder a isso. Fale com a Lueri pelo WhatsApp: ${WA}` },
   zh: { setup: `露西暂时无法使用。请直接通过 WhatsApp 联系 Lueri：${WA}`, tooLong: `这个问题有点长。请缩短问题，或通过 WhatsApp 联系 Lueri：${WA}`, api: `露西目前遇到了一点问题。请通过 WhatsApp 联系 Lueri：${WA}`, unknown: `我不确定这个信息。请通过 WhatsApp 联系 Lueri：${WA}`, error: `发生了一些问题。请通过 WhatsApp 联系 Lueri：${WA}`, method: "暂不支持此请求。请再试一次。", empty: `我不确定该如何回答。请通过 WhatsApp 联系 Lueri：${WA}` }
 };
+async function uploadParcelPhoto(dataUrl: string) {
+  const match = dataUrl.match(/^data:(image\\/(?:jpeg|png|webp));base64,(.+)$/);
+  if (!match || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
+  const mime = match[1];
+  const base64 = match[2];
+  if (base64.length > 5600000) throw new Error("Image is too large");
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
+  const path = `${new Date().toISOString().slice(0,10)}/${crypto.randomUUID()}.${ext}`;
+  const uploadUrl = `${SUPABASE_URL}/storage/v1/object/lucy-parcel-photos/${path}`;
+  const res = await fetch(uploadUrl, {
+    method: "POST",
+    headers: { Authorization: "Bearer " + SUPABASE_SERVICE_ROLE_KEY, apikey: SUPABASE_SERVICE_ROLE_KEY, "Content-Type": mime, "x-upsert": "false" },
+    body: bytes
+  });
+  if (!res.ok) {
+    console.error("Lucy parcel photo upload failed", res.status, await res.text());
+    return null;
+  }
+  return path;
+}
 function fallback(locale: string, key: keyof typeof FALLBACK.en) { return FALLBACK[locale]?.[key] ?? FALLBACK.en[key]; }
 
 const LOCALE_INSTRUCTIONS: Record<string, string> = {
@@ -114,6 +137,7 @@ Deno.serve(async (req) => {
     let reply = "";
     let action = "CHAT";
     let payload: Record<string, unknown> | null = null;
+    const imageData = typeof body?.image_data === "string" ? body.image_data : "";
 
     // Deterministic Lueri product/service answers: these do not depend on the AI provider.
     // This keeps Lucy useful for core product questions even if the AI layer is temporarily unavailable.
@@ -280,7 +304,69 @@ Deno.serve(async (req) => {
       switch (state.step) {
         case "PICKUP": state.pickup = message; state.step = "DROPOFF"; reply = flow(validLocale, "dropoff"); break;
         case "DROPOFF": state.dropoff = message; state.step = "PARCEL"; reply = flow(validLocale, "parcel"); break;
-        case "PARCEL": state.details = message; state.step = "TIME"; reply = flow(validLocale, "time"); break;
+        case "PARCEL": {
+          if (imageData) {
+            if (!OPENAI_API_KEY) {
+              reply = fallback(validLocale, "setup");
+              break;
+            }
+            try {
+              const photoPath = await uploadParcelPhoto(imageData);
+              const augmentedSystemPrompt = `${SYSTEM_PROMPT}
+              
+LANGUAGE INSTRUCTION:
+${LOCALE_INSTRUCTIONS[validLocale]}
+
+PARCEL PHOTO TASK:
+The customer uploaded a photo of the parcel/item they want delivered. Examine the image conservatively. Identify only visible, useful logistics details such as apparent item type, approximate package form/size, number of visible items, and any clearly visible packaging. Never invent weight, dimensions, contents that cannot be seen, value, or hazardous status. State that the final quote may require Lueri confirmation. Respond in the selected language.`;
+              const imageInput = [{
+                role: "user",
+                content: [
+                  { type: "input_text", text: "Please inspect this parcel photo and provide a concise logistics description for the Lueri booking." },
+                  { type: "input_image", image_url: imageData }
+                ]
+              }];
+              const visionRes = await fetch("https://api.openai.com/v1/responses", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
+                body: JSON.stringify({ model: MODEL, instructions: augmentedSystemPrompt, input: imageInput, max_output_tokens: 220 })
+              });
+              if (!visionRes.ok) {
+                console.error("Lucy parcel vision error", visionRes.status, await visionRes.text());
+                reply = fallback(validLocale, "api");
+                break;
+              }
+              const visionData = await visionRes.json();
+              const description = typeof visionData?.output_text === "string"
+                ? visionData.output_text.trim()
+                : visionData?.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? [])
+                    ?.find((part: { type?: string; text?: string }) => part.type === "output_text")?.text?.trim()
+                  ?? "";
+              if (!description) {
+                reply = fallback(validLocale, "unknown");
+                break;
+              }
+              state.details = `Photo attached: ${photoPath ?? "received"}\nAI parcel description: ${description}`;
+              state.step = "TIME";
+              const photoPrompts: Record<string,string> = {
+                en: `Thanks — I received the photo. I can see: ${description}\n\nFor the quote, I still need your preferred pickup time.`,
+                sw: `Asante — nimepokea picha. Ninaona: ${description}\n\nKwa nukuu ya bei, bado nahitaji muda unaopendelea wa pickup.`,
+                fr: `Merci — j’ai reçu la photo. Je vois : ${description}\n\nPour le devis, j’ai encore besoin de votre heure de collecte préférée.`,
+                es: `Gracias — recibí la foto. Puedo ver: ${description}\n\nPara la cotización, todavía necesito tu hora preferida de recogida.`,
+                ar: `شكراً — استلمت الصورة. أستطيع رؤية: ${description}\n\nلإعداد السعر، ما زلت بحاجة إلى وقت الاستلام المفضل لديك.`,
+                pt: `Obrigado — recebi a foto. Consigo ver: ${description}\n\nPara o orçamento, ainda preciso do horário de coleta que prefere.`,
+                zh: `谢谢——我已收到照片。我看到：${description}\n\n为了报价，我还需要您希望的取件时间。`
+              };
+              reply = photoPrompts[validLocale] ?? photoPrompts.en;
+            } catch (photoErr) {
+              console.error("Lucy parcel photo processing failed", photoErr);
+              reply = fallback(validLocale, "api");
+            }
+          } else {
+            state.details = message; state.step = "TIME"; reply = flow(validLocale, "time");
+          }
+          break;
+        }
         case "TIME": state.preferred_time = message; state.step = "NAME"; reply = flow(validLocale, "name"); break;
         case "NAME": state.customer_name = message; state.step = "PHONE"; reply = flow(validLocale, "phone"); break;
         case "PHONE":
