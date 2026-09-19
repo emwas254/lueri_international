@@ -22,7 +22,7 @@
 
   let locale='en', deliveryState={step:'IDLE'}, history=[], isOpen=false, busy=false;
 
-  function currentLocale(){try{const c=[window.LueriI18n&&typeof window.LueriI18n.get==='function'?window.LueriI18n.get():null,localStorage.getItem('lueri_language'),localStorage.getItem('lueri-language'),localStorage.getItem('lueri_lang'),localStorage.getItem('lueri_locale')];return c.find(v=>SUPPORTED_LOCALES.includes(v))||'en';}catch(_){return'en';}}
+  function currentLocale(){try{const c=[document.documentElement.dataset.lueriLanguage,document.documentElement.dataset.lucyLanguage,window.LueriI18n&&typeof window.LueriI18n.get==='function'?window.LueriI18n.get():null,localStorage.getItem('lueri_language'),localStorage.getItem('lueri-language'),localStorage.getItem('lueri_lang'),localStorage.getItem('lueri_locale')];return c.find(v=>SUPPORTED_LOCALES.includes(v))||'en';}catch(_){return'en';}}
   function t(k){return(UI[locale]||UI.en)[k];}
 
   function injectStyles(){if(document.getElementById('lucy-restored-styles'))return;const s=document.createElement('style');s.id='lucy-restored-styles';s.textContent=`
