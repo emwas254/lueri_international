@@ -100,12 +100,18 @@ Deno.serve(async (req) => {
     // This keeps Lucy useful for core product questions even if the AI layer is temporarily unavailable.
     if (state.step === "IDLE") {
       const q = message.toLowerCase();
-      const asksServices = /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
-      const asksPrice = /price|pricing|cost|how much|rate|rates|kes|350|quotation|quote|bei|gharama|prix|tarif|precio|costo|سعر|تكلفة|价格|费用/i.test(q);
-      const asksCoverage = /where|area|areas|coverage|deliver.*(nairobi|westlands|kilimani|kasarani|embakasi|thika|ngong)|nairobi|coverage|eneo|maeneo|zone|zones|où|couvre|zona|área|أين|مناطق|覆盖|区域/i.test(q);
-      const asksHours = /hours|open|opening|close|closed|sunday|monday|saturday|time|operating|masaa|saa|heures|horaires|horario|ساعات|مواعيد|营业时间/i.test(q);
-      const asksCorporate = /corporate|business account|business plan|professional|essential|elite|enterprise|company|monthly plan|compte entreprise|plan empresarial|empresarial|شركات|企业/i.test(q);
-      const asksRewards = /reward|rewards|points|loyalty|membership|bronze|silver|gold|platinum|vip|récompense|points|recompensas|مكافآت|积分|会员/i.test(q);
+      const normalizedIntent = topicIntent || (
+        /^(corporate plans?|business plans?|planos empresariais|planes corporativos|خطط الشركات|企业计划)$/i.test(q) ? "CORPORATE" :
+        /^(rewards membership|rewards|membresia rewards|membresía rewards|عضوية rewards|rewards 会员)$/i.test(q) ? "REWARDS" :
+        /^(delivery pricing|preços de entrega|tarifs de livraison|precios de entrega|أسعار التوصيل|配送价格)$/i.test(q) ? "PRICING" :
+        ""
+      );
+      const asksServices = normalizedIntent === "SERVICES" || /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
+      const asksPrice = normalizedIntent === "PRICING" || /price|pricing|cost|how much|rate|rates|kes|350|quotation|quote|bei|gharama|prix|tarif|precio|costo|سعر|تكلفة|价格|费用/i.test(q);
+      const asksCoverage = normalizedIntent === "COVERAGE" || /where|area|areas|coverage|deliver.*(nairobi|westlands|kilimani|kasarani|embakasi|thika|ngong)|nairobi|coverage|eneo|maeneo|zone|zones|où|couvre|zona|área|أين|مناطق|覆盖|区域/i.test(q);
+      const asksHours = normalizedIntent === "HOURS" || /hours|open|opening|close|closed|sunday|monday|saturday|time|operating|masaa|saa|heures|horaires|horario|ساعات|مواعيد|营业时间/i.test(q);
+      const asksCorporate = normalizedIntent === "CORPORATE" || /corporate|business account|business plan|professional|essential|elite|enterprise|company|monthly plan|compte entreprise|plan empresarial|empresarial|planos empresariais|planes corporativos|خطط الشركات|企业计划|شركات|企业/i.test(q);
+      const asksRewards = normalizedIntent === "REWARDS" || /reward|rewards|points|loyalty|membership|bronze|silver|gold|platinum|vip|récompense|points|recompensas|membresia rewards|membresía rewards|عضوية rewards|rewards 会员|مكافآت|积分|会员/i.test(q);
       const answers: Record<string,string> = {
         en: asksCorporate ? "Lueri corporate plans are for organizations and business teams. Essential is KES 25,000/month with 5 deliveries included; Professional is KES 45,000/month with 12; Elite is KES 75,000/month with 25. Custom Enterprise agreements are available above Elite. Apply through https://lueriinternational.com/corporate.html." :
            asksRewards ? "Lueri Rewards is for individual customers. Bronze is free; paid membership starts with Silver at KES 5,000/year, followed by Gold KES 15,000/year, Platinum KES 35,000/year and VIP KES 75,000/year. Join through https://lueriinternational.com/rewards.html." :
