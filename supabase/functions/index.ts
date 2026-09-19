@@ -107,7 +107,7 @@ async function sendReceiptEmail(opts: {
         <tr><td style="padding:8px 0;color:#4A5A52;">Reference</td><td style="padding:8px 0;text-align:right;">${escapeHtml(opts.internalReference)}</td></tr>
       </table>
       <p>We look forward to doing business with you — same-day dispatch, priority handling, and a team that answers.</p>
-      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0713 261 719.</p>
+      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0719 261 713.</p>
     </div>`;
 
   try {

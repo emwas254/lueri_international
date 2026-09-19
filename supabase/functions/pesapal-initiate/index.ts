@@ -184,7 +184,6 @@ Deno.serve(async (req) => {
         currency: "KES",
         amount: priceKes,
         description: `Lueri ${isBusiness ? "Business" : "Rewards"} — ${plan.display_name} membership`,
-        redirect_mode: "PARENT_WINDOW",
         callback_url: `${SITE_URL}${callbackPath}`,
         notification_id: IPN_ID,
         billing_address: {
