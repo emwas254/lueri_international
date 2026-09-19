@@ -88,15 +88,73 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const message = String(body?.message ?? "").trim();
     if (!message) return json({ error: "Empty message" }, 400);
-    if (message.length > MAX_MESSAGE_LEN) return json({ reply: fallback(validLocale, "tooLong"), delivery_state: state });
     const validLocale = SUPPORTED_LOCALES.includes(String(body?.locale)) ? String(body.locale) : "en";
     requestLocale = validLocale;
+    if (message.length > MAX_MESSAGE_LEN) return json({ reply: fallback(validLocale, "tooLong"), delivery_state: { step: "IDLE" } });
     let state: DeliveryState = body?.delivery_state && typeof body.delivery_state === "object" ? body.delivery_state : { step: "IDLE" };
     let reply = "";
     let action = "CHAT";
     let payload: Record<string, unknown> | null = null;
 
-    if (state.step === "IDLE" && isBookingIntent(message)) {
+    // Deterministic Lueri product/service answers: these do not depend on the AI provider.
+    // This keeps Lucy useful for core product questions even if the AI layer is temporarily unavailable.
+    if (state.step === "IDLE") {
+      const q = message.toLowerCase();
+      const asksServices = /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
+      const asksPrice = /price|pricing|cost|how much|rate|rates|kes|350|quotation|quote|bei|gharama|prix|tarif|precio|costo|سعر|تكلفة|价格|费用/i.test(q);
+      const asksCoverage = /where|area|areas|coverage|deliver.*(nairobi|westlands|kilimani|kasarani|embakasi|thika|ngong)|nairobi|coverage|eneo|maeneo|zone|zones|où|couvre|zona|área|أين|مناطق|覆盖|区域/i.test(q);
+      const asksHours = /hours|open|opening|close|closed|sunday|monday|saturday|time|operating|masaa|saa|heures|horaires|horario|ساعات|مواعيد|营业时间/i.test(q);
+      const asksCorporate = /corporate|business account|business plan|professional|essential|elite|enterprise|company|monthly plan|compte entreprise|plan empresarial|empresarial|شركات|企业/i.test(q);
+      const asksRewards = /reward|rewards|points|loyalty|membership|bronze|silver|gold|platinum|vip|récompense|points|recompensas|مكافآت|积分|会员/i.test(q);
+      const answers: Record<string,string> = {
+        en: asksServices ? "Lueri provides parcel and document delivery, business and e-commerce dispatch, and on-demand courier services across Nairobi and surrounding areas. You can arrange a one-off delivery or recurring business dispatch, with the final price confirmed before pickup." :
+           asksPrice ? "Single deliveries start from KES 350. The final quote depends on the pickup zone, drop-off zone and parcel size, and Lueri confirms the price before pickup with no hidden fees." :
+           asksCoverage ? "Lueri currently serves Nairobi and surrounding areas, including Nairobi CBD, Westlands, Kilimani, Kasarani, South B/South C, Embakasi, Ngong Road and Thika Road. If your location is not listed, ask us and we can confirm the route." :
+           asksHours ? "Lueri operates Monday–Friday, 8:00 AM–5:00 PM and Saturday, 8:00 AM–3:00 PM. We are closed on Sundays. Requests after the daily cut-off are queued for the next business day." :
+           asksCorporate ? "Lueri offers corporate plans: Essential at KES 25,000/month with 5 deliveries included; Professional at KES 45,000/month with 12 included; and Elite at KES 75,000/month with 25 included. Custom Enterprise agreements are available above Elite." :
+           asksRewards ? "Lueri Rewards is a free loyalty programme where members earn points on deliveries. Membership tiers include Bronze, Silver, Gold, Platinum and VIP; paid membership options are available through the Rewards checkout." : "",
+        sw: asksServices ? "Lueri hutoa usafirishaji wa vifurushi na nyaraka, usafirishaji wa biashara na e-commerce, pamoja na huduma ya courier kwa mahitaji ya haraka ndani ya Nairobi na maeneo yanayozunguka. Unaweza kuagiza delivery ya mara moja au huduma ya biashara inayojirudia, na bei ya mwisho huthibitishwa kabla ya pickup." :
+           asksPrice ? "Delivery moja huanzia KES 350. Bei ya mwisho hutegemea eneo la pickup, eneo la kupeleka na ukubwa wa kifurushi, na Lueri huthibitisha bei kabla ya pickup bila gharama zilizofichwa." :
+           asksCoverage ? "Lueri kwa sasa inahudumia Nairobi na maeneo yanayozunguka, ikiwemo Nairobi CBD, Westlands, Kilimani, Kasarani, South B/South C, Embakasi, Ngong Road na Thika Road. Ikiwa eneo lako halipo kwenye orodha, tuulize ili lithibitishwe." :
+           asksHours ? "Lueri hufanya kazi Jumatatu–Ijumaa, 08:00–17:00 na Jumamosi, 08:00–15:00. Tumefungwa Jumapili. Maombi baada ya muda wa kazi hupelekwa siku inayofuata ya kazi." :
+           asksCorporate ? "Lueri ina mipango ya biashara: Essential KES 25,000 kwa mwezi ikiwa na deliveries 5; Professional KES 45,000 kwa mwezi ikiwa na deliveries 12; na Elite KES 75,000 kwa mwezi ikiwa na deliveries 25. Mikataba maalum ya Enterprise inapatikana juu ya Elite." :
+           asksRewards ? "Lueri Rewards ni mpango wa uaminifu wa bure unaokuwezesha kupata pointi kwa deliveries. Viwango ni Bronze, Silver, Gold, Platinum na VIP; chaguo za uanachama wa kulipia zinapatikana kupitia Rewards checkout." : "",
+        pt: asksServices ? "A Lueri oferece entrega de encomendas e documentos, distribuição para empresas e e-commerce e serviços de courier sob demanda em Nairobi e áreas próximas. Pode solicitar uma entrega única ou entregas recorrentes para empresas, com o preço final confirmado antes da recolha." :
+           asksPrice ? "As entregas individuais começam em KES 350. O preço final depende da zona de recolha, zona de destino e tamanho da encomenda, e é confirmado antes da recolha, sem taxas ocultas." :
+           asksCoverage ? "A Lueri atende atualmente Nairobi e áreas próximas, incluindo Nairobi CBD, Westlands, Kilimani, Kasarani, South B/South C, Embakasi, Ngong Road e Thika Road. Se a sua localização não estiver na lista, podemos confirmar a rota." :
+           asksHours ? "A Lueri funciona de segunda a sexta, das 08:00 às 17:00, e aos sábados, das 08:00 às 15:00. Estamos fechados aos domingos. Pedidos após o horário de corte passam para o próximo dia útil." :
+           asksCorporate ? "A Lueri oferece planos empresariais: Essential por KES 25.000/mês com 5 entregas incluídas; Professional por KES 45.000/mês com 12; e Elite por KES 75.000/mês com 25. Também existem acordos Enterprise personalizados acima do Elite." :
+           asksRewards ? "O Lueri Rewards é um programa de fidelidade gratuito em que os membros ganham pontos por entregas. Os níveis são Bronze, Silver, Gold, Platinum e VIP; existem opções de adesão paga no checkout do Rewards." : "",
+        fr: asksServices ? "Lueri propose la livraison de colis et de documents, la distribution pour les entreprises et le e-commerce, ainsi qu’un service de coursier à la demande à Nairobi et dans les environs. Vous pouvez demander une livraison ponctuelle ou récurrente, avec un prix confirmé avant l’enlèvement." :
+           asksPrice ? "Les livraisons individuelles commencent à KES 350. Le prix final dépend de la zone d’enlèvement, de la zone de destination et de la taille du colis, et il est confirmé avant l’enlèvement, sans frais cachés." :
+           asksCoverage ? "Lueri dessert actuellement Nairobi et les environs, notamment Nairobi CBD, Westlands, Kilimani, Kasarani, South B/South C, Embakasi, Ngong Road et Thika Road. Si votre zone n’est pas listée, nous pouvons confirmer l’itinéraire." :
+           asksHours ? "Lueri est ouvert du lundi au vendredi de 08:00 à 17:00 et le samedi de 08:00 à 15:00. Nous sommes fermés le dimanche. Les demandes après l’heure limite passent au prochain jour ouvrable." :
+           asksCorporate ? "Lueri propose des plans d’entreprise : Essential à KES 25 000/mois avec 5 livraisons incluses, Professional à KES 45 000/mois avec 12, et Elite à KES 75 000/mois avec 25. Des accords Enterprise personnalisés sont disponibles au-delà d’Elite." :
+           asksRewards ? "Lueri Rewards est un programme de fidélité gratuit qui permet de gagner des points sur les livraisons. Les niveaux sont Bronze, Silver, Gold, Platinum et VIP; des options d’adhésion payante sont disponibles via le checkout Rewards." : "",
+        es: asksServices ? "Lueri ofrece entrega de paquetes y documentos, distribución para empresas y comercio electrónico, y servicio de mensajería bajo demanda en Nairobi y zonas cercanas. Puedes solicitar una entrega puntual o recurrente, con el precio final confirmado antes de la recogida." :
+           asksPrice ? "Las entregas individuales comienzan desde KES 350. El precio final depende de la zona de recogida, la zona de destino y el tamaño del paquete, y se confirma antes de la recogida sin cargos ocultos." :
+           asksCoverage ? "Lueri presta servicio actualmente en Nairobi y zonas cercanas, incluidos Nairobi CBD, Westlands, Kilimani, Kasarani, South B/South C, Embakasi, Ngong Road y Thika Road. Si tu zona no aparece, podemos confirmar la ruta." :
+           asksHours ? "Lueri opera de lunes a viernes, de 08:00 a 17:00, y los sábados, de 08:00 a 15:00. Cerramos los domingos. Las solicitudes fuera del horario pasan al siguiente día laborable." :
+           asksCorporate ? "Lueri ofrece planes corporativos: Essential por KES 25.000/mes con 5 entregas incluidas; Professional por KES 45.000/mes con 12; y Elite por KES 75.000/mes con 25. Hay acuerdos Enterprise personalizados por encima de Elite." :
+           asksRewards ? "Lueri Rewards es un programa de fidelidad gratuito que permite ganar puntos por cada entrega. Los niveles son Bronze, Silver, Gold, Platinum y VIP; también hay opciones de membresía de pago en el checkout de Rewards." : "",
+        ar: asksServices ? "تقدم لوري خدمات توصيل الطرود والمستندات، وخدمات التوزيع للشركات والتجارة الإلكترونية، وخدمة التوصيل عند الطلب في نيروبي والمناطق المحيطة. يمكن طلب توصيل لمرة واحدة أو توصيل متكرر للشركات، مع تأكيد السعر النهائي قبل الاستلام." :
+           asksPrice ? "تبدأ تكلفة التوصيل الفردي من 350 شلن كيني. يعتمد السعر النهائي على منطقة الاستلام ومنطقة التسليم وحجم الطرد، ويتم تأكيد السعر قبل الاستلام دون رسوم مخفية." :
+           asksCoverage ? "تخدم لوري حالياً نيروبي والمناطق المحيطة، بما في ذلك وسط نيروبي ووستلاندز وكليماني وكاساراني وساوث بي/ساوث سي وإمباكاسي ونغونغ رود وثيكا رود. إذا لم تكن منطقتك في القائمة، يمكننا تأكيد المسار." :
+           asksHours ? "تعمل لوري من الاثنين إلى الجمعة من 08:00 إلى 17:00، والسبت من 08:00 إلى 15:00. نحن مغلقون يوم الأحد. الطلبات بعد وقت الإغلاق تُرحّل إلى يوم العمل التالي." :
+           asksCorporate ? "تقدم لوري خططاً للشركات: Essential بسعر 25,000 شلن كيني شهرياً مع 5 عمليات توصيل، وProfessional بسعر 45,000 مع 12، وElite بسعر 75,000 مع 25. تتوفر اتفاقيات Enterprise مخصصة لما بعد Elite." :
+           asksRewards ? "برنامج Lueri Rewards مجاني ويتيح للأعضاء كسب نقاط مقابل عمليات التوصيل. المستويات هي Bronze وSilver وGold وPlatinum وVIP، وتتوفر خيارات عضوية مدفوعة عبر صفحة Rewards." : "",
+        zh: asksServices ? "Lueri 提供包裹和文件配送、企业及电商配送以及按需快递服务，覆盖内罗毕及周边地区。您可以安排一次性配送或企业重复配送，最终价格会在取件前确认。" :
+           asksPrice ? "单次配送起价为 350 肯尼亚先令。最终价格取决于取件区域、送达区域和包裹大小，Lueri 会在取件前确认价格，不收取隐藏费用。" :
+           asksCoverage ? "Lueri 目前服务于内罗毕及周边地区，包括内罗毕 CBD、Westlands、Kilimani、Kasarani、South B/South C、Embakasi、Ngong Road 和 Thika Road。如果您的地点不在列表中，可以联系我们确认路线。" :
+           asksHours ? "Lueri 周一至周五 08:00–17:00 营业，周六 08:00–15:00 营业，周日休息。营业时间之后的请求会安排到下一个工作日。" :
+           asksCorporate ? "Lueri 提供企业计划：Essential 每月 25,000 肯尼亚先令，包含 5 次配送；Professional 每月 45,000，包含 12 次；Elite 每月 75,000，包含 25 次。Elite 以上可提供定制 Enterprise 协议。" :
+           asksRewards ? "Lueri Rewards 是免费的忠诚计划，会员每次配送都可获得积分。等级包括 Bronze、Silver、Gold、Platinum 和 VIP；Rewards 结账页面还提供付费会员选项。" : ""
+      };
+      const knowledgeReply = answers[validLocale] || answers.en;
+      if (knowledgeReply) reply = knowledgeReply;
+    }
+
+    if (!reply && state.step === "IDLE" && isBookingIntent(message)) {
       state = { step: "PICKUP", member_id: state.member_id ?? null };
       reply = flow(validLocale, "pickup");
     } else if (state.step !== "IDLE") {
