@@ -20,6 +20,18 @@ type DeliveryState = {
   member_id?: string | null;
 };
 
+
+const FALLBACK: Record<string, {setup:string; tooLong:string; api:string; unknown:string; error:string; method:string; empty:string}> = {
+  en: { setup: `Lucy’s AI is temporarily unavailable. Please WhatsApp Lueri directly: ${WA}`, tooLong: `That question is a little long. Please shorten it, or WhatsApp Lueri directly: ${WA}`, api: `Lucy is having trouble right now. Please WhatsApp Lueri directly: ${WA}`, unknown: `I’m not sure about that. Please WhatsApp Lueri directly: ${WA}`, error: `Something went wrong. Please WhatsApp Lueri directly: ${WA}`, method: "That request is not supported. Please try again.", empty: `I’m not sure how to answer that. Please WhatsApp Lueri directly: ${WA}` },
+  sw: { setup: `Lucy haipatikani kwa muda. Tafadhali wasiliana na Lueri moja kwa moja kupitia WhatsApp: ${WA}`, tooLong: `Swali hilo ni refu kidogo. Tafadhali lifupishe, au wasiliana na Lueri kupitia WhatsApp: ${WA}`, api: `Lucy ana tatizo kwa sasa. Tafadhali wasiliana na Lueri kupitia WhatsApp: ${WA}`, unknown: `Sina uhakika kuhusu hilo. Tafadhali wasiliana na Lueri kupitia WhatsApp: ${WA}`, error: `Kuna tatizo limetokea. Tafadhali wasiliana na Lueri kupitia WhatsApp: ${WA}`, method: "Ombi hilo halitumiki. Tafadhali jaribu tena.", empty: `Sina uhakika jinsi ya kujibu hilo. Tafadhali wasiliana na Lueri kupitia WhatsApp: ${WA}` },
+  fr: { setup: `Lucy est temporairement indisponible. Veuillez contacter directement Lueri sur WhatsApp : ${WA}`, tooLong: `Votre question est un peu longue. Veuillez la raccourcir ou contacter Lueri sur WhatsApp : ${WA}`, api: `Lucy rencontre un problème pour le moment. Veuillez contacter Lueri sur WhatsApp : ${WA}`, unknown: `Je ne suis pas certaine de cette information. Veuillez contacter Lueri sur WhatsApp : ${WA}`, error: `Une erreur s’est produite. Veuillez contacter Lueri sur WhatsApp : ${WA}`, method: "Cette demande n’est pas prise en charge. Veuillez réessayer.", empty: `Je ne suis pas certaine de la réponse. Veuillez contacter Lueri sur WhatsApp : ${WA}` },
+  es: { setup: `Lucy no está disponible temporalmente. Contacta directamente con Lueri por WhatsApp: ${WA}`, tooLong: `La pregunta es un poco larga. Acórtala o contacta con Lueri por WhatsApp: ${WA}`, api: `Lucy está teniendo un problema en este momento. Contacta con Lueri por WhatsApp: ${WA}`, unknown: `No estoy segura de esa información. Contacta con Lueri por WhatsApp: ${WA}`, error: `Ha ocurrido un error. Contacta con Lueri por WhatsApp: ${WA}`, method: "Esta solicitud no es compatible. Inténtalo de nuevo.", empty: `No estoy segura de cómo responder a eso. Contacta con Lueri por WhatsApp: ${WA}` },
+  ar: { setup: `لوسي غير متاحة مؤقتاً. يرجى التواصل مع لوري مباشرة عبر واتساب: ${WA}`, tooLong: `السؤال طويل قليلاً. يرجى اختصاره أو التواصل مع لوري عبر واتساب: ${WA}`, api: `تواجه لوسي مشكلة حالياً. يرجى التواصل مع لوري عبر واتساب: ${WA}`, unknown: `لست متأكدة من هذه المعلومة. يرجى التواصل مع لوري عبر واتساب: ${WA}`, error: `حدث خطأ ما. يرجى التواصل مع لوري عبر واتساب: ${WA}`, method: "هذا الطلب غير مدعوم. يرجى المحاولة مرة أخرى.", empty: `لست متأكدة من كيفية الإجابة عن ذلك. يرجى التواصل مع لوري عبر واتساب: ${WA}` },
+  pt: { setup: `A Lucy está temporariamente indisponível. Fale diretamente com a Lueri pelo WhatsApp: ${WA}`, tooLong: `Essa pergunta está um pouco longa. Encurte-a ou fale com a Lueri pelo WhatsApp: ${WA}`, api: `A Lucy está com um problema no momento. Fale com a Lueri pelo WhatsApp: ${WA}`, unknown: `Não tenho certeza sobre essa informação. Fale com a Lueri pelo WhatsApp: ${WA}`, error: `Ocorreu um erro. Fale com a Lueri pelo WhatsApp: ${WA}`, method: "Essa solicitação não é compatível. Tente novamente.", empty: `Não tenho certeza de como responder a isso. Fale com a Lueri pelo WhatsApp: ${WA}` },
+  zh: { setup: `露西暂时无法使用。请直接通过 WhatsApp 联系 Lueri：${WA}`, tooLong: `这个问题有点长。请缩短问题，或通过 WhatsApp 联系 Lueri：${WA}`, api: `露西目前遇到了一点问题。请通过 WhatsApp 联系 Lueri：${WA}`, unknown: `我不确定这个信息。请通过 WhatsApp 联系 Lueri：${WA}`, error: `发生了一些问题。请通过 WhatsApp 联系 Lueri：${WA}`, method: "暂不支持此请求。请再试一次。", empty: `我不确定该如何回答。请通过 WhatsApp 联系 Lueri：${WA}` }
+};
+function fallback(locale: string, key: keyof typeof FALLBACK.en) { return FALLBACK[locale]?.[key] ?? FALLBACK.en[key]; }
+
 const LOCALE_INSTRUCTIONS: Record<string, string> = {
   en: "Respond strictly in English.",
   sw: "Jibu kwa Kiswahili pekee.",
@@ -69,11 +81,13 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   try {
-    if (!ANTHROPIC_API_KEY) return json({ reply: `Lucy’s AI is being set up. Please WhatsApp Lueri directly: ${WA}` });
+    const rawLocale = String((await req.clone().json().catch(() => ({})))?.locale ?? "en");
+    const validRequestLocale = SUPPORTED_LOCALES.includes(rawLocale) ? rawLocale : "en";
+    if (!ANTHROPIC_API_KEY) return json({ reply: fallback(validRequestLocale, "setup"), delivery_state: { step: "IDLE" } });
     const body = await req.json().catch(() => ({}));
     const message = String(body?.message ?? "").trim();
     if (!message) return json({ error: "Empty message" }, 400);
-    if (message.length > MAX_MESSAGE_LEN) return json({ reply: `That question is a little long. Please shorten it, or WhatsApp Lueri directly: ${WA}` });
+    if (message.length > MAX_MESSAGE_LEN) return json({ reply: fallback(validLocale, "tooLong"), delivery_state: state });
     const validLocale = SUPPORTED_LOCALES.includes(String(body?.locale)) ? String(body.locale) : "en";
     let state: DeliveryState = body?.delivery_state && typeof body.delivery_state === "object" ? body.delivery_state : { step: "IDLE" };
     let reply = "";
@@ -120,14 +134,14 @@ Deno.serve(async (req) => {
       }).slice(-MAX_HISTORY_ITEMS).map((item: { role: "user" | "assistant"; content: string }) => ({ role: item.role, content: item.content }));
       const augmentedSystemPrompt = `${SYSTEM_PROMPT}\n\nLANGUAGE INSTRUCTION:\n${LOCALE_INSTRUCTIONS[validLocale]}`;
       const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" }, body: JSON.stringify({ model: MODEL, max_tokens: 300, system: augmentedSystemPrompt, messages: [...history, { role: "user", content: message }] }) });
-      if (!res.ok) { console.error("Anthropic API error", res.status, await res.text()); return json({ reply: `Lucy is having trouble right now. Please WhatsApp Lueri directly: ${WA}`, delivery_state: state }); }
+      if (!res.ok) { console.error("Anthropic API error", res.status, await res.text()); return json({ reply: fallback(validLocale, "api"), delivery_state: state }); }
       const data = await res.json();
-      reply = data?.content?.find((b: { type: string }) => b.type === "text")?.text?.trim() ?? `I’m not sure about that. Please WhatsApp Lueri directly: ${WA}`;
+      reply = data?.content?.find((b: { type: string }) => b.type === "text")?.text?.trim() ?? fallback(validLocale, "unknown");
     }
 
     return json({ reply, action, payload, delivery_state: state });
   } catch (err) {
     console.error("lucy-chat error", err);
-    return json({ reply: `Something went wrong. Please WhatsApp Lueri directly: ${WA}` });
+    return json({ reply: fallback("en", "error") });
   }
 });
