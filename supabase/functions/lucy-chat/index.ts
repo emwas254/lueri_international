@@ -92,6 +92,7 @@ Deno.serve(async (req) => {
     requestLocale = validLocale;
     if (message.length > MAX_MESSAGE_LEN) return json({ reply: fallback(validLocale, "tooLong"), delivery_state: { step: "IDLE" } });
     let state: DeliveryState = body?.delivery_state && typeof body.delivery_state === "object" ? body.delivery_state : { step: "IDLE" };
+    const topicIntent = typeof body?.topic_intent === "string" ? body.topic_intent.trim().toUpperCase() : "";
     let reply = "";
     let action = "CHAT";
     let payload: Record<string, unknown> | null = null;
