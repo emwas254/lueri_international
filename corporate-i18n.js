@@ -17,7 +17,20 @@ function css(){if(q('#corpLangCSS'))return;const s=document.createElement('style
 function apply(loc){
  const a=T[loc]||T.en;document.documentElement.lang=loc==='zh'?'zh-CN':loc;document.documentElement.dir=loc==='ar'?'rtl':'ltr';document.documentElement.dataset.lueriLanguage=loc;css();
  const s=q('#languageSelector');if(s)s.value=loc;
- const m=a.menu;set(q('.menu-panel-eyebrow'),m[0]);let mi=0;qa('.menu-link-title').forEach(e=>set(e,m[++mi]));mi=0;qa('.menu-link-caption').forEach(e=>set(e,m[++mi]));set(q('.nav-cta'),m[17]);
+ const m=a.menu;
+ set(q('.menu-panel-eyebrow'),m[0]);
+ const menuTextByTag={
+  SVC:[m[1],m[2]],PRC:[m[3],m[4]],BIZ:[m[5],m[6]],CVG:[m[7],m[8]],
+  WHY:[m[9],m[10]],FAQ:[m[11],m[12]],RWD:[m[13],m[14]],CAR:[m[15],m[16]],BK:[m[17],m[18]]
+ };
+ qa('.menu-link').forEach(link=>{
+  const tag=link.querySelector('.menu-link-tag')?.textContent.trim();
+  const pair=menuTextByTag[tag];
+  if(pair){set(link.querySelector('.menu-link-title'),pair[0]);set(link.querySelector('.menu-link-caption'),pair[1]);}
+ });
+ set(q('.nav-cta'),m[17]);
+ set(q('#menuTriggerLabel'),loc==='zh'?'菜单':loc==='sw'?'Menyu':loc==='fr'?'Menu':loc==='es'?'Menú':loc==='ar'?'القائمة':loc==='pt'?'Menu':'Menu');
+ const trigger=q('#menuTrigger');if(trigger)trigger.setAttribute('aria-label',loc==='zh'?'打开导航菜单':loc==='sw'?'Fungua menyu ya urambazaji':loc==='fr'?'Ouvrir le menu de navigation':loc==='es'?'Abrir menú de navegación':loc==='ar'?'فتح قائمة التنقل':loc==='pt'?'Abrir menu de navegação':'Open navigation menu');
  const h=a.hero;set(q('.eyebrow-mono'),h[0]);set(q('.hero .title'),h[1],1);set(q('.hero .subtitle'),h[2]);set(q('.scope-tag'),h[3].replace('<u>','<a href="index.html#contact" style="color:inherit;text-decoration:underline">').replace('</u>','</a>'),1);set(q('.hero .stamp'),h[4]);
  const w=a.why;set(q('#why-business h2'),w[0]);qa('#why-business li').forEach((li,i)=>{set(li.querySelector('h3'),w[1+i*2]);set(li.querySelector('p'),w[2+i*2])});
  const p=a.plans;set(q('#corporate-pricing h2'),p[0]);qa('.pricing-card').forEach((c,i)=>{const x=p[1+i];set(c.querySelector('.tier'),x[0]);set(c.querySelector('h3'),x[1]);set(c.querySelector('p'),x[2]);qa('li',c).forEach((li,j)=>set(li,x[3+j]))});const notes=qa('#corporate-pricing .pricing-note');set(notes[0],p[4],1);set(notes[1].querySelector('strong'),p[5]);set(notes[1],linkify(p[6]),1);
