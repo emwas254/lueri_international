@@ -79,7 +79,17 @@ const FLOW: Record<string, Record<string, string>> = {
   zh: { pickup: "好的。取件地点在哪里？", dropoff: "明白了。送达地点在哪里？", parcel: "请描述包裹（大小、重量和类型）。", time: "您希望什么时候取件？（尽快、上午、下午或晚上）", name: "好的。您的全名是什么？", phone: "谢谢。您的电话号码是多少？", email: "快完成了。您的电子邮箱是什么？电子邮箱用于接收电子收据。", invalidPhone: "请输入有效的肯尼亚电话号码，例如0712345678。", invalidEmail: "请输入有效的电子邮箱地址以接收收据。", review: "这是您的预约摘要：\n\n📍 取件：{pickup}\n📍 送达：{dropoff}\n📦 详情：{details}\n⏰ 时间：{time}\n👤 姓名：{name}\n📱 电话：{phone}\n✉️ 邮箱：{email}\n\n以上信息正确吗？回复“是”以继续安全付款。", payment: "您的预约信息已经准备好。现在进入安全付款。", restart: "没问题。我们重新开始。取件地点在哪里？" }
 };
 
-const CORS_HEADERS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
+const ALLOWED_ORIGINS = ["https://lueriinternational.com", "https://www.lueriinternational.com"];
+const CORS_HEADERS = { "Access-Control-Allow-Origin": "https://lueriinternational.com", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin" };
+// Best-effort per-instance limiter. Not a substitute for a real edge rate limit / Turnstile.
+const HITS = new Map<string, number[]>();
+function limited(key: string, max: number, windowMs: number) {
+  const now = Date.now();
+  const arr = (HITS.get(key) ?? []).filter((t) => now - t < windowMs);
+  arr.push(now); HITS.set(key, arr);
+  if (HITS.size > 5000) HITS.clear();
+  return arr.length > max;
+}
 const KNOWLEDGE = `LUERI INTERNATIONAL — APPROVED SUPPORT KNOWLEDGE
 Identity: Lueri International is a Nairobi-based last-mile delivery and courier company.
 Services: parcel & document delivery, business/e-commerce dispatch, and on-demand courier. Nairobi last-mile only; not cross-border freight.
@@ -97,13 +107,16 @@ const SYSTEM_PROMPT = `You are Lucy, the friendly digital assistant for Lueri In
 
 function json(data: unknown, status = 200) { return new Response(JSON.stringify(data), { status, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }); }
 function validEmail(value: string) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()); }
-function validKenyanPhone(value: string) { return /^0[17]\d{8}$/.test(value.replace(/\s/g, "")); }
+function toLocalPhone(value: string) { const d = value.replace(/\D/g, ""); return d.startsWith("254") && d.length === 12 ? "0" + d.slice(3) : d; }
+function validKenyanPhone(value: string) { return /^0[17]\d{8}$/.test(toLocalPhone(value)); }
 function flow(locale: string, key: string) { return FLOW[locale]?.[key] ?? FLOW.en[key]; }
 function fill(template: string, state: DeliveryState) { return template.replace("{pickup}", state.pickup ?? "").replace("{dropoff}", state.dropoff ?? "").replace("{details}", state.details ?? "").replace("{time}", state.preferred_time ?? "").replace("{name}", state.customer_name ?? "").replace("{phone}", state.customer_phone ?? "").replace("{email}", state.customer_email ?? ""); }
-function isBookingIntent(message: string) { return /\b(book|booking|pickup|pick up|delivery|deliver|courier|oda|agiza|usafirishaji|réserver|livraison|reservar|entrega|حجز|توصيل|agendar|entrega|预订|取件|配送)\b/i.test(message); }
-function isYes(message: string) { return /\b(yes|yeah|yep|sure|okay|ok|proceed|ndiyo|ndio|oui|sí|si|sim|نعم|是|好的)\b/i.test(message.trim()); }
+function isBookingIntent(message: string) { return /\b(book(ing)?|pick ?up|schedule|send (a |my )?(parcel|package|document)s?|(need|want) (a )?(courier|rider|delivery)|réserver|reservar|agendar|agiza|oda)\b/i.test(message) || /(حجز|预订|预约|取件)/.test(message); }
+function isYes(message: string) { return /^(yes|y|yeah|yep|sure|ok|okay|proceed|correct|confirm|ndiyo|ndio|sawa|oui|d[’']accord|s[ií]|sim|claro|correcto|نعم|أجل|اجل|是|是的|好|好的|确认)(\s+(please|thanks?|proceed|correct|por favor|s[’']il vous pla[iî]t|tafadhali))?[\s.!]*$/iu.test(message.trim()); }
 function trackingStatus(locale: string, status: string) {
-  const s = String(status || "pending").toLowerCase();
+  const alias: Record<string,string> = { paid_ready: "paid", pending_payment: "pending", payment_failed: "failed", payment_cancelled: "cancelled", issue: "failed" };
+  const raw = String(status || "pending").toLowerCase();
+  const s = alias[raw] ?? raw;
   const labels: Record<string, Record<string,string>> = {
     en: { pending:"Pending", confirmed:"Confirmed", paid:"Payment confirmed", processing:"Processing", assigned:"Courier assigned", picked_up:"Picked up", in_transit:"In transit", delivered:"Delivered", cancelled:"Cancelled", failed:"Needs attention" },
     sw: { pending:"Inasubiri", confirmed:"Imethibitishwa", paid:"Malipo yamethibitishwa", processing:"Inachakatwa", assigned:"Courier amepewa", picked_up:"Imechukuliwa", in_transit:"Iko njiani", delivered:"Imefikishwa", cancelled:"Imeghairiwa", failed:"Inahitaji uangalizi" },
@@ -119,10 +132,14 @@ function isTrackingIntent(message: string) {
   return /\b(track|tracking|track delivery|delivery status|where is my delivery|fuatilia|oda yangu iko wapi|suivre|suivi|rastrear|seguimiento|تتبع|حالة التوصيل|追踪|配送状态)\b/i.test(message);
 }
 
-Deno.serve(async (req) => {
+async function handle(req: Request): Promise<Response> {
   let requestLocale = "en";
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
+  const origin = req.headers.get("origin");
+  if (origin && !ALLOWED_ORIGINS.includes(origin)) return json({ error: "Origin not allowed" }, 403);
+  const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
+  if (limited("m:" + ip, 30, 60_000)) return json({ reply: fallback("en", "api"), delivery_state: { step: "IDLE" } }, 429);
 
   try {
     const rawLocale = String((await req.clone().json().catch(() => ({})))?.locale ?? "en");
@@ -167,7 +184,7 @@ Deno.serve(async (req) => {
       } else {
         const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: "Bearer " + SUPABASE_SERVICE_ROLE_KEY };
         let rows: unknown[] = [];
-        const trackingUrl = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at&pesapal_tracking_id=eq." + encodeURIComponent(reference) + "&limit=1";
+        const trackingUrl = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at&or=" + encodeURIComponent("(reference.eq." + reference + ",pesapal_tracking_id.eq." + reference + ")") + "&limit=1";
         const trackingLookup = await fetch(trackingUrl, { headers });
         if (!trackingLookup.ok) {
           console.error("Lucy tracking lookup error", trackingLookup.status, await trackingLookup.text());
@@ -233,10 +250,11 @@ Deno.serve(async (req) => {
         state = { step: "TRACKING", member_id: state.member_id ?? null };
         reply = prompts[validLocale] ?? prompts.en;
       }
-      const asksServices = normalizedIntent === "SERVICES" || /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
+      const asksServicesRaw = normalizedIntent === "SERVICES" || /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
       const asksPrice = normalizedIntent === "PRICING" || /price|pricing|cost|how much|rate|rates|kes|350|quotation|quote|bei|gharama|prix|tarif|precio|costo|سعر|تكلفة|价格|费用/i.test(q);
       const asksCoverage = normalizedIntent === "COVERAGE" || /where|area|areas|coverage|deliver.*(nairobi|westlands|kilimani|kasarani|embakasi|thika|ngong)|nairobi|coverage|eneo|maeneo|zone|zones|où|couvre|zona|área|أين|مناطق|覆盖|区域/i.test(q);
       const asksHours = normalizedIntent === "HOURS" || /hours|open|opening|close|closed|sunday|monday|saturday|time|operating|masaa|saa|heures|horaires|horario|ساعات|مواعيد|营业时间/i.test(q);
+      const asksServices = asksServicesRaw && !(asksPrice || asksHours || (asksCoverage && !/servic/i.test(q)));
       const asksCorporate = normalizedIntent === "CORPORATE" || /corporate|business account|business plan|professional|essential|elite|enterprise|company|monthly plan|compte entreprise|plan empresarial|empresarial|planos empresariais|planes corporativos|خطط الشركات|企业计划|شركات|企业/i.test(q);
       const asksRewards = normalizedIntent === "REWARDS" || /reward|rewards|points|loyalty|membership|bronze|silver|gold|platinum|vip|récompense|points|recompensas|membresia rewards|membresía rewards|عضوية rewards|rewards 会员|مكافآت|积分|会员/i.test(q);
       const answers: Record<string,string> = {
@@ -307,6 +325,7 @@ Deno.serve(async (req) => {
         case "DROPOFF": state.dropoff = message; state.step = "PARCEL"; reply = flow(validLocale, "parcel"); break;
         case "PARCEL": {
           if (imageData) {
+            if (limited("p:" + ip, 5, 600_000)) { reply = fallback(validLocale, "api"); break; }
             if (!OPENAI_API_KEY) {
               reply = fallback(validLocale, "setup");
               break;
@@ -347,7 +366,7 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
                 reply = fallback(validLocale, "unknown");
                 break;
               }
-              state.details = `Photo attached: ${photoPath ?? "received"}\nAI parcel description: ${description}`;
+              state.details = `Photo attached: ${photoPath ? "yes" : "received"}\nAI parcel description: ${description}`;
               state.parcel_photo_path = photoPath ?? null;
               state.step = "TIME";
               const photoPrompts: Record<string,string> = {
@@ -372,7 +391,7 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
         case "TIME": state.preferred_time = message; state.step = "NAME"; reply = flow(validLocale, "name"); break;
         case "NAME": state.customer_name = message; state.step = "PHONE"; reply = flow(validLocale, "phone"); break;
         case "PHONE":
-          if (validKenyanPhone(message)) { state.customer_phone = message; state.step = "EMAIL"; reply = flow(validLocale, "email"); }
+          if (validKenyanPhone(message)) { state.customer_phone = toLocalPhone(message); state.step = "EMAIL"; reply = flow(validLocale, "email"); }
           else reply = flow(validLocale, "invalidPhone");
           break;
         case "EMAIL":
@@ -382,7 +401,9 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
         case "REVIEW":
           if (isYes(message)) {
             action = "INITIATE_PAYMENT";
-            payload = { customer_name: state.customer_name, customer_email: state.customer_email, phone: state.customer_phone, pickup: state.pickup, dropoff: state.dropoff, details: state.details, preferred_time: state.preferred_time, member_id: state.member_id ?? null, parcel_photo_path: state.parcel_photo_path ?? null };
+            const cap = (v: unknown, n = 300) => String(v ?? "").slice(0, n);
+            const safePhoto = /^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(String(state.parcel_photo_path ?? "")) ? state.parcel_photo_path : null;
+            payload = { customer_name: cap(state.customer_name, 120), customer_email: cap(state.customer_email, 200), phone: cap(state.customer_phone, 20), pickup: cap(state.pickup), dropoff: cap(state.dropoff), details: cap(state.details, 1500), preferred_time: cap(state.preferred_time, 100), member_id: state.member_id ?? null, parcel_photo_path: safePhoto };
             reply = flow(validLocale, "payment");
           } else {
             state = { step: "IDLE", member_id: state.member_id ?? null };
@@ -434,4 +455,10 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
     console.error("lucy-chat error", err);
     return json({ reply: fallback(requestLocale, "error") });
   }
+}
+Deno.serve(async (req) => {
+  const res = await handle(req);
+  const o = req.headers.get("origin");
+  if (o && ALLOWED_ORIGINS.includes(o)) res.headers.set("Access-Control-Allow-Origin", o);
+  return res;
 });
