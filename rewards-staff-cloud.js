@@ -347,7 +347,7 @@ const LUERI_REWARDS = {
   company: {
     name: 'Lueri International',
     address: 'Nairobi, Kenya',
-    phone: '+254 719 261 713',
+    phone: '+254 713 261 719',
     kraPin: '',
     vatRegistered: false,
     vatRate: 0.16,
