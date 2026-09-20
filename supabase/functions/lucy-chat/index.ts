@@ -159,6 +159,20 @@ async function handle(req: Request): Promise<Response> {
 
     // Deterministic Lueri product/service answers: these do not depend on the AI provider.
     // This keeps Lucy useful for core product questions even if the AI layer is temporarily unavailable.
+    // Quick-topic buttons must always be able to switch away from an unfinished transactional flow.
+    // Otherwise a stale BOOKING/TRACKING state can hijack buttons such as Corporate Plans or Rewards Membership.
+    const quickTopic = topicIntent || (
+      /^(corporate plans?|business plans?|planos empresariais|planes corporativos|خطط الشركات|企业计划)$/i.test(message) ? "CORPORATE" :
+      /^(rewards membership|rewards|membresia rewards|membresía rewards|عضوية rewards|rewards 会员)$/i.test(message) ? "REWARDS" :
+      /^(delivery pricing|preços de entrega|tarifs de livraison|precios de entrega|أسعار التوصيل|配送价格)$/i.test(message) ? "PRICING" :
+      /^(service areas|áreas de serviço|service area|eneo la huduma|zones de service|áreas de servicio|مناطق الخدمة|服务区域)$/i.test(message) ? "COVERAGE" :
+      /^(opening hours|horário de funcionamento|masaa ya kazi|heures d'ouverture|horario de apertura|ساعات العمل|营业时间)$/i.test(message) ? "HOURS" :
+      isTrackingIntent(message) ? "TRACK" : ""
+    );
+    if (state.step !== "IDLE" && ["CORPORATE","REWARDS","PRICING","COVERAGE","HOURS","TRACK"].includes(quickTopic)) {
+      state = { step: "IDLE", member_id: state.member_id ?? null };
+    }
+
     // Transactional booking button: start the deterministic booking flow before FAQ/product classification.
     // This prevents the word "delivery" in the button label from being mistaken for a services question.
     if (state.step === "IDLE" && (topicIntent === "BOOK" || isBookingIntent(message))) {
