@@ -127,6 +127,21 @@
     return key.split('.').reduce(function (obj, part) { return obj && obj[part]; }, source) || '';
   }
 
+  function localizeSectionLinks(locale) {
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var href = a.getAttribute('href');
+      if (!href || (!href.includes('rewards.html') && !href.includes('corporate.html'))) return;
+      try {
+        var url = new URL(href, window.location.href);
+        if (url.pathname.endsWith('/rewards.html') || url.pathname.endsWith('rewards.html') ||
+            url.pathname.endsWith('/corporate.html') || url.pathname.endsWith('corporate.html')) {
+          url.searchParams.set('lang', locale);
+          a.setAttribute('href', url.pathname + '?' + url.searchParams.toString() + (url.hash || ''));
+        }
+      } catch (_) {}
+    });
+  }
+
   function localizeRewardsLinks(locale) {
     document.querySelectorAll('a[href]').forEach(function (a) {
       var href = a.getAttribute('href');
@@ -159,6 +174,7 @@
       if (value) el.setAttribute('aria-label', value);
     });
     setDocumentLocale(locale);
+    localizeSectionLinks(locale);
     localizeRewardsLinks(locale);
     if (window.LueriI18nCompletion && typeof window.LueriI18nCompletion.apply === 'function') window.LueriI18nCompletion.apply(locale);
   }
