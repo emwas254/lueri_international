@@ -21,6 +21,7 @@ type DeliveryState = {
   customer_phone?: string;
   customer_email?: string;
   member_id?: string | null;
+  parcel_photo_path?: string | null;
 };
 
 
@@ -347,6 +348,7 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
                 break;
               }
               state.details = `Photo attached: ${photoPath ?? "received"}\nAI parcel description: ${description}`;
+              state.parcel_photo_path = photoPath ?? null;
               state.step = "TIME";
               const photoPrompts: Record<string,string> = {
                 en: `Thanks — I received the photo. I can see: ${description}\n\nFor the quote, I still need your preferred pickup time.`,
@@ -380,7 +382,7 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
         case "REVIEW":
           if (isYes(message)) {
             action = "INITIATE_PAYMENT";
-            payload = { customer_name: state.customer_name, customer_email: state.customer_email, phone: state.customer_phone, pickup: state.pickup, dropoff: state.dropoff, details: state.details, preferred_time: state.preferred_time, member_id: state.member_id ?? null };
+            payload = { customer_name: state.customer_name, customer_email: state.customer_email, phone: state.customer_phone, pickup: state.pickup, dropoff: state.dropoff, details: state.details, preferred_time: state.preferred_time, member_id: state.member_id ?? null, parcel_photo_path: state.parcel_photo_path ?? null };
             reply = flow(validLocale, "payment");
           } else {
             state = { step: "IDLE", member_id: state.member_id ?? null };
