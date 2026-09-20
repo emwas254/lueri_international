@@ -41,7 +41,7 @@ function apply(loc){
  const email=ld[1]?.querySelector('a[href^="mailto:"]');
  const footerBlocks=[
    {head:ft[0],lines:[ft[1],ft[2]]},
-   {head:ft[3],lines:[phone?.textContent.trim()||'+254 719 261 713',email?.textContent.trim()||'info@lueriinternational.com']},
+   {head:ft[3],lines:[phone?.textContent.trim()||'+254 713 261 719',email?.textContent.trim()||'info@lueriinternational.com']},
    {head:ft[4],lines:[ft[5],ft[6],ft[7]]}
  ];
  ld.forEach((block,i)=>{
