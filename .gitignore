@@ -1,0 +1,26 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local tooling / operating-system files
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs and local artifacts
+*.log
+coverage/
+dist/
+build/
+
+# Local databases / caches
+*.sqlite
+*.sqlite3
+.omniroute/
