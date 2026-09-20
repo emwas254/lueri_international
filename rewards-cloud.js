@@ -22,7 +22,7 @@ const TIERS = [
 
 const LUERI_REWARDS = {
   tiers: TIERS.map(t => ({ name: t.name, minSpend: t.min, benefits: t.benefits })),
-  company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254 719 261 713', kraPin: '', vatRegistered: false, vatRate: 0.16 },
+  company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254 713 261 719', kraPin: '', vatRegistered: false, vatRate: 0.16 },
 };
 
 let _pesapalModal = null;
