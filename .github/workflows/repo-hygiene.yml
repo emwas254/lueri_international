@@ -1,0 +1,54 @@
+name: Repository Hygiene
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  javascript-syntax:
+    name: JavaScript syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No JavaScript files found."
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            echo "Checking $file"
+            node --check "$file"
+          done
+
+  obvious-secret-patterns:
+    name: Obvious secret patterns
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan tracked text files
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE -- ':/(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|sk-[A-Za-z0-9]{20,}|SG\.[A-Za-z0-9_-]{20,})' -- . ':!*.png' ':!*.jpg' ':!*.jpeg' ':!*.webp'; then
+            echo "Potential credential material detected. Review and rotate any real credential before merging."
+            exit 1
+          fi
+          echo "No obvious high-risk credential patterns detected."
