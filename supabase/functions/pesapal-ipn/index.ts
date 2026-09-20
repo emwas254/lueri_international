@@ -54,11 +54,16 @@ function ipnReply(orderNotificationType: string, orderTrackingId: string, orderM
   );
 }
 
-function mapStatus(desc: string): "successful" | "failed" | "cancelled" {
-  switch (desc) {
-    case "Completed": return "successful";
-    case "Reversed": return "cancelled";
-    default: return "failed";
+// Pesapal reports Completed / Failed / Invalid / Reversed. Anything else
+// (blank, "Pending", a future value) is NOT terminal and must never be
+// recorded as a failure, or a genuine payment that arrives later is ignored.
+function mapStatus(desc: string): "successful" | "failed" | "cancelled" | "pending" {
+  switch (String(desc ?? "").trim().toLowerCase()) {
+    case "completed": return "successful";
+    case "reversed": return "cancelled";
+    case "failed":
+    case "invalid": return "failed";
+    default: return "pending";
   }
 }
 
@@ -104,7 +109,7 @@ async function sendReceiptEmail(opts: {
         <tr><td style="padding:8px 0;color:#4A5A52;">Reference</td><td style="padding:8px 0;text-align:right;">${escapeHtml(opts.internalReference)}</td></tr>
       </table>
       <p>We look forward to doing business with you — same-day dispatch, priority handling, and a team that answers.</p>
-      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0719 261 713.</p>
+      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0713 261 719.</p>
     </div>`;
 
   try {
@@ -117,7 +122,7 @@ async function sendReceiptEmail(opts: {
       body: JSON.stringify({
         from: RESEND_FROM_EMAIL,
         to: [opts.toEmail],
-        subject: `Payment confirmed — ${safeTier} ${label}`,
+        subject: `Payment confirmed — ${opts.planDisplayName} ${label}`,
         html,
       }),
     });
@@ -132,149 +137,150 @@ async function sendReceiptEmail(opts: {
 }
 
 const AMOUNT_EPSILON = 0.01;
+const PAYMENT_COLS = "id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id";
+// A booking may only be moved by payment events while it is still in a payment state.
+// This stops a late or repeated IPN from dragging a job back out of dispatch.
+const PAYMENT_STATES = ["pending_payment", "payment_failed", "payment_cancelled"];
+
+async function syncDeliveryBooking(payment: { booking_id: string | null }, finalStatus: string) {
+  if (!payment.booking_id) return null;
+  const bookingStatus =
+    finalStatus === "successful" ? "paid_ready" :
+    finalStatus === "cancelled" ? "payment_cancelled" : "payment_failed";
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      status: bookingStatus,
+      paid_at: finalStatus === "successful" ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", payment.booking_id)
+    .in("status", PAYMENT_STATES);
+  return error;
+}
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
   const orderTrackingId = url.searchParams.get("OrderTrackingId") ?? "";
   const orderMerchantReference = url.searchParams.get("OrderMerchantReference") ?? "";
   const orderNotificationType = url.searchParams.get("OrderNotificationType") ?? "IPNCHANGE";
+  const ack = (s: 200 | 500) => ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, s);
 
   try {
-    if (!orderTrackingId) {
-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
-    }
+    if (!orderTrackingId) return ack(500);
 
     const token = await getAuthToken();
-
     const statusRes = await fetch(
-      `${BASE_URL}/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
+      `${BASE_URL}/Transactions/GetTransactionStatus?orderTrackingId=${encodeURIComponent(orderTrackingId)}`,
       { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } },
     );
+    if (!statusRes.ok) {
+      console.error("GetTransactionStatus failed", statusRes.status);
+      return ack(500); // ask Pesapal to retry
+    }
     const result = await statusRes.json();
     const pesapalStatus = mapStatus(result.payment_status_description);
     const amountPaid = Number(result.amount);
 
     let { data: payment } = await supabase
-      .from("payments")
-      .select("id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id")
-      .eq("pesapal_tracking_id", orderTrackingId)
-      .maybeSingle();
+      .from("payments").select(PAYMENT_COLS)
+      .eq("pesapal_tracking_id", orderTrackingId).maybeSingle();
 
-    if (!payment && orderMerchantReference) {
-      const fallback = await supabase
-        .from("payments")
-        .select("id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id")
-        .eq("internal_reference", orderMerchantReference)
-        .maybeSingle();
-      payment = fallback.data;
+    // Fallback lookup must use the reference Pesapal itself reports, never the
+    // query-string value, which anyone can forge.
+    const trustedReference = String(result.merchant_reference ?? "");
+    if (!payment && trustedReference) {
+      const fb = await supabase.from("payments").select(PAYMENT_COLS)
+        .eq("internal_reference", trustedReference).maybeSingle();
+      payment = fb.data;
     }
-
     if (!payment) {
-      console.error("IPN for unknown payment", { orderTrackingId, orderMerchantReference });
-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
+      console.error("IPN for unknown payment", { orderTrackingId, trustedReference });
+      return ack(500);
+    }
+    if (trustedReference && trustedReference !== payment.internal_reference) {
+      console.error("IPN merchant reference mismatch", { orderTrackingId, trustedReference, expected: payment.internal_reference });
+      return ack(200); // do not retry a forged or crossed notification
     }
 
-    // Idempotency: only ever move forward from 'pending'. IPN calls repeat.
-    if (payment.status !== "pending") {
-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 200);
-    }
+    // Not a final state yet: change nothing, ask for nothing.
+    if (pesapalStatus === "pending") return ack(200);
 
-    // --- Anti-tampering check ---
-    const amountMatches = Math.abs(amountPaid - Number(payment.amount)) < AMOUNT_EPSILON;
+    // Already paid: repeat IPNs are harmless, but heal a booking that missed its update.
+    if (payment.status === "successful") {
+      if (payment.purpose === "delivery_fee") await syncDeliveryBooking(payment, "successful");
+      return ack(200);
+    }
+    // A recorded failure/cancellation may only be overturned by a genuine successful payment.
+    if (payment.status !== "pending" && pesapalStatus !== "successful") return ack(200);
+
+    const amountMatches =
+      Math.abs(amountPaid - Number(payment.amount)) < AMOUNT_EPSILON &&
+      (!result.currency || String(result.currency).toUpperCase() === "KES");
     const finalStatus = pesapalStatus === "successful" && !amountMatches ? "failed" : pesapalStatus;
     const failureReason =
-      pesapalStatus === "successful" && !amountMatches
-        ? "amount_mismatch_suspected_tampering"
-        : finalStatus !== "successful"
-        ? (result.payment_status_description ?? "unknown")
-        : null;
+      pesapalStatus === "successful" && !amountMatches ? "amount_mismatch_suspected_tampering"
+      : finalStatus !== "successful" ? (result.payment_status_description ?? "unknown") : null;
 
     if (pesapalStatus === "successful" && !amountMatches) {
-      console.error("AMOUNT MISMATCH — refusing membership grant", {
-        payment_id: payment.id,
-        expected: payment.amount,
-        paid: amountPaid,
-        order_tracking_id: orderTrackingId,
-      });
+      console.error("AMOUNT MISMATCH — refusing grant", { payment_id: payment.id, expected: payment.amount, paid: amountPaid, orderTrackingId });
     }
 
-    await supabase
+    // Atomic claim: only one concurrent IPN can move the row from its current status.
+    const { data: claimed, error: claimErr } = await supabase
       .from("payments")
       .update({
         status: finalStatus,
         completed_at: finalStatus === "successful" ? new Date().toISOString() : null,
         failure_reason: failureReason,
       })
-      .eq("id", payment.id);
+      .eq("id", payment.id)
+      .eq("status", payment.status)
+      .select("id");
+    if (claimErr) { console.error("payment update failed", claimErr); return ack(500); }
+    if (!claimed || claimed.length === 0) return ack(200); // another handler already processed it
 
-    if (payment.purpose === "delivery_fee" && payment.booking_id) {
-      const bookingStatus =
-        finalStatus === "successful" ? "paid_ready" :
-        finalStatus === "cancelled" ? "payment_cancelled" :
-        "payment_failed";
-      await supabase
-        .from("bookings")
-        .update({
-          status: bookingStatus,
-          paid_at: finalStatus === "successful" ? new Date().toISOString() : null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", payment.booking_id);
+    if (payment.purpose === "delivery_fee") {
+      const bErr = await syncDeliveryBooking(payment, finalStatus);
+      if (bErr) console.error("booking update failed (will heal on next IPN)", bErr);
     }
 
     if (finalStatus === "successful" && payment.plan_code) {
-      // Branch: individual member vs business organization. Exactly one
-      // of these is set, enforced by a DB check constraint — never both.
       const isBusiness = Boolean(payment.organization_id);
-      const { data: rpcResult, error: rpcError } = await supabase.rpc(
-        isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment",
-        isBusiness
-          ? { p_payment_id: payment.id, p_plan_code: payment.plan_code }
-          : { p_payment_id: payment.id, p_plan_code: payment.plan_code },
-      );
+      const fn = isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment";
+      const { data: rpcResult, error: rpcError } = await supabase.rpc(fn, { p_payment_id: payment.id, p_plan_code: payment.plan_code });
       if (rpcError) {
-        console.error(`${isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment"} error:`, rpcError);
-      } else {
-        console.log("membership grant result:", rpcResult);
+        // Paid but not granted: release the claim so Pesapal's retry re-runs the grant.
+        console.error(`${fn} error:`, rpcError);
+        await supabase.from("payments")
+          .update({ status: "pending", completed_at: null, failure_reason: "grant_failed_retrying" })
+          .eq("id", payment.id);
+        return ack(500);
+      }
+      console.log("membership grant result:", rpcResult);
 
-        // --- Receipt email, only after a real grant succeeded ---
-        try {
-          if (isBusiness) {
-            const [{ data: org }, { data: plan }] = await Promise.all([
-              supabase.from("organizations").select("contact_email, contact_person_name").eq("id", payment.organization_id).maybeSingle(),
-              supabase.from("business_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
-            ]);
-            await sendReceiptEmail({
-              toEmail: org?.contact_email ?? "",
-              recipientName: org?.contact_person_name ?? "",
-              planDisplayName: plan?.display_name ?? payment.plan_code,
-              amount: Number(payment.amount),
-              internalReference: payment.internal_reference,
-              isBusiness: true,
-            });
-          } else {
-            const [{ data: member }, { data: plan }] = await Promise.all([
-              supabase.from("members").select("email, full_name").eq("id", payment.member_id).maybeSingle(),
-              supabase.from("membership_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
-            ]);
-            await sendReceiptEmail({
-              toEmail: member?.email ?? "",
-              recipientName: member?.full_name ?? "",
-              planDisplayName: plan?.display_name ?? payment.plan_code,
-              amount: Number(payment.amount),
-              internalReference: payment.internal_reference,
-              isBusiness: false,
-            });
-          }
-        } catch (emailErr) {
-          console.error("Receipt email block failed (non-fatal)", emailErr);
+      try {
+        if (isBusiness) {
+          const [{ data: org }, { data: plan }] = await Promise.all([
+            supabase.from("organizations").select("contact_email, contact_person_name").eq("id", payment.organization_id).maybeSingle(),
+            supabase.from("business_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
+          ]);
+          await sendReceiptEmail({ toEmail: org?.contact_email ?? "", recipientName: org?.contact_person_name ?? "", planDisplayName: plan?.display_name ?? payment.plan_code, amount: Number(payment.amount), internalReference: payment.internal_reference, isBusiness: true });
+        } else {
+          const [{ data: member }, { data: plan }] = await Promise.all([
+            supabase.from("members").select("email, full_name").eq("id", payment.member_id).maybeSingle(),
+            supabase.from("membership_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
+          ]);
+          await sendReceiptEmail({ toEmail: member?.email ?? "", recipientName: member?.full_name ?? "", planDisplayName: plan?.display_name ?? payment.plan_code, amount: Number(payment.amount), internalReference: payment.internal_reference, isBusiness: false });
         }
+      } catch (emailErr) {
+        console.error("Receipt email block failed (non-fatal)", emailErr);
       }
     }
 
-    return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 200);
+    return ack(200);
   } catch (err) {
     console.error(err);
-    return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
+    return ack(500);
   }
 });
