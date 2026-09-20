@@ -22,11 +22,11 @@
   const LUERI = {
     supabaseUrl: 'https://ylifvexqamxvwzvhmwex.supabase.co',
     supabaseAnonKey: 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F',
-    whatsapp: '254719261713',
-    whatsappDisplay: '+254719261713',
+    whatsapp: '254713261719',
+    whatsappDisplay: '+254713261719',
     email: 'info@lueriinternational.com',
     waGeneralLink: 'https://wa.link/qk7m3b',
-    company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254719261713', kraPin: null, vatRegistered: false, vatRate: 0.16 },
+    company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254713261719', kraPin: null, vatRegistered: false, vatRate: 0.16 },
     pointsPerKes: 50,
   };
 
