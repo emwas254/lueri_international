@@ -127,6 +127,20 @@
     return key.split('.').reduce(function (obj, part) { return obj && obj[part]; }, source) || '';
   }
 
+  function localizeRewardsLinks(locale) {
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var href = a.getAttribute('href');
+      if (!href || href.indexOf('rewards.html') === -1) return;
+      try {
+        var url = new URL(href, window.location.href);
+        if (url.pathname.endsWith('/rewards.html') || url.pathname.endsWith('rewards.html')) {
+          url.searchParams.set('lang', locale);
+          a.setAttribute('href', url.pathname + '?' + url.searchParams.toString() + (url.hash || ''));
+        }
+      } catch (_) {}
+    });
+  }
+
   function applyI18next(locale) {
     if (!window.LueriI18n || !window.LueriI18n.translations) return;
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
@@ -145,6 +159,7 @@
       if (value) el.setAttribute('aria-label', value);
     });
     setDocumentLocale(locale);
+    localizeRewardsLinks(locale);
     if (window.LueriI18nCompletion && typeof window.LueriI18nCompletion.apply === 'function') window.LueriI18nCompletion.apply(locale);
   }
 
