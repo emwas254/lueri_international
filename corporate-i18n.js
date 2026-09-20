@@ -61,6 +61,6 @@ function apply(loc){
  const pay=a.pay;set(q('#lueriPaymentTitle'),pay[0]);if(q('#lueriPaymentClose'))q('#lueriPaymentClose').setAttribute('aria-label',pay[1]);set(q('#lueriPaymentLoading'),pay[2]);set(q('#lueriPaymentStatus'),pay[3]);
  try{localStorage.setItem(K,loc)}catch(e){}window.dispatchEvent(new CustomEvent('lueri:languagechange',{detail:{language:loc}}))
 }
-function init(){const s=q('#languageSelector');if(!s)return;let loc='en';try{loc=localStorage.getItem(K)||'en'}catch(e){}if(!L.includes(loc))loc='en';s.addEventListener('change',()=>apply(s.value));apply(loc)}
+function init(){const s=q('#languageSelector');if(!s)return;let loc='en';try{const fromUrl=new URLSearchParams(window.location.search).get('lang');loc=L.includes(fromUrl)?fromUrl:(localStorage.getItem(K)||'en')}catch(e){}if(!L.includes(loc))loc='en';s.addEventListener('change',()=>{apply(s.value);const u=new URL(window.location.href);u.searchParams.set('lang',s.value);history.replaceState(null,'',u.pathname+'?'+u.searchParams.toString()+u.hash)});apply(loc)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init()
 })();
