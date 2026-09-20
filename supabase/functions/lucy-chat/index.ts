@@ -450,6 +450,11 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
           ?? fallback(validLocale, "unknown");
     }
 
+    // Keep Lucy's Rewards destination in the visitor's selected language.
+    if (typeof reply === "string") {
+      const localizedRewardsUrl = `https://lueriinternational.com/rewards.html?lang=${encodeURIComponent(validLocale)}`;
+      reply = reply.replace(/https:\/\/lueriinternational\.com\/rewards\.html(?:\?[^\s)]+)?/g, localizedRewardsUrl);
+    }
     return json({ reply, action, payload, delivery_state: state });
   } catch (err) {
     console.error("lucy-chat error", err);
