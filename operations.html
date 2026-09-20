@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lueri Operations Center</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="operations.css?v=20260920-01">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="topbar">
+  <div><div class="eyebrow">LUERI INTERNATIONAL</div><h1>Operations Center</h1></div>
+  <div class="top-actions"><span id="operatorName"></span><button id="logout" class="ghost">Sign out</button></div>
+</header>
+
+<main class="shell">
+  <section id="loginView" class="auth-card">
+    <div class="eyebrow">PRIVATE OPERATIONS</div>
+    <h2>Sign in to dispatch</h2>
+    <p>Only active Lueri staff and administrators can access customer bookings and parcel photographs.</p>
+    <form id="loginForm">
+      <label>Email<input id="email" type="email" autocomplete="username" required></label>
+      <label>Password<input id="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Sign in</button>
+      <p id="loginError" class="error" role="alert"></p>
+    </form>
+  </section>
+
+  <section id="dashboardView" hidden>
+    <div class="toolbar">
+      <div><h2>Delivery queue</h2><p id="lastUpdated">Waiting for live data…</p></div>
+      <div class="filters">
+        <button class="filter active" data-status="all">All</button>
+        <button class="filter" data-status="pending_payment">Awaiting payment</button>
+        <button class="filter" data-status="paid_ready">Ready</button>
+        <button class="filter" data-status="assigned">Assigned</button>
+        <button class="filter" data-status="picked_up">Picked up</button>
+        <button class="filter" data-status="in_transit">In transit</button>
+        <button class="filter" data-status="delivered">Delivered</button>
+        <button class="filter" data-status="issue">Issues</button>
+      </div>
+    </div>
+    <div id="stats" class="stats"></div>
+    <div id="queue" class="queue"></div>
+  </section>
+
+  <section id="detailView" class="detail" hidden>
+    <button id="closeDetail" class="back">← Back to queue</button>
+    <div id="detailBody"></div>
+  </section>
+</main>
+<script src="operations.js?v=20260920-01"></script>
+</body>
+</html>
