@@ -171,7 +171,8 @@ function renderPendingPhotoAction(){
             customer_phone:payload.phone,
             customer_email:payload.customer_email||'',
             preferred_time:payload.preferred_time||'',
-            member_id:payload.member_id||null
+            member_id:payload.member_id||null,
+            parcel_photo_path:payload.parcel_photo_path||null
           })
         });
         const data=await res.json().catch(()=>({}));
