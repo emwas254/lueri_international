@@ -156,14 +156,14 @@ Deno.serve(async (req) => {
 
     let { data: payment } = await supabase
       .from("payments")
-      .select("id, plan_code, amount, status, member_id, organization_id, internal_reference")
+      .select("id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id")
       .eq("pesapal_tracking_id", orderTrackingId)
       .maybeSingle();
 
     if (!payment && orderMerchantReference) {
       const fallback = await supabase
         .from("payments")
-        .select("id, plan_code, amount, status, member_id, organization_id, internal_reference")
+        .select("id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id")
         .eq("internal_reference", orderMerchantReference)
         .maybeSingle();
       payment = fallback.data;
@@ -206,6 +206,21 @@ Deno.serve(async (req) => {
         failure_reason: failureReason,
       })
       .eq("id", payment.id);
+
+    if (payment.purpose === "delivery_fee" && payment.booking_id) {
+      const bookingStatus =
+        finalStatus === "successful" ? "paid_ready" :
+        finalStatus === "cancelled" ? "payment_cancelled" :
+        "payment_failed";
+      await supabase
+        .from("bookings")
+        .update({
+          status: bookingStatus,
+          paid_at: finalStatus === "successful" ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", payment.booking_id);
+    }
 
     if (finalStatus === "successful" && payment.plan_code) {
       // Branch: individual member vs business organization. Exactly one
