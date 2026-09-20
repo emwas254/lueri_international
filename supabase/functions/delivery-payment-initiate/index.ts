@@ -30,13 +30,14 @@ Deno.serve(async(req)=>{
   const preferredTime=body?.preferred_time?String(body.preferred_time).trim():null;
   const customerEmail=body?.customer_email?String(body.customer_email).trim().toLowerCase():null;
   const memberId=body?.member_id?String(body.member_id).trim():null;
+  const parcelPhotoPath=body?.parcel_photo_path?String(body.parcel_photo_path).trim():null;
   if(!pickup||!dropoff||!customerName||!phone)return json({error:"Missing required booking fields."},400);
   if(!validPhone(phone))return json({error:"Invalid Kenyan phone number."},400);
   if(customerEmail&&!validEmail(customerEmail))return json({error:"Invalid email address."},400);
   if(!CONSUMER_KEY||!CONSUMER_SECRET||!IPN_ID)return json({error:"Pesapal is not fully configured."},500);
   const amount=await getAuthoritativePrice(pickup,dropoff,details);
   const internalReference=`LR-DEL-${Date.now()}-${crypto.randomUUID().slice(0,8)}`;
-  const {data:booking,error:bookingInsertError}=await supabaseAdmin.from("bookings").insert({customer_name:customerName,customer_email:customerEmail,phone,pickup,dropoff,details:details||null,preferred_time:preferredTime,member_id:memberId,status:"pending_payment"}).select("id").single();
+  const {data:booking,error:bookingInsertError}=await supabaseAdmin.from("bookings").insert({customer_name:customerName,customer_email:customerEmail,phone,pickup,dropoff,details:details||null,preferred_time:preferredTime,member_id:memberId,parcel_photo_path:parcelPhotoPath,status:"pending_payment",reference:internalReference}).select("id").single();
   if(bookingInsertError||!booking){console.error("booking insert failed",bookingInsertError);return json({error:"Could not create the booking."},500)}
   const {data:payment,error:paymentInsertError}=await supabaseAdmin.from("payments").insert({internal_reference:internalReference,pesapal_tracking_id:null,booking_id:booking.id,member_id:memberId,organization_id:null,purpose:"delivery_fee",amount,currency:"KES",status:"pending",payment_method:"pesapal"}).select("id").single();
   if(paymentInsertError||!payment){await supabaseAdmin.from("bookings").delete().eq("id",booking.id);console.error("payment insert failed",paymentInsertError);return json({error:"Could not create the payment record."},500)}
@@ -47,8 +48,8 @@ Deno.serve(async(req)=>{
    const trackingId=String(order.order_tracking_id??""),redirectUrl=String(order.redirect_url??"");
    if(!orderRes.ok||!trackingId||!redirectUrl){console.error("Pesapal order failed",{status:orderRes.status});throw new Error("Pesapal did not return a valid checkout URL.")}
    await supabaseAdmin.from("payments").update({pesapal_tracking_id:trackingId}).eq("id",payment.id);
-   await supabaseAdmin.from("bookings").update({pesapal_tracking_id:trackingId}).eq("id",booking.id);
+   await supabaseAdmin.from("bookings").update({pesapal_tracking_id:trackingId,quoted_amount_kes:amount,updated_at:new Date().toISOString()}).eq("id",booking.id);
    return json({success:true,redirectUrl,trackingId,orderTrackingId:trackingId,paymentId:payment.id,bookingId:booking.id,amount});
-  }catch(err){console.error("Pesapal initiation error",err);await supabaseAdmin.from("payments").update({status:"failed",failure_reason:"pesapal_initiate_error"}).eq("id",payment.id);await supabaseAdmin.from("bookings").update({status:"payment_failed"}).eq("id",booking.id);return json({error:"We couldn't start your Pesapal checkout. Please try again."},502)}
+  }catch(err){console.error("Pesapal initiation error",err);await supabaseAdmin.from("payments").update({status:"failed",failure_reason:"pesapal_initiate_error"}).eq("id",payment.id);await supabaseAdmin.from("bookings").update({status:"payment_failed",updated_at:new Date().toISOString()}).eq("id",booking.id);return json({error:"We couldn't start your Pesapal checkout. Please try again."},502)}
  }catch(err){console.error("delivery-payment-initiate error",err);return json({error:"Unable to initiate delivery payment."},500)}
 });
