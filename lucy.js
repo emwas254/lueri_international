@@ -7,11 +7,11 @@
   const load = () => {
     if (document.querySelector('script[data-lucy-ui]')) return;
     const script = document.createElement('script');
-    script.src = 'lucy-ui.js?v=20260919-19';
+    script.src = 'lucy-ui.js?v=20260920-01';
     script.dataset.lucyUi = 'true';
     document.head.appendChild(script);
     const fix = document.createElement('script');
-    fix.src = 'lucy-fix.js?v=20260919-09';
+    fix.src = 'lucy-fix.js?v=20260920-01';
     fix.dataset.lucyFix = 'true';
     document.head.appendChild(fix);
   };
