@@ -349,19 +349,25 @@
     if (selector) selector.value = locale;
   }
 
+  function originalText(el) {
+    if (!el) return '';
+    if (!el.dataset.lueriOriginal) el.dataset.lueriOriginal = el.textContent.trim();
+    return el.dataset.lueriOriginal;
+  }
+
   function translateDynamic(root=document) {
     const t = T[locale];
     const benefitMap = BENEFITS[locale] || BENEFITS.en;
     root.querySelectorAll('.tier-explain-card').forEach(card => {
       const spend = card.querySelector('.tspend');
       if (spend) {
-        const raw = spend.textContent.trim();
+        const raw = originalText(spend);
         const m = raw.match(/^KES\s+([\d,]+)\+\s+annual spend$/);
         if (m) spend.textContent = 'KES ' + m[1] + '+ ' + t.annualSpend;
         else if (raw === 'Starting tier') spend.textContent = t.startingTier;
       }
       card.querySelectorAll('li').forEach(li => {
-        const raw = li.textContent.trim();
+        const raw = originalText(li);
         if (benefitMap[raw]) li.textContent = benefitMap[raw];
       });
     });
@@ -376,21 +382,21 @@
         button.textContent = t.choose + ' ' + localizedName;
       }
       card.querySelectorAll('li').forEach(li => {
-        const raw=li.textContent.trim();
+        const raw=originalText(li);
         if(benefitMap[raw]) li.textContent=benefitMap[raw];
       });
     });
 
     const plan = document.getElementById('planBannerTier');
     if (plan) {
-      const raw=plan.textContent;
+      const raw=originalText(plan);
       const m=raw.match(/^(.+?)\s+—\s+KES\s+([\d,]+)\/year$/);
       if(m) plan.textContent=m[1]+' — KES '+m[2]+'/'+t.perYear;
     }
 
     const progress=document.getElementById('mProgressNote');
     if(progress) {
-      const raw=progress.textContent;
+      const raw=originalText(progress);
       const m=raw.match(/^KES\s+([\d,]+)\s+more\s+\(in the last 12 months\)\s+to reach\s+(.+)$/);
       if(m) progress.textContent='KES '+m[1]+' '+t.more+' '+t.reach+' '+m[2];
       else if(raw === "You've reached our top tier — VIP.") progress.textContent=t.topTier;
@@ -399,10 +405,10 @@
     const txWrap=document.getElementById('mTxWrap');
     if(txWrap){
       const empty=txWrap.querySelector('.empty-note');
-      if(empty && (empty.textContent.trim()==='No transactions yet.' || empty.textContent.trim()==='Aucune transaction pour le moment.' || empty.textContent.trim()==='暂无交易记录。')) empty.textContent=t.noTransactions;
+      if(empty && originalText(empty)==='No transactions yet.') empty.textContent=t.noTransactions;
       txWrap.querySelectorAll('th').forEach(th => {
         const map={Date:t.date,Type:t.type,Amount:t.amount,Points:t.points};
-        if(map[th.textContent.trim()]) th.textContent=map[th.textContent.trim()];
+        const raw=originalText(th); if(map[raw]) th.textContent=map[raw];
       });
       txWrap.querySelectorAll('.receipt-link').forEach(b=>b.textContent=t.receipt);
     }
