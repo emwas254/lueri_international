@@ -315,8 +315,7 @@
 
   function translateStatic() {
     const t = T[locale];
-    setText('.back-link:nth-of-type(1)', t.main);
-    setText('.back-link:nth-of-type(2)', t.careers);
+    const backs=document.querySelectorAll('.back-link'); if(backs[0]) backs[0].textContent=t.main; if(backs[1]) backs[1].textContent=t.careers;
     setText('main .eyebrow-mono', t.eyebrow);
     setHTML('h1.title', t.title);
     setText('.subtitle', t.subtitle);
@@ -324,7 +323,7 @@
     setText('.tier-note', t.tierNote);
     setText('#purchaseSection .eyebrow-mono', t.buyEyebrow);
     setText('#purchaseSection h2', t.buyTitle);
-    setText('#purchaseSection > .switch-link', t.freeStart);
+    const freeWrap=document.querySelector('#purchaseSection > .switch-link'); if(freeWrap){ freeWrap.childNodes[0].textContent=t.freeStart+' '; }
     const freeLink = document.getElementById('joinFreeLink'); if (freeLink) freeLink.textContent = t.freeLink;
     const tabs = document.querySelectorAll('#tabBar .tab-btn'); if (tabs[0]) tabs[0].textContent=t.myRewards; if (tabs[1]) tabs[1].textContent=t.joinNow;
     setText('#lookupForm > p', t.lookupIntro);
