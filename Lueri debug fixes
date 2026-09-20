@@ -1,0 +1,1038 @@
+diff --git a/careers.html b/careers.html
+index ae2ed5e..4d0e8b6 100644
+--- a/careers.html
++++ b/careers.html
+@@ -529,7 +529,7 @@
+     </div>
+     <div>
+       <strong>Contact</strong>
+-      <a href="tel:+254719261713">+254 719 261 713</a><br>
++      <a href="tel:+254713261719">+254 713 261 719</a><br>
+       <a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a>
+     </div>
+     <div>
+@@ -615,6 +615,6 @@
+   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+ </script>
+ <script src="corporate-signup.js"></script>
+-<script src="lucy.js?v=20260920-01" defer></script>
++<script src="lucy.js?v=20260920-02" defer></script>
+ </body>
+ </html>
+diff --git a/corporate-i18n.js b/corporate-i18n.js
+index f1f3ae3..95b79cf 100644
+--- a/corporate-i18n.js
++++ b/corporate-i18n.js
+@@ -41,7 +41,7 @@ function apply(loc){
+  const email=ld[1]?.querySelector('a[href^="mailto:"]');
+  const footerBlocks=[
+    {head:ft[0],lines:[ft[1],ft[2]]},
+-   {head:ft[3],lines:[phone?.textContent.trim()||'+254 719 261 713',email?.textContent.trim()||'info@lueriinternational.com']},
++   {head:ft[3],lines:[phone?.textContent.trim()||'+254 713 261 719',email?.textContent.trim()||'info@lueriinternational.com']},
+    {head:ft[4],lines:[ft[5],ft[6],ft[7]]}
+  ];
+  ld.forEach((block,i)=>{
+diff --git a/corporate-signup.js b/corporate-signup.js
+index 33b67a1..21c54a8 100644
+--- a/corporate-signup.js
++++ b/corporate-signup.js
+@@ -2,7 +2,7 @@
+ (function () {
+   'use strict';
+ 
+-  const WHATSAPP_NUMBER = (window.LUERI && window.LUERI.whatsapp) || '254719261713';
++  const WHATSAPP_NUMBER = (window.LUERI && window.LUERI.whatsapp) || '254713261719';
+   const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylifvexqamxvwzvhmwex.supabase.co';
+   const SUPABASE_ANON_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || '';
+   const KRA_PIN_PATTERN = /^[A-Za-z]\d{9}[A-Za-z]$/;
+diff --git a/corporate.html b/corporate.html
+index 3348253..4743ba5 100644
+--- a/corporate.html
++++ b/corporate.html
+@@ -545,7 +545,7 @@
+     </div>
+     <div>
+       <strong>Contact</strong>
+-      <a href="tel:+254719261713">+254 719 261 713</a><br>
++      <a href="tel:+254713261719">+254 713 261 719</a><br>
+       <a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a>
+     </div>
+     <div>
+@@ -639,6 +639,6 @@
+ </script>
+ <script src="corporate-i18n.js?v=20260919-01"></script>
+ <script src="corporate-signup.js?v=20260916-02"></script>
+-<script src="lucy.js?v=20260920-01" defer></script>
++<script src="lucy.js?v=20260920-02" defer></script>
+ </body>
+ </html>
+diff --git a/index.html b/index.html
+index 995c731..22a9fef 100644
+--- a/index.html
++++ b/index.html
+@@ -43,7 +43,7 @@
+   "name": "Lueri International",
+   "image": "https://lueriinternational.com/assets/og-image.png",
+   "url": "https://lueriinternational.com/",
+-  "telephone": "+254719261713",
++  "telephone": "+254713261719",
+   "foundingDate": "2023-12-13",
+   "address": { "@type": "PostalAddress", "addressLocality": "Nairobi", "addressCountry": "KE" },
+   "areaServed": "Nairobi, Kenya",
+@@ -192,7 +192,7 @@
+   </div></div></section>
+ 
+   <section id="contact" class="reveal"><div class="wrap"><div class="contact-shell"><div class="section-head"><span class="section-num">07</span><h2 data-i18n="booking.title">Book a pickup</h2></div>
+-    <div class="contact-grid"><div class="contact-card" data-copy="254719261713" data-copy-label="WhatsApp"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.whatsapp">WhatsApp</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254719261713</bdi></div></div><div class="contact-card" data-href="tel:+254719261713"><div class="label" data-i18n="contact.call">Call</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254719261713</bdi></div></div><div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.email">Email</div><div class="value">info@lueriinternational.com</div></div></div>
++    <div class="contact-grid"><div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.whatsapp">WhatsApp</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></div></div><div class="contact-card" data-href="tel:+254713261719"><div class="label" data-i18n="contact.call">Call</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></div></div><div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.email">Email</div><div class="value">info@lueriinternational.com</div></div></div>
+     <form id="bookingForm" style="margin-top:40px;" novalidate>
+       <input type="text" name="website" id="bookingHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
+       <div class="form-row2"><div class="form-group"><label class="form-label" for="pickup" data-i18n="booking.pickup">Pickup Location</label><input class="form-input" type="text" id="pickup" placeholder="e.g. Westlands, Nairobi" data-i18n-placeholder="booking.pickupPlaceholder" required></div><div class="form-group"><label class="form-label" for="dropoff" data-i18n="booking.dropoff">Drop-off Location</label><input class="form-input" type="text" id="dropoff" placeholder="e.g. CBD, Nairobi" data-i18n-placeholder="booking.dropoffPlaceholder" required></div></div>
+@@ -206,7 +206,7 @@
+     </form>
+   </div></div></section>
+ </main>
+-<footer class="wrap"><div class="legal-block"><div><strong data-i18n="footer.registered">Registered business</strong><br><span data-i18n="footer.location">Lueri International · Nairobi, Kenya</span><br><span data-i18n="footer.founded">Founded 13 December 2023</span><br><span data-i18n="footer.registration">Registration details available on request for B2B clients</span></div><div><strong data-i18n="footer.contact">Contact</strong><br><a href="tel:+254719261713" class="phone-number" dir="ltr"><bdi dir="ltr">+254719261713</bdi></a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div><div><strong data-i18n="footer.hours">Hours</strong><br><span data-i18n="footer.weekdays">Mon–Fri, 8:00 AM – 5:00 PM</span><br><span data-i18n="footer.saturday">Sat, 8:00 AM – 3:00 PM</span><br><span data-i18n="footer.sunday">Closed Sunday</span></div></div><div class="footer-row" style="margin-top:40px;"><div class="brand"><img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International"><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span>Lueri International</span></div><div class="mono" style="opacity:.6;" data-i18n="footer.copyright">© 2026 Nairobi, Kenya</div><div class="social-links"><a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" data-i18n="footer.facebook">Facebook</a><a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.instagram">Instagram</a><a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" data-i18n="footer.x">X</a><a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" data-i18n="footer.linkedin">LinkedIn</a><a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.tiktok">TikTok</a></div><div class="foot-stamp" data-i18n="footer.ready">DISPATCH READY</div></div></footer>
+-<script src="i18n-translations.js?v=20260919-06"></script><script src="i18n-completion.js?v=20260919-06"></script><script src="i18n-strict.js?v=20260919-06"></script><script src="i18n.js?v=20260919-06"></script><script src="lucy.js?v=20260920-01"></script>
++<footer class="wrap"><div class="legal-block"><div><strong data-i18n="footer.registered">Registered business</strong><br><span data-i18n="footer.location">Lueri International · Nairobi, Kenya</span><br><span data-i18n="footer.founded">Founded 13 December 2023</span><br><span data-i18n="footer.registration">Registration details available on request for B2B clients</span></div><div><strong data-i18n="footer.contact">Contact</strong><br><a href="tel:+254713261719" class="phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div><div><strong data-i18n="footer.hours">Hours</strong><br><span data-i18n="footer.weekdays">Mon–Fri, 8:00 AM – 5:00 PM</span><br><span data-i18n="footer.saturday">Sat, 8:00 AM – 3:00 PM</span><br><span data-i18n="footer.sunday">Closed Sunday</span></div></div><div class="footer-row" style="margin-top:40px;"><div class="brand"><img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International"><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span>Lueri International</span></div><div class="mono" style="opacity:.6;" data-i18n="footer.copyright">© 2026 Nairobi, Kenya</div><div class="social-links"><a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" data-i18n="footer.facebook">Facebook</a><a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.instagram">Instagram</a><a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" data-i18n="footer.x">X</a><a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" data-i18n="footer.linkedin">LinkedIn</a><a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.tiktok">TikTok</a></div><div class="foot-stamp" data-i18n="footer.ready">DISPATCH READY</div></div></footer>
++<script src="i18n-translations.js?v=20260919-06"></script><script src="i18n-completion.js?v=20260919-06"></script><script src="i18n-strict.js?v=20260919-06"></script><script src="i18n.js?v=20260919-06"></script><script src="lucy.js?v=20260920-02"></script>
+ </body>
+ </html>
+\ No newline at end of file
+diff --git a/lucy-ui.js b/lucy-ui.js
+index 92c2b4f..c98946b 100644
+--- a/lucy-ui.js
++++ b/lucy-ui.js
+@@ -45,6 +45,7 @@
+   function clearSession(){
+     try{sessionStorage.removeItem(LUCY_SESSION_KEY);sessionStorage.removeItem(LUCY_PENDING_PHOTO_KEY);}catch(_){}
+   }
++  function compressImage(file){return new Promise((resolve,reject)=>{const url=URL.createObjectURL(file);const img=new Image();img.onload=()=>{try{const max=1600;let w=img.naturalWidth,h=img.naturalHeight;if(!w||!h)throw new Error('empty');const r=Math.min(1,max/Math.max(w,h));w=Math.round(w*r);h=Math.round(h*r);const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);const out=c.toDataURL('image/jpeg',0.8);out.length>4000000?reject(new Error('still too large')):resolve(out);}catch(e){URL.revokeObjectURL(url);reject(e);}};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('decode failed'));};img.src=url;});}
+   async function savePendingPhoto(data){
+     try{sessionStorage.setItem(LUCY_PENDING_PHOTO_KEY,data);return true;}catch(_){return false;}
+   }
+@@ -92,7 +93,7 @@ function renderPendingPhotoAction(){
+       if(status)status.textContent=t('status');
+       if(input){input.placeholder=t('placeholder');input.dir=panel.dir;}
+       if(close)close.setAttribute('aria-label',t('close'));
+-      if(send)send.setAttribute('aria-label',t('send'));const camera=panel.querySelector('#lucy-camera');if(camera)camera.setAttribute('aria-label',locale==='sw'?'Piga au ambatisha picha':locale==='fr'?'Prendre ou joindre une photo':locale==='es'?'Tomar o adjuntar una foto':locale==='ar'?'التقاط أو إرفاق صورة':locale==='pt'?'Tirar ou anexar uma foto':locale==='zh'?'拍摄或附加照片':'Take or attach a photo';
++      if(send)send.setAttribute('aria-label',t('send'));const camera=panel.querySelector('#lucy-camera');if(camera)camera.setAttribute('aria-label',locale==='sw'?'Piga au ambatisha picha':locale==='fr'?'Prendre ou joindre une photo':locale==='es'?'Tomar o adjuntar una foto':locale==='ar'?'التقاط أو إرفاق صورة':locale==='pt'?'Tirar ou anexar uma foto':locale==='zh'?'拍摄或附加照片':'Take or attach a photo');
+       const greeting=panel.querySelector('.lucy-message.bot');
+       const messages=panel.querySelector('#lucy-messages');
+       if(previous!==locale && messages && messages.children.length===1 && greeting){
+@@ -114,7 +115,7 @@ function renderPendingPhotoAction(){
+   function build(){if(document.getElementById('lucy-panel'))return;const launcher=document.createElement('button');launcher.id='lucy-launcher';launcher.type='button';launcher.setAttribute('aria-label',UI.en.open);launcher.title=UI.en.open;launcher.innerHTML='<span class="lucy-launcher-avatar" aria-hidden="true"></span><span class="lucy-launcher-copy"><span class="lucy-launcher-title" data-lucy-launcher-title>Chat with Lucy</span><span class="lucy-launcher-status"><span class="lucy-online-dot"></span><span data-lucy-launcher-status>Online</span></span></span>';launcher.addEventListener('click',toggle);
+     const panel=document.createElement('section');panel.id='lucy-panel';panel.setAttribute('aria-label','Lucy');
+     const head=document.createElement('div');head.className='lucy-head';const headMain=document.createElement('div');headMain.className='lucy-head-main';const avatar=document.createElement('div');avatar.className='lucy-avatar';avatar.setAttribute('aria-hidden','true');const identity=document.createElement('div');const title=document.createElement('div');title.className='lucy-title';title.dataset.lucyTitle='';const status=document.createElement('div');status.className='lucy-status';status.dataset.lucyStatus='';identity.append(title,status);headMain.append(avatar,identity);const close=document.createElement('button');close.className='lucy-close';close.id='lucy-close';close.type='button';close.setAttribute('aria-label','Close');close.textContent='×';head.append(headMain,close);
+-    const body=document.createElement('div');body.className='lucy-body';const messages=document.createElement('div');messages.className='lucy-messages';messages.id='lucy-messages';const parcelActions=document.createElement('div');parcelActions.className='lucy-parcel-actions';parcelActions.id='lucy-parcel-actions';const fileInput=document.createElement('input');fileInput.type='file';fileInput.accept='image/jpeg,image/png,image/webp';fileInput.setAttribute('capture','environment');fileInput.hidden=true;fileInput.id='lucy-parcel-photo';const photoBtn=document.createElement('button');photoBtn.type='button';photoBtn.className='lucy-parcel-btn primary';photoBtn.dataset.lucyPhoto='';photoBtn.textContent=locale==='ar'?'📷 تحميل صورة':locale==='zh'?'📷 上传照片':locale==='sw'?'📷 Pakia picha':locale==='fr'?'📷 Envoyer une photo':locale==='es'?'📷 Subir foto':locale==='pt'?'📷 Enviar foto':'📷 Upload Photo';const typeBtn=document.createElement('button');typeBtn.type='button';typeBtn.className='lucy-parcel-btn';typeBtn.dataset.lucyType='';typeBtn.textContent=locale==='ar'?'⌨ أدخل التفاصيل':locale==='zh'?'⌨ 输入详情':locale==='sw'?'⌨ Andika maelezo':locale==='fr'?'⌨ Saisir les détails':locale==='es'?'⌨ Escribir detalles':locale==='pt'?'⌨ Digitar detalhes':'⌨ Type Details';photoBtn.addEventListener('click',()=>fileInput.click());typeBtn.addEventListener('click',()=>document.getElementById('lucy-input')?.focus());fileInput.addEventListener('change',()=>{const file=fileInput.files?.[0];if(!file)return;if(file.size>4*1024*1024){addMessage(locale==='sw'?'Picha ni kubwa sana. Tumia picha iliyo chini ya 4 MB.':locale==='fr'?'La photo est trop volumineuse. Utilisez une image de moins de 4 Mo.':locale==='es'?'La foto es demasiado grande. Usa una imagen de menos de 4 MB.':locale==='ar'?'الصورة كبيرة جداً. استخدم صورة أقل من 4 ميغابايت.':locale==='pt'?'A foto é demasiado grande. Use uma imagem com menos de 4 MB.':locale==='zh'?'图片太大。请使用小于 4 MB 的图片。':locale==='en'?'The photo is too large. Please use an image under 4 MB.':'Picha ni kubwa sana.','bot');fileInput.value='';return;}const reader=new FileReader();reader.onload=()=>{const data=String(reader.result||'');sendMessage('', '', data);fileInput.value='';};reader.readAsDataURL(file);});parcelActions.append(photoBtn,typeBtn,fileInput);const topics=document.createElement('div');topics.className='lucy-topics';topics.id='lucy-topics';const compose=document.createElement('div');compose.className='lucy-compose';const camera=document.createElement('button');camera.className='lucy-camera';camera.type='button';camera.textContent='📷';camera.id='lucy-camera';camera.setAttribute('aria-label','Take or attach parcel photo');const input=document.createElement('input');input.className='lucy-input';input.id='lucy-input';input.autocomplete='off';const send=document.createElement('button');send.className='lucy-send';send.id='lucy-send';send.type='button';send.setAttribute('aria-label','Send');compose.append(camera,input,send);body.append(messages,parcelActions,topics,compose);panel.append(head,body);
++    const body=document.createElement('div');body.className='lucy-body';const messages=document.createElement('div');messages.className='lucy-messages';messages.id='lucy-messages';const parcelActions=document.createElement('div');parcelActions.className='lucy-parcel-actions';parcelActions.id='lucy-parcel-actions';const fileInput=document.createElement('input');fileInput.type='file';fileInput.accept='image/jpeg,image/png,image/webp';fileInput.setAttribute('capture','environment');fileInput.hidden=true;fileInput.id='lucy-parcel-photo';const photoBtn=document.createElement('button');photoBtn.type='button';photoBtn.className='lucy-parcel-btn primary';photoBtn.dataset.lucyPhoto='';photoBtn.textContent=locale==='ar'?'📷 تحميل صورة':locale==='zh'?'📷 上传照片':locale==='sw'?'📷 Pakia picha':locale==='fr'?'📷 Envoyer une photo':locale==='es'?'📷 Subir foto':locale==='pt'?'📷 Enviar foto':'📷 Upload Photo';const typeBtn=document.createElement('button');typeBtn.type='button';typeBtn.className='lucy-parcel-btn';typeBtn.dataset.lucyType='';typeBtn.textContent=locale==='ar'?'⌨ أدخل التفاصيل':locale==='zh'?'⌨ 输入详情':locale==='sw'?'⌨ Andika maelezo':locale==='fr'?'⌨ Saisir les détails':locale==='es'?'⌨ Escribir detalles':locale==='pt'?'⌨ Digitar detalhes':'⌨ Type Details';photoBtn.addEventListener('click',()=>fileInput.click());typeBtn.addEventListener('click',()=>document.getElementById('lucy-input')?.focus());fileInput.addEventListener('change',()=>{const file=fileInput.files?.[0];if(!file)return;const sendData=d=>{sendMessage('','',d);fileInput.value='';};const legacy=()=>{if(file.size>4*1024*1024){addMessage(locale==='sw'?'Picha ni kubwa sana. Tumia picha iliyo chini ya 4 MB.':locale==='fr'?'La photo est trop volumineuse. Utilisez une image de moins de 4 Mo.':locale==='es'?'La foto es demasiado grande. Usa una imagen de menos de 4 MB.':locale==='ar'?'الصورة كبيرة جداً. استخدم صورة أقل من 4 ميغابايت.':locale==='pt'?'A foto é demasiado grande. Use uma imagem com menos de 4 MB.':locale==='zh'?'图片太大。请使用小于 4 MB 的图片。':locale==='en'?'The photo is too large. Please use an image under 4 MB.':'Picha ni kubwa sana.','bot');fileInput.value='';return;}const reader=new FileReader();reader.onload=()=>{const data=String(reader.result||'');sendMessage('', '', data);fileInput.value='';};reader.readAsDataURL(file);};if(file.size>25*1024*1024){legacy();return;}compressImage(file).then(sendData).catch(legacy);});parcelActions.append(photoBtn,typeBtn,fileInput);const topics=document.createElement('div');topics.className='lucy-topics';topics.id='lucy-topics';const compose=document.createElement('div');compose.className='lucy-compose';const camera=document.createElement('button');camera.className='lucy-camera';camera.type='button';camera.textContent='📷';camera.id='lucy-camera';camera.setAttribute('aria-label','Take or attach parcel photo');const input=document.createElement('input');input.className='lucy-input';input.id='lucy-input';input.autocomplete='off';const send=document.createElement('button');send.className='lucy-send';send.id='lucy-send';send.type='button';send.setAttribute('aria-label','Send');compose.append(camera,input,send);body.append(messages,parcelActions,topics,compose);panel.append(head,body);
+     close.addEventListener('click',toggle);camera.addEventListener('click',()=>fileInput.click());send.addEventListener('click',()=>sendMessage());input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});document.body.appendChild(launcher);document.body.appendChild(panel);restoreSession();applyLocale(currentLocale());const messagesBox=document.getElementById('lucy-messages');if(history.length){history.forEach(item=>addMessage(item.content,item.role==='user'?'user':'bot'));}else addMessage(t('greeting'),'bot');renderParcelActions();
+   }
+   function toggle(){const panel=document.getElementById('lucy-panel');if(!panel)return;isOpen=!isOpen;panel.classList.toggle('is-open',isOpen);if(isOpen)document.getElementById('lucy-input')?.focus();}
+diff --git a/lucy.js b/lucy.js
+index eea1c5f..9fb68ae 100644
+--- a/lucy.js
++++ b/lucy.js
+@@ -7,11 +7,11 @@
+   const load = () => {
+     if (document.querySelector('script[data-lucy-ui]')) return;
+     const script = document.createElement('script');
+-    script.src = 'lucy-ui.js?v=20260920-01';
++    script.src = 'lucy-ui.js?v=20260920-02';
+     script.dataset.lucyUi = 'true';
+     document.head.appendChild(script);
+     const fix = document.createElement('script');
+-    fix.src = 'lucy-fix.js?v=20260920-01';
++    fix.src = 'lucy-fix.js?v=20260920-02';
+     fix.dataset.lucyFix = 'true';
+     document.head.appendChild(fix);
+   };
+diff --git a/lueri-common.js b/lueri-common.js
+index d18989d..f8ecde2 100644
+--- a/lueri-common.js
++++ b/lueri-common.js
+@@ -22,11 +22,11 @@
+   const LUERI = {
+     supabaseUrl: 'https://ylifvexqamxvwzvhmwex.supabase.co',
+     supabaseAnonKey: 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F',
+-    whatsapp: '254719261713',
+-    whatsappDisplay: '+254719261713',
++    whatsapp: '254713261719',
++    whatsappDisplay: '+254713261719',
+     email: 'info@lueriinternational.com',
+     waGeneralLink: 'https://wa.link/qk7m3b',
+-    company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254719261713', kraPin: null, vatRegistered: false, vatRate: 0.16 },
++    company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254713261719', kraPin: null, vatRegistered: false, vatRate: 0.16 },
+     pointsPerKes: 50,
+   };
+ 
+diff --git a/operations.html b/operations.html
+index 8ca95c4..5daaed1 100644
+--- a/operations.html
++++ b/operations.html
+@@ -5,7 +5,7 @@
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Lueri Operations Center</title>
+ <meta name="robots" content="noindex,nofollow">
+-<link rel="stylesheet" href="operations.css?v=20260920-01">
++<link rel="stylesheet" href="operations.css?v=20260920-02">
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ </head>
+ <body>
+@@ -50,6 +50,6 @@
+     <div id="detailBody"></div>
+   </section>
+ </main>
+-<script src="operations.js?v=20260920-01"></script>
++<script src="operations.js?v=20260920-02"></script>
+ </body>
+ </html>
+\ No newline at end of file
+diff --git a/operations.js b/operations.js
+index 0a1bff9..36ca229 100644
+--- a/operations.js
++++ b/operations.js
+@@ -44,7 +44,7 @@ async function openDetail(id){
+  const p=paymentFor(id);$('dashboardView').hidden=true;$('detailView').hidden=false;
+  let photo='';
+  if(selected.parcel_photo_path){const r=await sb.storage.from('lucy-parcel-photos').createSignedUrl(selected.parcel_photo_path,900);if(r.data?.signedUrl)photo='<img class="photo" src="'+r.data.signedUrl+'" alt="Parcel photograph">';}
+- $('detailBody').innerHTML='<div class="detail-card"><div class="ref">'+escapeHtml(selected.reference||selected.id)+'</div><h2>'+escapeHtml(selected.customer_name||'Customer')+'</h2><div class="detail-grid"><div><div class="kv"><b>Pickup</b>'+escapeHtml(selected.pickup)+'</div><div class="kv"><b>Drop-off</b>'+escapeHtml(selected.dropoff)+'</div><div class="kv"><b>Preferred time</b>'+escapeHtml(selected.preferred_time||'Not specified')+'</div><div class="kv"><b>Phone</b><a href="tel:'+escapeHtml(selected.phone||'')+'">'+escapeHtml(selected.phone||'')+'</a></div><div class="kv"><b>Email</b>'+escapeHtml(selected.customer_email||'Not provided')+'</div><div class="kv"><b>Parcel details</b>'+escapeHtml(selected.details||'Not provided')+'</div></div><div><h3>Payment</h3><div class="kv"><b>Status</b>'+escapeHtml(p?statusLabel(p.status):'No payment record')+'</div><div class="kv"><b>Amount</b>'+escapeHtml(p?((p.currency||'KES')+' '+Number(p.amount||0).toLocaleString()):'—')+'</div><div class="kv"><b>Reference</b>'+escapeHtml(p?.internal_reference||selected.reference||'—')+'</div><div class="kv"><b>PesaPal tracking</b>'+escapeHtml(p?.pesapal_tracking_id||selected.pesapal_tracking_id||'—')+'</div><h3>Parcel photograph</h3>'+ (photo||'<div class="meta">No photograph attached.</div>')+'</div></div><h3>Dispatch status</h3><div class="status-row">'+['paid_ready','assigned','picked_up','in_transit','delivered','issue'].map(s=>'<button class="status-btn '+(selected.status===s?'active':'')+'" data-set-status="'+s+'">'+statusLabel(s)+'</button>').join('')+'</div><h3>Internal notes</h3><textarea id="notes" class="notes" placeholder="Rider, access, customer or parcel notes…">'+escapeHtml(selected.internal_notes||'')+'</textarea><div class="save-row"><button class="primary" id="saveBooking">Save booking</button></div></div>';
++ $('detailBody').innerHTML='<div class="detail-card"><div class="ref">'+escapeHtml(selected.reference||selected.id)+'</div><h2>'+escapeHtml(selected.customer_name||'Customer')+'</h2><div class="detail-grid"><div><div class="kv"><b>Pickup</b>'+escapeHtml(selected.pickup)+'</div><div class="kv"><b>Drop-off</b>'+escapeHtml(selected.dropoff)+'</div><div class="kv"><b>Preferred time</b>'+escapeHtml(selected.preferred_time||'Not specified')+'</div><div class="kv"><b>Phone</b><a href="tel:'+escapeHtml(selected.phone||'')+'">'+escapeHtml(selected.phone||'')+'</a></div><div class="kv"><b>Email</b>'+escapeHtml(selected.customer_email||'Not provided')+'</div><div class="kv"><b>Parcel details</b>'+escapeHtml(selected.details||'Not provided')+'</div></div><div><h3>Payment</h3><div class="kv"><b>Status</b>'+escapeHtml(p?({pending:'Pending',successful:'Paid',failed:'Failed',cancelled:'Cancelled'}[p.status]||p.status):'No payment record')+'</div><div class="kv"><b>Amount</b>'+escapeHtml(p?((p.currency||'KES')+' '+Number(p.amount||0).toLocaleString()):'—')+'</div><div class="kv"><b>Reference</b>'+escapeHtml(p?.internal_reference||selected.reference||'—')+'</div><div class="kv"><b>PesaPal tracking</b>'+escapeHtml(p?.pesapal_tracking_id||selected.pesapal_tracking_id||'—')+'</div><h3>Parcel photograph</h3>'+ (photo||'<div class="meta">No photograph attached.</div>')+'</div></div><h3>Dispatch status</h3><div class="status-row">'+['paid_ready','assigned','picked_up','in_transit','delivered','issue'].map(s=>'<button class="status-btn '+(selected.status===s?'active':'')+'" data-set-status="'+s+'">'+statusLabel(s)+'</button>').join('')+'</div><h3>Internal notes</h3><textarea id="notes" class="notes" placeholder="Rider, access, customer or parcel notes…">'+escapeHtml(selected.internal_notes||'')+'</textarea><div class="save-row"><button class="primary" id="saveBooking">Save booking</button></div></div>';
+  document.querySelectorAll('[data-set-status]').forEach(b=>b.onclick=async()=>{await updateBooking({status:b.dataset.setStatus})});
+  $('saveBooking').onclick=async()=>{await updateBooking({status:selected.status,internal_notes:$('notes').value})};
+ }
+@@ -53,7 +53,7 @@ $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginError').textContent
+ $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+ $('closeDetail').onclick=()=>{$('detailView').hidden=true;$('dashboardView').hidden=false;renderQueue()};
+ document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.status;renderQueue()});
+-sb.auth.onAuthStateChange(()=>{setTimeout(checkAccess,0)});
++sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_IN'||ev==='SIGNED_OUT')setTimeout(checkAccess,0)});
+ sb.channel('operations-bookings').on('postgres_changes',{event:'*',schema:'public',table:'bookings'},()=>load()).subscribe();
+ function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+ checkAccess();
+diff --git a/payment-callback.html b/payment-callback.html
+index 23da814..298ddb1 100644
+--- a/payment-callback.html
++++ b/payment-callback.html
+@@ -16,8 +16,8 @@ h1{margin:0 0 10px;font-size:1.45rem}p{margin:0;color:var(--slate);line-height:1
+ <body>
+ <main class="card" role="status" aria-live="polite">
+ <div class="mark">✓</div>
+-<h1 id="title">Payment received</h1>
+-<p id="copy">Lueri is confirming your payment securely. You can close this window when the checkout confirms.</p>
++<h1 id="title">Thank you — we are confirming your payment</h1>
++<p id="copy">Your bank or M-Pesa is being checked securely. If the payment went through, Lueri will confirm it shortly. If you cancelled or it failed, nothing was charged and you can book again. Questions? Quote the reference below on WhatsApp.</p>
+ <div class="ref" id="ref"></div>
+ <p class="small">Do not refresh the payment screen while confirmation is in progress.</p>
+ </main>
+diff --git a/privacy-policy.html b/privacy-policy.html
+index 9d0e1e4..fc5dd2e 100644
+--- a/privacy-policy.html
++++ b/privacy-policy.html
+@@ -320,7 +320,7 @@
+       <h2>Contact us</h2>
+       <p>If you have any questions about this Privacy Policy, or want to exercise any of the rights listed in Section 10, reach us at:</p>
+       <ul>
+-        <li>WhatsApp / Call: <a href="tel:+254719261713">+254 719 261 713</a></li>
++        <li>WhatsApp / Call: <a href="tel:+254713261719">+254 713 261 719</a></li>
+         <li>Email: <a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></li>
+         <li>Based in Nairobi, Kenya (remote-first; no walk-in office)</li>
+         <li>Hours: Monday–Friday, 8:00 AM – 5:00 PM; Saturday, 8:00 AM – 3:00 PM; closed Sunday</li>
+diff --git a/rewards-cloud.js b/rewards-cloud.js
+index 1ec6413..e091404 100644
+--- a/rewards-cloud.js
++++ b/rewards-cloud.js
+@@ -22,7 +22,7 @@ const TIERS = [
+ 
+ const LUERI_REWARDS = {
+   tiers: TIERS.map(t => ({ name: t.name, minSpend: t.min, benefits: t.benefits })),
+-  company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254 719 261 713', kraPin: '', vatRegistered: false, vatRate: 0.16 },
++  company: { name: 'Lueri International', address: 'Nairobi, Kenya', phone: '+254 713 261 719', kraPin: '', vatRegistered: false, vatRate: 0.16 },
+ };
+ 
+ let _pesapalModal = null;
+diff --git a/rewards-staff-cloud.js b/rewards-staff-cloud.js
+index 5b7196e..92f6883 100644
+--- a/rewards-staff-cloud.js
++++ b/rewards-staff-cloud.js
+@@ -347,7 +347,7 @@ const LUERI_REWARDS = {
+   company: {
+     name: 'Lueri International',
+     address: 'Nairobi, Kenya',
+-    phone: '+254 719 261 713',
++    phone: '+254 713 261 719',
+     kraPin: '',
+     vatRegistered: false,
+     vatRate: 0.16,
+diff --git a/supabase/functions/delivery-payment-initiate/index.ts b/supabase/functions/delivery-payment-initiate/index.ts
+index bbdabbc..4cf13b5 100644
+--- a/supabase/functions/delivery-payment-initiate/index.ts
++++ b/supabase/functions/delivery-payment-initiate/index.ts
+@@ -14,42 +14,53 @@ const CORS_HEADERS={"Access-Control-Allow-Origin":"https://lueriinternational.co
+ function json(data:unknown,status=200){return new Response(JSON.stringify(data),{status,headers:{...CORS_HEADERS,"Content-Type":"application/json"}})}
+ function normalizePhone(phone:string){const digits=phone.replace(/\D/g,"");if(digits.startsWith("0"))return `254${digits.slice(1)}`;if(digits.startsWith("254"))return digits;return digits}
+ function nameParts(fullName:string){const parts=fullName.trim().split(/\s+/).filter(Boolean);return{first_name:parts[0]||"Customer",last_name:parts.slice(1).join(" ")||"Customer"}}
++function toLocalPhone(v:string){const d=v.replace(/\D/g,"");return d.startsWith("254")&&d.length===12?"0"+d.slice(3):d}
+ function validPhone(v:string){return /^0[17]\d{8}$/.test(v.replace(/\s/g,""))}
+ function validEmail(v:string){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())}
+ async function getAuthToken(){const res=await fetch(`${BASE_URL}/Auth/RequestToken`,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({consumer_key:CONSUMER_KEY,consumer_secret:CONSUMER_SECRET})});const raw=await res.text();let data:Record<string,unknown>={};try{data=JSON.parse(raw)}catch{}if(!res.ok||!data.token)throw new Error("Pesapal authentication failed.");return String(data.token)}
+-async function getAuthoritativePrice(pickup:string,dropoff:string,details:string){if(!SUPABASE_URL||!SUPABASE_SERVICE_ROLE_KEY)throw new Error("Supabase service credentials unavailable");const {data,error}=await supabaseAdmin.rpc("get_delivery_price",{p_pickup:pickup,p_dropoff:dropoff,p_details:details});if(error||data==null){console.error("Pricing RPC failed",error);throw new Error("Failed to calculate authoritative price")}const row=Array.isArray(data)?data[0]:data;const amount=Number(row?.amount_kes);if(row?.is_valid!==true||!Number.isFinite(amount)||amount<0){throw new Error(row?.error_message||"A confirmed price is required for this route before payment.")}return amount}
++async function getAuthoritativePrice(pickup:string,dropoff:string,details:string){if(!SUPABASE_URL||!SUPABASE_SERVICE_ROLE_KEY)throw new Error("Supabase service credentials unavailable");const {data,error}=await supabaseAdmin.rpc("get_delivery_price",{p_pickup:pickup,p_dropoff:dropoff,p_details:details});if(error||data==null){console.error("Pricing RPC failed",error);throw new Error("Failed to calculate authoritative price")}const row=Array.isArray(data)?data[0]:data;const amount=Number(row?.amount_kes);if(row?.is_valid!==true||!Number.isFinite(amount)||amount<=0){throw new Error(row?.error_message||"A confirmed price is required for this route before payment.")}return amount}
+ 
+-Deno.serve(async(req)=>{
++async function handle(req:Request):Promise<Response>{
+  if(req.method==="OPTIONS")return new Response(null,{headers:CORS_HEADERS});
+  if(req.method!=="POST")return json({error:"Method not allowed"},405);
+  const origin=req.headers.get("origin");if(origin&&!["https://lueriinternational.com","https://www.lueriinternational.com"].includes(origin))return json({error:"Invalid payment origin."},403);
+  try{
+   const body=await req.json();
+   const pickup=String(body?.pickup??"").trim(),dropoff=String(body?.dropoff??"").trim(),details=String(body?.details??"").trim();
+-  const customerName=String(body?.customer_name??"").trim(),phone=String(body?.phone??body?.customer_phone??"").trim();
++  const customerName=String(body?.customer_name??"").trim(),phone=toLocalPhone(String(body?.phone??body?.customer_phone??"").trim());
+   const preferredTime=body?.preferred_time?String(body.preferred_time).trim():null;
+   const customerEmail=body?.customer_email?String(body.customer_email).trim().toLowerCase():null;
+   const memberId=body?.member_id?String(body.member_id).trim():null;
+   const parcelPhotoPath=body?.parcel_photo_path?String(body.parcel_photo_path).trim():null;
+   if(!pickup||!dropoff||!customerName||!phone)return json({error:"Missing required booking fields."},400);
++  if(parcelPhotoPath&&!/^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(parcelPhotoPath))return json({error:"Invalid parcel photo reference."},400);
++  if(pickup.length>300||dropoff.length>300||details.length>1500||customerName.length>120)return json({error:"One of the fields is too long."},400);
+   if(!validPhone(phone))return json({error:"Invalid Kenyan phone number."},400);
+   if(customerEmail&&!validEmail(customerEmail))return json({error:"Invalid email address."},400);
+   if(!CONSUMER_KEY||!CONSUMER_SECRET||!IPN_ID)return json({error:"Pesapal is not fully configured."},500);
+   const amount=await getAuthoritativePrice(pickup,dropoff,details);
+   const internalReference=`LR-DEL-${Date.now()}-${crypto.randomUUID().slice(0,8)}`;
+-  const {data:booking,error:bookingInsertError}=await supabaseAdmin.from("bookings").insert({customer_name:customerName,customer_email:customerEmail,phone,pickup,dropoff,details:details||null,preferred_time:preferredTime,member_id:memberId,parcel_photo_path:parcelPhotoPath,status:"pending_payment",reference:internalReference}).select("id").single();
++  const {data:booking,error:bookingInsertError}=await supabaseAdmin.from("bookings").insert({customer_name:customerName,customer_email:customerEmail,phone,pickup,dropoff,details:details||null,preferred_time:preferredTime,member_id:memberId,parcel_photo_path:parcelPhotoPath,status:"pending_payment",quoted_amount_kes:amount,reference:internalReference}).select("id").single();
+   if(bookingInsertError||!booking){console.error("booking insert failed",bookingInsertError);return json({error:"Could not create the booking."},500)}
+   const {data:payment,error:paymentInsertError}=await supabaseAdmin.from("payments").insert({internal_reference:internalReference,pesapal_tracking_id:null,booking_id:booking.id,member_id:memberId,organization_id:null,purpose:"delivery_fee",amount,currency:"KES",status:"pending",payment_method:"pesapal"}).select("id").single();
+   if(paymentInsertError||!payment){await supabaseAdmin.from("bookings").delete().eq("id",booking.id);console.error("payment insert failed",paymentInsertError);return json({error:"Could not create the payment record."},500)}
+   try{
+    const token=await getAuthToken(),names=nameParts(customerName);
+-   const orderRes=await fetch(`${BASE_URL}/Transactions/SubmitOrderRequest`,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify({id:internalReference,currency:"KES",amount,description:`Lueri Delivery: ${pickup} to ${dropoff}`,callback_url:`${SITE_URL}/delivery-callback.html?payment=complete`,notification_id:IPN_ID,billing_address:{email_address:customerEmail||"booking@lueriinternational.com",phone_number:normalizePhone(phone),country_code:"KE",first_name:names.first_name,last_name:names.last_name}})});
++   const orderRes=await fetch(`${BASE_URL}/Transactions/SubmitOrderRequest`,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify({id:internalReference,currency:"KES",amount,description:`Lueri Delivery: ${pickup} to ${dropoff}`,callback_url:`${SITE_URL}/payment-callback.html?payment=complete&type=delivery`,notification_id:IPN_ID,billing_address:{email_address:customerEmail||"booking@lueriinternational.com",phone_number:normalizePhone(phone),country_code:"KE",first_name:names.first_name,last_name:names.last_name}})});
+    const rawOrder=await orderRes.text();let order:Record<string,unknown>={};try{order=JSON.parse(rawOrder)}catch{}
+    const trackingId=String(order.order_tracking_id??""),redirectUrl=String(order.redirect_url??"");
+    if(!orderRes.ok||!trackingId||!redirectUrl){console.error("Pesapal order failed",{status:orderRes.status});throw new Error("Pesapal did not return a valid checkout URL.")}
+-   await supabaseAdmin.from("payments").update({pesapal_tracking_id:trackingId}).eq("id",payment.id);
++   const {error:trackErr}=await supabaseAdmin.from("payments").update({pesapal_tracking_id:trackingId}).eq("id",payment.id);if(trackErr)console.error("could not save tracking id on payment",trackErr);
+    await supabaseAdmin.from("bookings").update({pesapal_tracking_id:trackingId,quoted_amount_kes:amount,updated_at:new Date().toISOString()}).eq("id",booking.id);
+    return json({success:true,redirectUrl,trackingId,orderTrackingId:trackingId,paymentId:payment.id,bookingId:booking.id,amount});
+   }catch(err){console.error("Pesapal initiation error",err);await supabaseAdmin.from("payments").update({status:"failed",failure_reason:"pesapal_initiate_error"}).eq("id",payment.id);await supabaseAdmin.from("bookings").update({status:"payment_failed",updated_at:new Date().toISOString()}).eq("id",booking.id);return json({error:"We couldn't start your Pesapal checkout. Please try again."},502)}
+  }catch(err){console.error("delivery-payment-initiate error",err);return json({error:"Unable to initiate delivery payment."},500)}
+-});
+\ No newline at end of file
++}
++const ALLOWED_ORIGINS=["https://lueriinternational.com","https://www.lueriinternational.com"];
++Deno.serve(async(req)=>{
++ const res=await handle(req);
++ const o=req.headers.get("origin");
++ if(o&&ALLOWED_ORIGINS.includes(o))res.headers.set("Access-Control-Allow-Origin",o);
++ res.headers.set("Vary","Origin");
++ return res;
++});
+diff --git a/supabase/functions/index.ts b/supabase/functions/index.ts
+deleted file mode 100644
+index 9caaa85..0000000
+--- a/supabase/functions/index.ts
++++ /dev/null
+@@ -1,268 +0,0 @@
+-// supabase/functions/pesapal-ipn/index.ts
+-//
+-// Registered with Pesapal as the IPN URL. Calls GetTransactionStatus to
+-// get the real, Pesapal-confirmed amount paid, verifies it against what
+-// we locked in at initiate time (anti-tampering), then grants the
+-// correct kind of membership: apply_membership_payment for an
+-// individual (payment.member_id set) or
+-// apply_organization_membership_payment for a business
+-// (payment.organization_id set). Exactly one is ever set, enforced by
+-// the payments_member_xor_organization check constraint.
+-//
+-// v7: added email receipt on successful payment via Resend. Sending is
+-// wrapped in try/catch and never blocks or fails the IPN response — if
+-// email fails, the membership grant still stands and Pesapal still gets
+-// its 200. Requires RESEND_API_KEY and RESEND_FROM_EMAIL as Edge Function
+-// secrets (Supabase Dashboard -> Edge Functions -> pesapal-ipn -> Secrets).
+-//
+-// PULLED VERBATIM FROM THE LIVE DEPLOYMENT 2026-09-14 — this is what is
+-// actually running, not a reconstruction. GitHub's copy of this function
+-// (root-level index.ts) was a stale early draft with none of the above;
+-// see CHANGES_2026-09-14-edge-functions.md.
+-
+-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+-
+-const PESAPAL_ENV = Deno.env.get("PESAPAL_ENV") ?? "sandbox";
+-const BASE_URL =
+-  PESAPAL_ENV === "live"
+-    ? "https://pay.pesapal.com/v3/api"
+-    : "https://cybqa.pesapal.com/pesapalv3/api";
+-
+-const CONSUMER_KEY = Deno.env.get("PESAPAL_CONSUMER_KEY")!;
+-const CONSUMER_SECRET = Deno.env.get("PESAPAL_CONSUMER_SECRET")!;
+-
+-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+-const RESEND_FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") ?? "Lueri International <receipts@lueriinternational.com>";
+-
+-const supabase = createClient(
+-  Deno.env.get("SUPABASE_URL")!,
+-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+-);
+-
+-async function getAuthToken(): Promise<string> {
+-  const res = await fetch(`${BASE_URL}/Auth/RequestToken`, {
+-    method: "POST",
+-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+-    body: JSON.stringify({ consumer_key: CONSUMER_KEY, consumer_secret: CONSUMER_SECRET }),
+-  });
+-  const data = await res.json();
+-  if (!data.token) throw new Error(`Pesapal auth failed: ${JSON.stringify(data)}`);
+-  return data.token;
+-}
+-
+-function ipnReply(orderNotificationType: string, orderTrackingId: string, orderMerchantReference: string, status: 200 | 500) {
+-  return new Response(
+-    JSON.stringify({ orderNotificationType, orderTrackingId, orderMerchantReference, status }),
+-    { headers: { "Content-Type": "application/json" } },
+-  );
+-}
+-
+-function mapStatus(desc: string): "successful" | "failed" | "cancelled" {
+-  switch (desc) {
+-    case "Completed": return "successful";
+-    case "Reversed": return "cancelled";
+-    default: return "failed";
+-  }
+-}
+-
+-function escapeHtml(s: string): string {
+-  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+-  }[c] as string));
+-}
+-
+-function formatKES(amount: number): string {
+-  return new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", minimumFractionDigits: 0 }).format(amount);
+-}
+-
+-async function sendReceiptEmail(opts: {
+-  toEmail: string;
+-  recipientName: string;
+-  planDisplayName: string;
+-  amount: number;
+-  internalReference: string;
+-  isBusiness: boolean;
+-}) {
+-  if (!RESEND_API_KEY) {
+-    console.warn("RESEND_API_KEY not set — skipping receipt email");
+-    return;
+-  }
+-  if (!opts.toEmail) {
+-    console.warn("No recipient email on record — skipping receipt email", { ref: opts.internalReference });
+-    return;
+-  }
+-
+-  const safeName = escapeHtml(opts.recipientName || "there");
+-  const safeTier = escapeHtml(opts.planDisplayName);
+-  const kes = formatKES(opts.amount);
+-  const label = opts.isBusiness ? "business membership" : "membership";
+-
+-  const html = `
+-    <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1B2620;">
+-      <h2 style="color:#B8321F;">Congratulations, ${safeName}!</h2>
+-      <p>You've successfully purchased the <strong>${safeTier} ${label}</strong> with Lueri International.</p>
+-      <table style="width:100%;border-collapse:collapse;margin:20px 0;">
+-        <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#4A5A52;">Plan</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${safeTier}</td></tr>
+-        <tr><td style="padding:8px 0;border-bottom:1px solid #eee;color:#4A5A52;">Amount paid</td><td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${kes}</td></tr>
+-        <tr><td style="padding:8px 0;color:#4A5A52;">Reference</td><td style="padding:8px 0;text-align:right;">${escapeHtml(opts.internalReference)}</td></tr>
+-      </table>
+-      <p>We look forward to doing business with you — same-day dispatch, priority handling, and a team that answers.</p>
+-      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0719 261 713.</p>
+-    </div>`;
+-
+-  try {
+-    const res = await fetch("https://api.resend.com/emails", {
+-      method: "POST",
+-      headers: {
+-        "Authorization": `Bearer ${RESEND_API_KEY}`,
+-        "Content-Type": "application/json",
+-      },
+-      body: JSON.stringify({
+-        from: RESEND_FROM_EMAIL,
+-        to: [opts.toEmail],
+-        subject: `Payment confirmed — ${safeTier} ${label}`,
+-        html,
+-      }),
+-    });
+-    if (!res.ok) {
+-      console.error("Resend send failed", await res.text());
+-    } else {
+-      console.log("Receipt email sent", { to: opts.toEmail, ref: opts.internalReference });
+-    }
+-  } catch (err) {
+-    console.error("Receipt email error (non-fatal)", err);
+-  }
+-}
+-
+-const AMOUNT_EPSILON = 0.01;
+-
+-Deno.serve(async (req) => {
+-  const url = new URL(req.url);
+-  const orderTrackingId = url.searchParams.get("OrderTrackingId") ?? "";
+-  const orderMerchantReference = url.searchParams.get("OrderMerchantReference") ?? "";
+-  const orderNotificationType = url.searchParams.get("OrderNotificationType") ?? "IPNCHANGE";
+-
+-  try {
+-    if (!orderTrackingId) {
+-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
+-    }
+-
+-    const token = await getAuthToken();
+-
+-    const statusRes = await fetch(
+-      `${BASE_URL}/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
+-      { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } },
+-    );
+-    const result = await statusRes.json();
+-    const pesapalStatus = mapStatus(result.payment_status_description);
+-    const amountPaid = Number(result.amount);
+-
+-    let { data: payment } = await supabase
+-      .from("payments")
+-      .select("id, plan_code, amount, status, member_id, organization_id, internal_reference")
+-      .eq("pesapal_tracking_id", orderTrackingId)
+-      .maybeSingle();
+-
+-    if (!payment && orderMerchantReference) {
+-      const fallback = await supabase
+-        .from("payments")
+-        .select("id, plan_code, amount, status, member_id, organization_id, internal_reference")
+-        .eq("internal_reference", orderMerchantReference)
+-        .maybeSingle();
+-      payment = fallback.data;
+-    }
+-
+-    if (!payment) {
+-      console.error("IPN for unknown payment", { orderTrackingId, orderMerchantReference });
+-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
+-    }
+-
+-    // Idempotency: only ever move forward from 'pending'. IPN calls repeat.
+-    if (payment.status !== "pending") {
+-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 200);
+-    }
+-
+-    // --- Anti-tampering check ---
+-    const amountMatches = Math.abs(amountPaid - Number(payment.amount)) < AMOUNT_EPSILON;
+-    const finalStatus = pesapalStatus === "successful" && !amountMatches ? "failed" : pesapalStatus;
+-    const failureReason =
+-      pesapalStatus === "successful" && !amountMatches
+-        ? "amount_mismatch_suspected_tampering"
+-        : finalStatus !== "successful"
+-        ? (result.payment_status_description ?? "unknown")
+-        : null;
+-
+-    if (pesapalStatus === "successful" && !amountMatches) {
+-      console.error("AMOUNT MISMATCH — refusing membership grant", {
+-        payment_id: payment.id,
+-        expected: payment.amount,
+-        paid: amountPaid,
+-        order_tracking_id: orderTrackingId,
+-      });
+-    }
+-
+-    await supabase
+-      .from("payments")
+-      .update({
+-        status: finalStatus,
+-        completed_at: finalStatus === "successful" ? new Date().toISOString() : null,
+-        failure_reason: failureReason,
+-      })
+-      .eq("id", payment.id);
+-
+-    if (finalStatus === "successful" && payment.plan_code) {
+-      // Branch: individual member vs business organization. Exactly one
+-      // of these is set, enforced by a DB check constraint — never both.
+-      const isBusiness = Boolean(payment.organization_id);
+-      const { data: rpcResult, error: rpcError } = await supabase.rpc(
+-        isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment",
+-        isBusiness
+-          ? { p_payment_id: payment.id, p_plan_code: payment.plan_code }
+-          : { p_payment_id: payment.id, p_plan_code: payment.plan_code },
+-      );
+-      if (rpcError) {
+-        console.error(`${isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment"} error:`, rpcError);
+-      } else {
+-        console.log("membership grant result:", rpcResult);
+-
+-        // --- Receipt email, only after a real grant succeeded ---
+-        try {
+-          if (isBusiness) {
+-            const [{ data: org }, { data: plan }] = await Promise.all([
+-              supabase.from("organizations").select("contact_email, contact_person_name").eq("id", payment.organization_id).maybeSingle(),
+-              supabase.from("business_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
+-            ]);
+-            await sendReceiptEmail({
+-              toEmail: org?.contact_email ?? "",
+-              recipientName: org?.contact_person_name ?? "",
+-              planDisplayName: plan?.display_name ?? payment.plan_code,
+-              amount: Number(payment.amount),
+-              internalReference: payment.internal_reference,
+-              isBusiness: true,
+-            });
+-          } else {
+-            const [{ data: member }, { data: plan }] = await Promise.all([
+-              supabase.from("members").select("email, full_name").eq("id", payment.member_id).maybeSingle(),
+-              supabase.from("membership_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
+-            ]);
+-            await sendReceiptEmail({
+-              toEmail: member?.email ?? "",
+-              recipientName: member?.full_name ?? "",
+-              planDisplayName: plan?.display_name ?? payment.plan_code,
+-              amount: Number(payment.amount),
+-              internalReference: payment.internal_reference,
+-              isBusiness: false,
+-            });
+-          }
+-        } catch (emailErr) {
+-          console.error("Receipt email block failed (non-fatal)", emailErr);
+-        }
+-      }
+-    }
+-
+-    return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 200);
+-  } catch (err) {
+-    console.error(err);
+-    return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
+-  }
+-});
+diff --git a/supabase/functions/lucy-chat/index.ts b/supabase/functions/lucy-chat/index.ts
+index ccda5c3..6f3510e 100644
+--- a/supabase/functions/lucy-chat/index.ts
++++ b/supabase/functions/lucy-chat/index.ts
+@@ -79,7 +79,17 @@ const FLOW: Record<string, Record<string, string>> = {
+   zh: { pickup: "好的。取件地点在哪里？", dropoff: "明白了。送达地点在哪里？", parcel: "请描述包裹（大小、重量和类型）。", time: "您希望什么时候取件？（尽快、上午、下午或晚上）", name: "好的。您的全名是什么？", phone: "谢谢。您的电话号码是多少？", email: "快完成了。您的电子邮箱是什么？电子邮箱用于接收电子收据。", invalidPhone: "请输入有效的肯尼亚电话号码，例如0712345678。", invalidEmail: "请输入有效的电子邮箱地址以接收收据。", review: "这是您的预约摘要：\n\n📍 取件：{pickup}\n📍 送达：{dropoff}\n📦 详情：{details}\n⏰ 时间：{time}\n👤 姓名：{name}\n📱 电话：{phone}\n✉️ 邮箱：{email}\n\n以上信息正确吗？回复“是”以继续安全付款。", payment: "您的预约信息已经准备好。现在进入安全付款。", restart: "没问题。我们重新开始。取件地点在哪里？" }
+ };
+ 
+-const CORS_HEADERS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
++const ALLOWED_ORIGINS = ["https://lueriinternational.com", "https://www.lueriinternational.com"];
++const CORS_HEADERS = { "Access-Control-Allow-Origin": "https://lueriinternational.com", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin" };
++// Best-effort per-instance limiter. Not a substitute for a real edge rate limit / Turnstile.
++const HITS = new Map<string, number[]>();
++function limited(key: string, max: number, windowMs: number) {
++  const now = Date.now();
++  const arr = (HITS.get(key) ?? []).filter((t) => now - t < windowMs);
++  arr.push(now); HITS.set(key, arr);
++  if (HITS.size > 5000) HITS.clear();
++  return arr.length > max;
++}
+ const KNOWLEDGE = `LUERI INTERNATIONAL — APPROVED SUPPORT KNOWLEDGE
+ Identity: Lueri International is a Nairobi-based last-mile delivery and courier company.
+ Services: parcel & document delivery, business/e-commerce dispatch, and on-demand courier. Nairobi last-mile only; not cross-border freight.
+@@ -97,13 +107,16 @@ const SYSTEM_PROMPT = `You are Lucy, the friendly digital assistant for Lueri In
+ 
+ function json(data: unknown, status = 200) { return new Response(JSON.stringify(data), { status, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }); }
+ function validEmail(value: string) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()); }
+-function validKenyanPhone(value: string) { return /^0[17]\d{8}$/.test(value.replace(/\s/g, "")); }
++function toLocalPhone(value: string) { const d = value.replace(/\D/g, ""); return d.startsWith("254") && d.length === 12 ? "0" + d.slice(3) : d; }
++function validKenyanPhone(value: string) { return /^0[17]\d{8}$/.test(toLocalPhone(value)); }
+ function flow(locale: string, key: string) { return FLOW[locale]?.[key] ?? FLOW.en[key]; }
+ function fill(template: string, state: DeliveryState) { return template.replace("{pickup}", state.pickup ?? "").replace("{dropoff}", state.dropoff ?? "").replace("{details}", state.details ?? "").replace("{time}", state.preferred_time ?? "").replace("{name}", state.customer_name ?? "").replace("{phone}", state.customer_phone ?? "").replace("{email}", state.customer_email ?? ""); }
+-function isBookingIntent(message: string) { return /\b(book|booking|pickup|pick up|delivery|deliver|courier|oda|agiza|usafirishaji|réserver|livraison|reservar|entrega|حجز|توصيل|agendar|entrega|预订|取件|配送)\b/i.test(message); }
+-function isYes(message: string) { return /\b(yes|yeah|yep|sure|okay|ok|proceed|ndiyo|ndio|oui|sí|si|sim|نعم|是|好的)\b/i.test(message.trim()); }
++function isBookingIntent(message: string) { return /\b(book(ing)?|pick ?up|schedule|send (a |my )?(parcel|package|document)s?|(need|want) (a )?(courier|rider|delivery)|réserver|reservar|agendar|agiza|oda)\b/i.test(message) || /(حجز|预订|预约|取件)/.test(message); }
++function isYes(message: string) { return /^(yes|y|yeah|yep|sure|ok|okay|proceed|correct|confirm|ndiyo|ndio|sawa|oui|d[’']accord|s[ií]|sim|claro|correcto|نعم|أجل|اجل|是|是的|好|好的|确认)(\s+(please|thanks?|proceed|correct|por favor|s[’']il vous pla[iî]t|tafadhali))?[\s.!]*$/iu.test(message.trim()); }
+ function trackingStatus(locale: string, status: string) {
+-  const s = String(status || "pending").toLowerCase();
++  const alias: Record<string,string> = { paid_ready: "paid", pending_payment: "pending", payment_failed: "failed", payment_cancelled: "cancelled", issue: "failed" };
++  const raw = String(status || "pending").toLowerCase();
++  const s = alias[raw] ?? raw;
+   const labels: Record<string, Record<string,string>> = {
+     en: { pending:"Pending", confirmed:"Confirmed", paid:"Payment confirmed", processing:"Processing", assigned:"Courier assigned", picked_up:"Picked up", in_transit:"In transit", delivered:"Delivered", cancelled:"Cancelled", failed:"Needs attention" },
+     sw: { pending:"Inasubiri", confirmed:"Imethibitishwa", paid:"Malipo yamethibitishwa", processing:"Inachakatwa", assigned:"Courier amepewa", picked_up:"Imechukuliwa", in_transit:"Iko njiani", delivered:"Imefikishwa", cancelled:"Imeghairiwa", failed:"Inahitaji uangalizi" },
+@@ -119,10 +132,14 @@ function isTrackingIntent(message: string) {
+   return /\b(track|tracking|track delivery|delivery status|where is my delivery|fuatilia|oda yangu iko wapi|suivre|suivi|rastrear|seguimiento|تتبع|حالة التوصيل|追踪|配送状态)\b/i.test(message);
+ }
+ 
+-Deno.serve(async (req) => {
++async function handle(req: Request): Promise<Response> {
+   let requestLocale = "en";
+   if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
++  const origin = req.headers.get("origin");
++  if (origin && !ALLOWED_ORIGINS.includes(origin)) return json({ error: "Origin not allowed" }, 403);
++  const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
++  if (limited("m:" + ip, 30, 60_000)) return json({ reply: fallback("en", "api"), delivery_state: { step: "IDLE" } }, 429);
+ 
+   try {
+     const rawLocale = String((await req.clone().json().catch(() => ({})))?.locale ?? "en");
+@@ -167,7 +184,7 @@ Deno.serve(async (req) => {
+       } else {
+         const headers = { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: "Bearer " + SUPABASE_SERVICE_ROLE_KEY };
+         let rows: unknown[] = [];
+-        const trackingUrl = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at&pesapal_tracking_id=eq." + encodeURIComponent(reference) + "&limit=1";
++        const trackingUrl = SUPABASE_URL + "/rest/v1/bookings?select=id,status,created_at&or=" + encodeURIComponent("(reference.eq." + reference + ",pesapal_tracking_id.eq." + reference + ")") + "&limit=1";
+         const trackingLookup = await fetch(trackingUrl, { headers });
+         if (!trackingLookup.ok) {
+           console.error("Lucy tracking lookup error", trackingLookup.status, await trackingLookup.text());
+@@ -233,10 +250,11 @@ Deno.serve(async (req) => {
+         state = { step: "TRACKING", member_id: state.member_id ?? null };
+         reply = prompts[validLocale] ?? prompts.en;
+       }
+-      const asksServices = normalizedIntent === "SERVICES" || /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
++      const asksServicesRaw = normalizedIntent === "SERVICES" || /service|services|deliver|delivery|courier|carry|what do you do|what can you deliver|parcel|document|e-commerce|dispatch|serviço|serviços|entrega|entregas|courier|paquet|livraison|servicios|entrega|توصيل|خدمات|配送|服务|取件|usafirishaji/i.test(q);
+       const asksPrice = normalizedIntent === "PRICING" || /price|pricing|cost|how much|rate|rates|kes|350|quotation|quote|bei|gharama|prix|tarif|precio|costo|سعر|تكلفة|价格|费用/i.test(q);
+       const asksCoverage = normalizedIntent === "COVERAGE" || /where|area|areas|coverage|deliver.*(nairobi|westlands|kilimani|kasarani|embakasi|thika|ngong)|nairobi|coverage|eneo|maeneo|zone|zones|où|couvre|zona|área|أين|مناطق|覆盖|区域/i.test(q);
+       const asksHours = normalizedIntent === "HOURS" || /hours|open|opening|close|closed|sunday|monday|saturday|time|operating|masaa|saa|heures|horaires|horario|ساعات|مواعيد|营业时间/i.test(q);
++      const asksServices = asksServicesRaw && !(asksPrice || asksHours || (asksCoverage && !/servic/i.test(q)));
+       const asksCorporate = normalizedIntent === "CORPORATE" || /corporate|business account|business plan|professional|essential|elite|enterprise|company|monthly plan|compte entreprise|plan empresarial|empresarial|planos empresariais|planes corporativos|خطط الشركات|企业计划|شركات|企业/i.test(q);
+       const asksRewards = normalizedIntent === "REWARDS" || /reward|rewards|points|loyalty|membership|bronze|silver|gold|platinum|vip|récompense|points|recompensas|membresia rewards|membresía rewards|عضوية rewards|rewards 会员|مكافآت|积分|会员/i.test(q);
+       const answers: Record<string,string> = {
+@@ -307,6 +325,7 @@ Deno.serve(async (req) => {
+         case "DROPOFF": state.dropoff = message; state.step = "PARCEL"; reply = flow(validLocale, "parcel"); break;
+         case "PARCEL": {
+           if (imageData) {
++            if (limited("p:" + ip, 5, 600_000)) { reply = fallback(validLocale, "api"); break; }
+             if (!OPENAI_API_KEY) {
+               reply = fallback(validLocale, "setup");
+               break;
+@@ -347,7 +366,7 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
+                 reply = fallback(validLocale, "unknown");
+                 break;
+               }
+-              state.details = `Photo attached: ${photoPath ?? "received"}\nAI parcel description: ${description}`;
++              state.details = `Photo attached: ${photoPath ? "yes" : "received"}\nAI parcel description: ${description}`;
+               state.parcel_photo_path = photoPath ?? null;
+               state.step = "TIME";
+               const photoPrompts: Record<string,string> = {
+@@ -372,7 +391,7 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
+         case "TIME": state.preferred_time = message; state.step = "NAME"; reply = flow(validLocale, "name"); break;
+         case "NAME": state.customer_name = message; state.step = "PHONE"; reply = flow(validLocale, "phone"); break;
+         case "PHONE":
+-          if (validKenyanPhone(message)) { state.customer_phone = message; state.step = "EMAIL"; reply = flow(validLocale, "email"); }
++          if (validKenyanPhone(message)) { state.customer_phone = toLocalPhone(message); state.step = "EMAIL"; reply = flow(validLocale, "email"); }
+           else reply = flow(validLocale, "invalidPhone");
+           break;
+         case "EMAIL":
+@@ -382,7 +401,9 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
+         case "REVIEW":
+           if (isYes(message)) {
+             action = "INITIATE_PAYMENT";
+-            payload = { customer_name: state.customer_name, customer_email: state.customer_email, phone: state.customer_phone, pickup: state.pickup, dropoff: state.dropoff, details: state.details, preferred_time: state.preferred_time, member_id: state.member_id ?? null, parcel_photo_path: state.parcel_photo_path ?? null };
++            const cap = (v: unknown, n = 300) => String(v ?? "").slice(0, n);
++            const safePhoto = /^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(String(state.parcel_photo_path ?? "")) ? state.parcel_photo_path : null;
++            payload = { customer_name: cap(state.customer_name, 120), customer_email: cap(state.customer_email, 200), phone: cap(state.customer_phone, 20), pickup: cap(state.pickup), dropoff: cap(state.dropoff), details: cap(state.details, 1500), preferred_time: cap(state.preferred_time, 100), member_id: state.member_id ?? null, parcel_photo_path: safePhoto };
+             reply = flow(validLocale, "payment");
+           } else {
+             state = { step: "IDLE", member_id: state.member_id ?? null };
+@@ -434,4 +455,10 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
+     console.error("lucy-chat error", err);
+     return json({ reply: fallback(requestLocale, "error") });
+   }
++}
++Deno.serve(async (req) => {
++  const res = await handle(req);
++  const o = req.headers.get("origin");
++  if (o && ALLOWED_ORIGINS.includes(o)) res.headers.set("Access-Control-Allow-Origin", o);
++  return res;
+ });
+diff --git a/supabase/functions/pesapal-ipn/index.ts b/supabase/functions/pesapal-ipn/index.ts
+index e517739..e700336 100644
+--- a/supabase/functions/pesapal-ipn/index.ts
++++ b/supabase/functions/pesapal-ipn/index.ts
+@@ -54,11 +54,16 @@ function ipnReply(orderNotificationType: string, orderTrackingId: string, orderM
+   );
+ }
+ 
+-function mapStatus(desc: string): "successful" | "failed" | "cancelled" {
+-  switch (desc) {
+-    case "Completed": return "successful";
+-    case "Reversed": return "cancelled";
+-    default: return "failed";
++// Pesapal reports Completed / Failed / Invalid / Reversed. Anything else
++// (blank, "Pending", a future value) is NOT terminal and must never be
++// recorded as a failure, or a genuine payment that arrives later is ignored.
++function mapStatus(desc: string): "successful" | "failed" | "cancelled" | "pending" {
++  switch (String(desc ?? "").trim().toLowerCase()) {
++    case "completed": return "successful";
++    case "reversed": return "cancelled";
++    case "failed":
++    case "invalid": return "failed";
++    default: return "pending";
+   }
+ }
+ 
+@@ -104,7 +109,7 @@ async function sendReceiptEmail(opts: {
+         <tr><td style="padding:8px 0;color:#4A5A52;">Reference</td><td style="padding:8px 0;text-align:right;">${escapeHtml(opts.internalReference)}</td></tr>
+       </table>
+       <p>We look forward to doing business with you — same-day dispatch, priority handling, and a team that answers.</p>
+-      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0719 261 713.</p>
++      <p style="color:#4A5A52;font-size:0.85rem;margin-top:32px;">Lueri International &middot; Nairobi, Kenya<br>Questions? Reply to this email or WhatsApp us at 0713 261 719.</p>
+     </div>`;
+ 
+   try {
+@@ -117,7 +122,7 @@ async function sendReceiptEmail(opts: {
+       body: JSON.stringify({
+         from: RESEND_FROM_EMAIL,
+         to: [opts.toEmail],
+-        subject: `Payment confirmed — ${safeTier} ${label}`,
++        subject: `Payment confirmed — ${opts.planDisplayName} ${label}`,
+         html,
+       }),
+     });
+@@ -132,149 +137,150 @@ async function sendReceiptEmail(opts: {
+ }
+ 
+ const AMOUNT_EPSILON = 0.01;
++const PAYMENT_COLS = "id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id";
++// A booking may only be moved by payment events while it is still in a payment state.
++// This stops a late or repeated IPN from dragging a job back out of dispatch.
++const PAYMENT_STATES = ["pending_payment", "payment_failed", "payment_cancelled"];
++
++async function syncDeliveryBooking(payment: { booking_id: string | null }, finalStatus: string) {
++  if (!payment.booking_id) return null;
++  const bookingStatus =
++    finalStatus === "successful" ? "paid_ready" :
++    finalStatus === "cancelled" ? "payment_cancelled" : "payment_failed";
++  const { error } = await supabase
++    .from("bookings")
++    .update({
++      status: bookingStatus,
++      paid_at: finalStatus === "successful" ? new Date().toISOString() : null,
++      updated_at: new Date().toISOString(),
++    })
++    .eq("id", payment.booking_id)
++    .in("status", PAYMENT_STATES);
++  return error;
++}
+ 
+ Deno.serve(async (req) => {
+   const url = new URL(req.url);
+   const orderTrackingId = url.searchParams.get("OrderTrackingId") ?? "";
+   const orderMerchantReference = url.searchParams.get("OrderMerchantReference") ?? "";
+   const orderNotificationType = url.searchParams.get("OrderNotificationType") ?? "IPNCHANGE";
++  const ack = (s: 200 | 500) => ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, s);
+ 
+   try {
+-    if (!orderTrackingId) {
+-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
+-    }
++    if (!orderTrackingId) return ack(500);
+ 
+     const token = await getAuthToken();
+-
+     const statusRes = await fetch(
+-      `${BASE_URL}/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
++      `${BASE_URL}/Transactions/GetTransactionStatus?orderTrackingId=${encodeURIComponent(orderTrackingId)}`,
+       { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } },
+     );
++    if (!statusRes.ok) {
++      console.error("GetTransactionStatus failed", statusRes.status);
++      return ack(500); // ask Pesapal to retry
++    }
+     const result = await statusRes.json();
+     const pesapalStatus = mapStatus(result.payment_status_description);
+     const amountPaid = Number(result.amount);
+ 
+     let { data: payment } = await supabase
+-      .from("payments")
+-      .select("id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id")
+-      .eq("pesapal_tracking_id", orderTrackingId)
+-      .maybeSingle();
++      .from("payments").select(PAYMENT_COLS)
++      .eq("pesapal_tracking_id", orderTrackingId).maybeSingle();
+ 
+-    if (!payment && orderMerchantReference) {
+-      const fallback = await supabase
+-        .from("payments")
+-        .select("id, plan_code, amount, status, member_id, organization_id, internal_reference, purpose, booking_id")
+-        .eq("internal_reference", orderMerchantReference)
+-        .maybeSingle();
+-      payment = fallback.data;
++    // Fallback lookup must use the reference Pesapal itself reports, never the
++    // query-string value, which anyone can forge.
++    const trustedReference = String(result.merchant_reference ?? "");
++    if (!payment && trustedReference) {
++      const fb = await supabase.from("payments").select(PAYMENT_COLS)
++        .eq("internal_reference", trustedReference).maybeSingle();
++      payment = fb.data;
+     }
+-
+     if (!payment) {
+-      console.error("IPN for unknown payment", { orderTrackingId, orderMerchantReference });
+-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
++      console.error("IPN for unknown payment", { orderTrackingId, trustedReference });
++      return ack(500);
++    }
++    if (trustedReference && trustedReference !== payment.internal_reference) {
++      console.error("IPN merchant reference mismatch", { orderTrackingId, trustedReference, expected: payment.internal_reference });
++      return ack(200); // do not retry a forged or crossed notification
+     }
+ 
+-    // Idempotency: only ever move forward from 'pending'. IPN calls repeat.
+-    if (payment.status !== "pending") {
+-      return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 200);
++    // Not a final state yet: change nothing, ask for nothing.
++    if (pesapalStatus === "pending") return ack(200);
++
++    // Already paid: repeat IPNs are harmless, but heal a booking that missed its update.
++    if (payment.status === "successful") {
++      if (payment.purpose === "delivery_fee") await syncDeliveryBooking(payment, "successful");
++      return ack(200);
+     }
++    // A recorded failure/cancellation may only be overturned by a genuine successful payment.
++    if (payment.status !== "pending" && pesapalStatus !== "successful") return ack(200);
+ 
+-    // --- Anti-tampering check ---
+-    const amountMatches = Math.abs(amountPaid - Number(payment.amount)) < AMOUNT_EPSILON;
++    const amountMatches =
++      Math.abs(amountPaid - Number(payment.amount)) < AMOUNT_EPSILON &&
++      (!result.currency || String(result.currency).toUpperCase() === "KES");
+     const finalStatus = pesapalStatus === "successful" && !amountMatches ? "failed" : pesapalStatus;
+     const failureReason =
+-      pesapalStatus === "successful" && !amountMatches
+-        ? "amount_mismatch_suspected_tampering"
+-        : finalStatus !== "successful"
+-        ? (result.payment_status_description ?? "unknown")
+-        : null;
++      pesapalStatus === "successful" && !amountMatches ? "amount_mismatch_suspected_tampering"
++      : finalStatus !== "successful" ? (result.payment_status_description ?? "unknown") : null;
+ 
+     if (pesapalStatus === "successful" && !amountMatches) {
+-      console.error("AMOUNT MISMATCH — refusing membership grant", {
+-        payment_id: payment.id,
+-        expected: payment.amount,
+-        paid: amountPaid,
+-        order_tracking_id: orderTrackingId,
+-      });
++      console.error("AMOUNT MISMATCH — refusing grant", { payment_id: payment.id, expected: payment.amount, paid: amountPaid, orderTrackingId });
+     }
+ 
+-    await supabase
++    // Atomic claim: only one concurrent IPN can move the row from its current status.
++    const { data: claimed, error: claimErr } = await supabase
+       .from("payments")
+       .update({
+         status: finalStatus,
+         completed_at: finalStatus === "successful" ? new Date().toISOString() : null,
+         failure_reason: failureReason,
+       })
+-      .eq("id", payment.id);
++      .eq("id", payment.id)
++      .eq("status", payment.status)
++      .select("id");
++    if (claimErr) { console.error("payment update failed", claimErr); return ack(500); }
++    if (!claimed || claimed.length === 0) return ack(200); // another handler already processed it
+ 
+-    if (payment.purpose === "delivery_fee" && payment.booking_id) {
+-      const bookingStatus =
+-        finalStatus === "successful" ? "paid_ready" :
+-        finalStatus === "cancelled" ? "payment_cancelled" :
+-        "payment_failed";
+-      await supabase
+-        .from("bookings")
+-        .update({
+-          status: bookingStatus,
+-          paid_at: finalStatus === "successful" ? new Date().toISOString() : null,
+-          updated_at: new Date().toISOString(),
+-        })
+-        .eq("id", payment.booking_id);
++    if (payment.purpose === "delivery_fee") {
++      const bErr = await syncDeliveryBooking(payment, finalStatus);
++      if (bErr) console.error("booking update failed (will heal on next IPN)", bErr);
+     }
+ 
+     if (finalStatus === "successful" && payment.plan_code) {
+-      // Branch: individual member vs business organization. Exactly one
+-      // of these is set, enforced by a DB check constraint — never both.
+       const isBusiness = Boolean(payment.organization_id);
+-      const { data: rpcResult, error: rpcError } = await supabase.rpc(
+-        isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment",
+-        isBusiness
+-          ? { p_payment_id: payment.id, p_plan_code: payment.plan_code }
+-          : { p_payment_id: payment.id, p_plan_code: payment.plan_code },
+-      );
++      const fn = isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment";
++      const { data: rpcResult, error: rpcError } = await supabase.rpc(fn, { p_payment_id: payment.id, p_plan_code: payment.plan_code });
+       if (rpcError) {
+-        console.error(`${isBusiness ? "apply_organization_membership_payment" : "apply_membership_payment"} error:`, rpcError);
+-      } else {
+-        console.log("membership grant result:", rpcResult);
++        // Paid but not granted: release the claim so Pesapal's retry re-runs the grant.
++        console.error(`${fn} error:`, rpcError);
++        await supabase.from("payments")
++          .update({ status: "pending", completed_at: null, failure_reason: "grant_failed_retrying" })
++          .eq("id", payment.id);
++        return ack(500);
++      }
++      console.log("membership grant result:", rpcResult);
+ 
+-        // --- Receipt email, only after a real grant succeeded ---
+-        try {
+-          if (isBusiness) {
+-            const [{ data: org }, { data: plan }] = await Promise.all([
+-              supabase.from("organizations").select("contact_email, contact_person_name").eq("id", payment.organization_id).maybeSingle(),
+-              supabase.from("business_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
+-            ]);
+-            await sendReceiptEmail({
+-              toEmail: org?.contact_email ?? "",
+-              recipientName: org?.contact_person_name ?? "",
+-              planDisplayName: plan?.display_name ?? payment.plan_code,
+-              amount: Number(payment.amount),
+-              internalReference: payment.internal_reference,
+-              isBusiness: true,
+-            });
+-          } else {
+-            const [{ data: member }, { data: plan }] = await Promise.all([
+-              supabase.from("members").select("email, full_name").eq("id", payment.member_id).maybeSingle(),
+-              supabase.from("membership_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
+-            ]);
+-            await sendReceiptEmail({
+-              toEmail: member?.email ?? "",
+-              recipientName: member?.full_name ?? "",
+-              planDisplayName: plan?.display_name ?? payment.plan_code,
+-              amount: Number(payment.amount),
+-              internalReference: payment.internal_reference,
+-              isBusiness: false,
+-            });
+-          }
+-        } catch (emailErr) {
+-          console.error("Receipt email block failed (non-fatal)", emailErr);
++      try {
++        if (isBusiness) {
++          const [{ data: org }, { data: plan }] = await Promise.all([
++            supabase.from("organizations").select("contact_email, contact_person_name").eq("id", payment.organization_id).maybeSingle(),
++            supabase.from("business_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
++          ]);
++          await sendReceiptEmail({ toEmail: org?.contact_email ?? "", recipientName: org?.contact_person_name ?? "", planDisplayName: plan?.display_name ?? payment.plan_code, amount: Number(payment.amount), internalReference: payment.internal_reference, isBusiness: true });
++        } else {
++          const [{ data: member }, { data: plan }] = await Promise.all([
++            supabase.from("members").select("email, full_name").eq("id", payment.member_id).maybeSingle(),
++            supabase.from("membership_plans").select("display_name").eq("code", payment.plan_code).maybeSingle(),
++          ]);
++          await sendReceiptEmail({ toEmail: member?.email ?? "", recipientName: member?.full_name ?? "", planDisplayName: plan?.display_name ?? payment.plan_code, amount: Number(payment.amount), internalReference: payment.internal_reference, isBusiness: false });
+         }
++      } catch (emailErr) {
++        console.error("Receipt email block failed (non-fatal)", emailErr);
+       }
+     }
+ 
+-    return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 200);
++    return ack(200);
+   } catch (err) {
+     console.error(err);
+-    return ipnReply(orderNotificationType, orderTrackingId, orderMerchantReference, 500);
++    return ack(500);
+   }
+ });
+diff --git a/terms-of-service.html b/terms-of-service.html
+index 8ffa630..9535863 100644
+--- a/terms-of-service.html
++++ b/terms-of-service.html
+@@ -294,7 +294,7 @@
+       <h2>Contact us</h2>
+       <p>If you have any questions about these Terms, reach us at:</p>
+       <ul>
+-        <li>WhatsApp / Call: <a href="tel:+254719261713">+254 719 261 713</a></li>
++        <li>WhatsApp / Call: <a href="tel:+254713261719">+254 713 261 719</a></li>
+         <li>Email: <a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></li>
+         <li>Based in Nairobi, Kenya (remote-first; no walk-in office)</li>
+         <li>Hours: Monday–Friday, 8:00 AM – 5:00 PM; Saturday, 8:00 AM – 3:00 PM; closed Sunday</li>
