@@ -537,12 +537,6 @@
       return;
     }
 
-    if (selectedPurchasePlan) {
-      showMsg('joinSuccessMsg', `Setting up your ${selectedPurchasePlan.name} membership — redirecting you to secure payment…`);
-      await startMembershipPurchase(result.member.id, selectedPurchasePlan.code);
-      return;
-    }
-
     const firstName = String(result.member.name || 'there').split(' ')[0];
     const existingText = result.existing
       ? `Welcome back, ${firstName}! We found your existing Rewards account. You are currently ${result.member.tier || 'Bronze'} and your existing points remain attached to your account.`
@@ -561,8 +555,6 @@
     }, { once: true });
     document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
   });
-
-  renderPurchaseCards();
 
   try {
     const themeToggle = document.getElementById('themeToggle');
