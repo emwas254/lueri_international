@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lueri Operations Center</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="stylesheet" href="operations.css?v=20260920-02">
+<link rel="stylesheet" href="operations.css?v=20260921-01">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -25,6 +25,24 @@
       <button class="primary" type="submit">Sign in</button>
       <p id="loginError" class="error" role="alert"></p>
     </form>
+    <div class="auth-links">
+      <a id="createAccountLink" href="#create-account" hidden>Create the first Chief Dispatch Officer account</a>
+    </div>
+  </section>
+
+  <section id="signupView" class="auth-card" hidden>
+    <div class="eyebrow">INITIAL STAFF SETUP</div>
+    <h2>Create dispatch account</h2>
+    <p>This one-time setup creates the initial <strong>Chief Dispatch Officer</strong> account. Use your own business email and a strong password. The setup authorization closes after the first active staff account is created.</p>
+    <form id="signupForm">
+      <label>Full name<input id="signupName" type="text" autocomplete="name" required></label>
+      <label>Business email<input id="signupEmail" type="email" autocomplete="email" required></label>
+      <label>Password<input id="signupPassword" type="password" autocomplete="new-password" minlength="10" required></label>
+      <label>Confirm password<input id="signupPasswordConfirm" type="password" autocomplete="new-password" minlength="10" required></label>
+      <button id="signupBtn" class="primary" type="submit">Create Chief Dispatch Officer account</button>
+      <p id="signupError" class="error" role="alert"></p>
+    </form>
+    <div class="auth-links"><a id="backToLogin" href="#">← Back to sign in</a></div>
   </section>
 
   <section id="dashboardView" hidden>
@@ -50,6 +68,6 @@
     <div id="detailBody"></div>
   </section>
 </main>
-<script src="operations.js?v=20260920-02"></script>
+<script src="operations.js?v=20260921-01"></script>
 </body>
 </html>
