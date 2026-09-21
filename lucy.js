@@ -7,7 +7,7 @@
   const load = () => {
     if (document.querySelector('script[data-lucy-ui]')) return;
     const script = document.createElement('script');
-    script.src = 'lucy-ui.js?v=20260920-02';
+    script.src = 'lucy-ui.js?v=20260921-01';
     script.dataset.lucyUi = 'true';
     document.head.appendChild(script);
     const fix = document.createElement('script');
