@@ -356,3 +356,67 @@
   .nav-cta{grid-column:1 / -1;}
   .hero-polished .hero-copy .title{font-size:clamp(2.15rem,11.8vw,3rem);}
 }
+
+/* RTL MOBILE SAFETY — Arabic must fit the viewport without horizontal scrolling */
+html[lang="ar"],
+html[lang="ar"] body{
+  max-width:100%;
+  overflow-x:hidden;
+}
+html[lang="ar"] body,
+html[lang="ar"] body *{
+  box-sizing:border-box;
+}
+html[lang="ar"] .wrap,
+html[lang="ar"] .navbar,
+html[lang="ar"] section,
+html[lang="ar"] footer{
+  max-width:100%;
+}
+html[lang="ar"] .navbar,
+html[lang="ar"] .nav-controls,
+html[lang="ar"] .hero-copy,
+html[lang="ar"] .hero-route-bar,
+html[lang="ar"] .pricing-card,
+html[lang="ar"] .card,
+html[lang="ar"] .contact-card,
+html[lang="ar"] .form-row,
+html[lang="ar"] .form-row2,
+html[lang="ar"] .cta-row{
+  min-width:0;
+}
+html[lang="ar"] .nav-controls > *,
+html[lang="ar"] .hero-copy *,
+html[lang="ar"] .pricing-card *,
+html[lang="ar"] .card *,
+html[lang="ar"] .contact-card *,
+html[lang="ar"] .section-head *{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+html[lang="ar"] .hero-polished .hero-copy .title,
+html[lang="ar"] .hero-polished .hero-copy .subtitle,
+html[lang="ar"] .section-intro,
+html[lang="ar"] .pricing-card p,
+html[lang="ar"] .pricing-note{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+@media(max-width:700px){
+  html[lang="ar"] .nav-controls{
+    grid-template-columns:minmax(0,auto) minmax(0,auto) minmax(0,1fr) minmax(0,auto);
+  }
+  html[lang="ar"] .nav-cta{
+    min-width:0;
+    max-width:100%;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+  html[lang="ar"] .lueri-language-trigger,
+  html[lang="ar"] #languageSelector{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+}
