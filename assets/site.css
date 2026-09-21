@@ -466,3 +466,16 @@ html[dir="rtl"] .lueri-payment-head .lueri-payment-brand > div {
     text-align: right;
   }
 }
+
+/* 2026-09-21 mobile/RTL hardening */
+html[dir="rtl"],html[dir="rtl"] body{overflow-x:hidden;max-width:100%;}
+html[dir="rtl"] .wrap,html[dir="rtl"] .navbar{min-width:0;max-width:100%;}
+html[dir="rtl"] .nav-controls{min-width:0;max-width:100%;}
+html[dir="rtl"] .brand span{overflow-wrap:anywhere;}
+html[dir="rtl"] .lueri-language-menu{max-width:100%;}
+html[dir="rtl"] .lueri-language-list{right:auto;left:0;max-width:calc(100vw - 24px);}
+html[dir="rtl"] .lueri-language-option{direction:rtl;text-align:right;}
+html[dir="rtl"] .menu-link{min-width:0;}
+html[dir="rtl"] .menu-link-body{min-width:0;overflow-wrap:anywhere;}
+html[dir="rtl"] .hero-copy,html[dir="rtl"] .section-intro,html[dir="rtl"] .card,html[dir="rtl"] .pricing-card,html[dir="rtl"] .faq-item p{overflow-wrap:anywhere;word-break:normal;}
+@media(max-width:600px){html[dir="rtl"] .navbar{padding-left:14px;padding-right:14px;}html[dir="rtl"] .nav-controls{gap:7px;}html[dir="rtl"] #languageSelector{min-width:0!important;width:auto!important;max-width:112px!important;}html[dir="rtl"] .lueri-language-trigger{min-width:0;max-width:112px;}html[dir="rtl"] .hero{padding-left:0;padding-right:0;}html[dir="rtl"] .wrap{padding-left:16px;padding-right:16px;}html[dir="rtl"] .cta-row{flex-direction:column;align-items:stretch;}html[dir="rtl"] .cta-row .btn{width:100%;justify-content:center;}}
