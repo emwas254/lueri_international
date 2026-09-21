@@ -445,6 +445,11 @@
     observer.observe(document.body,{subtree:true,childList:true});
   }
 
+  window.LueriRewardsI18n = {
+    setLanguage: (next) => apply(next, true),
+    refresh: () => { translateStatic(); translateDynamic(); }
+  };
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
 })();
