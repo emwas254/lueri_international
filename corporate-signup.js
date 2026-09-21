@@ -249,7 +249,7 @@
     const status = document.getElementById('lueriPaymentStatus');
     const planLabel = document.getElementById('lueriPaymentPlan');
     if (!panel || !frame) throw new Error('The secure payment panel could not be loaded.');
-    if (planLabel) planLabel.textContent = (planCode === 'biz_gold' ? 'Essential' : planCode === 'biz_platinum' ? 'Professional' : 'Elite') + ' corporate membership';
+    if (planLabel) planLabel.textContent = (planCode === 'biz_gold' ? 'Gold' : planCode === 'biz_platinum' ? 'Platinum' : 'VIP') + ' corporate membership';
     if (loading) loading.classList.remove('hidden');
     if (status) status.textContent = 'Your secure payment is loading…';
     panel.classList.add('active');
@@ -512,9 +512,9 @@
     const paymentMethod = getPaymentMethod();
     const planCode = CORPORATE_PLAN_CODES.includes(data.plan) ? data.plan : null;
 
-    if (paymentMethod === 'pesapal' && !planCode) return showError('Pesapal payment is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
-    if (paymentMethod === 'bank_transfer' && !planCode) return showError('Bank transfer is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
-    if (paymentMethod === 'cheque' && !planCode) return showError('Cheque payment is available for Essential, Professional and Elite. Enterprise is handled by Accounts Desk.');
+    if (paymentMethod === 'pesapal' && !planCode) return showError('Pesapal payment is available for Gold, Platinum and VIP. Enterprise is handled by Accounts Desk.');
+    if (paymentMethod === 'bank_transfer' && !planCode) return showError('Bank transfer is available for Gold, Platinum and VIP. Enterprise is handled by Accounts Desk.');
+    if (paymentMethod === 'cheque' && !planCode) return showError('Cheque payment is available for Gold, Platinum and VIP. Enterprise is handled by Accounts Desk.');
 
     const invalid = validate(data, paymentMethod);
     if (invalid.length) return showError(`Please check: ${invalid.join(', ')}.`);
