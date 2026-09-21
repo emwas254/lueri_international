@@ -1,6 +1,6 @@
 'use strict';
 
-// Lueri Rewards — Supabase-backed client. v20260917-03
+// Lueri Rewards — Supabase-backed client. v20260921-01
 // Pesapal pricing, callback URL, and membership activation remain server-authoritative.
 // CHANGELOG v20260917-03:
 //  - rpcCall/registerMember now surface the REAL HTTP error instead of a generic message.
@@ -13,10 +13,10 @@ const SUPABASE_URL = (window.LUERI && window.LUERI.supabaseUrl) || 'https://ylif
 const SUPABASE_PUBLISHABLE_KEY = (window.LUERI && window.LUERI.supabaseAnonKey) || 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
 
 const TIERS = [
-  { name: 'VIP', min: 75000, benefits: ['Everything in Platinum','20% off all bookings','4 free standard deliveries every month','Personal account manager','Early access to new services & promotions','Invitations to exclusive Lueri events'] },
-  { name: 'Platinum', min: 35000, benefits: ['Everything in Gold','15% off priority same-day bookings','2 free standard deliveries every month','Priority dispatch queue during peak hours','Quarterly gift voucher'] },
-  { name: 'Gold', min: 15000, benefits: ['Everything in Silver','10% off priority same-day bookings','1 free standard delivery every month','Dedicated dispatcher line'] },
-  { name: 'Silver', min: 5000, benefits: ['Everything in Bronze','5% off priority same-day bookings','KES 200 free delivery credit monthly','Faster WhatsApp response time'] },
+  { name: 'VIP', min: 75000, benefits: ['Everything in Platinum','10% off eligible bookings (monthly benefit cap KES 3,000)','Dedicated priority support','Early access to new services and selected offers'] },
+  { name: 'Platinum', min: 35000, benefits: ['Everything in Gold','7.5% off priority same-day bookings (monthly benefit cap KES 1,500)','Peak-period priority queue','Quarterly member offer'] },
+  { name: 'Gold', min: 15000, benefits: ['Everything in Silver','5% off priority same-day bookings (monthly benefit cap KES 750)','Priority dispatch consideration','Early access to selected promotions'] },
+  { name: 'Silver', min: 5000, benefits: ['Everything in Bronze','3% off priority same-day bookings (monthly benefit cap KES 300)','Priority WhatsApp support','Member-only promotions'] },
   { name: 'Bronze', min: 0, benefits: ['1 point per KES 50 spent','Standard delivery rates','Birthday bonus points','Access to seasonal promotions'] },
 ];
 
@@ -155,15 +155,9 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
   return modal;
 }
 
-// CHANGED: paid memberships now go through checkout.html — the single live
-// checkout implementation that offers Pesapal, bank transfer AND cheque.
-// The browser never supplies an amount; the server verifies price at checkout.
-async function startMembershipPurchase(memberId, planCode) {
-  const params = new URLSearchParams();
-  params.set('plan', planCode || '');
-  if (memberId) params.set('member', String(memberId));
-  window.location.href = 'checkout.html?' + params.toString();
-  return { success: true, redirected: true };
+// Rewards is now a free, earned loyalty programme. Paid tier purchases are intentionally disabled until redemption economics are proven.
+async function startMembershipPurchase() {
+  return { success:false, redirected:false, error:'Lueri Rewards tiers are earned through eligible spend; there is no paid tier membership at this time.' };
 }
 
 async function checkPaymentStatus(trackingId, meta = {}) {
