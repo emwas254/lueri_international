@@ -107,7 +107,7 @@ function renderPendingPhotoAction(){
     }
     const launcherTitle=document.querySelector('[data-lucy-launcher-title]');
     const launcherStatus=document.querySelector('[data-lucy-launcher-status]');
-    if(launcherTitle)launcherTitle.textContent=locale==='ar'?'تحدث مع لوسي':locale==='zh'?'与露西聊天':locale==='sw'?'Zungumza na Lucy':locale==='fr'?'Discuter avec Lucy':locale==='es'?'Habla con Lucy':locale==='pt'?'Falar com a Lucy':'Chat with Lucy'; const launcher=document.getElementById('lucy-launcher'); if(launcher){launcher.classList.remove('locale-ar','locale-sw','locale-fr'); if(locale==='ar'||locale==='sw'||locale==='fr') launcher.classList.add('locale-'+locale);}
+    if(launcherTitle)launcherTitle.textContent=locale==='ar'?'تحدث مع لوسي':locale==='zh'?'与露西聊天':locale==='sw'?'Zungumza na Lucy':locale==='fr'?'Discuter avec Lucy':locale==='es'?'Habla con Lucy':locale==='pt'?'Falar com a Lucy':'Chat with Lucy'; if(launcher){launcher.classList.remove('locale-ar','locale-sw','locale-fr'); if(locale==='ar'||locale==='sw'||locale==='fr') launcher.classList.add('locale-'+locale);}
     if(launcherStatus)launcherStatus.textContent=locale==='ar'?'متصلة':locale==='zh'?'在线':locale==='sw'?'Mtandaoni':locale==='fr'?'En ligne':locale==='es'?'En línea':locale==='pt'?'Online':'Online';
     renderTopics();renderParcelActions();renderPendingPhotoAction();
   }
