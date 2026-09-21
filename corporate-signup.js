@@ -10,7 +10,6 @@
   const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const CORPORATE_PLAN_CODES = ['biz_gold', 'biz_platinum', 'biz_vip'];
   const PAYMENT_STATE_KEY = 'lueri_corporate_pesapal_pending_v1';
-  const CHEQUE_STATE_KEY = 'lueri_corporate_cheque_pending_v1';
   const BANK_TRANSFER_STATE_KEY = 'lueri_corporate_bank_transfer_pending_v1';
 
   const form = document.getElementById('corporateForm');
@@ -104,7 +103,6 @@
         <select class="form-input" id="corpPaymentMethod" name="payment_method">
           <option value="pesapal">Pay online with Pesapal (M-Pesa &amp; Cards)</option>
           <option value="bank_transfer">Bank transfer</option>
-          <option value="cheque">Pay by cheque</option>
                   </select>
         <p id="corpPaymentMethodHint" style="margin:6px 0 0;font-size:.78rem;opacity:.7;">Online payment opens the secure Pesapal checkout. The amount is verified server-side.</p>
       </div>
@@ -129,18 +127,6 @@
         </div>
         <div style="font-size:.8rem;line-height:1.55;opacity:.78;padding:4px 0 10px;">Do not send card numbers, passwords or banking login details. Only the bank transaction/reference number is required here.</div>
       </div>
-
-      <div id="corporateChequeFields" style="display:none;">
-        <div class="form-row2">
-          <div class="form-group">
-            <label class="form-label" for="corpChequeNumber">Cheque number</label>
-            <input class="form-input" type="text" id="corpChequeNumber" maxlength="64" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="corpChequeBank">Bank</label>
-            <input class="form-input" type="text" id="corpChequeBank" maxlength="120" autocomplete="organization">
-          </div>
-        </div>
         <div class="form-group">
           <label class="form-label" for="corpChequeDate">Cheque date</label>
           <input class="form-input" type="date" id="corpChequeDate">
@@ -156,7 +142,7 @@
 
     const method = document.getElementById('corpPaymentMethod');
     const plan = document.getElementById('plan');
-    const chequeFields = document.getElementById('corporateChequeFields');
+    const chequeFields = null;
     const bankFields = document.getElementById('corporateBankTransferFields');
     const hint = document.getElementById('corpPaymentMethodHint');
     const date = document.getElementById('corpChequeDate');
@@ -165,7 +151,7 @@
     function syncPaymentUI() {
       const planCode = plan ? plan.value : '';
       const isPaidPlan = CORPORATE_PLAN_CODES.includes(planCode);
-      const isCheque = method && method.value === 'cheque';
+      const isCheque = false;
       const isBank = method && method.value === 'bank_transfer';
       const isPesapal = method && method.value === 'pesapal';
 
@@ -202,14 +188,7 @@
     return document.getElementById('corpPaymentMethod')?.value || 'pesapal';
   }
 
-  function getChequeData() {
-    return {
-      number: document.getElementById('corpChequeNumber')?.value.trim() || '',
-      bank: document.getElementById('corpChequeBank')?.value.trim() || '',
-      date: document.getElementById('corpChequeDate')?.value || '',
-      notes: document.getElementById('corpChequeNotes')?.value.trim() || '',
-    };
-  }
+  function getChequeData() { return null; }
 
   function getBankTransferData() {
     return {
@@ -324,41 +303,7 @@
     window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash || ''}`);
   }
 
-  async function submitCheque(state) {
-    const sb = supabaseClient();
-    if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
-    const sessionResult = await sb.auth.getSession();
-    const session = sessionResult?.data?.session;
-    const authEmail = session?.user?.email?.trim().toLowerCase() || '';
-    if (!session || authEmail !== state.email.toLowerCase()) throw new Error('Please open the secure verification link sent to the company email before completing the cheque submission.');
-
-    const result = await rpc('submit_organization_cheque_payment', {
-      p_organization_id: state.organizationId,
-      p_plan_code: state.planCode,
-      p_cheque_number: state.cheque.number,
-      p_cheque_bank: state.cheque.bank,
-      p_cheque_date: state.cheque.date,
-      p_cheque_notes: state.cheque.notes || null,
-    });
-
-    if (!result?.success) {
-      const messages = {
-        authentication_required: 'Please open the company-email verification link first.',
-        authenticated_email_required: 'The company email could not be verified.',
-        organization_access_denied: 'The verified email does not match the corporate account.',
-        unknown_organization: 'The corporate application could not be found.',
-        organization_plan_mismatch: 'The selected plan no longer matches the corporate account.',
-        invalid_business_plan: 'This plan is not available for cheque payment.',
-        invalid_cheque_number: 'Please enter a valid cheque number.',
-        invalid_cheque_bank: 'Please enter the bank name.',
-        cheque_date_required: 'Please enter the cheque date.',
-        cheque_date_in_future: 'The cheque date cannot be in the future.',
-      };
-      throw new Error(messages[result?.error] || 'We could not submit the cheque details.');
-    }
-    clearState(CHEQUE_STATE_KEY);
-    return result;
-  }
+  async function submitCheque() { throw new Error('Cheque payments are currently unavailable.'); }
 
   async function submitBankTransfer(state) {
     const sb = supabaseClient();
@@ -390,18 +335,7 @@
     return result;
   }
 
-  async function sendChequeVerification(state) {
-    const sb = supabaseClient();
-    if (!sb) throw new Error('Secure payment service is unavailable. Please reload the page.');
-    const current = await sb.auth.getSession();
-    const currentEmail = current?.data?.session?.user?.email?.trim().toLowerCase() || '';
-    if (currentEmail === state.email.toLowerCase()) return submitCheque(state);
-    if (currentEmail && currentEmail !== state.email.toLowerCase()) throw new Error('A different account is already signed in. Sign out, then retry using the company email.');
-
-    const result = await sb.auth.signInWithOtp({ email: state.email, options: { shouldCreateUser: true, emailRedirectTo: window.location.href } });
-    if (result.error) throw new Error('We could not send the company-email verification link. Please try again.');
-    return null;
-  }
+  async function sendChequeVerification() { throw new Error('Cheque payments are currently unavailable.'); }
 
   async function sendBankTransferVerification(state) {
     const sb = supabaseClient();
@@ -416,24 +350,7 @@
     return null;
   }
 
-  async function resumeCheque() {
-    const state = readState(CHEQUE_STATE_KEY);
-    if (!state) return;
-    const sb = supabaseClient();
-    if (!sb) return;
-    const sessionResult = await sb.auth.getSession();
-    const session = sessionResult?.data?.session;
-    const email = session?.user?.email?.trim().toLowerCase() || '';
-    if (!session || email !== String(state.email || '').trim().toLowerCase()) return;
-
-    try {
-      const result = await submitCheque(state);
-      setOverlay('Cheque submitted for verification', `The cheque has been recorded as pending verification. Reference: ${result.internal_reference}. Membership will not activate until Lueri staff clears the cheque.`, null);
-    } catch (err) {
-      console.error('Corporate cheque resume failed:', err);
-      showError(err.message || 'We could not complete the cheque submission.');
-    }
-  }
+  async function resumeCheque() { return; }
 
   async function resumeBankTransfer() {
     const state = readState(BANK_TRANSFER_STATE_KEY);
@@ -489,13 +406,7 @@
     if (!isValidPhone(data.contactPhone)) invalid.push('Phone Number');
     if (!EMAIL_PATTERN.test(data.contactEmail)) invalid.push('Company Email');
 
-    if (paymentMethod === 'cheque') {
-      const cheque = getChequeData();
-      if (cheque.number.length < 3 || cheque.number.length > 64) invalid.push('Cheque Number');
-      if (cheque.bank.length < 2 || cheque.bank.length > 120) invalid.push('Cheque Bank');
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(cheque.date)) invalid.push('Cheque Date');
-      if (cheque.date && cheque.date > new Date().toISOString().slice(0, 10)) invalid.push('Cheque Date');
-    }
+    
     if (paymentMethod === 'bank_transfer') {
       const bank = getBankTransferData();
       if (bank.reference.length < 3 || bank.reference.length > 120) invalid.push('Bank Transaction/Reference Number');
@@ -523,7 +434,7 @@
     const originalText = submitBtn?.textContent || 'Submit Application';
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = paymentMethod === 'pesapal' ? 'Preparing secure Pesapal checkout…' : paymentMethod === 'bank_transfer' ? 'Securing bank-transfer submission…' : paymentMethod === 'cheque' ? 'Securing cheque submission…' : 'Submitting…';
+      submitBtn.textContent = paymentMethod === 'pesapal' ? 'Preparing secure Pesapal checkout…' : paymentMethod === 'bank_transfer' ? 'Securing bank-transfer submission…' : 'Submitting…';
     }
 
     try {
@@ -565,20 +476,7 @@
         return;
       }
 
-      if (paymentMethod === 'cheque') {
-        const state = { organizationId, planCode, email: data.contactEmail.toLowerCase(), cheque: getChequeData(), savedAt: Date.now() };
-        saveState(CHEQUE_STATE_KEY, state);
-        const immediate = await sendChequeVerification(state);
-        if (immediate) {
-          setOverlay('Cheque submitted for verification', `Your cheque payment is pending staff verification. Reference: ${immediate.internal_reference}. No membership is activated until the cheque is cleared.`, null);
-        } else {
-          setOverlay('Check your company email', 'We created the corporate application and sent a secure verification link to the company email. Open that link on this device to complete cheque submission. No membership has been activated yet.', null);
-        }
-        return;
-      }
-
-      sendWhatsAppApplication(data);
-    } catch (err) {
+       catch (err) {
       console.error('Corporate application failed:', err);
       showError(err.message || 'We could not process this application. Please try again.');
     } finally {
@@ -591,7 +489,6 @@
 
   ensurePaymentUI();
   handlePesapalReturn().catch((err) => console.error('Corporate Pesapal return check failed:', err));
-  resumeCheque().catch((err) => console.error('Corporate cheque resume check failed:', err));
   resumeBankTransfer().catch((err) => console.error('Corporate bank transfer resume check failed:', err));
   form.addEventListener('submit', handleSubmit);
 
