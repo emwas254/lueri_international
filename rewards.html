@@ -348,7 +348,7 @@
   function renderMember(summary) {
     document.getElementById('lookupForm').style.display = 'none';
     document.getElementById('memberCard').classList.add('show');
-    document.getElementById('mTierName').textContent = summary.tier;
+    document.getElementById('mTierName').textContent = summary.effective_tier || summary.tier;
     document.getElementById('mPoints').textContent = summary.points.toLocaleString();
 
     const progressPct = Math.round((summary.tierProgress || 0) * 100);
@@ -450,7 +450,7 @@
                 <p class="btag">Same-day courier &middot; Nairobi</p>
               </div>
             </div>
-            <div class="tier-badge">${escapeHTML(member.tier)} member</div>
+            <div class="tier-badge">${escapeHTML(member.effective_tier || member.tier)} member</div>
           </div>
           <div class="rstatus">
             <div class="paid-stamp">Paid</div>
@@ -551,7 +551,7 @@
 
     const firstName = String(result.member.name || 'there').split(' ')[0];
     const existingText = result.existing
-      ? `Welcome back, ${firstName}! We found your existing Rewards account. You are currently ${result.member.tier || 'Bronze'} and your existing points remain attached to your account.`
+      ? `Welcome back, ${firstName}! We found your existing Rewards account. You are currently ${(result.member.effective_tier || result.member.tier || 'Bronze')} and your existing points remain attached to your account.`
       : `Welcome, ${firstName}! Your Rewards account is set up as Bronze. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`;
     showMsg('joinSuccessMsg', existingText);
 
