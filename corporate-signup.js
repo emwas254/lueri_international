@@ -455,7 +455,7 @@
   }
 
   function sendWhatsAppApplication(data) {
-    const planLabels = { biz_gold: 'Essential (KES 25,000/mo)', biz_platinum: 'Professional (KES 45,000/mo)', biz_vip: 'Elite (KES 75,000/mo)', enterprise: 'Enterprise — custom quote' };
+    const planLabels = { biz_gold: 'Gold (KES 25,000/mo)', biz_platinum: 'Platinum (KES 45,000/mo)', biz_vip: 'VIP (KES 75,000/mo)', enterprise: 'Enterprise — custom quote' };
     const message =
       'New corporate account application - Lueri website\n' +
       `Company: ${escapeText(data.companyName)}\n` +
