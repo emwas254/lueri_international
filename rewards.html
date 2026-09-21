@@ -568,6 +568,36 @@
     document.getElementById('joinSuccessMsg').insertAdjacentElement('afterend', continueBtn);
   });
 
+  (function renderPurchaseCards() {
+    const container = document.getElementById('purchaseCards');
+    if (!container) return;
+    const purchasable = [
+      { code:'silver', name:'Silver', price:5000, benefits:['Everything in Bronze','3% off priority same-day bookings (monthly benefit cap KES 300)','Priority WhatsApp support'] },
+      { code:'gold', name:'Gold', price:15000, benefits:['Everything in Silver','5% off priority same-day bookings (monthly benefit cap KES 750)','Priority dispatch consideration'] },
+      { code:'platinum', name:'Platinum', price:35000, benefits:['Everything in Gold','7.5% off priority same-day bookings (monthly benefit cap KES 1,500)','Peak-period priority queue'] },
+      { code:'vip', name:'VIP', price:75000, benefits:['Everything in Platinum','10% off eligible bookings (monthly benefit cap KES 3,000)','Dedicated priority support'] }
+    ];
+    container.innerHTML = purchasable.map(tier => `
+      <div class="purchase-card">
+        <div class="tname">${escapeHTML(tier.name)}</div>
+        <div class="tprice">KES ${tier.price.toLocaleString()}</div>
+        <div class="tperiod">per year</div>
+        <ul>${tier.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>
+        <button type="button" class="btn btn-primary" data-choose="${tier.code}">Choose ${escapeHTML(tier.name)}</button>
+      </div>`).join('');
+    container.querySelectorAll('[data-choose]').forEach(button => {
+      button.addEventListener('click', () => {
+        const code = button.dataset.choose;
+        if (typeof startMembershipPurchase !== 'function') {
+          showMsg('joinMsg', 'Secure checkout is temporarily unavailable. Please refresh and try again.');
+          return;
+        }
+        startMembershipPurchase(code);
+      });
+    });
+    if (window.LueriRewardsI18n?.refresh) window.LueriRewardsI18n.refresh();
+  })();
+
   try {
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = document.getElementById('sunIcon');
