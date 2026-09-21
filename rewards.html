@@ -551,7 +551,7 @@
 
     const firstName = String(result.member.name || 'there').split(' ')[0];
     const existingText = result.existing
-      ? `Welcome back, ${firstName}! We found your existing Rewards account. You are currently ${(result.member.effective_tier || result.member.tier || 'Bronze')} and your existing points remain attached to your account.`
+      ? `Welcome back, ${firstName}! We found your existing Rewards account. You are currently ${(result.member.effective_tier || (result.member.effective_tier || result.member.tier || 'Bronze'))} and your existing points remain attached to your account.`
       : `Welcome, ${firstName}! Your Rewards account is set up as Bronze. Member No. ${result.member.memberNumber}. Save this number — you'll need it to look up your rewards.`;
     showMsg('joinSuccessMsg', existingText);
 
