@@ -420,3 +420,49 @@ html[lang="ar"] .pricing-note{
     max-width:100%!important;
   }
 }
+
+/* RTL brand order — keep the L mark visually in front of the Lueri International wordmark. */
+html[dir="rtl"] .brand,
+html[dir="rtl"] .co-brand,
+html[dir="rtl"] .lueri-payment-panel-brand,
+html[dir="rtl"] .lueri-payment-head .lueri-payment-brand {
+  direction: ltr;
+  flex-direction: row;
+}
+
+html[dir="rtl"] .brand span,
+html[dir="rtl"] .co-brand span,
+html[dir="rtl"] .lueri-payment-panel-brand > div,
+html[dir="rtl"] .lueri-payment-head .lueri-payment-brand > div {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .brand .mark-img,
+html[dir="rtl"] .co-brand img,
+html[dir="rtl"] .lueri-payment-panel-brand img,
+html[dir="rtl"] .lueri-payment-head .lueri-payment-brand img {
+  order: 0;
+  flex: 0 0 auto;
+}
+
+html[dir="rtl"] .brand span,
+html[dir="rtl"] .co-brand span,
+html[dir="rtl"] .lueri-payment-panel-brand > div,
+html[dir="rtl"] .lueri-payment-head .lueri-payment-brand > div {
+  order: 1;
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  html[dir="rtl"] .brand {
+    direction: ltr;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  html[dir="rtl"] .brand span {
+    direction: rtl;
+    text-align: right;
+  }
+}
