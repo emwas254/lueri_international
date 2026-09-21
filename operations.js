@@ -16,8 +16,7 @@ async function checkAccess(){
  let p=await getProfile();
  if(p&&!p.active&&setupToken){const b=await bootstrapAccount(p.full_name||'');if(b.success)p=await getProfile();else{await sb.auth.signOut();$('loginError').textContent=b.error==='email_not_confirmed'?'Confirm your email first, then return and sign in again.':b.error==='bootstrap_closed'?'Initial setup has already been completed.':b.error==='invalid_or_expired_token'?'This setup link is invalid or has expired.':(b.error||'Account activation failed.');$('loginView').hidden=false;$('signupView').hidden=true;$('dashboardView').hidden=true;return}}
  if(!p||!p.active||!['staff','admin'].includes(p.role)){
- if(error||!p||!p.active||!['staff','admin'].includes(p.role)){
-   await sb.auth.signOut();$('loginError').textContent='This account is not provisioned for Lueri Operations. Ask an Lueri administrator to activate a staff/admin profile.';$('loginView').hidden=false;$('dashboardView').hidden=true;return;
+   await sb.auth.signOut();$('loginError').textContent='This account is not provisioned for Lueri Operations. Ask an Lueri administrator to activate a staff/admin profile.';$('loginView').hidden=false;$('signupView').hidden=true;$('dashboardView').hidden=true;return;
  }
  $('operatorName').textContent=(p.full_name||session.user.email||'Operator')+' · '+(p.job_title||'Lueri Staff');$('loginView').hidden=true;$('signupView').hidden=true;$('dashboardView').hidden=false;await load();
 }
