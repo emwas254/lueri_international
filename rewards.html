@@ -202,7 +202,7 @@
   <div class="wrap">
     <div class="eyebrow-mono">Lueri Rewards</div>
     <h1 class="title">Earn on every<br>delivery.</h1>
-    <p class="subtitle">Free to join. Every booking earns points toward Silver, Gold, Platinum and VIP — unlocking free deliveries, discounts and priority dispatch. Or skip the wait and buy your tier outright below.</p>
+    <p class="subtitle">Free to join. Eligible spend moves you through Silver, Gold, Platinum and VIP, unlocking controlled discounts, priority support and service privileges.</p>
 
     <div class="tier-explainer" id="tierExplainer">
       <div class="eyebrow-mono" style="margin-bottom:16px;">Earn it free — tiers by spend</div>
@@ -210,15 +210,14 @@
       <p class="tier-note">Your tier is based on your spend over the last 12 months, so it reflects your recent activity with us. Points are earned on every booking and can be redeemed for delivery vouchers — see your balance under "My Rewards" once you've joined.</p>
     </div>
 
-    <div class="purchase-section" id="purchaseSection">
+    <div class="purchase-section" id="purchaseSection" style="display:block;">
       <div class="purchase-head">
         <div>
-          <div class="eyebrow-mono" style="margin-bottom:4px;">Or buy it outright</div>
-          <h2>Skip the wait — 1 year, instant</h2>
+          <div class="eyebrow-mono" style="margin-bottom:4px;">Simple by design</div>
+          <h2>Rewards are earned, not bought</h2>
         </div>
       </div>
-      <div class="purchase-cards" id="purchaseCards"></div>
-      <p class="switch-link">Prefer to start without a paid membership? <a href="#" id="joinFreeLink">Join for Free</a></p>
+      <p class="tier-note">Lueri Rewards is free. Your tier is earned from eligible spend over the last 12 months. Benefits are deliberately capped so the programme rewards loyal customers without creating unsustainable delivery subsidies.</p>
     </div>
 
     <div class="panel">
@@ -504,54 +503,6 @@
     document.getElementById('memberCard').classList.remove('show');
     document.getElementById('lookupForm').style.display = 'block';
     document.getElementById('lookupPhone').value = '';
-  });
-
-  const PURCHASE_TIERS = [
-    { code: 'silver',   name: 'Silver',   price: 5000,  benefits: ['Everything in Bronze', '5% off priority same-day bookings', 'KES 200 free delivery credit monthly'] },
-    { code: 'gold',     name: 'Gold',     price: 15000, benefits: ['Everything in Silver', '10% off priority same-day bookings', '1 free standard delivery every month'] },
-    { code: 'platinum', name: 'Platinum', price: 35000, benefits: ['Everything in Gold', '15% off priority same-day bookings', '2 free standard deliveries every month'] },
-    { code: 'vip',      name: 'VIP',      price: 75000, benefits: ['Everything in Platinum', '20% off all bookings', '4 free standard deliveries every month'] },
-  ];
-
-  let selectedPurchasePlan = null;
-
-  function renderPurchaseCards() {
-    const container = document.getElementById('purchaseCards');
-    container.innerHTML = PURCHASE_TIERS.map(tier => `
-      <div class="purchase-card">
-        <div class="tname">${escapeHTML(tier.name)}</div>
-        <div class="tprice">${fmt(tier.price)}</div>
-        <div class="tperiod">per year</div>
-        <ul>${tier.benefits.map(b => `<li>${escapeHTML(b)}</li>`).join('')}</ul>
-        <button type="button" class="btn btn-primary" data-choose="${tier.code}">Choose ${escapeHTML(tier.name)}</button>
-      </div>
-    `).join('');
-
-    container.querySelectorAll('[data-choose]').forEach(btn => {
-      btn.addEventListener('click', () => choosePurchasePlan(btn.dataset.choose));
-    });
-  }
-
-  function choosePurchasePlan(code) {
-    const tier = PURCHASE_TIERS.find(t => t.code === code);
-    if (!tier) return;
-    selectedPurchasePlan = tier;
-
-    document.getElementById('planBannerTier').textContent = `${tier.name} — ${fmt(tier.price)}/year`;
-    document.getElementById('planBanner').classList.add('show');
-
-    showTab('join');
-    document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('joinName').focus();
-  }
-
-  document.getElementById('joinFreeLink').addEventListener('click', (e) => {
-    e.preventDefault();
-    selectedPurchasePlan = null;
-    document.getElementById('planBanner').classList.remove('show');
-    showTab('join');
-    document.querySelector('.panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('joinName').focus();
   });
 
   document.getElementById('joinBtn').addEventListener('click', async () => {
