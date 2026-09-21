@@ -17,8 +17,8 @@
       },
       hero: {
         dispatch:'Dispatch / Nairobi & environs', waybill:'WAYBILL NO. LI–2026',
-        title:'We move it across Nairobi today.',
-        subtitle:'Lueri International handles last-mile delivery and courier dispatch for individuals and businesses — parcels, documents, and e-commerce orders, picked up and delivered the same day across Nairobi.',
+        title:'Need it picked up, bought, or delivered? We have got you.',
+        subtitle:'Lueri International helps individuals and businesses with same-day delivery, shopping and collection, parcel pickup, and practical Nairobi errands — including sourcing and collecting items when you cannot get there yourself.',
         scope:'Nairobi last-mile · Not cross-border freight', stamp:'Same-day dispatch',
         pickup:'PICKUP', dropoff:'DROP-OFF', bookBtn:'Book a Pickup', whatsappBtn:'WhatsApp Us'
       },
@@ -45,7 +45,7 @@
         proofTitle:'Proof of delivery',proofText:'Delivery confirmation helps you know when and where the item was received.'
       },
       coverage:{title:'Coverage',subtitle:'Nairobi and surrounding areas, with dispatch planned around the route and service requirements.',body:'We focus on Nairobi last-mile delivery and nearby environs. For locations outside our standard operating area, contact us before booking so we can confirm availability.'},
-      pricing:{title:'Pricing',subtitle:'Clear quoted rates with no hidden fees.',body:'Your delivery price depends on route, distance, parcel requirements, urgency, and any special handling. Request a quote before dispatch and we will confirm the amount with you.',note:'No hidden fees · Confirmed before dispatch'},
+      pricing:{title:'Pricing',subtitle:'Clear quoted rates with no hidden fees.',body:'Selected Nairobi routes start from KES 100; documents start from KES 200. Final pricing depends on route, parcel requirements, urgency, and any special handling. Request a quote before dispatch and we will confirm the amount with you.',note:'*Starting prices apply to selected routes/services · Confirmed before dispatch'},
       why:{
         title:'Why Lueri',subtitle:'A straightforward delivery service built for people and businesses that value reliability.',
         oneTitle:'Direct line to the dispatcher',oneText:'You speak to the person moving your parcel, not a call centre — every job is coordinated directly on WhatsApp or phone.',
