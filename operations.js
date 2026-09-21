@@ -3,18 +3,23 @@
 const SUPABASE_URL='https://ylifvexqamxvwzvhmwex.supabase.co';
 const SUPABASE_KEY='sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const setupToken=new URLSearchParams(location.search).get('setup')||'';
 let bookings=[],payments=[],filter='all',selected=null;
 const $=id=>document.getElementById(id);
 const statusLabel=s=>({pending_payment:'Awaiting payment',paid_ready:'Ready for dispatch',assigned:'Assigned',picked_up:'Picked up',in_transit:'In transit',delivered:'Delivered',payment_failed:'Payment failed',payment_cancelled:'Payment cancelled',issue:'Issue'})[s]||String(s||'Unknown').replaceAll('_',' ');
 function badgeClass(s){return ['paid_ready','assigned','picked_up','in_transit','delivered'].includes(s)?'green':['pending_payment','payment_cancelled'].includes(s)?'yellow':['payment_failed','issue'].includes(s)?'red':''}
+async function getProfile(){const {data:{session}}=await sb.auth.getSession();if(!session)return null;const r=await sb.from('profiles').select('full_name,role,active,job_title').eq('id',session.user.id).maybeSingle();return r.error?null:r.data}
+async function bootstrapAccount(name){if(!setupToken)return{success:false,error:'no_setup_token'};const r=await sb.rpc('claim_chief_dispatch_bootstrap',{p_token:setupToken,p_full_name:name});return r.error?{success:false,error:r.error.message}:r.data}
 async function checkAccess(){
  const {data:{session}}=await sb.auth.getSession();
- if(!session){$('loginView').hidden=false;$('dashboardView').hidden=true;return}
- const {data:p,error}=await sb.from('profiles').select('full_name,role,active').eq('id',session.user.id).single();
+ if(!session){$('loginView').hidden=false;$('signupView').hidden=true;$('dashboardView').hidden=true;return}
+ let p=await getProfile();
+ if(p&&!p.active&&setupToken){const b=await bootstrapAccount(p.full_name||'');if(b.success)p=await getProfile();else{await sb.auth.signOut();$('loginError').textContent=b.error==='email_not_confirmed'?'Confirm your email first, then return and sign in again.':b.error==='bootstrap_closed'?'Initial setup has already been completed.':b.error==='invalid_or_expired_token'?'This setup link is invalid or has expired.':(b.error||'Account activation failed.');$('loginView').hidden=false;$('signupView').hidden=true;$('dashboardView').hidden=true;return}}
+ if(!p||!p.active||!['staff','admin'].includes(p.role)){
  if(error||!p||!p.active||!['staff','admin'].includes(p.role)){
    await sb.auth.signOut();$('loginError').textContent='This account is not provisioned for Lueri Operations. Ask an Lueri administrator to activate a staff/admin profile.';$('loginView').hidden=false;$('dashboardView').hidden=true;return;
  }
- $('operatorName').textContent=p.full_name||session.user.email||'Operator';$('loginView').hidden=true;$('dashboardView').hidden=false;await load();
+ $('operatorName').textContent=(p.full_name||session.user.email||'Operator')+' · '+(p.job_title||'Lueri Staff');$('loginView').hidden=true;$('signupView').hidden=true;$('dashboardView').hidden=false;await load();
 }
 async function load(){
  const b=await sb.from('bookings').select('*').order('created_at',{ascending:false}).limit(200);
@@ -49,6 +54,10 @@ async function openDetail(id){
  $('saveBooking').onclick=async()=>{await updateBooking({status:selected.status,internal_notes:$('notes').value})};
 }
 async function updateBooking(patch){const r=await sb.from('bookings').update({...patch,updated_at:new Date().toISOString()}).eq('id',selected.id).select('*').single();if(r.error){alert('Could not save: '+r.error.message);return}selected=r.data;await load();openDetail(selected.id)}
+async function createAccount(){const name=$('signupName').value.trim(),email=$('signupEmail').value.trim(),pw=$('signupPassword').value,pw2=$('signupPasswordConfirm').value,err=$('signupError'),btn=$('signupBtn');err.textContent='';if(!setupToken){err.textContent='This page is not carrying the one-time setup authorization.';return}if(name.length<2){err.textContent='Enter your full name.';return}if(!/^\\S+@\\S+\\.\\S+$/.test(email)){err.textContent='Enter a valid email address.';return}if(pw.length<10){err.textContent='Use a password of at least 10 characters.';return}if(pw!==pw2){err.textContent='The passwords do not match.';return}btn.disabled=true;btn.textContent='Creating account…';try{const r=await sb.auth.signUp({email,password:pw,options:{data:{full_name:name}}});if(r.error){err.textContent=r.error.message||'Could not create account.';return}if(r.data.session){const b=await bootstrapAccount(name);if(!b.success){await sb.auth.signOut();err.textContent=b.error||'Account activation failed.';return}await checkAccess();return}err.className='success';err.textContent='Account created. Check your email for the confirmation link if requested. Then return here and sign in with the same credentials.';$('email').value=email;setTimeout(()=>{$('signupView').hidden=true;$('loginView').hidden=false},1400)}finally{btn.disabled=false;btn.textContent='Create Chief Dispatch Officer account'}}
+$('signupForm').onsubmit=async e=>{e.preventDefault();await createAccount()};
+$('createAccountLink').onclick=e=>{e.preventDefault();if(setupToken){$('loginView').hidden=true;$('signupView').hidden=false;$('dashboardView').hidden=true}};
+$('backToLogin').onclick=e=>{e.preventDefault();$('signupView').hidden=true;$('loginView').hidden=false};
 $('loginForm').onsubmit=async e=>{e.preventDefault();$('loginError').textContent='';const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginError').textContent=error.message;return}await checkAccess()};
 $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
 $('closeDetail').onclick=()=>{$('detailView').hidden=true;$('dashboardView').hidden=false;renderQueue()};
@@ -56,5 +65,5 @@ document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{document.querySel
 sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_IN'||ev==='SIGNED_OUT')setTimeout(checkAccess,0)});
 sb.channel('operations-bookings').on('postgres_changes',{event:'*',schema:'public',table:'bookings'},()=>load()).subscribe();
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-checkAccess();
+if(location.hash==='#create-account'&&setupToken){$('loginView').hidden=true;$('signupView').hidden=false;$('dashboardView').hidden=true}else{checkAccess()}
 })();
