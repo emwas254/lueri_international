@@ -155,9 +155,16 @@ function openPesapalModal(paymentUrl, trackingId, meta = {}) {
   return modal;
 }
 
-// Rewards is now a free, earned loyalty programme. Paid tier purchases are intentionally disabled until redemption economics are proven.
-async function startMembershipPurchase() {
-  return { success:false, redirected:false, error:'Lueri Rewards tiers are earned through eligible spend; there is no paid tier membership at this time.' };
+// Direct tier purchase is optional. Customers can still earn tiers through eligible spend.
+async function startMembershipPurchase(planCode) {
+  const code = String(planCode || '').trim().toLowerCase();
+  const allowed = ['silver','gold','platinum','vip'];
+  if (!allowed.includes(code)) {
+    return { success:false, redirected:false, error:'That Rewards tier is not available for direct purchase.' };
+  }
+  const url = 'checkout.html?plan=' + encodeURIComponent(code);
+  window.location.assign(url);
+  return { success:true, redirected:true, url };
 }
 
 async function checkPaymentStatus(trackingId, meta = {}) {
