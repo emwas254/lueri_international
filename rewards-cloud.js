@@ -280,10 +280,10 @@ async function getMemberSummary(phone) {
     return null;
   }
   if (!result.success || !result.member) return null;
-  const member=result.member; const tierName=capitalizeTier(member.tier); member.tier=tierName;
+  const member=result.member; const tierName=capitalizeTier(member.effective_tier || member.tier); member.tier=tierName;
   const windowSpend=member.tierWindowSpend !== undefined && member.tierWindowSpend !== null ? Number(member.tierWindowSpend) : Number(member.lifetimeSpend)||0;
   const progress=tierProgress(tierName,windowSpend); _txCache[member.id]=result.transactions||[];
-  return {member,tier:tierName,benefits:getBenefits(tierName),points:Number(member.points)||0,lifetimeSpend:Number(member.lifetimeSpend)||0,nextTier:progress.nextTier,amountToNextTier:progress.remaining,tierProgress:progress.progress};
+  return {member,tier:tierName,effective_tier:member.effective_tier || tierName,purchased_tier:member.purchased_tier || null,benefits:getBenefits(tierName),points:Number(member.points)||0,lifetimeSpend:Number(member.lifetimeSpend)||0,nextTier:progress.nextTier,amountToNextTier:progress.remaining,tierProgress:progress.progress};
 }
 
 function getMemberTransactions(memberId) { return _txCache[memberId] || []; }
