@@ -46,7 +46,7 @@
   .brand img{ height:30px; }
   .back-link{ font-size:.85rem; text-transform:uppercase; letter-spacing:.03em; opacity:.75; }
   .back-link:hover{ opacity:1; color:var(--route); }
-  .language-selector{ min-width:128px; min-height:34px; padding:6px 28px 6px 9px; border:1px solid var(--ink); border-radius:6px; background:var(--paper); color:var(--ink); font:600 .78rem/1.2 'IBM Plex Sans',sans-serif; cursor:pointer; }
+  .language-selector{ min-width:150px; width:150px; min-height:34px; padding:6px 28px 6px 9px; border:1px solid var(--ink); border-radius:6px; background:var(--paper); color:var(--ink); font:600 .78rem/1.2 'IBM Plex Sans',sans-serif; cursor:pointer; }
   [data-theme="dark"] .language-selector{ background:var(--paper); color:var(--ink); }
   @media(max-width:600px){ .language-selector{ min-width:112px; font-size:.74rem; } }
   .theme-toggle{ background:none; border:1px solid var(--line); border-radius:50%; width:34px; height:34px;
@@ -191,7 +191,15 @@
     <div class="nav-actions">
       <a class="back-link" href="index.html">← Main site</a>
       <a class="back-link" href="careers.html">Careers</a>
-      <select id="languageSelector" class="language-selector" aria-label="Select language"></select>
+      <select id="languageSelector" class="language-selector" aria-label="Select language">
+  <option value="en">🇬🇧 English</option>
+  <option value="zh">🇨🇳 中文</option>
+  <option value="sw">🇰🇪 Kiswahili</option>
+  <option value="fr">🇫🇷 Français</option>
+  <option value="es">🇪🇸 Español</option>
+  <option value="ar">🇸🇦 العربية</option>
+  <option value="pt">🇧🇷 Português</option>
+</select>
       <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
         <svg id="sunIcon" style="display:none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
