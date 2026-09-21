@@ -509,6 +509,7 @@
       return;
     }
     renderMember(summary);
+    if (window.LueriRewardsI18n?.refresh) window.LueriRewardsI18n.refresh();
   });
 
   document.getElementById('lookupAnother').addEventListener('click', () => {
