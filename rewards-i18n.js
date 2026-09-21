@@ -437,12 +437,10 @@
     locale=getLocale();
     installSelector();
     apply(locale, false);
-    const observer=new MutationObserver(mutations => {
-      let relevant=false;
-      mutations.forEach(m => { if(m.addedNodes && m.addedNodes.length) relevant=true; });
-      if(relevant) translateDynamic();
-    });
-    observer.observe(document.body,{subtree:true,childList:true});
+    // Do not observe the entire document for translations. Translation itself changes
+    // text nodes, which can retrigger a MutationObserver indefinitely and freeze the page.
+    // Dynamic Rewards components explicitly call LueriRewardsI18n.refresh() after rendering.
+
   }
 
   window.LueriRewardsI18n = {
