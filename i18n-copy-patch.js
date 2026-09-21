@@ -16,9 +16,9 @@
       ecommerceTitle: 'Bulk buys & pickups',
       ecommerceText: 'Rice, groceries or supplies bought or collected in town and delivered to your door at one all-in quoted price.',
       urgentTitle: 'Parcels, documents & CBD runs',
-      urgentText: 'Same-day point-to-point delivery across Nairobi: parcels, documents, cheques, and quick CBD hops from KES 100.' },
+      urgentText: 'Same-day point-to-point delivery within Nairobi: parcels, documents, cheques, and quick CBD runs from KES 100. The KES 100–200 rate applies only when both pickup and drop-off are within Nairobi CBD.' },
     pricing: { single: 'Quick runs & documents', priceFrom: 'KES 100–200',
-      singleText: 'CBD hops from KES 100 (a cable, a small parcel). Documents and cheques KES 200. Further out or heavier, we quote by zone and size before we move.',
+      singleText: 'KES 100–200 for a single delivery only when both pickup and drop-off are within Nairobi CBD. Documents and cheques are KES 200 within the CBD. Anything outside the Nairobi CBD boundary, or heavier/larger, is quoted separately by zone and size before we move.',
       urgent: 'Errands', priority: 'Errands & bulk pickups', priceQuoted: 'From KES 400',
       urgentText: 'Check-and-confirm errands from KES 400 within Nairobi. Bulk buy-and-deliver jobs are quoted all-in before we move.',
       quoteBody: 'Every job is quoted before we move, with no hidden fees. Send your pickup point, drop-off point and what you need on WhatsApp or the booking form below. In a hurry? Say so and we confirm price and ETA first. Payment accepted via M-Pesa.' }
@@ -32,9 +32,9 @@
       ecommerceTitle: 'Ununuzi wa jumla na uchukuzi',
       ecommerceText: 'Mchele, mboga au bidhaa zinanunuliwa au kuchukuliwa mjini na kufikishwa kwako kwa bei moja kamili iliyotajwa.',
       urgentTitle: 'Vifurushi, hati na safari za CBD',
-      urgentText: 'Usafirishaji wa siku hiyo hiyo ndani ya Nairobi: vifurushi, hati, hundi, na safari fupi za CBD kuanzia KES 100.' },
+      urgentText: 'Usafirishaji wa siku hiyo hiyo ndani ya Nairobi: vifurushi, hati, hundi na safari fupi za CBD. Bei ya KES 100–200 inatumika tu ikiwa eneo la kuchukua na la kupeleka yote mawili yako ndani ya Nairobi CBD.' },
     pricing: { single: 'Safari fupi na hati', priceFrom: 'KES 100–200',
-      singleText: 'Safari za CBD kuanzia KES 100 (waya, kifurushi kidogo). Hati na hundi KES 200. Mbali zaidi au mzigo mzito, tunatoa bei kulingana na eneo na ukubwa kabla hatujaanza.',
+      singleText: 'KES 100–200 kwa delivery moja inatumika tu ikiwa eneo la kuchukua na la kupeleka yote mawili yako ndani ya Nairobi CBD. Hati na hundi ni KES 200 ndani ya CBD. Nje ya Nairobi CBD, au kwa mzigo mkubwa/mzito, tunatoa bei tofauti kulingana na eneo na ukubwa kabla hatujaanza.',
       urgent: 'Errands', priority: 'Errands na uchukuzi wa jumla', priceQuoted: 'Kuanzia KES 400',
       urgentText: 'Errands za kukagua na kuthibitisha kuanzia KES 400 ndani ya Nairobi. Kazi za ununuzi wa jumla hutolewa bei kamili kabla hatujaanza.',
       quoteBody: 'Kila kazi hutolewa bei kabla hatujaanza, bila gharama zilizofichwa. Tuma eneo la kuchukua, la kupeleka na unachohitaji kupitia WhatsApp au fomu iliyo chini. Una haraka? Tuambie, tuthibitishe bei na muda kwanza. Malipo kupitia M-Pesa.' }
