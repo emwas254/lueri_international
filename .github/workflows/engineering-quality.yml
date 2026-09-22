@@ -1,0 +1,103 @@
+name: Engineering Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  javascript-syntax:
+    name: Engineering Quality / JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
+          for file in "\${files[@]}"; do
+            echo "Checking $file"
+            node --check "$file"
+          done
+
+  edge-functions:
+    name: Engineering Quality / Edge Functions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.1.4
+
+      - name: Type-check Edge Functions
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in supabase/functions/*/index.ts; do
+            echo "Checking $file"
+            deno check --no-config "$file"
+          done
+
+  static-site:
+    name: Engineering Quality / Static Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify local HTML references
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urlsplit
+
+          class Parser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.refs = []
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  for key in ("src", "href"):
+                      value = attrs.get(key)
+                      if value:
+                          self.refs.append((tag, key, value))
+
+          root = Path(".")
+          failures = []
+
+          for html in root.glob("*.html"):
+              parser = Parser()
+              parser.feed(html.read_text(encoding="utf-8", errors="replace"))
+              for tag, key, value in parser.refs:
+                  if value.startswith(("#", "http://", "https://", "mailto:", "tel:", "data:", "javascript:")):
+                      continue
+                  path = urlsplit(value).path
+                  if not path:
+                      continue
+                  target = (html.parent / path).resolve()
+                  if not target.exists():
+                      failures.append(f"{html}: {key}={value} -> missing {target}")
+
+          if failures:
+              print("\n".join(failures))
+              raise SystemExit(1)
+
+          print("All local HTML references resolve.")
+          PY
