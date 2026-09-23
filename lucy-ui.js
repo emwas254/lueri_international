@@ -161,7 +161,36 @@ function renderPendingPhotoAction(){
         if(!payload.pickup||!payload.dropoff||!payload.customer_name||!payload.phone){
           throw new Error('The booking details are incomplete. Please restart the booking.');
         }
-        const res=await fetch(`${API_BASE.replace('/functions/v1','')}/functions/v1/delivery-payment-initiate`,{
+        const functionsBase=API_BASE.replace('/functions/v1','');
+        const quoteRes=await fetch(`${functionsBase}/functions/v1/delivery-route-quote`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            pickup:payload.pickup,
+            dropoff:payload.dropoff,
+            details:payload.details||''
+          })
+        });
+        const quoteData=await quoteRes.json().catch(()=>({}));
+        if(!quoteRes.ok||!quoteData?.success||!quoteData?.quote){
+          throw new Error(quoteData?.error||'We could not calculate the delivery quote.');
+        }
+        const quote=quoteData.quote;
+        const quoteText=locale==='zh'
+          ? `路线约 ${Number(quote.distance_km).toFixed(1)} 公里，预计 ${quote.duration_minutes} 分钟。当前配送报价：KES ${Number(quote.amount_kes).toLocaleString()}。`
+          : locale==='sw'
+          ? `Umbali wa safari ni takriban km ${Number(quote.distance_km).toFixed(1)}, muda wa makadirio ni dakika ${quote.duration_minutes}. Bei ya sasa ya delivery ni KES ${Number(quote.amount_kes).toLocaleString()}.`
+          : locale==='fr'
+          ? `L’itinéraire est d’environ ${Number(quote.distance_km).toFixed(1)} km, pour environ ${quote.duration_minutes} min. Le devis actuel est de KES ${Number(quote.amount_kes).toLocaleString()}.`
+          : locale==='es'
+          ? `La ruta es de aproximadamente ${Number(quote.distance_km).toFixed(1)} km, con unos ${quote.duration_minutes} min. El presupuesto actual es de KES ${Number(quote.amount_kes).toLocaleString()}.`
+          : locale==='ar'
+          ? `المسافة حوالي ${Number(quote.distance_km).toFixed(1)} كم، والمدة التقديرية ${quote.duration_minutes} دقيقة. السعر الحالي للتوصيل هو KES ${Number(quote.amount_kes).toLocaleString()}.`
+          : locale==='pt'
+          ? `A rota tem cerca de ${Number(quote.distance_km).toFixed(1)} km, com duração estimada de ${quote.duration_minutes} min. O orçamento atual é KES ${Number(quote.amount_kes).toLocaleString()}.`
+          : `The route is approximately ${Number(quote.distance_km).toFixed(1)} km, with an estimated driving time of ${quote.duration_minutes} minutes. The current delivery quote is KES ${Number(quote.amount_kes).toLocaleString()}.`;
+        addMessage(quoteText,'bot');
+        const res=await fetch(`${functionsBase}/functions/v1/delivery-payment-initiate`,{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({
