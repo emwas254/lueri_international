@@ -600,3 +600,12 @@ html[dir="rtl"] .coverage-note{
   }
 }
 
+
+/* Brand lockup: logo + name + localized motto. */
+.brand{align-items:center;}
+.brand-copy{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.05;}
+.brand-name{display:block;white-space:nowrap;}
+.brand-motto{display:block;margin-top:4px;font-size:.58rem;line-height:1.2;font-weight:600;letter-spacing:.06em;opacity:.72;white-space:normal;}
+html[dir="rtl"] .brand-copy{direction:rtl;text-align:right;}
+html[dir="rtl"] .brand-name,html[dir="rtl"] .brand-motto{direction:rtl;}
+@media(max-width:700px){.brand-motto{font-size:.5rem;margin-top:3px;letter-spacing:.04em;}}
