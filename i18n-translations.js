@@ -45,7 +45,7 @@
         proofTitle:'Proof of delivery',proofText:'Delivery confirmation helps you know when and where the item was received.'
       },
       coverage:{title:'Coverage',subtitle:'Nairobi and surrounding areas, with dispatch planned around the route and service requirements.',body:'We focus on Nairobi last-mile delivery and nearby environs. For locations outside our standard operating area, contact us before booking so we can confirm availability.'},
-      pricing:{title:'Pricing',subtitle:'Clear quoted rates with no hidden fees.',body:'Selected Nairobi routes start from KES 100; documents start from KES 200. Final pricing depends on route, parcel requirements, urgency, and any special handling. Request a quote before dispatch and we will confirm the amount with you.',note:'*Starting prices apply to selected routes/services · Confirmed before dispatch'},
+      pricing:{title:'Pricing',subtitle:'Clear quoted rates with no hidden fees.',body:'Selected Nairobi routes start from KES 350 (Standard) or KES 800 (Express); documents start from KES 400. Final pricing depends on route, parcel requirements, urgency, and any special handling. Request a quote before dispatch and we will confirm the amount with you.',note:'*Starting prices apply to selected routes/services · Confirmed before dispatch'},
       why:{
         title:'Why Lueri',subtitle:'A straightforward delivery service built for people and businesses that value reliability.',
         oneTitle:'Direct line to the dispatcher',oneText:'You speak to the person moving your parcel, not a call centre — every job is coordinated directly on WhatsApp or phone.',
