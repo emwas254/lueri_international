@@ -565,3 +565,38 @@ html[dir="rtl"] .menu-panel-grid{
   }
 }
 
+
+
+/* RTL/mobile containment for the actual coverage component. */
+html[dir="rtl"] .coverage-wrap{
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+  width:100%;
+  min-width:0;
+}
+html[dir="rtl"] .coverage-list{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  min-width:0;
+}
+html[dir="rtl"] .coverage-list > div,
+html[dir="rtl"] .coverage-note{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+@media (max-width:760px){
+  html[dir="rtl"] .coverage-wrap{
+    grid-template-columns:minmax(0,1fr);
+    gap:20px;
+  }
+  html[dir="rtl"] .coverage-list{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:10px 16px;
+  }
+}
+@media (max-width:420px){
+  html[dir="rtl"] .coverage-list{
+    grid-template-columns:minmax(0,1fr);
+    gap:8px;
+  }
+}
+
