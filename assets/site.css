@@ -479,3 +479,89 @@ html[dir="rtl"] .menu-link{min-width:0;}
 html[dir="rtl"] .menu-link-body{min-width:0;overflow-wrap:anywhere;}
 html[dir="rtl"] .hero-copy,html[dir="rtl"] .section-intro,html[dir="rtl"] .card,html[dir="rtl"] .pricing-card,html[dir="rtl"] .faq-item p{overflow-wrap:anywhere;word-break:normal;}
 @media(max-width:600px){html[dir="rtl"] .navbar{padding-left:14px;padding-right:14px;}html[dir="rtl"] .nav-controls{gap:7px;}html[dir="rtl"] #languageSelector{min-width:0!important;width:auto!important;max-width:112px!important;}html[dir="rtl"] .lueri-language-trigger{min-width:0;max-width:112px;}html[dir="rtl"] .hero{padding-left:0;padding-right:0;}html[dir="rtl"] .wrap{padding-left:16px;padding-right:16px;}html[dir="rtl"] .cta-row{flex-direction:column;align-items:stretch;}html[dir="rtl"] .cta-row .btn{width:100%;justify-content:center;}}
+
+
+/* Arabic RTL hardening: keep the L logo on the physical left and prevent
+   horizontal overflow on narrow/mobile screens. */
+html[dir="rtl"] .brand{
+  direction:ltr !important;
+  flex-direction:row !important;
+  justify-content:flex-start;
+  text-align:left;
+  unicode-bidi:isolate;
+}
+html[dir="rtl"] .brand .mark-img{
+  order:0 !important;
+  flex:0 0 auto;
+}
+html[dir="rtl"] .brand span{
+  order:1 !important;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+html[dir="rtl"] .navbar{
+  min-width:0;
+}
+html[dir="rtl"] .nav-controls{
+  min-width:0;
+  max-width:100%;
+}
+html[dir="rtl"] .wrap{
+  max-width:100%;
+}
+html[dir="rtl"] img,
+html[dir="rtl"] video,
+html[dir="rtl"] iframe,
+html[dir="rtl"] svg{
+  max-width:100%;
+}
+html[dir="rtl"] .hero-copy,
+html[dir="rtl"] .section-intro,
+html[dir="rtl"] .card,
+html[dir="rtl"] .pricing-card,
+html[dir="rtl"] .pricing-note,
+html[dir="rtl"] .contact-shell,
+html[dir="rtl"] .menu-panel,
+html[dir="rtl"] .faq-item,
+html[dir="rtl"] .why-list,
+html[dir="rtl"] .coverage-grid{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+html[dir="rtl"] .coverage-grid,
+html[dir="rtl"] .menu-panel-grid{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+}
+@media (max-width:600px){
+  html[dir="rtl"] .navbar{
+    padding-left:12px;
+    padding-right:12px;
+    gap:8px;
+  }
+  html[dir="rtl"] .brand{
+    max-width:100%;
+    flex:1 1 auto;
+    font-size:1rem;
+  }
+  html[dir="rtl"] .brand .mark-img{
+    height:32px;
+  }
+  html[dir="rtl"] .nav-controls{
+    width:100%;
+    flex:1 1 100%;
+  }
+  html[dir="rtl"] .coverage-grid,
+  html[dir="rtl"] .menu-panel-grid{
+    grid-template-columns:1fr;
+  }
+  html[dir="rtl"] .hero-copy,
+  html[dir="rtl"] .section-intro,
+  html[dir="rtl"] .pricing-card,
+  html[dir="rtl"] .pricing-note,
+  html[dir="rtl"] .contact-shell{
+    overflow-x:hidden;
+  }
+}
+
