@@ -312,8 +312,8 @@
 </main>
 
 <!-- FIX: Added cache-busting version tag to force download of the updated JS file -->
-<script src="rewards-i18n.js?v=20260923-01"></script>
-<script src="rewards-cloud.js?v=20260923-01"></script>
+<script src="rewards-i18n.js?v=20260925-02"></script>
+<script src="rewards-cloud.js?v=20260925-02"></script>
 <script>
   function fmt(n) {
     return 'KES ' + Number(n || 0).toLocaleString();
@@ -640,6 +640,9 @@
       if (container) container.innerHTML = '';
     }
   })();
+  // Final pass: the tier and purchase cards are rendered dynamically above,
+  // so localization must run after those DOM nodes exist.
+  if (window.LueriRewardsI18n?.refresh) window.LueriRewardsI18n.refresh();
 </script>
 <script src="analytics.js?v=20260921-01" defer></script>
 </body>
