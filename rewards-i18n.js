@@ -362,6 +362,12 @@
     const t = T[locale];
     const benefitMap = BENEFITS[locale] || BENEFITS.en;
     root.querySelectorAll('.tier-explain-card').forEach(card => {
+      const nameEl = card.querySelector('.tname');
+      if (nameEl) {
+        const rawName = originalText(nameEl);
+        const names = TIER_NAMES[locale] || TIER_NAMES.en;
+        if (names[rawName]) nameEl.textContent = names[rawName];
+      }
       const spend = card.querySelector('.tspend');
       if (spend) {
         const raw = originalText(spend);
@@ -377,11 +383,13 @@
 
     root.querySelectorAll('.purchase-card').forEach(card => {
       const period = card.querySelector('.tperiod'); if (period) period.textContent=t.perYear;
-      const name = card.querySelector('.tname')?.textContent?.trim();
+      const nameEl = card.querySelector('.tname');
+      const rawName = nameEl ? originalText(nameEl) : '';
+      const names = TIER_NAMES[locale] || TIER_NAMES.en;
+      if (nameEl && names[rawName]) nameEl.textContent = names[rawName];
       const button = card.querySelector('[data-choose]');
-      if (button && name) {
-        const tier = button.dataset.choose ? button.dataset.choose.charAt(0).toUpperCase()+button.dataset.choose.slice(1) : name;
-        const localizedName = name;
+      if (button && rawName) {
+        const localizedName = names[rawName] || rawName;
         button.textContent = t.choose + ' ' + localizedName;
       }
       card.querySelectorAll('li').forEach(li => {
