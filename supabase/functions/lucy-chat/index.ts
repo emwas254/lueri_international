@@ -80,9 +80,23 @@ const FLOW: Record<string, Record<string, string>> = {
 };
 
 const ALLOWED_ORIGINS = ["https://lueriinternational.com", "https://www.lueriinternational.com"];
-const CORS_HEADERS = { "Access-Control-Allow-Origin": "https://lueriinternational.com", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin" };
+const CORS_HEADERS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS", "Vary": "Origin" };
 // Best-effort per-instance limiter. Not a substitute for a real edge rate limit / Turnstile.
 const HITS = new Map<string, number[]>();
+async function distributedLimited(key: string, max: number, windowSpec: string) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return false;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/rl_check`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` },
+      body: JSON.stringify({ p_bucket: "lucy_chat", p_key: key, p_max: max, p_window: windowSpec })
+    });
+    if (!res.ok) return false;
+    return (await res.json()) === false;
+  } catch {
+    return false;
+  }
+}
 function limited(key: string, max: number, windowMs: number) {
   const now = Date.now();
   const arr = (HITS.get(key) ?? []).filter((t) => now - t < windowMs);
@@ -139,7 +153,7 @@ async function handle(req: Request): Promise<Response> {
   const origin = req.headers.get("origin");
   if (origin && !ALLOWED_ORIGINS.includes(origin)) return json({ error: "Origin not allowed" }, 403);
   const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
-  if (limited("m:" + ip, 30, 60_000)) return json({ reply: fallback("en", "api"), delivery_state: { step: "IDLE" } }, 429);
+  if (limited("m:" + ip, 30, 60_000) || await distributedLimited(ip, 30, "1 minute")) return json({ reply: fallback("en", "api"), delivery_state: { step: "IDLE" } }, 429);
 
   try {
     const rawLocale = String((await req.clone().json().catch(() => ({})))?.locale ?? "en");
