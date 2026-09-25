@@ -709,3 +709,90 @@ footer .brand::after{
     line-height:1.35 !important;
   }
 }
+
+
+/* PREMIUM LUERI WORDMARK — preserve the original Oswald typography and ivory/green palette.
+   The motto is framed with the refined horizontal-line treatment approved for the brand. */
+.brand{
+  direction:ltr;
+  align-items:center;
+  gap:11px;
+}
+.brand .mark-img{
+  height:36px;
+  width:auto;
+  flex:0 0 auto;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.16));
+}
+.brand-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  line-height:1;
+}
+.brand-name{
+  display:block;
+  font-family:'Oswald', sans-serif;
+  font-weight:700;
+  font-size:1.18rem;
+  letter-spacing:.025em;
+  line-height:1;
+  white-space:nowrap;
+}
+.brand-motto{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  width:max-content;
+  max-width:100%;
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:.58rem;
+  font-weight:600;
+  letter-spacing:.055em;
+  line-height:1.15;
+  white-space:nowrap;
+  color:var(--ink);
+  opacity:.82;
+}
+.brand-motto::before,
+.brand-motto::after{
+  content:"";
+  display:block;
+  width:24px;
+  height:1px;
+  flex:0 0 24px;
+  background:currentColor;
+  opacity:.72;
+}
+.brand-motto::before{ margin-left:1px; }
+.brand-motto::after{ margin-right:1px; }
+
+html[dir="rtl"] .brand{
+  direction:ltr !important;
+}
+html[dir="rtl"] .brand-copy{
+  direction:rtl;
+}
+html[dir="rtl"] .brand-motto{
+  direction:rtl;
+  justify-content:flex-start;
+}
+
+@media(max-width:700px){
+  .brand{gap:8px;}
+  .brand .mark-img{height:32px;}
+  .brand-name{font-size:1rem;}
+  .brand-motto{
+    font-size:.5rem;
+    gap:6px;
+    letter-spacing:.035em;
+  }
+  .brand-motto::before,
+  .brand-motto::after{
+    width:15px;
+    flex-basis:15px;
+  }
+}
