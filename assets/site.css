@@ -647,7 +647,6 @@ html[dir="rtl"] .brand-name,html[dir="rtl"] .brand-motto{direction:rtl;}
   order:2 !important;
   direction:rtl !important;
   text-align:right !important;
-  display:block !important;
   width:100% !important;
   margin-top:4px !important;
   white-space:normal !important;
