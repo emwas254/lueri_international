@@ -711,7 +711,7 @@ footer .brand::after{
 }
 
 
-/* LUERI PREMIUM WORDMARK v2 — original palette/font, refined motto lines */
+/* LUERI PREMIUM WORDMARK v3 — approved line-framed motto, no periods */
 .brand{
   direction:ltr !important;
   align-items:center !important;
@@ -754,7 +754,6 @@ footer .brand::after{
   white-space:nowrap !important;
   color:var(--ink) !important;
   opacity:.86 !important;
-  text-shadow:0 1px 0 rgba(255,255,255,.10) !important;
 }
 .brand-motto::before,
 .brand-motto::after{
@@ -766,31 +765,13 @@ footer .brand::after{
   background:currentColor !important;
   opacity:.72 !important;
 }
-.brand-motto::before{margin-left:0 !important;}
-.brand-motto::after{margin-right:0 !important;}
-
-html[dir="rtl"] .brand{
-  direction:ltr !important;
-}
-html[dir="rtl"] .brand-copy{
-  direction:rtl !important;
-  align-items:flex-start !important;
-}
-html[dir="rtl"] .brand-motto{
-  direction:rtl !important;
-}
-
+html[dir="rtl"] .brand{direction:ltr !important;}
+html[dir="rtl"] .brand-copy{direction:rtl !important;align-items:flex-start !important;}
+html[dir="rtl"] .brand-motto{direction:rtl !important;}
 @media(max-width:700px){
   .brand{gap:8px !important;}
   .brand .mark-img{height:32px !important;}
   .brand-name{font-size:1rem !important;}
-  .brand-motto{
-    font-size:.5rem !important;
-    gap:6px !important;
-  }
-  .brand-motto::before,
-  .brand-motto::after{
-    width:18px !important;
-    min-width:18px !important;
-  }
+  .brand-motto{font-size:.5rem !important;gap:6px !important;}
+  .brand-motto::before,.brand-motto::after{width:18px !important;min-width:18px !important;}
 }
