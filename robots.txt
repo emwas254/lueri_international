@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /rewards-staff.html
+Disallow: /operations.html
+Disallow: /checkout.html
+Disallow: /payment-callback.html
 
 Sitemap: https://lueriinternational.com/sitemap.xml
