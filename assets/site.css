@@ -643,6 +643,7 @@ html[dir="rtl"] .brand-name,html[dir="rtl"] .brand-motto{direction:rtl;}
   white-space:nowrap !important;
 }
 .brand > .brand-copy > .brand-motto{
+  text-decoration:none !important;
   order:2 !important;
   direction:rtl !important;
   text-align:right !important;
