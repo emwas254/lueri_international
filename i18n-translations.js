@@ -15,7 +15,7 @@
         faqCaption:'Common questions, answered', rewardsCaption:'Earn points on every delivery',
         careersCaption:'Future roles at Lueri', bookCaption:'Send a pickup request now'
       },
-      hero: {motto:'Until the seal is broken.',
+      hero: {motto:'Until the seal is broken',
         dispatch:'Dispatch / Nairobi & environs', waybill:'WAYBILL NO. LI–2026',
         title:'Need it picked up, bought, or delivered? We have got you.',
         subtitle:'Lueri International helps individuals and businesses with same-day delivery, shopping and collection, parcel pickup, and practical Nairobi errands — including sourcing and collecting items when you cannot get there yourself.',
