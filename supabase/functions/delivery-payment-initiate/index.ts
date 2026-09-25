@@ -10,7 +10,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const CORS_HEADERS={"Access-Control-Allow-Origin":"https://lueriinternational.com","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS"};
+const CORS_HEADERS={"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS"};
 function json(data:unknown,status=200){return new Response(JSON.stringify(data),{status,headers:{...CORS_HEADERS,"Content-Type":"application/json"}})}
 function normalizePhone(phone:string){const digits=phone.replace(/\D/g,"");if(digits.startsWith("0"))return `254${digits.slice(1)}`;if(digits.startsWith("254"))return digits;return digits}
 function nameParts(fullName:string){const parts=fullName.trim().split(/\s+/).filter(Boolean);return{first_name:parts[0]||"Customer",last_name:parts.slice(1).join(" ")||"Customer"}}
