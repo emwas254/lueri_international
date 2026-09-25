@@ -609,3 +609,103 @@ html[dir="rtl"] .coverage-note{
 html[dir="rtl"] .brand-copy{direction:rtl;text-align:right;}
 html[dir="rtl"] .brand-name,html[dir="rtl"] .brand-motto{direction:rtl;}
 @media(max-width:700px){.brand-motto{font-size:.5rem;margin-top:3px;letter-spacing:.04em;}}
+
+
+/* ============================================================
+   LUERI BRAND LOCKUP — FINAL RTL-SAFE RULES
+   The circular L mark is ALWAYS physically first.
+   The motto is ALWAYS directly beneath the wordmark.
+   Language direction must never reverse the brand lockup.
+   ============================================================ */
+.brand{
+  direction:ltr !important;
+  flex-direction:row !important;
+  unicode-bidi:isolate;
+}
+.brand > .mark-img{
+  order:1 !important;
+  flex:0 0 auto !important;
+}
+.brand > .brand-copy{
+  order:2 !important;
+  direction:ltr !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  min-width:0 !important;
+  text-align:left !important;
+}
+.brand > .brand-copy > .brand-name{
+  order:1 !important;
+  direction:ltr !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+}
+.brand > .brand-copy > .brand-motto{
+  order:2 !important;
+  direction:rtl !important;
+  text-align:right !important;
+  display:block !important;
+  width:100% !important;
+  margin-top:4px !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+}
+
+/* Arabic: keep the logo/name/motto lockup LTR while Arabic content remains RTL. */
+html[dir="rtl"] .brand{
+  direction:ltr !important;
+  flex-direction:row !important;
+  justify-content:flex-start !important;
+  unicode-bidi:isolate !important;
+}
+html[dir="rtl"] .brand > .mark-img{
+  order:1 !important;
+}
+html[dir="rtl"] .brand > .brand-copy{
+  order:2 !important;
+  direction:ltr !important;
+  align-items:flex-start !important;
+  text-align:left !important;
+}
+html[dir="rtl"] .brand > .brand-copy > .brand-name{
+  direction:ltr !important;
+  text-align:left !important;
+}
+html[dir="rtl"] .brand > .brand-copy > .brand-motto{
+  direction:rtl !important;
+  text-align:right !important;
+}
+
+/* Footer uses the exact same brand lockup. */
+footer .brand{
+  align-items:center !important;
+}
+footer .brand > span:not(.brand-copy){
+  order:2 !important;
+  direction:ltr !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+}
+footer .brand::after{
+  display:none !important;
+}
+
+@media(max-width:700px){
+  .brand{
+    direction:ltr !important;
+    flex-direction:row !important;
+  }
+  html[dir="rtl"] .brand{
+    direction:ltr !important;
+    flex-direction:row !important;
+  }
+  .brand > .brand-copy{
+    max-width:calc(100% - 44px) !important;
+  }
+  .brand > .brand-copy > .brand-motto{
+    font-size:.5rem !important;
+    line-height:1.35 !important;
+  }
+}
