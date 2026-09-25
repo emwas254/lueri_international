@@ -711,88 +711,86 @@ footer .brand::after{
 }
 
 
-/* PREMIUM LUERI WORDMARK — preserve the original Oswald typography and ivory/green palette.
-   The motto is framed with the refined horizontal-line treatment approved for the brand. */
+/* LUERI PREMIUM WORDMARK v2 — original palette/font, refined motto lines */
 .brand{
-  direction:ltr;
-  align-items:center;
-  gap:11px;
+  direction:ltr !important;
+  align-items:center !important;
+  gap:11px !important;
 }
 .brand .mark-img{
-  height:36px;
-  width:auto;
-  flex:0 0 auto;
-  filter:drop-shadow(0 1px 1px rgba(0,0,0,.16));
+  height:38px !important;
+  width:auto !important;
+  flex:0 0 auto !important;
 }
 .brand-copy{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:2px;
-  line-height:1;
+  min-width:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  gap:3px !important;
 }
 .brand-name{
-  display:block;
-  font-family:'Oswald', sans-serif;
-  font-weight:700;
-  font-size:1.18rem;
-  letter-spacing:.025em;
-  line-height:1;
-  white-space:nowrap;
+  display:block !important;
+  font-family:'Oswald',sans-serif !important;
+  font-weight:700 !important;
+  font-size:1.18rem !important;
+  letter-spacing:.02em !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
 }
 .brand-motto{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:8px;
-  width:max-content;
-  max-width:100%;
-  font-family:'IBM Plex Sans', sans-serif;
-  font-size:.58rem;
-  font-weight:600;
-  letter-spacing:.055em;
-  line-height:1.15;
-  white-space:nowrap;
-  color:var(--ink);
-  opacity:.82;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+  width:auto !important;
+  max-width:100% !important;
+  font-family:'IBM Plex Sans',sans-serif !important;
+  font-size:.58rem !important;
+  font-weight:600 !important;
+  letter-spacing:.045em !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+  color:var(--ink) !important;
+  opacity:.86 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.10) !important;
 }
 .brand-motto::before,
 .brand-motto::after{
-  content:"";
-  display:block;
-  width:24px;
-  height:1px;
-  flex:0 0 24px;
-  background:currentColor;
-  opacity:.72;
+  content:"" !important;
+  display:block !important;
+  width:32px !important;
+  min-width:32px !important;
+  height:1px !important;
+  background:currentColor !important;
+  opacity:.72 !important;
 }
-.brand-motto::before{ margin-left:1px; }
-.brand-motto::after{ margin-right:1px; }
+.brand-motto::before{margin-left:0 !important;}
+.brand-motto::after{margin-right:0 !important;}
 
 html[dir="rtl"] .brand{
   direction:ltr !important;
 }
 html[dir="rtl"] .brand-copy{
-  direction:rtl;
+  direction:rtl !important;
+  align-items:flex-start !important;
 }
 html[dir="rtl"] .brand-motto{
-  direction:rtl;
-  justify-content:flex-start;
+  direction:rtl !important;
 }
 
 @media(max-width:700px){
-  .brand{gap:8px;}
-  .brand .mark-img{height:32px;}
-  .brand-name{font-size:1rem;}
+  .brand{gap:8px !important;}
+  .brand .mark-img{height:32px !important;}
+  .brand-name{font-size:1rem !important;}
   .brand-motto{
-    font-size:.5rem;
-    gap:6px;
-    letter-spacing:.035em;
+    font-size:.5rem !important;
+    gap:6px !important;
   }
   .brand-motto::before,
   .brand-motto::after{
-    width:15px;
-    flex-basis:15px;
+    width:18px !important;
+    min-width:18px !important;
   }
 }
