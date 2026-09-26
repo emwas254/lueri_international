@@ -177,12 +177,33 @@ function renderPendingPhotoAction(){
           })
         });
         const data=await res.json().catch(()=>({}));
-        if(!res.ok||!data.redirectUrl)throw new Error(data.error||'We could not open the secure payment page.');
+        if(!res.ok)throw new Error(data.error||'We could not prepare the delivery payment.');
+
+        if(data.paymentMethod==='ncba_till'){
+          const labels={
+            en:{title:'Delivery payment ready',intro:'Your booking is created. Complete the payment using the NCBA Till details below.',amount:'Amount',paybill:'NCBA PayBill',account:'Till / account',reference:'Reference',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → enter 880100 → enter the Lueri Till short code → enter the reference/narration.',wait:'Your booking stays pending until the NCBA transaction is confirmed and reconciled by Lueri.'},
+            sw:{title:'Malipo ya delivery yako yako tayari',intro:'Booking yako imeundwa. Kamilisha malipo ukitumia maelezo ya NCBA Till hapa chini.',amount:'Kiasi',paybill:'NCBA PayBill',account:'Till / akaunti',reference:'Reference',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → weka 880100 → weka Till ya Lueri → weka reference/narration.',wait:'Booking yako itabaki ikisubiri hadi muamala wa NCBA uthibitishwe na kulinganishwa na Lueri.'},
+            fr:{title:'Paiement de livraison prêt',intro:'Votre réservation est créée. Effectuez le paiement avec les informations NCBA Till ci-dessous.',amount:'Montant',paybill:'NCBA PayBill',account:'Till / compte',reference:'Référence',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → saisissez 880100 → saisissez le Till Lueri → saisissez la référence/narration.',wait:'La réservation reste en attente jusqu’à la confirmation et au rapprochement du paiement NCBA par Lueri.'},
+            es:{title:'Pago de entrega listo',intro:'Tu reserva está creada. Completa el pago con los datos de NCBA Till que aparecen abajo.',amount:'Importe',paybill:'NCBA PayBill',account:'Till / cuenta',reference:'Referencia',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → introduce 880100 → introduce el Till de Lueri → introduce la referencia/narración.',wait:'La reserva queda pendiente hasta que Lueri confirme y concilie el pago de NCBA.'},
+            ar:{title:'دفع التوصيل جاهز',intro:'تم إنشاء الحجز. أكمل الدفع باستخدام بيانات NCBA Till أدناه.',amount:'المبلغ',paybill:'NCBA PayBill',account:'Till / الحساب',reference:'المرجع',steps:'M-Pesa ← Lipa na M-Pesa ← Pay Bill ← أدخل 880100 ← أدخل Till الخاص بـ Lueri ← أدخل المرجع/الوصف.',wait:'سيبقى الحجز قيد الانتظار حتى تؤكد Lueri دفعة NCBA وتطابقها مع الحجز.'},
+            pt:{title:'Pagamento da entrega pronto',intro:'A sua reserva foi criada. Conclua o pagamento usando os dados do NCBA Till abaixo.',amount:'Valor',paybill:'NCBA PayBill',account:'Till / conta',reference:'Referência',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → introduza 880100 → introduza o Till da Lueri → introduza a referência/narração.',wait:'A reserva permanece pendente até a Lueri confirmar e reconciliar o pagamento NCBA.'},
+            zh:{title:'配送付款已准备好',intro:'您的订单已创建。请使用下面的 NCBA Till 信息完成付款。',amount:'金额',paybill:'NCBA PayBill',account:'Till / 账户',reference:'参考号',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → 输入 880100 → 输入 Lueri Till → 输入参考号/备注。',wait:'订单将在 Lueri 确认并核对 NCBA 付款后才会从待付款状态更新。'}
+          };
+          const l=labels[locale]||labels.en;
+          const text=l.title+'\n\n'+l.intro+'\n\n'+l.amount+': KES '+Number(data.amount||0).toLocaleString()+'\n'+l.paybill+': '+String(data.paybill||'880100')+'\n'+l.account+': '+String(data.tillShortCode||'')+'\n'+l.reference+': '+String(data.bookingReference||'')+'\n\n'+l.steps+'\n\n'+l.wait;
+          addMessage(text,'bot');
+          clearSession();
+          if(input)input.focus();
+          return;
+        }
+
+        if(!data.redirectUrl)throw new Error(data.error||'We could not open the secure payment page.');
         addMessage(locale==='zh'?'正在打开安全付款页面…':locale==='sw'?'Tunafungua ukurasa salama wa malipo…':locale==='fr'?'Ouverture de la page de paiement sécurisée…':locale==='es'?'Abriendo la página de pago seguro…':locale==='ar'?'جارٍ فتح صفحة الدفع الآمنة…':locale==='pt'?'A abrir a página de pagamento segura…':'Opening the secure payment page…','bot');
-        clearSession();window.location.href=data.redirectUrl;
+        clearSession();
+        window.location.href=data.redirectUrl;
       }catch(err){
         console.error('Lucy payment handoff failed',err);
-        addMessage(locale==='zh'?'无法打开付款页面，请稍后再试。':locale==='sw'?'Hatukuweza kufungua ukurasa wa malipo. Tafadhali jaribu tena.':locale==='fr'?'Impossible d’ouvrir la page de paiement. Veuillez réessayer.':locale==='es'?'No pudimos abrir la página de pago. Inténtalo de nuevo.':locale==='ar'?'تعذر فتح صفحة الدفع. يرجى المحاولة مرة أخرى.':locale==='pt'?'Não foi possível abrir a página de pagamento. Tente novamente.':'We could not open the payment page. Please try again.','bot');
+        addMessage(locale==='zh'?'无法准备付款，请稍后再试。':locale==='sw'?'Hatukuweza kuandaa malipo. Tafadhali jaribu tena.':locale==='fr'?'Impossible de préparer le paiement. Veuillez réessayer.':locale==='es'?'No pudimos preparar el pago. Inténtalo de nuevo.':locale==='ar'?'تعذر إعداد الدفع. يرجى المحاولة مرة أخرى.':locale==='pt'?'Não foi possível preparar o pagamento. Tente novamente.':'We could not prepare the payment. Please try again.','bot');
         if(input)input.focus();
       }finally{if(send)send.disabled=false;}
     });
