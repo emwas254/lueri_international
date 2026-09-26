@@ -849,3 +849,199 @@ footer .brand::after{
     gap:4px !important;
   }
 }
+
+
+/* ============================================================
+   HOMEPAGE HEADER — MOBILE CORPORATE POLISH
+   Clean lockup, one-line tablet header, compact phone header.
+   ============================================================ */
+header{
+  overflow:visible !important;
+}
+.navbar{
+  min-height:74px !important;
+  padding:12px 24px !important;
+  gap:12px 20px !important;
+  flex-wrap:nowrap !important;
+}
+.navbar .brand{
+  flex:0 1 auto !important;
+  width:auto !important;
+  max-width:55% !important;
+}
+.nav-controls{
+  width:auto !important;
+  flex:0 1 auto !important;
+  flex-wrap:nowrap !important;
+  justify-content:flex-end !important;
+  gap:10px !important;
+  min-width:0 !important;
+}
+.nav-controls > *{
+  flex:0 0 auto !important;
+}
+.language-selector{
+  height:46px !important;
+  min-width:150px !important;
+  margin-right:0 !important;
+  padding:0 12px !important;
+  font-size:.78rem !important;
+}
+.menu-trigger,
+.theme-toggle{
+  height:46px !important;
+}
+.nav-cta{
+  height:46px !important;
+  padding:0 18px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:nowrap !important;
+}
+
+/* The motto is a visual lockup, never a separate wide element. */
+.brand-copy{
+  width:auto !important;
+  max-width:100% !important;
+}
+.brand-name{
+  overflow:visible !important;
+}
+.brand-motto{
+  box-sizing:border-box !important;
+}
+
+/* Tablet / narrow desktop: preserve a premium single-row header. */
+@media (max-width:900px){
+  .navbar{
+    padding:11px 18px !important;
+    gap:10px 14px !important;
+  }
+  .navbar .brand{
+    max-width:none !important;
+    flex:1 1 auto !important;
+  }
+  .brand .mark-img{
+    height:34px !important;
+  }
+  .brand-name{
+    font-size:1.05rem !important;
+  }
+  .brand-motto{
+    font-size:.5rem !important;
+    gap:5px !important;
+  }
+  .nav-controls{
+    flex:0 0 auto !important;
+    gap:7px !important;
+  }
+  .menu-trigger,
+  .theme-toggle,
+  .language-selector,
+  .nav-cta{
+    height:44px !important;
+  }
+  .language-selector{
+    min-width:126px !important;
+    max-width:170px !important;
+    font-size:.74rem !important;
+  }
+  .nav-cta{
+    padding:0 14px !important;
+    font-size:.72rem !important;
+  }
+}
+
+/* Phones: brand on its own compact row; controls remain balanced. */
+@media (max-width:600px){
+  .navbar{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) !important;
+    gap:9px !important;
+    padding:10px 14px 11px !important;
+  }
+  .navbar .brand{
+    width:100% !important;
+    max-width:100% !important;
+    justify-self:start !important;
+  }
+  .brand .mark-img{
+    height:32px !important;
+  }
+  .brand-copy{
+    max-width:calc(100% - 42px) !important;
+  }
+  .brand-name{
+    font-size:1rem !important;
+    letter-spacing:.01em !important;
+  }
+  .brand-motto{
+    font-size:.48rem !important;
+    gap:4px !important;
+    letter-spacing:.02em !important;
+  }
+  .nav-controls{
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:auto auto minmax(0,1fr) auto !important;
+    gap:7px !important;
+  }
+  .menu-trigger,
+  .theme-toggle,
+  .language-selector,
+  .nav-cta{
+    height:42px !important;
+  }
+  .menu-trigger{
+    padding:0 11px !important;
+  }
+  .theme-toggle{
+    width:42px !important;
+    padding:0 !important;
+  }
+  .language-selector{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 8px !important;
+    font-size:.72rem !important;
+  }
+  .nav-cta{
+    padding:0 12px !important;
+    font-size:.68rem !important;
+    letter-spacing:.035em !important;
+  }
+}
+
+/* Very small phones: prevent the controls from colliding. */
+@media (max-width:390px){
+  .navbar{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+  .brand .mark-img{
+    height:30px !important;
+  }
+  .brand-name{
+    font-size:.94rem !important;
+  }
+  .brand-motto{
+    font-size:.44rem !important;
+  }
+  .nav-controls{
+    grid-template-columns:auto auto minmax(0,1fr) !important;
+  }
+  .nav-cta{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+  }
+}
+
+/* RTL never reverses the physical brand order. */
+html[dir="rtl"] .navbar{
+  direction:ltr !important;
+}
+html[dir="rtl"] .nav-controls{
+  direction:ltr !important;
+}
