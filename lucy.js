@@ -7,11 +7,11 @@
   const load = () => {
     if (document.querySelector('script[data-lucy-ui]')) return;
     const script = document.createElement('script');
-    script.src = 'lucy-ui.js?v=20260926-booking-types-v1';
+    script.src = 'lucy-ui.js?v=20260926-booking-types-v2';
     script.dataset.lucyUi = 'true';
     document.head.appendChild(script);
     const fix = document.createElement('script');
-    fix.src = 'lucy-fix.js?v=20260920-02';
+    fix.src = 'lucy-fix.js?v=20260926-payment-v1';
     fix.dataset.lucyFix = 'true';
     document.head.appendChild(fix);
   };
