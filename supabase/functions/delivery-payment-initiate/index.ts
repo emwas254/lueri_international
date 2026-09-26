@@ -84,10 +84,17 @@ async function handle(req: Request): Promise<Response> {
     const customerEmail = body?.customer_email ? String(body.customer_email).trim().toLowerCase() : null;
     const memberId = body?.member_id ? String(body.member_id).trim() : null;
     const parcelPhotoPath = body?.parcel_photo_path ? String(body.parcel_photo_path).trim() : null;
+    const deliveryType = String(body?.delivery_type ?? "one_off").trim();
+    const tripCount = Number(body?.trip_count ?? 1);
 
     if (!pickup || !dropoff || !customerName || !phone) {
       return json({ error: "Missing required booking fields." }, 400);
     }
+
+    if (!["one_off","round_trip","multi_trip"].includes(deliveryType)) return json({ error: "Invalid delivery type." }, 400);
+    if (!Number.isInteger(tripCount) || tripCount < 1 || tripCount > 100) return json({ error: "Invalid trip count." }, 400);
+    if (deliveryType === "multi_trip" && tripCount < 2) return json({ error: "Multi-trip bookings require at least 2 trips." }, 400);
+    if (deliveryType !== "multi_trip" && tripCount !== 1) return json({ error: "Invalid trip count for this delivery type." }, 400);
 
     if (parcelPhotoPath && !/^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(parcelPhotoPath)) {
       return json({ error: "Invalid parcel photo reference." }, 400);
@@ -100,7 +107,10 @@ async function handle(req: Request): Promise<Response> {
     if (!validPhone(phone)) return json({ error: "Invalid Kenyan phone number." }, 400);
     if (customerEmail && !validEmail(customerEmail)) return json({ error: "Invalid email address." }, 400);
 
-    const amount = await getAuthoritativePrice(pickup, dropoff, details);
+    const baseAmount = await getAuthoritativePrice(pickup, dropoff, details);
+    // Until dedicated round/multi-trip tariff tables are configured, each trip uses the authoritative one-way route price. Round trip = 2 trips; multi-trip = requested number of trips.
+    const effectiveTripCount = deliveryType === "round_trip" ? 2 : tripCount;
+    const amount = baseAmount * effectiveTripCount;
     const internalReference = "LR-DEL-" + Date.now() + "-" + crypto.randomUUID().slice(0, 8);
 
     const { data: booking, error: bookingInsertError } = await supabaseAdmin
@@ -115,6 +125,8 @@ async function handle(req: Request): Promise<Response> {
         preferred_time: preferredTime,
         member_id: memberId,
         parcel_photo_path: parcelPhotoPath,
+        delivery_type: deliveryType,
+        trip_count: effectiveTripCount,
         status: "pending_payment",
         quoted_amount_kes: amount,
         reference: internalReference
@@ -157,6 +169,9 @@ async function handle(req: Request): Promise<Response> {
       bookingId: booking.id,
       bookingReference: internalReference,
       amount,
+      baseRouteAmount: baseAmount,
+      deliveryType,
+      tripCount: effectiveTripCount,
       currency: "KES",
       paybill: NCBA_TILL_PAYBILL,
       tillShortCode: NCBA_TILL_SHORT_CODE,
