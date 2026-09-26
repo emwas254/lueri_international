@@ -1,20 +1,11 @@
-/* Lueri International — Lucy loader
- * Loads the customer-facing Lucy UI, then applies the production hotfix layer.
- * Stable filename preserves existing page references.
- */
-(function () {
-  'use strict';
-  const load = () => {
-    if (document.querySelector('script[data-lucy-ui]')) return;
-    const script = document.createElement('script');
-    script.src = 'lucy-ui.js?v=20260926-booking-types-v2';
-    script.dataset.lucyUi = 'true';
+/* Lueri International — Lucy loader v3 */
+(function(){'use strict';
+  const load=()=>{
+    if(document.querySelector('script[data-lucy-ui-v3]')) return;
+    const script=document.createElement('script');
+    script.src='lucy-ui-v3.js';
+    script.dataset.lucyUiV3='true';
     document.head.appendChild(script);
-    const fix = document.createElement('script');
-    fix.src = 'lucy-fix.js?v=20260926-payment-v1';
-    fix.dataset.lucyFix = 'true';
-    document.head.appendChild(fix);
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, { once: true });
-  else load();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
 })();
