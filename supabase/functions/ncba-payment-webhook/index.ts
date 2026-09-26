@@ -37,6 +37,8 @@ function extract(body: any) {
     account: String(first(p?.account, p?.accountNumber, p?.account_number, p?.shortCode, p?.short_code, "") ?? "").trim(),
     narration,
     reference: refMatch?.[0] ?? null,
+    status: String(first(p?.status, p?.transactionStatus, p?.transaction_status, p?.resultStatus, p?.result_status, "") ?? "").trim().toLowerCase(),
+    failureReason: String(first(p?.failureReason, p?.failure_reason, p?.message, p?.responseDescription, p?.response_description, "") ?? "").trim(),
     receivedAt: first(p?.transactionDate, p?.transaction_date, p?.paidAt, p?.paid_at, p?.timestamp) ?? null
   };
 }
@@ -100,9 +102,11 @@ Deno.serve(async (req) => {
     if (Number(payment.amount) !== Number(tx.amount)) return json({ ok: false, matched: false, reason: "amount_mismatch" }, 422);
 
     const now = new Date().toISOString();
+    const failed = ["failed","rejected","declined","cancelled","canceled","insufficient_funds","insufficient funds"].includes(tx.status);
     const { error: pe } = await db.from("payments").update({
-      status: "successful",
-      completed_at: now,
+      status: failed ? "failed" : "successful",
+      completed_at: failed ? null : now,
+      failure_reason: failed ? (tx.failureReason || tx.status || "NCBA payment was not successful") : null,
       provider_reference: tx.providerReference,
       provider_receipt: tx.receipt,
       payer_phone: tx.payerPhone || null,
@@ -113,11 +117,11 @@ Deno.serve(async (req) => {
     if (pe) throw pe;
 
     if (payment.booking_id) {
-      const { error: be } = await db.from("bookings").update({ status: "paid", paid_at: now, updated_at: now }).eq("id", payment.booking_id);
+      const { error: be } = await db.from("bookings").update({ status: failed ? "payment_failed" : "paid", paid_at: failed ? null : now, updated_at: now }).eq("id", payment.booking_id);
       if (be) throw be;
     }
 
-    return json({ ok: true, matched: true, paymentId: payment.id, bookingId: payment.booking_id, amount: tx.amount });
+    return json({ ok: true, matched: true, paymentId: payment.id, bookingId: payment.booking_id, amount: tx.amount, status: failed ? "failed" : "successful" });
   } catch (err) {
     console.error("NCBA reconciliation error", err);
     return json({ error: "Reconciliation failed" }, 500);
