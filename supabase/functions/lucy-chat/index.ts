@@ -176,7 +176,7 @@ async function handle(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   const origin = req.headers.get("origin");
-  if (origin && !ALLOWED_ORIGINS.includes(origin)) return json({ error: "Origin not allowed" }, 403);
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) return json({ error: "Origin not allowed" }, 403);
   const ip = (req.headers.get("x-forwarded-for") ?? "unknown").split(",")[0].trim();
   if (limited("m:" + ip, 30, 60_000) || await distributedLimited(ip, 30, "1 minute")) return json({ reply: fallback("en", "api"), delivery_state: { step: "IDLE" } }, 429);
 
@@ -311,7 +311,7 @@ async function handle(req: Request): Promise<Response> {
       const asksCorporate = normalizedIntent === "CORPORATE" || /corporate|business account|business plan|professional|essential|elite|enterprise|company|monthly plan|compte entreprise|plan empresarial|empresarial|planos empresariais|planes corporativos|خطط الشركات|企业计划|شركات|企业/i.test(q);
       const asksRewards = normalizedIntent === "REWARDS" || /reward|rewards|points|loyalty|membership|bronze|silver|gold|platinum|vip|récompense|points|recompensas|membresia rewards|membresía rewards|عضوية rewards|rewards 会员|مكافآت|积分|会员/i.test(q);
       const answers: Record<string,string> = {
-        en: asksCorporate ? "Lueri corporate plans are for organizations and business teams. Gold is KES 25,000/month with 5 deliveries included; Platinum is KES 45,000/month with 12; VIP is KES 75,000/month with 25. Custom Enterprise agreements are available above VIP. Apply through https://lueriinternational.com/corporate.html." :
+        en: asksCorporate ? "Lueri corporate plans are for organizations and business teams. Essential is KES 25,000/month with 5 deliveries included; Professional is KES 45,000/month with 12; Elite is KES 75,000/month with 25. Custom Enterprise agreements are available above Elite. Apply through https://lueriinternational.com/corporate.html." :
            asksRewards ? "Lueri Rewards is for individual customers. Bronze is free and Rewards tiers are earned through eligible spend: Silver from KES 5,000, Gold from KES 15,000, Platinum from KES 35,000 and VIP from KES 75,000. Benefits are controlled discounts and service privileges; there are no paid tier memberships. Join through https://lueriinternational.com/rewards.html." :
            asksServices ? "Lueri provides parcel and document delivery, business and e-commerce dispatch, and on-demand courier services across Nairobi and surrounding areas. You can arrange a one-off delivery or recurring business dispatch, with the final price confirmed before pickup." :
            asksPrice ? "Selected Nairobi routes start from KES 100; documents start from KES 200. The final quote depends on the pickup zone, drop-off zone, parcel size, urgency and special handling, and Lueri confirms the price before pickup with no hidden fees." :
@@ -354,7 +354,7 @@ async function handle(req: Request): Promise<Response> {
         ar: asksCorporate ? "خطط لوري للشركات مخصصة للمؤسسات وفرق الأعمال. تبلغ Essential قيمة 25,000 شلن كيني شهرياً مع 5 عمليات توصيل؛ وProfessional بقيمة 45,000 مع 12؛ وElite بقيمة 75,000 مع 25. تتوفر اتفاقيات Enterprise مخصصة فوق Elite. التقديم عبر https://lueriinternational.com/corporate.html." :
            asksRewards ? "برنامج Lueri Rewards مخصص للعملاء الأفراد. Bronze مجاني؛ وتبدأ العضوية المدفوعة مع Silver بسعر 5,000 شلن كيني سنوياً، ثم Gold بسعر 15,000 وPlatinum بسعر 35,000 وVIP بسعر 75,000 سنوياً. الانضمام عبر https://lueriinternational.com/rewards.html." :
            asksServices ? "تقدم لوري خدمات توصيل الطرود والمستندات، وخدمات التوزيع للشركات والتجارة الإلكترونية، وخدمة التوصيل عند الطلب في نيروبي والمناطق المحيطة. يمكن طلب توصيل لمرة واحدة أو توصيل متكرر للشركات، مع تأكيد السعر النهائي قبل الاستلام." :
-           asksPrice ? "تبدأ تكلفة التوصيل الفردي من 350 شلن كيني. يعتمد السعر النهائي على منطقة الاستلام ومنطقة التسليم وحجم الطرد، ويتم تأكيد السعر قبل الاستلام دون رسوم مخفية." :
+           asksPrice ? "تبدأ أسعار بعض الطرق في نيروبي من 100 شلن كيني؛ وتبدأ أسعار المستندات من 200 شلن كيني. يعتمد السعر النهائي على منطقة الاستلام ومنطقة التسليم وحجم الطرد ومدى الاستعجال، ويتم تأكيد السعر قبل الاستلام دون رسوم مخفية." :
            asksCoverage ? "تخدم لوري حالياً نيروبي والمناطق المحيطة، بما في ذلك وسط نيروبي ووستلاندز وكليماني وكاساراني وساوث بي/ساوث سي وإمباكاسي ونغونغ رود وثيكا رود. إذا لم تكن منطقتك في القائمة، يمكننا تأكيد المسار." :
            asksHours ? "تعمل لوري من الاثنين إلى الجمعة من 08:00 إلى 17:00، والسبت من 08:00 إلى 15:00. نحن مغلقون يوم الأحد. الطلبات بعد وقت الإغلاق تُرحّل إلى يوم العمل التالي." :
            asksCorporate ? "تقدم لوري خططاً للشركات: Essential بسعر 25,000 شلن كيني شهرياً مع 5 عمليات توصيل، وProfessional بسعر 45,000 مع 12، وElite بسعر 75,000 مع 25. تتوفر اتفاقيات Enterprise مخصصة لما بعد Elite." :
@@ -362,7 +362,7 @@ async function handle(req: Request): Promise<Response> {
         zh: asksCorporate ? "Lueri 企业计划面向机构和企业团队。Essential 每月 25,000 肯尼亚先令，包含 5 次配送；Professional 每月 45,000，包含 12 次；Elite 每月 75,000，包含 25 次。Elite 以上可定制 Enterprise 协议。申请：https://lueriinternational.com/corporate.html。" :
            asksRewards ? "Lueri Rewards 面向个人客户。Bronze 免费；付费会员从 Silver 每年 5,000 肯尼亚先令开始，然后是 Gold 15,000、Platinum 35,000 和 VIP 75,000。加入：https://lueriinternational.com/rewards.html。" :
            asksServices ? "Lueri 提供包裹和文件配送、企业及电商配送以及按需快递服务，覆盖内罗毕及周边地区。您可以安排一次性配送或企业重复配送，最终价格会在取件前确认。" :
-           asksPrice ? "单次配送起价为 350 肯尼亚先令。最终价格取决于取件区域、送达区域和包裹大小，Lueri 会在取件前确认价格，不收取隐藏费用。" :
+           asksPrice ? "内罗毕部分路线起价为100肯尼亚先令；文件配送起价为200肯尼亚先令。最终价格取决于取件区域、送达区域、包裹大小和紧急程度，Lueri 会在取件前确认价格，不收取隐藏费用。" :
            asksCoverage ? "Lueri 目前服务于内罗毕及周边地区，包括内罗毕 CBD、Westlands、Kilimani、Kasarani、South B/South C、Embakasi、Ngong Road 和 Thika Road。如果您的地点不在列表中，可以联系我们确认路线。" :
            asksHours ? "Lueri 周一至周五 08:00–17:00 营业，周六 08:00–15:00 营业，周日休息。营业时间之后的请求会安排到下一个工作日。" :
            asksCorporate ? "Lueri 提供企业计划：Essential 每月 25,000 肯尼亚先令，包含 5 次配送；Professional 每月 45,000，包含 12 次；Elite 每月 75,000，包含 25 次。Elite 以上可提供定制 Enterprise 协议。" :
