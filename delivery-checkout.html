@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lueri Delivery Checkout</title>
+<meta name="description" content="Lueri International delivery payment checkout.">
+<style>
+:root{--ink:#18251f;--paper:#f7f4eb;--green:#274238;--accent:#b8321f;--muted:#66736d;--line:rgba(24,37,31,.14)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef0eb,#f7f4eb);color:var(--ink);font-family:Arial,sans-serif;min-height:100vh}
+.wrap{width:min(720px,calc(100% - 28px));margin:28px auto}.brand{font-weight:900;letter-spacing:.06em;margin-bottom:18px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(24,37,31,.1)}
+.head{background:var(--green);color:var(--paper);padding:24px}.head h1{margin:0 0 7px;font-size:1.55rem}.head p{margin:0;opacity:.82;line-height:1.5}
+.body{padding:22px}.amount{font-size:2rem;font-weight:900;margin:4px 0 20px}.ref{font-family:monospace;color:var(--green);font-weight:800;word-break:break-all}
+.box{border:1px solid var(--line);border-radius:13px;padding:16px;margin:14px 0;background:#fafbf9}.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800}.value{font-size:1.15rem;font-weight:900;margin-top:6px}
+.steps{line-height:1.7;margin:10px 0 0;padding-left:20px}.notice{background:#fff7df;border:1px solid #ead89a;border-radius:12px;padding:13px;line-height:1.5;font-size:.88rem}
+.status{margin-top:18px;padding:13px;border-radius:12px;background:#eef5f0;font-weight:700}.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}button,a{border:0;border-radius:10px;padding:12px 15px;font-weight:800;text-decoration:none;cursor:pointer}button{background:var(--green);color:#fff}a{background:#eee;color:var(--ink)}
+.error{background:#fff0ed;color:#8f2417;border:1px solid #e0b0a8;padding:14px;border-radius:12px}
+.small{font-size:.78rem;color:var(--muted);line-height:1.5;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">LUERI INTERNATIONAL</div>
+  <main class="card">
+    <section class="head"><h1>Delivery Checkout</h1><p>Complete your Lueri delivery payment using the NCBA Till.</p></section>
+    <section class="body" id="content"><p>Loading your secure booking payment…</p></section>
+  </main>
+</div>
+<script>
+(function(){
+'use strict';
+const SUPA='https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1';
+const ref=new URLSearchParams(location.search).get('reference')||'';
+const el=document.getElementById('content');
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function load(){
+ if(!/^LR-DEL-\d{10,}-[A-Za-z0-9]{8}$/.test(ref)){el.innerHTML='<div class="error">Invalid or missing booking reference.</div>';return;}
+ try{
+  const r=await fetch(SUPA+'/ncba-payment-status?reference='+encodeURIComponent(ref),{cache:'no-store'});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error||'Unable to load payment details.');
+  const paid=d.paid;
+  el.innerHTML='<div class="label">Amount due</div>'+
+   '<div class="amount">KES '+Number(d.amount||0).toLocaleString()+'</div>'+
+   '<div class="box"><div class="label">NCBA PayBill</div><div class="value">880100</div></div>'+
+   '<div class="box"><div class="label">Account / Till short code</div><div class="value">PAYLUERIINT</div></div>'+
+   '<div class="box"><div class="label">Booking / payment reference</div><div class="ref">'+esc(d.reference)+'</div></div>'+
+   '<div class="box"><div class="label">How to pay</div><ol class="steps"><li>Open M-Pesa and choose <b>Lipa na M-Pesa</b>.</li><li>Select <b>Pay Bill</b>.</li><li>Business Number: <b>880100</b>.</li><li>Account Number: <b>PAYLUERIINT</b>.</li><li>Use the booking reference above as the payment narration/reference where applicable.</li><li>Enter the exact amount shown above and complete with your M-Pesa PIN.</li></ol></div>'+
+   '<div class="status">'+(paid?'Payment confirmed. Your booking payment has been reconciled.':'Payment pending. Your booking remains pending until Lueri receives and reconciles the NCBA transaction.')+'</div>'+
+   '<div class="actions"><button id="refresh">Check payment status</button><a href="/">Return to Lueri</a></div>'+
+   '<p class="small">Never share your M-Pesa PIN with Lueri or anyone else. If you have paid and the status remains pending, keep your M-Pesa confirmation message and booking reference.</p>';
+  document.getElementById('refresh').onclick=load;
+ }catch(e){el.innerHTML='<div class="error">'+esc(e.message)+'</div><div class="actions"><a href="/">Return to Lueri</a></div>';}
+}
+load();
+})();
+</script>
+</body>
+</html>
