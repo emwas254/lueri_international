@@ -538,7 +538,7 @@ Identify only visible logistics details. Never invent weight, dimensions, value,
           break;
         case "REVIEW":
           if (isYes(message)) {
-            action = "INITIATE_PAYMENT";
+            action = "PAYMENT_READY";
             const cap = (v: unknown, n = 300) => String(v ?? "").slice(0, n);
             const safePhoto = /^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(String(state.parcel_photo_path ?? "")) ? state.parcel_photo_path : null;
             payload = { customer_name: cap(state.customer_name, 120), customer_email: cap(state.customer_email, 200), phone: cap(state.customer_phone, 20), pickup: cap(state.pickup), dropoff: cap(state.dropoff), details: cap(state.details, 1500), preferred_time: cap(state.preferred_time, 100), delivery_type: state.delivery_type ?? "one_off", trip_count: state.trip_count ?? 1, member_id: state.member_id ?? null, parcel_photo_path: safePhoto };
