@@ -434,49 +434,81 @@ async function handle(req: Request): Promise<Response> {
         case "DROPOFF": state.dropoff = message; state.step = "PARCEL"; reply = flow(validLocale, "parcel"); break;
         case "PARCEL": {
           if (imageData) {
-            if (limited("p:" + ip, 5, 600_000)) { reply = fallback(validLocale, "api"); break; }
-            if (!OPENAI_API_KEY) {
-              reply = fallback(validLocale, "setup");
+            // Photo handling must never become a hard dependency for booking.
+            // If rate-limited, ask for a manual description rather than breaking the booking.
+            if (limited("p:" + ip, 5, 600_000)) {
+              state.details = "Parcel photo supplied; manual parcel description required.";
+              state.step = "PARCEL";
+              reply = validLocale === "sw"
+                ? "Nimepokea picha ya kifurushi. Kwa usalama wa nukuu, tafadhali andika maelezo mafupi ya kifurushi (aina, ukubwa na uzito unaokadiriwa), kisha tutaendelea."
+                : validLocale === "fr"
+                  ? "J’ai reçu la photo du colis. Pour établir le devis correctement, veuillez saisir une courte description (type, taille et poids approximatif), puis nous continuerons."
+                  : validLocale === "es"
+                    ? "He recibido la foto del paquete. Para preparar el presupuesto correctamente, escribe una breve descripción (tipo, tamaño y peso aproximado) y continuaremos."
+                    : validLocale === "ar"
+                      ? "استلمت صورة الطرد. لإعداد السعر بشكل صحيح، يرجى كتابة وصف مختصر للطرد (النوع والحجم والوزن التقريبي)، ثم نتابع."
+                      : validLocale === "pt"
+                        ? "Recebi a foto do pacote. Para preparar o orçamento corretamente, escreva uma breve descrição (tipo, tamanho e peso aproximado) e continuaremos."
+                        : validLocale === "zh"
+                          ? "我已收到包裹照片。为了准确报价，请输入简短的包裹描述（类型、大小和大致重量），然后我们继续。"
+                          : "I received the parcel photo. To quote it correctly, please type a short parcel description (type, size and approximate weight), then we’ll continue.";
               break;
             }
+
+            let photoPath: string | null = null;
             try {
-              const photoPath = await uploadParcelPhoto(imageData);
-              const augmentedSystemPrompt = `${SYSTEM_PROMPT}
-              
+              photoPath = await uploadParcelPhoto(imageData);
+            } catch (uploadErr) {
+              console.error("Lucy parcel photo upload failed", uploadErr);
+            }
+
+            // Vision is an enhancement, not a gate. If it fails, preserve the photo
+            // reference when available and ask for a manual description instead.
+            let description = "";
+            if (OPENAI_API_KEY) {
+              try {
+                const augmentedSystemPrompt = `${SYSTEM_PROMPT}
+
 LANGUAGE INSTRUCTION:
 ${LOCALE_INSTRUCTIONS[validLocale]}
 
 PARCEL PHOTO TASK:
-The customer uploaded a photo of the parcel/item they want delivered. Examine the image conservatively. Identify only visible, useful logistics details such as apparent item type, approximate package form/size, number of visible items, and any clearly visible packaging. Never invent weight, dimensions, contents that cannot be seen, value, or hazardous status. State that the final quote may require Lueri confirmation. Respond in the selected language.`;
-              const imageInput = [{
-                role: "user",
-                content: [
-                  { type: "input_text", text: "Please inspect this parcel photo and provide a concise logistics description for the Lueri booking." },
-                  { type: "input_image", image_url: imageData }
-                ]
-              }];
-              const visionRes = await fetch("https://api.openai.com/v1/responses", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
-                body: JSON.stringify({ model: MODEL, instructions: augmentedSystemPrompt, input: imageInput, max_output_tokens: 220 })
-              });
-              if (!visionRes.ok) {
-                console.error("Lucy parcel vision error", visionRes.status, await visionRes.text());
-                reply = fallback(validLocale, "api");
-                break;
+Identify only visible logistics details. Never invent weight, dimensions, value, contents that cannot be seen, or hazardous status. Keep the response under 60 words. State that final pricing may require Lueri confirmation.`;
+                const imageInput = [{
+                  role: "user",
+                  content: [
+                    { type: "input_text", text: "Briefly describe this parcel for a delivery quote." },
+                    { type: "input_image", image_url: imageData, detail: "low" }
+                  ]
+                }];
+                const visionRes = await fetch("https://api.openai.com/v1/responses", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` },
+                  body: JSON.stringify({
+                    model: MODEL,
+                    instructions: augmentedSystemPrompt,
+                    input: imageInput,
+                    max_output_tokens: 120
+                  })
+                });
+                if (visionRes.ok) {
+                  const visionData = await visionRes.json();
+                  description = typeof visionData?.output_text === "string"
+                    ? visionData.output_text.trim()
+                    : visionData?.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? [])
+                        ?.find((part: { type?: string; text?: string }) => part.type === "output_text")?.text?.trim()
+                      ?? "";
+                } else {
+                  console.error("Lucy parcel vision error", visionRes.status, await visionRes.text());
+                }
+              } catch (visionErr) {
+                console.error("Lucy parcel vision processing failed", visionErr);
               }
-              const visionData = await visionRes.json();
-              const description = typeof visionData?.output_text === "string"
-                ? visionData.output_text.trim()
-                : visionData?.output?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? [])
-                    ?.find((part: { type?: string; text?: string }) => part.type === "output_text")?.text?.trim()
-                  ?? "";
-              if (!description) {
-                reply = fallback(validLocale, "unknown");
-                break;
-              }
+            }
+
+            if (description) {
               state.details = `Photo attached: ${photoPath ? "yes" : "received"}\nAI parcel description: ${description}`;
-              state.parcel_photo_path = photoPath ?? null;
+              state.parcel_photo_path = photoPath;
               state.step = "TIME";
               const photoPrompts: Record<string,string> = {
                 en: `Thanks — I received the photo. I can see: ${description}\n\nFor the quote, I still need your preferred pickup time.`,
@@ -488,12 +520,27 @@ The customer uploaded a photo of the parcel/item they want delivered. Examine th
                 zh: `谢谢——我已收到照片。我看到：${description}\n\n为了报价，我还需要您希望的取件时间。`
               };
               reply = photoPrompts[validLocale] ?? photoPrompts.en;
-            } catch (photoErr) {
-              console.error("Lucy parcel photo processing failed", photoErr);
-              reply = fallback(validLocale, "api");
+            } else {
+              state.parcel_photo_path = photoPath;
+              state.step = "PARCEL";
+              reply = validLocale === "sw"
+                ? "Nimepokea picha ya kifurushi, lakini siwezi kuisoma vizuri kwa sasa. Tafadhali andika maelezo mafupi ya kifurushi (aina, ukubwa na uzito unaokadiriwa), kisha tutaendelea."
+                : validLocale === "fr"
+                  ? "J’ai reçu la photo du colis, mais je ne peux pas la lire correctement pour le moment. Veuillez saisir une courte description (type, taille et poids approximatif), puis nous continuerons."
+                  : validLocale === "es"
+                    ? "He recibido la foto, pero no puedo leerla correctamente en este momento. Escribe una breve descripción (tipo, tamaño y peso aproximado) y continuaremos."
+                    : validLocale === "ar"
+                      ? "استلمت الصورة، لكن لا أستطيع قراءتها بشكل موثوق حالياً. يرجى كتابة وصف مختصر للطرد (النوع والحجم والوزن التقريبي)، ثم نتابع."
+                      : validLocale === "pt"
+                        ? "Recebi a foto, mas não consigo lê-la corretamente neste momento. Escreva uma breve descrição (tipo, tamanho e peso aproximado) e continuaremos."
+                        : validLocale === "zh"
+                          ? "我已收到照片，但目前无法可靠读取。请输入简短的包裹描述（类型、大小和大致重量），然后我们继续。"
+                          : "I received the parcel photo, but I can’t reliably read it right now. Please type a short parcel description (type, size and approximate weight), then we’ll continue.";
             }
           } else {
-            state.details = message; state.step = "TIME"; reply = flow(validLocale, "time");
+            state.details = message;
+            state.step = "TIME";
+            reply = flow(validLocale, "time");
           }
           break;
         }
