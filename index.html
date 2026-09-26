@@ -1,660 +1,263 @@
-:root{
-    --ink:#1B2620;
-    --paper:#F0EAD8;
-    --paper-dim:#e6dfc9;
-    --route:#B8321F;
-    --slate:#4A5A52;
-    --signal:#E8B93D;
-    --line: rgba(27,38,32,0.16);
-    --success: #2e7d32;
-    --error: #c62828;
-    --card-bg: var(--paper);
-    --paper-rgb: 240,234,216;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lueri International — Nairobi Errands, Courier & Delivery</title>
+<meta name="description" content="Lueri International — Nairobi errands, stock checks, bulk pickups and same-day courier delivery. Quick Nairobi CBD deliveries from KES 350 (Standard) or KES 800 (Express). Quoted before we move. Book by WhatsApp, call, or form.">
+<meta property="og:title" content="Lueri International — Nairobi Errands, Courier & Delivery">
+<meta property="og:description" content="Errands, bulk pickups and same-day delivery across Nairobi. Quoted before we move.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lueriinternational.com/">
+<meta property="og:site_name" content="Lueri International">
+<meta property="og:locale" content="en_KE">
+<meta property="og:image" content="https://lueriinternational.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lueri International — Nairobi Errands, Courier & Delivery">
+<meta name="twitter:description" content="Errands, bulk pickups and same-day delivery across Nairobi. Quoted before we move.">
+<meta name="twitter:image" content="https://lueriinternational.com/assets/og-image.png">
+<link rel="canonical" href="https://lueriinternational.com/">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://ylifvexqamxvwzvhmwex.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js"></script>
+<script src="lueri-common.js"></script>
+<script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="assets/site.css?v=20260926-header-v2">
+<link rel="stylesheet" href="i18n-content.css">
+<style>
+  body.rtl { text-align: right; direction: rtl; }
+  body.rtl .language-selector { margin-left: 8px; margin-right: 0; }
+  .phone-number{direction:ltr;unicode-bidi:isolate;white-space:nowrap;}
+  .phone-number{direction:ltr!important;unicode-bidi:isolate!important;white-space:nowrap!important;display:inline-block;}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Lueri International",
+  "image": "https://lueriinternational.com/assets/og-image.png",
+  "url": "https://lueriinternational.com/",
+  "telephone": "+254713261719",
+  "foundingDate": "2023-12-13",
+  "address": { "@type": "PostalAddress", "addressLocality": "Nairobi", "addressCountry": "KE" },
+  "areaServed": "Nairobi, Kenya",
+  "description": "Nairobi errands, stock checks, bulk pickups and same-day courier delivery for individuals and small businesses. Quoted before we move.",
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "17:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "08:00", "closes": "15:00" }
+  ],
+  "sameAs": [
+    "https://www.facebook.com/LueriInt",
+    "https://www.instagram.com/lueri_international",
+    "https://x.com/Lueri_Int",
+    "https://www.linkedin.com/company/lueriinternational/",
+    "https://www.tiktok.com/@lueri_international"
+  ]
+}
+</script>
+</head>
+<body>
+<script>
+(function(){
+  // STOPGAP ONLY — this masks a bug, it does not fix it.
+  // Root cause is almost certainly a raw escaped "\n" landing in translated
+  // copy somewhere in the i18n-*.js chain or an async content fetch
+  // (lucy.js / lueri.boot / Supabase). Find and fix that; this observer is
+  // just here so visitors stop seeing the literal characters while you do.
+  //
+  // Previous version only ran once on DOMContentLoaded, so any "\n" text
+  // node inserted AFTER that point (async translations, async widget
+  // content, etc.) was never caught — which is exactly what the reported
+  // screenshot shows. This version watches for the life of the page.
+  function isStrayNewline(node){
+    return node.nodeValue && node.nodeValue.trim() === "\\n";
   }
-  [data-theme="dark"] {
-    --ink:#F0EAD8;
-    --paper:#1B2620;
-    --paper-dim:#24312a;
-    --slate:#a0b0a7;
-    --line: rgba(240,234,216,0.16);
-    --card-bg: #24312a;
-    --paper-rgb: 27,38,32;
+  function sweep(root){
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    var toRemove = [];
+    while (walker.nextNode()) {
+      if (isStrayNewline(walker.currentNode)) toRemove.push(walker.currentNode);
+    }
+    toRemove.forEach(function(n){ if (n.parentNode) n.parentNode.removeChild(n); });
   }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth; overflow-x:hidden;}
-  body{
-    margin:0; background:var(--paper); color:var(--ink); overflow-x:hidden; max-width:100%;
-    font-family:'IBM Plex Sans', sans-serif; line-height:1.5;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    background-image:
-      radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
-      radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
+  function start(){
+    sweep(document.body);
+    if (!window.MutationObserver) return; // very old browsers: one-shot sweep only
+    var observer = new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        m.addedNodes && m.addedNodes.forEach(function(n){
+          if (n.nodeType === 3 && isStrayNewline(n)) {
+            n.parentNode && n.parentNode.removeChild(n);
+          } else if (n.nodeType === 1) {
+            sweep(n);
+          }
+        });
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
-  .reveal { opacity: 0; transform: translateY(30px); transition: var(--transition); }
-  .reveal.active { opacity: 1; transform: translateY(0); }
-  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.02em; margin:0; }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
-  a{ color:inherit; text-decoration: none; transition: var(--transition); }
-  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
-    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
-  }
-  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
-  header{
-    position:sticky; top:0; z-index:100; background: rgba(var(--paper-rgb), 0.85);
-    border-bottom:1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  }
-  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; flex-wrap:wrap; gap:12px 16px; }
-  .brand{ min-width:0; }
-  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:0.03em; }
-  .brand .mark-img{ height:34px; width:auto; display:block; }
-  .brand .mark-dark-img{ display:none; }
-  [data-theme="dark"] .brand .mark-light{ display:none; }
-  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
-  .nav-controls { display: flex; align-items: center; gap: 16px; flex-wrap:wrap; }
-  @media (max-width:480px){
-    .nav-controls{ width:100%; justify-content:space-between; gap:10px; }
-    .nav-cta{ padding:9px 14px; font-size:.76rem; }
-    .menu-trigger{ padding:8px 12px 8px 10px; font-size:.72rem; }
-  }
-  .theme-toggle {
-    background: none; border: 1px solid var(--line); border-radius: 50%;
-    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
-    display: flex; align-items: center; justify-content: center; transition: var(--transition);
-  }
-  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
-  .nav-cta{
-    display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:var(--paper);
-    padding:9px 16px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;
-    border-radius:2px; font-weight: 600;
-  }
-  .menu-trigger{
-    display:flex; align-items:center; gap:10px; background:none;
-    border:1.5px solid var(--ink); border-radius:2px; padding:8px 14px 8px 12px;
-    cursor:pointer; color:var(--ink); font-family:'IBM Plex Mono', monospace;
-    font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; transition: var(--transition);
-  }
-  .menu-trigger:hover{ border-color:var(--route); color:var(--route); }
-  .menu-trigger-bars{ position:relative; width:16px; height:11px; flex-shrink:0; }
-  .menu-trigger-bars span{ position:absolute; left:0; width:16px; height:2px; background:currentColor; transition: top .25s ease, transform .25s ease, opacity .2s ease; }
-  .menu-trigger-bars span:nth-child(1){ top:0; }
-  .menu-trigger-bars span:nth-child(2){ top:4.5px; }
-  .menu-trigger-bars span:nth-child(3){ top:9px; }
-  .menu-trigger.open .menu-trigger-bars span:nth-child(1){ top:4.5px; transform:rotate(45deg); }
-  .menu-trigger.open .menu-trigger-bars span:nth-child(2){ opacity:0; }
-  .menu-trigger.open .menu-trigger-bars span:nth-child(3){ top:4.5px; transform:rotate(-45deg); }
-  .menu-panel{
-    display:grid; grid-template-rows:0fr; background:var(--paper); border-bottom:1px solid transparent;
-    transition: grid-template-rows .45s cubic-bezier(0.4,0,0.2,1), border-color .45s ease;
-  }
-  .menu-panel.open{ grid-template-rows:1fr; border-bottom-color:var(--line); }
-  .menu-panel-inner{ overflow:hidden; }
-  .menu-panel-eyebrow{ padding:18px 24px 4px; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.12em; color:var(--slate); }
-  .menu-panel-grid{ display:grid; grid-template-columns:repeat(2,1fr); }
-  @media (max-width:700px){ .menu-panel-grid{ grid-template-columns:1fr; } }
-  .menu-link{
-    position:relative; display:flex; align-items:center; gap:16px; overflow:hidden;
-    padding:18px 24px; border-bottom:1px solid var(--line); border-right:1px solid var(--line);
-    color:var(--ink); z-index:1; transition: padding .3s cubic-bezier(0.4,0,0.2,1), color .3s ease;
-  }
-  @media (max-width:700px){ .menu-link{ border-right:none; } }
-  .menu-link::before{
-    content:""; position:absolute; inset:0; background:var(--route); transform:scaleX(0);
-    transform-origin:left; transition:transform .4s cubic-bezier(0.4,0,0.2,1); z-index:-1;
-  }
-  .menu-link:hover::before{ transform:scaleX(1); }
-  .menu-link:hover{ color:var(--paper); padding-left:34px; }
-  .menu-link-tag{
-    font-family:'IBM Plex Mono', monospace; font-size:.68rem; letter-spacing:.06em; color:var(--route);
-    border:1px solid currentColor; border-radius:2px; padding:3px 6px; flex-shrink:0; transition: color .3s ease;
-  }
-  .menu-link:hover .menu-link-tag{ color:var(--signal); }
-  .menu-link-body{ flex:1; min-width:0; }
-  .menu-link-title{ display:block; font-family:'Oswald', sans-serif; font-size:1.25rem; text-transform:uppercase; letter-spacing:.02em; }
-  .menu-link-caption{ display:block; font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--slate); margin-top:2px; opacity:.85; transition: color .3s ease; }
-  .menu-link:hover .menu-link-caption{ color:var(--paper); opacity:.75; }
-  .menu-link-arrow{ flex-shrink:0; font-size:1.2rem; opacity:.4; transition: transform .3s cubic-bezier(0.4,0,0.2,1), opacity .3s ease; }
-  .menu-link:hover .menu-link-arrow{ transform:translateX(6px); opacity:1; }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
+</script>
+<a class="skip-link" href="#contact" data-i18n="booking.title">Skip to booking form</a>
+<div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div>
+    <div class="overlay-check">&#10003;</div>
+    <h2 id="successTitle" class="overlay-title" data-i18n="booking.success">Booking received</h2>
+    <p id="successCopy" class="overlay-copy" data-i18n="booking.successCopy">Opening WhatsApp to confirm your dispatch…</p>
+    <p id="successRef" class="overlay-ref" style="display:none;"></p>
+    <p id="successFallback" style="display:none; margin-bottom:24px;">
+      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" data-i18n="booking.openWhatsapp">Open WhatsApp</a>
+    </p>
+    <button type="button" id="successClose" class="btn btn-primary" data-i18n="booking.close">Close</button>
+  </div>
+</div>
+<header>
+  <div class="navbar wrap">
+    <a class="brand" href="index.html">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span class="brand-copy">
+        <span class="brand-name">Lueri International</span>
+        <span class="brand-motto"><span data-i18n="hero.motto">Until the seal is broken</span></span>
+      </span>
+    </a>
+    <div class="nav-controls">
+      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
+        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
+        <span id="menuTriggerLabel" data-i18n="nav.menu">Menu</span>
+      </button>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <select id="languageSelector" class="language-selector" aria-label="Select Language" data-i18n-aria="nav.menu" style="background:transparent; border:1px solid currentColor; border-radius:4px; padding:4px 8px; margin-right:8px; font-family:inherit; cursor:pointer; color:inherit;">
+        <option value="en">🇬🇧 EN</option><option value="zh">🇨🇳 ZH</option><option value="sw">🇰🇪 SW</option><option value="fr">🇫🇷 FR</option><option value="es">🇪🇸 ES</option><option value="ar">🇸🇦 AR</option><option value="pt">🇧🇷 PT</option>
+      </select>
+      <a class="nav-cta" href="#contact" data-i18n="nav.book">Book Pickup</a>
+    </div>
+  </div>
+  <div class="menu-panel" id="menuPanel">
+    <div class="menu-panel-inner">
+      <div class="menu-panel-eyebrow" data-i18n="nav.where">Where to next</div>
+      <div class="menu-panel-grid">
+        <a href="#services" class="menu-link" data-close-menu><span class="menu-link-tag">SVC</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.services">Services</span><span class="menu-link-caption" data-i18n="nav.servicesCaption">What we carry, and how fast</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="#pricing" class="menu-link" data-close-menu><span class="menu-link-tag">PRC</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.pricing">Pricing</span><span class="menu-link-caption" data-i18n="nav.pricingCaption">Quoted rates, no hidden fees</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="corporate.html" class="menu-link" data-close-menu><span class="menu-link-tag">BIZ</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.business">Business</span><span class="menu-link-caption" data-i18n="nav.businessCaption">Set up a corporate account</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="#coverage" class="menu-link" data-close-menu><span class="menu-link-tag">CVG</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.coverage">Coverage</span><span class="menu-link-caption" data-i18n="nav.coverageCaption">Where we deliver in Nairobi</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="#why" class="menu-link" data-close-menu><span class="menu-link-tag">WHY</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.why">Why Us</span><span class="menu-link-caption" data-i18n="nav.whyCaption">What makes Lueri different</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="#faq" class="menu-link" data-close-menu><span class="menu-link-tag">FAQ</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.faq">FAQ</span><span class="menu-link-caption" data-i18n="nav.faqCaption">Common questions, answered</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="rewards.html" class="menu-link" data-close-menu><span class="menu-link-tag">RWD</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.rewards">Rewards</span><span class="menu-link-caption" data-i18n="nav.rewardsCaption">Earn points on every delivery</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="careers.html" class="menu-link" data-close-menu><span class="menu-link-tag">CAR</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.careers">Careers</span><span class="menu-link-caption" data-i18n="nav.careersCaption">Future roles at Lueri</span></span><span class="menu-link-arrow">&#8594;</span></a>
+        <a href="#contact" class="menu-link" data-close-menu><span class="menu-link-tag">BK</span><span class="menu-link-body"><span class="menu-link-title" data-i18n="nav.book">Book</span><span class="menu-link-caption" data-i18n="nav.bookCaption">Send a pickup request now</span></span><span class="menu-link-arrow">&#8594;</span></a>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+  <section class="hero hero-polished reveal">
+    <div class="hero-stage" aria-label="Lueri Nairobi delivery route">
+      <picture class="hero-art">
+        <img
+          src="assets/lueri-hero-day.jpg?v=20260925-hero4"
+          data-day-src="assets/lueri-hero-day.jpg?v=20260925-hero4"
+          data-night-src="assets/lueri-hero-night.jpg?v=20260925-hero4"
+          alt="Nairobi cityscape with Lueri delivery vehicles"
+          class="hero-art-image"
+          width="2048" height="682"
+          decoding="async"
+          fetchpriority="high">
+      </picture>
+      <div class="hero-art-overlay" aria-hidden="true"></div>
+    </div>
+    <div class="hero-route-bar">
+      <div class="hero-route-endpoint"><span class="route-pin" aria-hidden="true">●</span><span data-i18n="hero.pickup">PICKUP</span></div>
+      <div class="hero-route-endpoint"><span class="route-pin route-pin-end" aria-hidden="true">●</span><span data-i18n="hero.dropoff">DROP-OFF</span></div>
+    </div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <div class="hero-copy-kicker"><span class="eyebrow-mono" data-i18n="hero.dispatch">Dispatch / Nairobi &amp; environs</span><span class="waybill-no" data-i18n="hero.waybill">WAYBILL NO. LI&#8211;2026</span></div>
+        <h1 class="title" data-i18n="hero.title" style="white-space:pre-line;">Errands and deliveries<br>across Nairobi,<br>done today.</h1>
+        <p class="subtitle" data-i18n="hero.subtitle">Tell us what you need on WhatsApp. We will collect it, check it, buy it or deliver it, and confirm with you before we move. Parcels, documents, Eastleigh stock checks, bulk buys like 15 kg of rice, and same-day runs across Nairobi.</p>
+        <div class="cta-row"><a href="#contact" class="btn btn-primary" data-i18n="hero.bookBtn">Book a Pickup</a><a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-i18n="hero.whatsappBtn">WhatsApp Us</a></div>
+      </div>
+    </div>
+  </section>
 
-  .hero{ padding:80px 0 60px; }
-  .docket{
-    background:var(--paper); border:1.5px solid var(--ink); position:relative; padding:48px 40px;
-    box-shadow: 12px 12px 0 rgba(27,38,32,0.08); transition: var(--transition);
-  }
-  .docket:hover { transform: translate(-4px, -4px); box-shadow: 16px 16px 0 rgba(27,38,32,0.1); }
-  .docket::before, .docket::after{
-    content:""; position:absolute; width:12px; height:12px; border:1.5px solid var(--ink);
-    border-radius:50%; background:var(--paper-dim); top:16px;
-  }
-  .docket::before{ left:16px; }
-  .docket::after{ right:16px; }
-  .docket-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; margin-bottom: 24px; }
-  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em; color:var(--slate); text-transform:uppercase; }
-  .waybill-no{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; border:1px dashed var(--ink); padding:8px 12px; white-space:nowrap; }
-  h1.title{ font-size:clamp(2.8rem, 8vw, 4.8rem); line-height:0.95; margin:0 0 12px; }
-  .subtitle{ max-width:580px; color:var(--slate); font-size:1.15rem; margin:16px 0; line-height: 1.6; }
-  .stamp{
-    display:inline-block; border:3px solid var(--route); color:var(--route); font-family:'Oswald', sans-serif;
-    font-weight:700; font-size:0.9rem; letter-spacing:0.1em; text-transform:uppercase; padding:8px 18px;
-    transform:rotate(-4deg); border-radius:4px; margin:24px 0;
-  }
-  .scope-tag{
-    display:inline-block; margin-top:8px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
-    letter-spacing:0.06em; text-transform:uppercase; color:var(--slate); border:1px dashed var(--line); padding:6px 10px;
-  }
-  .cta-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:32px; }
-  .btn{
-    display:inline-flex; align-items:center; gap:10px; padding:16px 28px; font-size:0.9rem;
-    text-transform:uppercase; letter-spacing:0.06em; border-radius:4px; font-weight:700;
-    font-family:'IBM Plex Sans', sans-serif; cursor: pointer; transition: var(--transition);
-  }
-  .btn-primary{ background:var(--route); color:var(--paper); border: none; }
-  .btn-secondary{ background:transparent; border:2px solid var(--ink); color:var(--ink); }
-  .btn:hover{ transform: translateY(-2px); filter:brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-  .btn:active{ transform: translateY(0); }
-  section{ padding:80px 0; }
-  .section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:48px; }
-  .section-num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:1rem; font-weight: 600; }
-  .section-head h2{ font-size:2.4rem; }
-  .why-list{ list-style:none; margin:0; padding:0; }
-  .why-list li{ display:flex; gap:16px; padding:20px 0; border-bottom:1px solid var(--line); }
-  .why-list .n{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-weight:600; width:36px; flex-shrink:0; }
-  .why-list h3{ font-size:1.05rem; text-transform:none; letter-spacing:0; margin:0 0 6px; }
-  .why-list p{ margin:0; color:var(--slate); font-size:0.95rem; line-height:1.6; }
-  .pricing-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-  .pricing-card{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:28px; }
-  .pricing-card .tier{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--route); margin-bottom:10px; }
-  .pricing-card h3{ font-size:1.15rem; text-transform:none; letter-spacing:0; margin:0 0 8px; }
-  .pricing-card .price{ font-family:'Oswald', sans-serif; font-size:1.8rem; margin:12px 0; }
-  .pricing-card p{ color:var(--slate); font-size:0.92rem; margin:0; line-height:1.6; }
-  .pricing-card ul{ margin:16px 0 0; padding-left:18px; color:var(--slate); font-size:0.88rem; line-height:1.7; }
-  @media (max-width:860px){ .pricing-grid{ grid-template-columns:1fr; } }
-  .contact-shell{
-    background:var(--ink); color:var(--paper); padding:64px 48px; border-radius:4px; position:relative; overflow:hidden;
-  }
-  .contact-shell::before {
-    content: ""; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
-    background: rgba(232, 185, 61, 0.05); border-radius: 50%;
-  }
-  .form-group { margin-bottom: 24px; }
-  .form-label{ display:block; margin-bottom:8px; color:var(--signal); font-family:'IBM Plex Mono', monospace; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; }
-  .form-input{
-    width:100%; padding:14px; border:1px solid rgba(240,234,216,0.2); background: rgba(255,255,255,0.03);
-    color:var(--paper); border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem; transition: var(--transition);
-  }
-  .form-input:focus{ outline:none; border-color:var(--signal); background: rgba(255,255,255,0.08); }
-  .form-input.invalid { border-color: var(--error); }
-  .form-input::placeholder{ color: rgba(240,234,216,0.4); }
-  textarea.form-input{ resize: vertical; }
-  select.form-input{ cursor: pointer; }
-  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-  @media (max-width:760px){ .form-row2{ grid-template-columns:1fr; } }
-  .form-hint{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color: rgba(240,234,216,0.55); margin-top:6px; display:block; }
-  /* Honeypot: invisible to people, present to bots that fill every field. */
-  .honeypot{ position:absolute !important; left:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none; }
-  .success-overlay {
-    position: fixed; inset: 0; background: rgba(27,38,32,0.95); z-index: 1000;
-    display: none; align-items: center; justify-content: center; text-align: center; color: var(--paper); padding: 24px;
-  }
-  .success-overlay.active { display: flex; animation: fadeIn 0.4s ease; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  footer{ padding:60px 0; border-top:1px solid var(--line); }
-  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:32px; }
-  .foot-stamp{ font-family:'IBM Plex Mono', monospace; border:1px dashed var(--ink); padding:6px 14px; font-size:0.8rem; font-weight: 600; }
-  .social-links{ display:flex; gap:10px; align-items:center; }
-  .social-links a{
-    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
-    border:1px solid var(--line); border-radius:20px; padding:6px 14px; opacity:0.8;
-  }
-  .social-links a:hover{ opacity:1; border-color:var(--ink); color:var(--route); }
-  .legal-block{
-    margin-top:32px; padding-top:32px; border-top:1px solid var(--line);
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px;
-    font-size:0.88rem; color:var(--slate); line-height:1.6;
-  }
-  .legal-block strong{
-    display:block; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.06em;
-    text-transform:uppercase; color:var(--ink); margin-bottom:6px;
-  }
-  [data-theme="dark"] .legal-block strong{ color:var(--paper); }
-  .skip-link{
-    position:absolute; left:-9999px; top:0; z-index:200;
-    background:var(--ink); color:var(--paper); padding:12px 20px;
-    font-family:'IBM Plex Mono', monospace; font-size:.8rem; border-radius:0 0 4px 0;
-  }
-  .skip-link:focus{ left:0; }
-  @media (max-width:600px){
-    .hero{ padding:48px 0 32px; }
-    section{ padding:48px 0; }
-    .docket{ padding:32px 24px; }
-    .contact-shell{ padding:40px 24px; }
-    h1.title{ font-size:clamp(2.2rem, 9vw, 3.2rem); }
-  }
+  <section id="services" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">01</span><h2 data-i18n="services.title">Services</h2></div><p class="section-intro" data-i18n="services.subtitle">Practical delivery services built around speed, reliability, and clear communication.</p>
+    <div class="grid3">
+      <div class="card"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg></div><h3 data-i18n="services.parcelTitle">Errands &amp; stock checks</h3><p data-i18n="services.parcelText">Can't get to town? We go to the shop (Eastleigh fabric, spare parts, stock), check it, confirm with you by call or WhatsApp, then ship or deliver it.</p></div>
+      <div class="card"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div><h3 data-i18n="services.ecommerceTitle">Bulk buys &amp; pickups</h3><p data-i18n="services.ecommerceText">Rice, groceries or supplies bought or collected in town and delivered to your door at one all-in quoted price.</p></div>
+      <div class="card"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><h3 data-i18n="services.urgentTitle">Parcels, documents &amp; CBD runs</h3><p data-i18n="services.urgentText">Same-day point-to-point delivery within Nairobi: parcels, documents, cheques, and CBD runs from KES 350 (Standard, shared route) or KES 800 (Express, dedicated rider). Applies only within the Nairobi CBD boundary — anywhere further is quoted by zone before we move.</p></div>
+    </div>
+  </div></section>
 
-  /* ---------- Homepage-only sections (not used by corporate.html) ---------- */
-  .route-track{ position:relative; height:70px; margin:32px 0; }
-  .pin{ position:absolute; top:8px; font-size:.72rem; letter-spacing:.06em; padding:6px 10px; border:1px dashed var(--line); border-radius:4px; }
-  .pin.start{ left:0; }
-  .pin.end{ right:0; }
-  .truck{ position:absolute; top:0; left:50%; transform:translateX(-50%); color:var(--route); width:34px; height:34px; }
-  .truck svg{ width:100%; height:100%; }
+  <section id="coverage" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">02</span><h2 data-i18n="coverage.title">Coverage</h2></div><p class="section-intro" data-i18n="coverage.subtitle">Nairobi and surrounding areas, with dispatch planned around the route and service requirements.</p>
+    <div class="coverage-wrap"><div class="coverage-list"><div data-i18n="zones.cbd">Nairobi CBD</div><div data-i18n="zones.westlands">Westlands</div><div data-i18n="zones.kilimani">Kilimani</div><div data-i18n="zones.kasarani">Kasarani</div><div data-i18n="zones.south">South B / South C</div><div data-i18n="zones.embakasi">Embakasi</div><div data-i18n="zones.ngong">Ngong Road</div><div data-i18n="zones.thika">Thika Road</div><div data-i18n="zones.eastleigh">Eastleigh</div><div data-i18n="zones.kariobangi">Kariobangi</div></div><div class="coverage-note"><div class="eyebrow-mono" data-i18n="coverage.noteTitle">Not on this list?</div><p data-i18n="coverage.body">Lueri runs delivery across Nairobi and its surrounding towns. If your point isn't listed, message us directly — most routes are covered.</p></div></div>
+  </div></section>
 
-  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-  @media (max-width:860px){ .grid3{ grid-template-columns:1fr; } }
-  .card{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:28px; }
-  .card h3{ font-size:1.05rem; text-transform:none; letter-spacing:0; margin:16px 0 8px; }
-  .card p{ color:var(--slate); font-size:.92rem; line-height:1.6; margin:0; }
-  .icon-box{ width:44px; height:44px; border:1px solid var(--line); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--route); }
+  <section id="pricing" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">03</span><h2 data-i18n="pricing.title">Pricing</h2></div><p class="section-intro" data-i18n="pricing.subtitle">Clear quoted rates with no hidden fees.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card"><div class="tier" data-i18n="pricing.onDemand">On-demand</div><h3 data-i18n="pricing.single">Single delivery</h3><div class="price" data-i18n="pricing.priceFrom">KES 350–800</div><p data-i18n="pricing.singleText">KES 350 for a shared-route Standard delivery when both pickup and drop-off are within Nairobi CBD. Documents and cheques are KES 400. Need it moving right now? Express (dedicated rider) is KES 800. Anything outside the Nairobi CBD boundary, or heavier/larger, is quoted separately by zone and size before we move.</p></div>
+      <div class="pricing-card"><div class="tier" data-i18n="pricing.business">Business</div><h3 data-i18n="pricing.daily">Daily dispatch</h3><div class="price" data-i18n="pricing.priceCustom">Custom rates</div><p data-i18n="pricing.dailyText">Standing pickup arrangements for shops and online sellers with repeat daily or weekly runs. Volume pricing available.</p></div>
+      <div class="pricing-card"><div class="tier" data-i18n="pricing.urgent">Errands</div><h3 data-i18n="pricing.priority">Errands &amp; bulk pickups</h3><div class="price" data-i18n="pricing.priceQuoted">From KES 600</div><p data-i18n="pricing.urgentText">Check-and-confirm errands (e.g. Eastleigh stock checks) and bulky/luggage pickups from KES 600 within Nairobi. Bulk buy-and-deliver jobs are quoted all-in before we move.</p></div>
+    </div>
+    <div class="pricing-note"><strong data-i18n="pricing.quoteTitle">How quoting works</strong><br><span data-i18n="pricing.quoteBody">Every job is quoted before we move, with no hidden fees. Send your pickup point, drop-off point and what you need on WhatsApp or the booking form below. In a hurry? Say so and we confirm price and ETA first. Payment accepted via M-Pesa.</span></div>
+    <div class="pricing-note" style="margin-top:16px;"><strong data-i18n="pricing.corporateTitle">Corporate billing</strong><br><span data-i18n="pricing.corporateBody">Repeat business clients can set up invoicing with bank transfer.</span> <a href="corporate.html" style="color:var(--route);text-decoration:underline;font-weight:600;" data-i18n="pricing.corporateCta">Apply for a business account</a> <span data-i18n="pricing.corporateTail">— we typically activate new accounts within one working day.</span></div>
+    <div class="sla-grid">
+      <div class="sla-item"><div class="label" data-i18n="pricing.hoursTitle">Operating hours</div><p data-i18n="pricing.hoursBody">Monday–Friday, 8:00 AM – 5:00 PM · Saturday, 8:00 AM – 3:00 PM · Closed Sundays. Orders placed after 5:00 PM (or outside these hours) are queued for next-business-day dispatch.</p></div>
+      <div class="sla-item"><div class="label" data-i18n="pricing.cutoffTitle">Same-day cut-off</div><p data-i18n="pricing.cutoffBody">Bookings received before 5:00 PM on a working day are typically dispatched the same day, subject to route and traffic. Bookings placed after 5:00 PM, or on a Sunday, carry over to the next business day.</p></div>
+      <div class="sla-item"><div class="label" data-i18n="pricing.responseTitle">Response time</div><p data-i18n="pricing.responseBody">WhatsApp and call enquiries answered during operating hours. Most quotes returned within 15 minutes.</p></div>
+      <div class="sla-item"><div class="label" data-i18n="pricing.serviceTitle">Service level</div><p data-i18n="pricing.serviceBody">Delivery timeframes are estimates, not guarantees. We communicate delays proactively when traffic or weather affects your route.</p></div>
+    </div>
+  </div></section>
 
-  .coverage-wrap{ display:grid; grid-template-columns:1.2fr 1fr; gap:32px; align-items:start; }
-  @media (max-width:760px){ .coverage-wrap{ grid-template-columns:1fr; } }
-  .coverage-list{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px 20px; font-family:'IBM Plex Mono',monospace; font-size:.85rem; }
-  .coverage-note{ max-width:420px; border:1px dashed var(--line); border-radius:4px; padding:20px; color:var(--slate); font-size:.92rem; line-height:1.6; }
+  <section id="why" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">04</span><h2 data-i18n="why.title">Why Lueri</h2></div><p class="section-intro" data-i18n="why.subtitle">A straightforward delivery service built for people and businesses that value reliability.</p>
+    <ul class="why-list"><li><span class="n">01</span><div><h3 data-i18n="why.oneTitle">Direct line to the dispatcher</h3><p data-i18n="why.oneText">You speak to the person moving your parcel, not a call centre — every job is coordinated directly on WhatsApp or phone.</p></div></li><li><span class="n">02</span><div><h3 data-i18n="why.twoTitle">Same-day turnaround</h3><p data-i18n="why.twoText">Most pickups within Nairobi are delivered the same day they're booked, when confirmed before the daily cut-off.</p></div></li><li><span class="n">03</span><div><h3 data-i18n="why.threeTitle">Built for repeat business</h3><p data-i18n="why.threeText">Shops and online sellers get a consistent dispatch routine — not a fresh booking and re-brief with a new rider every day.</p></div></li></ul>
+    <div id="customerReviews" class="reviews-grid" hidden></div>
+    <div class="trust-banner"><p data-i18n="why.reviewText">Used Lueri? A short, honest review helps other Nairobi customers know who to trust.</p><a class="btn btn-secondary review-cta" href="https://www.facebook.com/LueriInt/reviews" target="_blank" rel="noopener noreferrer">Leave a review on Facebook</a></div>
+  </div></section>
 
-  .pricing-note{ border:1px dashed var(--line); border-radius:4px; padding:16px 24px; color:var(--slate); font-size:.9rem; line-height:1.6; }
+  <section id="proof" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">05</span><h2 data-i18n="pod.title">Proof of delivery</h2></div><p class="section-intro" data-i18n="pod.subtitle">Visibility from dispatch to handover.</p><div class="pod-steps"><div class="pod-step"><div class="step-num" data-i18n="pod.step1Label">Step 01</div><h3 data-i18n="pod.step1Title">Quote before pickup</h3><p data-i18n="pod.step1Text">You receive a confirmed price and estimated delivery window on WhatsApp before we dispatch — no surprises after collection.</p></div><div class="pod-step"><div class="step-num" data-i18n="pod.step2Label">Step 02</div><h3 data-i18n="pod.step2Title">Status updates</h3><p data-i18n="pod.step2Text">We message you when your parcel is picked up and when it's out for delivery. You're never left guessing where it is.</p></div><div class="pod-step"><div class="step-num" data-i18n="pod.step3Label">Step 03</div><h3 data-i18n="pod.step3Title">Delivery confirmation</h3><p data-i18n="pod.step3Text">Every completed job includes confirmation that your parcel reached the recipient — photo or written confirmation on request.</p></div></div></div></section>
 
-  .sla-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:32px; }
-  @media (max-width:760px){ .sla-grid{ grid-template-columns:1fr; } }
-  .sla-item .label{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--route); margin-bottom:6px; }
-  .sla-item p{ color:var(--slate); font-size:.9rem; line-height:1.6; margin:0; }
+  <section id="rewards-promo" class="reveal"><div class="wrap"><div class="coverage-note" style="max-width:none;"><div class="eyebrow-mono" data-i18n="rewards.eyebrow">Lueri Rewards</div><h2 style="font-size:1.8rem;margin:10px 0 12px;" data-i18n="rewards.title">Earn on every delivery.</h2><p style="opacity:.85;line-height:1.6;max-width:640px;" data-i18n="rewards.body">Every delivery earns points — after each delivery, message us your member number and we'll log your points. Free to join, no card needed. Paid membership tiers are also available for businesses that dispatch regularly.</p><a href="rewards.html" class="btn btn-primary" style="margin-top:20px;" data-i18n="rewards.cta">Join Lueri Rewards</a></div></div></section>
 
-  .trust-banner{ border:1px dashed var(--line); border-radius:4px; padding:20px 24px; color:var(--slate); font-size:.92rem; line-height:1.6; margin-top:32px; }
-  .trust-banner a{ color:var(--route); text-decoration:underline; font-weight:600; }
+  <section id="faq" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">06</span><h2 data-i18n="faq.title">FAQ</h2></div><div class="faq-list">
+    <details class="faq-item"><summary data-i18n="faq.q1">What does "International" in the name mean?</summary><p data-i18n="faq.a1">Lueri International is a Nairobi-born logistics and last-mile delivery company built with a global ambition. We provide reliable, professional, technology-driven delivery solutions that connect businesses with their customers efficiently and seamlessly. While our operations currently focus on Nairobi and its surrounding towns, our vision extends far beyond Kenya — we're building the systems, service standards, technology, and operational capacity required to scale into a trusted global logistics and delivery brand. Our immediate focus is to become a leading last-mile delivery partner in Nairobi, while laying the foundation for expansion across Kenya, Africa, and ultimately international markets. Our goal is simple: start local, build world-class, and go global.</p></details>
+    <details class="faq-item"><summary data-i18n="faq.q2">What can and can't you deliver?</summary><p data-i18n="faq.a2">We carry parcels, documents, e-commerce orders, and personal items within Nairobi. We do not transport illegal goods, hazardous materials, cash, or items prohibited under Kenyan law. Fragile or high-value items should be declared at booking so we can confirm we can carry them safely.</p></details>
+    <details class="faq-item"><summary data-i18n="faq.q3">How do I pay?</summary><p data-i18n="faq.a3">Most customers pay via M-Pesa after the quote is confirmed and before or at pickup. Repeat business clients can arrange invoicing — ask us when setting up a standing dispatch arrangement.</p></details>
+    <details class="faq-item"><summary data-i18n="faq.q4">Is same-day delivery guaranteed?</summary><p data-i18n="faq.a4">No. We aim for same-day delivery on most Nairobi routes, but timeframes are estimates — not guarantees. Traffic, weather, and after-hours bookings can affect delivery time. We communicate delays as soon as we know about them.</p></details>
+    <details class="faq-item"><summary data-i18n="faq.q5">What if my parcel is lost or damaged?</summary><p data-i18n="faq.a5">We take reasonable care of every item. Liability for loss or damage is limited to the lower of the declared value or KES 5,000 unless otherwise agreed in writing. See our Terms of Service for full details.</p></details>
+    <details class="faq-item"><summary data-i18n="faq.q6">Do you offer business contracts?</summary><p data-i18n="faq.a6">Yes. If you dispatch daily or several times a week, we can set up a recurring pickup arrangement with agreed rates and a single point of contact. Apply for a business account and our team will confirm pickup details once we review your application.</p></details>
+  </div></div></section>
 
-  .pod-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-  @media (max-width:860px){ .pod-steps{ grid-template-columns:1fr; } }
-  .pod-step .step-num{ font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--route); margin-bottom:8px; }
-  .pod-step h3{ font-size:1.05rem; text-transform:none; letter-spacing:0; margin:0 0 8px; }
-  .pod-step p{ color:var(--slate); font-size:.92rem; line-height:1.6; margin:0; }
-
-  .faq-list{ border-top:1px solid var(--line); }
-  .faq-item{ border-bottom:1px solid var(--line); padding:18px 0; }
-  .faq-item summary{ cursor:pointer; font-weight:600; list-style:none; position:relative; padding-right:24px; }
-  .faq-item summary::-webkit-details-marker{ display:none; }
-  .faq-item summary::after{ content:"+"; position:absolute; right:0; top:0; color:var(--route); }
-  .faq-item[open] summary::after{ content:"–"; }
-  .faq-item p{ color:var(--slate); font-size:.92rem; line-height:1.6; margin:12px 0 0; }
-  .faq-item a{ color:var(--route); text-decoration:underline; }
-
-  .contact-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
-  @media (max-width:760px){ .contact-grid{ grid-template-columns:1fr; } }
-  .contact-card{ background:rgba(255,255,255,0.03); border:1px solid rgba(240,234,216,0.2); border-radius:4px; padding:18px; cursor:pointer; position:relative; transition:var(--transition); }
-  .contact-card:hover{ border-color:var(--signal); }
-  .contact-card .label{ font-family:'IBM Plex Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--signal); margin-bottom:6px; }
-  .contact-card .value{ font-size:1.05rem; font-weight:600; }
-  .contact-card .copy-hint{ position:absolute; top:12px; right:14px; font-size:.65rem; color:rgba(240,234,216,0.5); opacity:0; transition:opacity .2s ease; }
-  .contact-card:hover .copy-hint{ opacity:1; }
-
-  .overlay-check{ font-size:3.2rem; color:var(--signal); margin-bottom:16px; }
-  .overlay-title{ font-size:1.8rem; margin-bottom:8px; }
-  .overlay-copy{ color:rgba(240,234,216,0.8); font-size:1.05rem; margin-bottom:20px; }
-  .overlay-ref{ font-family:'IBM Plex Mono',monospace; font-size:.95rem; color:var(--signal); margin-bottom:16px; }
-
-  .btn-signal{ background:var(--signal); color:var(--ink); border:none; }
-  .btn-block{ width:100%; justify-content:center; }
-
-/* FINAL HERO POLISH — clean artwork, no embedded route strip */
-.hero-polished{padding:0 0 72px;}
-.hero-polished .hero-stage{position:relative;width:100%;height:auto;min-height:0;overflow:hidden;background:var(--paper);border-bottom:1px solid var(--line);isolation:isolate;}
-.hero-polished .hero-art{display:block;width:100%;height:auto;line-height:0;}
-.hero-polished .hero-art-image{display:block;width:100%;height:auto;min-height:0;max-height:none;object-fit:initial;object-position:center top;image-rendering:auto;}
-.hero-polished .hero-art-overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(27,38,32,0) 55%,rgba(27,38,32,.20) 100%);z-index:1;}
-[data-theme="dark"] .hero-polished .hero-art-overlay{background:linear-gradient(to bottom,rgba(0,10,12,0) 50%,rgba(0,10,12,.18) 100%);}
-.hero-route-bar{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid var(--line);}
-.hero-route-endpoint{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px dashed var(--line);border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;color:var(--ink);}
-.route-pin{color:#00bfa6;font-size:.9rem;line-height:1;}
-.route-pin-end{color:var(--route);}
-.hero-route-label{text-align:center;color:var(--slate);font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;}
-.hero-polished .hero-copy{max-width:1080px;margin:0 auto;padding:64px 24px 0;}
-.hero-polished .hero-copy-kicker{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px;}
-.hero-polished .hero-copy .title{max-width:760px;font-size:clamp(3rem,8vw,5.8rem);line-height:.91;margin-bottom:22px;}
-.hero-polished .hero-copy .subtitle{max-width:720px;font-size:clamp(1rem,1.7vw,1.18rem);}
-@media(max-width:760px){
- .hero-polished{padding-bottom:48px;}
- .hero-polished .hero-stage{height:auto;min-height:0;}
- .hero-route-bar{padding:10px 16px;gap:10px;}
- .hero-route-endpoint{padding:8px 10px;font-size:.62rem;}
- .hero-route-label{font-size:.58rem;}
- .hero-polished .hero-copy{padding-top:42px;}
- .hero-polished .hero-copy-kicker{align-items:flex-start;flex-direction:column;gap:10px;}
- .hero-polished .hero-copy .title{font-size:clamp(2.7rem,12vw,4.4rem);}
-}
-@media(prefers-reduced-motion:reduce){.hero-polished .hero-art-image{transition:none;}}
-
-/* MOBILE POLISH — prevent squeezed navigation and oversized hero typography */
-@media (max-width:700px){
-  .wrap{padding-left:16px;padding-right:16px;}
-  .navbar{padding:12px 16px;gap:10px;}
-  .brand .mark-img{height:30px;}
-  .theme-toggle{width:36px;height:36px;}
-  .lueri-language-menu{width:100%;min-width:0;}
-  .lueri-language-trigger{width:100%;min-width:0;justify-content:space-between;}
-  .hero-polished .hero-copy{padding:32px 16px 0;}
-  .hero-polished .hero-copy .title{font-size:clamp(2.35rem,11.5vw,3.5rem);line-height:.96;letter-spacing:.01em;max-width:100%;overflow-wrap:anywhere;}
-  .hero-polished .hero-copy .subtitle{font-size:1rem;line-height:1.55;max-width:100%;}
-  .hero-polished .hero-copy-kicker{margin-bottom:16px;}
-  .hero-route-bar{padding:8px 12px;gap:8px;}
-  .hero-route-endpoint{min-width:0;flex:1;justify-content:center;padding:7px 8px;font-size:.58rem;}
-  .cta-row{display:grid;grid-template-columns:1fr;gap:10px;margin-top:24px;}
-  .cta-row .btn{width:100%;justify-content:center;}
-  section{padding:44px 0;}
-  .section-head{gap:10px;margin-bottom:28px;}
-  .section-head h2{font-size:2rem;}
-  .section-intro{font-size:.98rem;line-height:1.55;}
-  .pricing-card,.card{padding:22px;}
-  .pricing-card .price{font-size:1.55rem;overflow-wrap:anywhere;}
-  .pricing-note{padding:14px 16px;font-size:.86rem;}
-  .coverage-list{grid-template-columns:1fr;}
-  .contact-shell{padding:32px 18px;}
-}
-
-/* RTL MOBILE SAFETY — Arabic must fit the viewport without horizontal scrolling */
-html[lang="ar"],
-html[lang="ar"] body{
-  max-width:100%;
-  overflow-x:hidden;
-}
-html[lang="ar"] body,
-html[lang="ar"] body *{
-  box-sizing:border-box;
-}
-html[lang="ar"] .wrap,
-html[lang="ar"] .navbar,
-html[lang="ar"] section,
-html[lang="ar"] footer{
-  max-width:100%;
-}
-html[lang="ar"] .navbar,
-html[lang="ar"] .nav-controls,
-html[lang="ar"] .hero-copy,
-html[lang="ar"] .hero-route-bar,
-html[lang="ar"] .pricing-card,
-html[lang="ar"] .card,
-html[lang="ar"] .contact-card,
-html[lang="ar"] .form-row,
-html[lang="ar"] .form-row2,
-html[lang="ar"] .cta-row{
-  min-width:0;
-}
-html[lang="ar"] .nav-controls > *,
-html[lang="ar"] .hero-copy *,
-html[lang="ar"] .pricing-card *,
-html[lang="ar"] .card *,
-html[lang="ar"] .contact-card *,
-html[lang="ar"] .section-head *{
-  min-width:0;
-  max-width:100%;
-  overflow-wrap:anywhere;
-  word-break:normal;
-}
-html[lang="ar"] .hero-polished .hero-copy .title,
-html[lang="ar"] .hero-polished .hero-copy .subtitle,
-html[lang="ar"] .section-intro,
-html[lang="ar"] .pricing-card p,
-html[lang="ar"] .pricing-note{
-  overflow-wrap:anywhere;
-  word-break:normal;
-}
-@media(max-width:700px){
-  html[lang="ar"] #languageSelector{
-    min-width:0!important;
-    max-width:100%!important;
-  }
-  html[lang="ar"] .lueri-language-trigger{
-    min-width:0!important;
-    max-width:100%!important;
-  }
-}
-
-/* RTL/mobile containment for the coverage component. */
-html[dir="rtl"] .coverage-wrap{
-  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
-  width:100%;
-  min-width:0;
-}
-html[dir="rtl"] .coverage-list{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  min-width:0;
-}
-html[dir="rtl"] .coverage-list > div,
-html[dir="rtl"] .coverage-note{
-  min-width:0;
-  max-width:100%;
-  overflow-wrap:anywhere;
-}
-@media (max-width:760px){
-  html[dir="rtl"] .coverage-wrap{
-    grid-template-columns:minmax(0,1fr);
-    gap:20px;
-  }
-  html[dir="rtl"] .coverage-list{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:10px 16px;
-  }
-}
-@media (max-width:420px){
-  html[dir="rtl"] .coverage-list{
-    grid-template-columns:minmax(0,1fr);
-    gap:8px;
-  }
-}
-html[dir="rtl"] .menu-panel-grid{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-}
-@media(max-width:700px){
-  html[dir="rtl"] .menu-panel-grid{ grid-template-columns:1fr; }
-}
-html[dir="rtl"] .menu-link{ min-width:0; }
-html[dir="rtl"] .menu-link-body{ min-width:0; overflow-wrap:anywhere; }
-html[dir="rtl"] .hero-copy,
-html[dir="rtl"] .section-intro,
-html[dir="rtl"] .card,
-html[dir="rtl"] .pricing-card,
-html[dir="rtl"] .faq-item p{
-  overflow-wrap:anywhere;
-  word-break:normal;
-}
-
-/* ============================================================
-   HEADER + BRAND LOCKUP — SINGLE SOURCE OF TRUTH
-   Everything below replaces what used to be five separate,
-   competing "final" override blocks stacked with !important.
-   One ladder, one owner per property, no specificity wars.
-   The circular L mark is always physically first; the wordmark
-   sits next to it; the motto sits directly under the wordmark.
-   Arabic content stays RTL everywhere except this lockup, which
-   stays LTR so the logo never jumps to the visual right.
-   ============================================================ */
-
-header{ overflow:visible; }
-
-.navbar.wrap{
-  box-sizing:border-box;
-  width:100%;
-  max-width:1200px;
-  margin:0 auto;
-  padding:12px 28px;
-  min-height:76px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:nowrap;
-  gap:24px;
-}
-
-.brand{
-  direction:ltr;
-  unicode-bidi:isolate;
-  display:flex;
-  flex-direction:row;
-  align-items:center;
-  gap:11px;
-  flex:0 1 auto;
-  min-width:0;
-  max-width:52%;
-}
-.brand .mark-img{
-  order:1;
-  height:38px;
-  width:auto;
-  flex:0 0 auto;
-}
-.brand-copy{
-  order:2;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:flex-start;
-  min-width:0;
-  max-width:calc(100% - 49px);
-  gap:3px;
-}
-.brand-name{
-  display:block;
-  max-width:100%;
-  font-family:'Oswald', sans-serif;
-  font-weight:700;
-  font-size:1.18rem;
-  letter-spacing:.02em;
-  line-height:1;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis; /* was "clip" before — cut names mid-word, which read as broken, not stylistic */
-  text-align:left;
-}
-.brand-motto{
-  display:grid;
-  grid-template-columns:minmax(8px,1fr) auto minmax(8px,1fr);
-  align-items:center;
-  gap:6px;
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  margin-top:2px;
-  font-family:'IBM Plex Sans', sans-serif;
-  font-size:.58rem;
-  font-weight:600;
-  letter-spacing:.045em;
-  line-height:1;
-  white-space:nowrap;
-  color:var(--ink);
-  opacity:.86;
-}
-.brand-motto > span{
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  text-align:center;
-}
-.brand-motto::before,
-.brand-motto::after{
-  content:"";
-  display:block;
-  height:1px;
-  min-width:8px;
-  background:currentColor;
-  opacity:.72;
-}
-
-/* Arabic pages: content flips RTL, but the logo/name/motto lockup itself never does */
-html[dir="rtl"] .brand{
-  direction:ltr;
-  flex-direction:row;
-  justify-content:flex-start;
-}
-html[dir="rtl"] .brand-copy{
-  direction:ltr;
-  align-items:flex-start;
-  text-align:left;
-}
-html[dir="rtl"] .brand-name{
-  direction:ltr;
-  text-align:left;
-}
-html[dir="rtl"] .brand-motto > span{
-  direction:rtl;
-  text-align:center;
-}
-
-footer .brand{ align-items:center; }
-footer .brand::after{ display:none; }
-
-.nav-controls{
-  flex:0 0 auto;
-  min-width:0;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  flex-wrap:nowrap;
-  gap:10px;
-}
-.nav-controls > *{ flex:0 0 auto; }
-.menu-trigger,.theme-toggle,.language-selector,.nav-cta{
-  height:46px;
-  box-sizing:border-box;
-}
-.language-selector{
-  min-width:150px;
-  max-width:190px;
-  margin:0;
-  padding:0 12px;
-  font-size:.78rem;
-}
-.nav-cta{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:0 18px;
-  white-space:nowrap;
-}
-
-@media (max-width:900px){
-  .navbar.wrap{ padding:11px 18px; gap:14px; }
-  .brand .mark-img{ height:34px; }
-  .brand-name{ font-size:1.05rem; }
-  .brand-motto{ font-size:.50rem; gap:5px; }
-  .nav-controls{ gap:7px; }
-  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{ height:44px; }
-  .language-selector{ min-width:126px; max-width:170px; font-size:.74rem; }
-  .nav-cta{ padding:0 14px; font-size:.72rem; }
-}
-
-@media (max-width:600px){
-  .navbar.wrap{
-    display:grid;
-    grid-template-columns:minmax(0,1fr);
-    grid-auto-flow:row;
-    row-gap:10px;
-    padding:10px 14px 11px;
-  }
-  .brand{ width:100%; max-width:100%; }
-  .brand .mark-img{ height:32px; }
-  .brand-copy{ max-width:calc(100% - 42px); }
-  .brand-name{ font-size:1rem; letter-spacing:.01em; }
-  .brand-motto{ font-size:.48rem; gap:4px; letter-spacing:.02em; }
-  .nav-controls{
-    width:100%;
-    display:grid;
-    grid-template-columns:auto auto minmax(0,1fr) auto;
-    gap:7px;
-  }
-  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{ height:42px; }
-  .menu-trigger{ padding:0 11px; }
-  .theme-toggle{ width:42px; padding:0; }
-  .language-selector{ width:100%; min-width:0; max-width:none; padding:0 8px; font-size:.72rem; }
-  .nav-cta{ padding:0 12px; font-size:.68rem; letter-spacing:.035em; }
-}
-
-@media (max-width:390px){
-  .navbar.wrap{ padding-left:12px; padding-right:12px; }
-  .brand .mark-img{ height:30px; }
-  .brand-name{ font-size:.94rem; }
-  .brand-motto{ font-size:.44rem; }
-  .nav-controls{ grid-template-columns:auto auto minmax(0,1fr); }
-  .nav-cta{ grid-column:1 / -1; width:100%; }
-}
-
-html[dir="rtl"] .navbar,
-html[dir="rtl"] .nav-controls{ direction:ltr; }
+  <section id="contact" class="reveal"><div class="wrap"><div class="contact-shell"><div class="section-head"><span class="section-num">07</span><h2 data-i18n="booking.title">Book a pickup</h2></div>
+    <div class="contact-grid"><div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.whatsapp">WhatsApp</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></div></div><div class="contact-card" data-href="tel:+254713261719"><div class="label" data-i18n="contact.call">Call</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></div></div><div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.email">Email</div><div class="value">info@lueriinternational.com</div></div></div>
+    <form id="bookingForm" style="margin-top:40px;" novalidate>
+      <input type="text" name="website" id="bookingHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
+      <div class="form-row2"><div class="form-group"><label class="form-label" for="pickup" data-i18n="booking.pickup">Pickup Location</label><input class="form-input" type="text" id="pickup" placeholder="e.g. Westlands, Nairobi" data-i18n-placeholder="booking.pickupPlaceholder" required></div><div class="form-group"><label class="form-label" for="dropoff" data-i18n="booking.dropoff">Drop-off Location</label><input class="form-input" type="text" id="dropoff" placeholder="e.g. CBD, Nairobi" data-i18n-placeholder="booking.dropoffPlaceholder" required></div></div>
+      <div class="form-group"><label class="form-label" for="details" data-i18n="booking.details">Parcel Details</label><textarea class="form-input" id="details" rows="2" placeholder="Describe the item(s), approx. size/weight..." data-i18n-placeholder="booking.detailsPlaceholder" required></textarea></div>
+      <div class="form-row2"><div class="form-group"><label class="form-label" for="name" data-i18n="booking.name">Your Name</label><input class="form-input" type="text" id="name" data-i18n-placeholder="booking.namePlaceholder" required></div><div class="form-group"><label class="form-label" for="phone" data-i18n="booking.phone">Phone Number</label><input class="form-input" type="tel" id="phone" placeholder="07xx xxx xxx" data-i18n-placeholder="booking.phonePlaceholder" required></div></div>
+      <div class="form-group"><label class="form-label" for="time" data-i18n="booking.time">Preferred Pickup Time</label><select class="form-input" id="time" required><option value="" disabled selected data-i18n="booking.selectTime">Select time...</option><option value="asap" data-i18n="booking.asap">ASAP (Today)</option><option value="morning" data-i18n="booking.morning">This Morning</option><option value="afternoon" data-i18n="booking.afternoon">This Afternoon</option><option value="evening" data-i18n="booking.evening">This Evening</option></select></div>
+      <div class="form-group"><label class="form-label" for="memberNumber" data-i18n="booking.member">Lueri Rewards Member No. (optional)</label><input class="form-input" type="text" id="memberNumber" placeholder="e.g. LR-1004 — leave blank if you're not a member yet" data-i18n-placeholder="booking.memberPlaceholder"></div>
+      <button type="submit" id="bookingSubmit" class="btn btn-signal btn-block" data-i18n="booking.submit">Send Booking</button>
+      <p id="bookingError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:.9rem;"></p>
+      <p style="margin:16px 0 0;font-size:.82rem;opacity:.65;line-height:1.5;" data-i18n="booking.terms">By booking, you agree to our Terms of Service and Privacy Policy.</p>
+    </form>
+  </div></div></section>
+</main>
+<footer class="wrap"><div class="legal-block"><div><strong data-i18n="footer.registered">Registered business</strong><br><span data-i18n="footer.location">Lueri International · Nairobi, Kenya</span><br><span data-i18n="footer.founded">Founded 13 December 2023</span><br><span data-i18n="footer.registration">Registration details available on request for B2B clients</span></div><div><strong data-i18n="footer.contact">Contact</strong><br><a href="tel:+254713261719" class="phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div><div><strong data-i18n="footer.hours">Hours</strong><br><span data-i18n="footer.weekdays">Mon–Fri, 8:00 AM – 5:00 PM</span><br><span data-i18n="footer.saturday">Sat, 8:00 AM – 3:00 PM</span><br><span data-i18n="footer.sunday">Closed Sunday</span></div></div><div class="footer-row" style="margin-top:40px;"><div class="brand"><img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International"><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span class="brand-copy"><span class="brand-name">Lueri International</span><span class="brand-motto"><span data-i18n="hero.motto">Until the seal is broken</span></span></span></div><div class="mono" style="opacity:.6;" data-i18n="footer.copyright">© 2026 Nairobi, Kenya</div><div class="social-links"><a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" data-i18n="footer.facebook">Facebook</a><a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.instagram">Instagram</a><a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" data-i18n="footer.x">X</a><a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" data-i18n="footer.linkedin">LinkedIn</a><a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.tiktok">TikTok</a></div><div class="foot-stamp" data-i18n="footer.ready">DISPATCH READY</div></div></footer>
+<script src="i18n-translations.js?v=20260919-06"></script><script src="i18n-completion.js?v=20260919-06"></script><script src="i18n-copy-patch.js?v=20260921-01"></script><script src="i18n-strict.js?v=20260919-06"></script><script src="i18n.js?v=20260919-06"></script><script src="i18n-coverage-fix.js?v=20260925-01"></script><script src="lucy.js?v=20260920-02"></script>
+<script src="reviews.js?v=20260921-01" defer></script>
+<script src="analytics.js?v=20260921-01" defer></script>
+</body>
+</html>
