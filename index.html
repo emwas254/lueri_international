@@ -30,7 +30,7 @@
 <script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="assets/site.css?v=20260926-header-polish-v1">
+<link rel="stylesheet" href="assets/site.css?v=20260926-header-v2">
 <link rel="stylesheet" href="i18n-content.css">
 <style>
   body.rtl { text-align: right; direction: rtl; }
@@ -65,6 +65,23 @@
 </script>
 </head>
 <body>
+<script>
+(function(){
+  function removeStrayNewlineText(){
+    var root=document.body;
+    if(!root)return;
+    var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+    var nodes=[];
+    while(walker.nextNode()){
+      var n=walker.currentNode;
+      if(n.nodeValue && n.nodeValue.trim()==="\\n") nodes.push(n);
+    }
+    nodes.forEach(function(n){if(n.parentNode)n.parentNode.removeChild(n);});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",removeStrayNewlineText);
+  else removeStrayNewlineText();
+})();
+</script>
 <a class="skip-link" href="#contact" data-i18n="booking.title">Skip to booking form</a>
 <div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
   <div>
