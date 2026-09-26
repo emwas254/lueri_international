@@ -435,26 +435,8 @@ async function handle(req: Request): Promise<Response> {
         case "PARCEL": {
           if (imageData) {
             // Photo handling must never become a hard dependency for booking.
-            // If rate-limited, ask for a manual description rather than breaking the booking.
-            if (limited("p:" + ip, 5, 600_000)) {
-              state.details = "Parcel photo supplied; manual parcel description required.";
-              state.step = "PARCEL";
-              reply = validLocale === "sw"
-                ? "Nimepokea picha ya kifurushi. Kwa usalama wa nukuu, tafadhali andika maelezo mafupi ya kifurushi (aina, ukubwa na uzito unaokadiriwa), kisha tutaendelea."
-                : validLocale === "fr"
-                  ? "J’ai reçu la photo du colis. Pour établir le devis correctement, veuillez saisir une courte description (type, taille et poids approximatif), puis nous continuerons."
-                  : validLocale === "es"
-                    ? "He recibido la foto del paquete. Para preparar el presupuesto correctamente, escribe una breve descripción (tipo, tamaño y peso aproximado) y continuaremos."
-                    : validLocale === "ar"
-                      ? "استلمت صورة الطرد. لإعداد السعر بشكل صحيح، يرجى كتابة وصف مختصر للطرد (النوع والحجم والوزن التقريبي)، ثم نتابع."
-                      : validLocale === "pt"
-                        ? "Recebi a foto do pacote. Para preparar o orçamento corretamente, escreva uma breve descrição (tipo, tamanho e peso aproximado) e continuaremos."
-                        : validLocale === "zh"
-                          ? "我已收到包裹照片。为了准确报价，请输入简短的包裹描述（类型、大小和大致重量），然后我们继续。"
-                          : "I received the parcel photo. To quote it correctly, please type a short parcel description (type, size and approximate weight), then we’ll continue.";
-              break;
-            }
-
+            // Upload the photo independently; AI vision is optional and rate-limited.
+            const visionAllowed = !limited("p:" + ip, 5, 600_000);
             let photoPath: string | null = null;
             try {
               photoPath = await uploadParcelPhoto(imageData);
@@ -465,7 +447,7 @@ async function handle(req: Request): Promise<Response> {
             // Vision is an enhancement, not a gate. If it fails, preserve the photo
             // reference when available and ask for a manual description instead.
             let description = "";
-            if (OPENAI_API_KEY) {
+            if (OPENAI_API_KEY && visionAllowed) {
               try {
                 const augmentedSystemPrompt = `${SYSTEM_PROMPT}
 
@@ -521,21 +503,21 @@ Identify only visible logistics details. Never invent weight, dimensions, value,
               };
               reply = photoPrompts[validLocale] ?? photoPrompts.en;
             } else {
+              // Vision failure must not stop the transaction. The photo reference is retained
+              // when storage succeeds; Lueri can manually confirm parcel handling later.
               state.parcel_photo_path = photoPath;
-              state.step = "PARCEL";
-              reply = validLocale === "sw"
-                ? "Nimepokea picha ya kifurushi, lakini siwezi kuisoma vizuri kwa sasa. Tafadhali andika maelezo mafupi ya kifurushi (aina, ukubwa na uzito unaokadiriwa), kisha tutaendelea."
-                : validLocale === "fr"
-                  ? "J’ai reçu la photo du colis, mais je ne peux pas la lire correctement pour le moment. Veuillez saisir une courte description (type, taille et poids approximatif), puis nous continuerons."
-                  : validLocale === "es"
-                    ? "He recibido la foto, pero no puedo leerla correctamente en este momento. Escribe una breve descripción (tipo, tamaño y peso aproximado) y continuaremos."
-                    : validLocale === "ar"
-                      ? "استلمت الصورة، لكن لا أستطيع قراءتها بشكل موثوق حالياً. يرجى كتابة وصف مختصر للطرد (النوع والحجم والوزن التقريبي)، ثم نتابع."
-                      : validLocale === "pt"
-                        ? "Recebi a foto, mas não consigo lê-la corretamente neste momento. Escreva uma breve descrição (tipo, tamanho e peso aproximado) e continuaremos."
-                        : validLocale === "zh"
-                          ? "我已收到照片，但目前无法可靠读取。请输入简短的包裹描述（类型、大小和大致重量），然后我们继续。"
-                          : "I received the parcel photo, but I can’t reliably read it right now. Please type a short parcel description (type, size and approximate weight), then we’ll continue.";
+              state.details = "Parcel photo attached; AI description unavailable. Final parcel handling may require Lueri confirmation.";
+              state.step = "TIME";
+              const photoFallbacks: Record<string,string> = {
+                en: "Thanks — I received the parcel photo. When would you like the pickup? (ASAP, Morning, Afternoon or Evening)",
+                sw: "Asante — nimepokea picha ya kifurushi. Ungependa pickup ifanyike lini? (HARAKA, Asubuhi, Mchana au Jioni)",
+                fr: "Merci — j’ai reçu la photo du colis. Quand souhaitez-vous la collecte ? (Dès que possible, matin, après-midi ou soir)",
+                es: "Gracias — recibí la foto del paquete. ¿Cuándo deseas la recogida? (Lo antes posible, mañana, tarde o noche)",
+                ar: "شكراً — استلمت صورة الطرد. متى تريد الاستلام؟ (في أقرب وقت، صباحاً، بعد الظهر أو مساءً)",
+                pt: "Obrigado — recebi a foto do pacote. Quando deseja a coleta? (O quanto antes, manhã, tarde ou noite)",
+                zh: "谢谢——我已收到包裹照片。您希望什么时候取件？（尽快、上午、下午或晚上）"
+              };
+              reply = photoFallbacks[validLocale] ?? photoFallbacks.en;
             }
           } else {
             state.details = message;
