@@ -325,11 +325,7 @@
 @media (max-width:700px){
   .wrap{padding-left:16px;padding-right:16px;}
   .navbar{padding:12px 16px;gap:10px;}
-  .brand{font-size:1rem;gap:8px;flex:1 1 100%;min-width:0;}
   .brand .mark-img{height:30px;}
-  .nav-controls{width:100%;display:grid;grid-template-columns:auto auto minmax(112px,1fr) auto;align-items:center;gap:8px;}
-  .nav-cta{justify-content:center;white-space:nowrap;padding:9px 10px;font-size:.7rem;}
-  .menu-trigger{justify-content:center;padding:8px 9px;font-size:.68rem;}
   .theme-toggle{width:36px;height:36px;}
   .lueri-language-menu{width:100%;min-width:0;}
   .lueri-language-trigger{width:100%;min-width:0;justify-content:space-between;}
@@ -350,11 +346,6 @@
   .pricing-note{padding:14px 16px;font-size:.86rem;}
   .coverage-list{grid-template-columns:1fr;}
   .contact-shell{padding:32px 18px;}
-}
-@media (max-width:380px){
-  .nav-controls{grid-template-columns:auto auto minmax(100px,1fr);}
-  .nav-cta{grid-column:1 / -1;}
-  .hero-polished .hero-copy .title{font-size:clamp(2.15rem,11.8vw,3rem);}
 }
 
 /* RTL MOBILE SAFETY — Arabic must fit the viewport without horizontal scrolling */
@@ -405,169 +396,17 @@ html[lang="ar"] .pricing-note{
   word-break:normal;
 }
 @media(max-width:700px){
-  html[lang="ar"] .nav-controls{
-    grid-template-columns:minmax(0,auto) minmax(0,auto) minmax(0,1fr) minmax(0,auto);
-  }
-  html[lang="ar"] .nav-cta{
-    min-width:0;
-    max-width:100%;
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
-  html[lang="ar"] .lueri-language-trigger,
   html[lang="ar"] #languageSelector{
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  html[lang="ar"] .lueri-language-trigger{
     min-width:0!important;
     max-width:100%!important;
   }
 }
 
-/* RTL brand order — keep the L mark visually in front of the Lueri International wordmark. */
-html[dir="rtl"] .brand,
-html[dir="rtl"] .co-brand,
-html[dir="rtl"] .lueri-payment-panel-brand,
-html[dir="rtl"] .lueri-payment-head .lueri-payment-brand {
-  direction: ltr;
-  flex-direction: row;
-}
-
-html[dir="rtl"] .brand span,
-html[dir="rtl"] .co-brand span,
-html[dir="rtl"] .lueri-payment-panel-brand > div,
-html[dir="rtl"] .lueri-payment-head .lueri-payment-brand > div {
-  direction: rtl;
-  text-align: right;
-}
-
-html[dir="rtl"] .brand .mark-img,
-html[dir="rtl"] .co-brand img,
-html[dir="rtl"] .lueri-payment-panel-brand img,
-html[dir="rtl"] .lueri-payment-head .lueri-payment-brand img {
-  order: 0;
-  flex: 0 0 auto;
-}
-
-html[dir="rtl"] .brand span,
-html[dir="rtl"] .co-brand span,
-html[dir="rtl"] .lueri-payment-panel-brand > div,
-html[dir="rtl"] .lueri-payment-head .lueri-payment-brand > div {
-  order: 1;
-  min-width: 0;
-}
-
-@media (max-width: 700px) {
-  html[dir="rtl"] .brand {
-    direction: ltr;
-    justify-content: flex-start;
-    text-align: left;
-  }
-
-  html[dir="rtl"] .brand span {
-    direction: rtl;
-    text-align: right;
-  }
-}
-
-/* 2026-09-21 mobile/RTL hardening */
-html[dir="rtl"],html[dir="rtl"] body{overflow-x:hidden;max-width:100%;}
-html[dir="rtl"] .wrap,html[dir="rtl"] .navbar{min-width:0;max-width:100%;}
-html[dir="rtl"] .nav-controls{min-width:0;max-width:100%;}
-html[dir="rtl"] .brand span{overflow-wrap:anywhere;}
-html[dir="rtl"] .lueri-language-menu{max-width:100%;}
-html[dir="rtl"] .lueri-language-list{right:auto;left:0;max-width:calc(100vw - 24px);}
-html[dir="rtl"] .lueri-language-option{direction:rtl;text-align:right;}
-html[dir="rtl"] .menu-link{min-width:0;}
-html[dir="rtl"] .menu-link-body{min-width:0;overflow-wrap:anywhere;}
-html[dir="rtl"] .hero-copy,html[dir="rtl"] .section-intro,html[dir="rtl"] .card,html[dir="rtl"] .pricing-card,html[dir="rtl"] .faq-item p{overflow-wrap:anywhere;word-break:normal;}
-@media(max-width:600px){html[dir="rtl"] .navbar{padding-left:14px;padding-right:14px;}html[dir="rtl"] .nav-controls{gap:7px;}html[dir="rtl"] #languageSelector{min-width:0!important;width:auto!important;max-width:112px!important;}html[dir="rtl"] .lueri-language-trigger{min-width:0;max-width:112px;}html[dir="rtl"] .hero{padding-left:0;padding-right:0;}html[dir="rtl"] .wrap{padding-left:16px;padding-right:16px;}html[dir="rtl"] .cta-row{flex-direction:column;align-items:stretch;}html[dir="rtl"] .cta-row .btn{width:100%;justify-content:center;}}
-
-
-/* Arabic RTL hardening: keep the L logo on the physical left and prevent
-   horizontal overflow on narrow/mobile screens. */
-html[dir="rtl"] .brand{
-  direction:ltr !important;
-  flex-direction:row !important;
-  justify-content:flex-start;
-  text-align:left;
-  unicode-bidi:isolate;
-}
-html[dir="rtl"] .brand .mark-img{
-  order:0 !important;
-  flex:0 0 auto;
-}
-html[dir="rtl"] .brand span{
-  order:1 !important;
-  min-width:0;
-  overflow-wrap:anywhere;
-}
-html[dir="rtl"] .navbar{
-  min-width:0;
-}
-html[dir="rtl"] .nav-controls{
-  min-width:0;
-  max-width:100%;
-}
-html[dir="rtl"] .wrap{
-  max-width:100%;
-}
-html[dir="rtl"] img,
-html[dir="rtl"] video,
-html[dir="rtl"] iframe,
-html[dir="rtl"] svg{
-  max-width:100%;
-}
-html[dir="rtl"] .hero-copy,
-html[dir="rtl"] .section-intro,
-html[dir="rtl"] .card,
-html[dir="rtl"] .pricing-card,
-html[dir="rtl"] .pricing-note,
-html[dir="rtl"] .contact-shell,
-html[dir="rtl"] .menu-panel,
-html[dir="rtl"] .faq-item,
-html[dir="rtl"] .why-list,
-html[dir="rtl"] .coverage-grid{
-  min-width:0;
-  max-width:100%;
-  overflow-wrap:anywhere;
-  word-break:normal;
-}
-html[dir="rtl"] .coverage-grid,
-html[dir="rtl"] .menu-panel-grid{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-}
-@media (max-width:600px){
-  html[dir="rtl"] .navbar{
-    padding-left:12px;
-    padding-right:12px;
-    gap:8px;
-  }
-  html[dir="rtl"] .brand{
-    max-width:100%;
-    flex:1 1 auto;
-    font-size:1rem;
-  }
-  html[dir="rtl"] .brand .mark-img{
-    height:32px;
-  }
-  html[dir="rtl"] .nav-controls{
-    width:100%;
-    flex:1 1 100%;
-  }
-  html[dir="rtl"] .coverage-grid,
-  html[dir="rtl"] .menu-panel-grid{
-    grid-template-columns:1fr;
-  }
-  html[dir="rtl"] .hero-copy,
-  html[dir="rtl"] .section-intro,
-  html[dir="rtl"] .pricing-card,
-  html[dir="rtl"] .pricing-note,
-  html[dir="rtl"] .contact-shell{
-    overflow-x:hidden;
-  }
-}
-
-
-
-/* RTL/mobile containment for the actual coverage component. */
+/* RTL/mobile containment for the coverage component. */
 html[dir="rtl"] .coverage-wrap{
   grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
   width:100%;
@@ -599,409 +438,223 @@ html[dir="rtl"] .coverage-note{
     gap:8px;
   }
 }
-
-
-/* Brand lockup: logo + name + localized motto. */
-.brand{align-items:center;}
-.brand-copy{display:flex;flex-direction:column;justify-content:center;min-width:0;line-height:1.05;}
-.brand-name{display:block;white-space:nowrap;}
-.brand-motto{display:block;margin-top:4px;font-size:.58rem;line-height:1.2;font-weight:600;letter-spacing:.06em;opacity:.72;white-space:normal;}
-html[dir="rtl"] .brand-copy{direction:rtl;text-align:right;}
-html[dir="rtl"] .brand-name,html[dir="rtl"] .brand-motto{direction:rtl;}
-@media(max-width:700px){.brand-motto{font-size:.5rem;margin-top:3px;letter-spacing:.04em;}}
-
+html[dir="rtl"] .menu-panel-grid{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+}
+@media(max-width:700px){
+  html[dir="rtl"] .menu-panel-grid{ grid-template-columns:1fr; }
+}
+html[dir="rtl"] .menu-link{ min-width:0; }
+html[dir="rtl"] .menu-link-body{ min-width:0; overflow-wrap:anywhere; }
+html[dir="rtl"] .hero-copy,
+html[dir="rtl"] .section-intro,
+html[dir="rtl"] .card,
+html[dir="rtl"] .pricing-card,
+html[dir="rtl"] .faq-item p{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
 
 /* ============================================================
-   LUERI BRAND LOCKUP — FINAL RTL-SAFE RULES
-   The circular L mark is ALWAYS physically first.
-   The motto is ALWAYS directly beneath the wordmark.
-   Language direction must never reverse the brand lockup.
+   HEADER + BRAND LOCKUP — SINGLE SOURCE OF TRUTH
+   Everything below replaces what used to be five separate,
+   competing "final" override blocks stacked with !important.
+   One ladder, one owner per property, no specificity wars.
+   The circular L mark is always physically first; the wordmark
+   sits next to it; the motto sits directly under the wordmark.
+   Arabic content stays RTL everywhere except this lockup, which
+   stays LTR so the logo never jumps to the visual right.
    ============================================================ */
+
+header{ overflow:visible; }
+
+.navbar.wrap{
+  box-sizing:border-box;
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  padding:12px 28px;
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:nowrap;
+  gap:24px;
+}
+
 .brand{
-  direction:ltr !important;
-  flex-direction:row !important;
+  direction:ltr;
   unicode-bidi:isolate;
-}
-.brand > .mark-img{
-  order:1 !important;
-  flex:0 0 auto !important;
-}
-.brand > .brand-copy{
-  order:2 !important;
-  direction:ltr !important;
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:flex-start !important;
-  justify-content:center !important;
-  min-width:0 !important;
-  text-align:left !important;
-}
-.brand > .brand-copy > .brand-name{
-  order:1 !important;
-  direction:ltr !important;
-  text-align:left !important;
-  white-space:nowrap !important;
-}
-.brand > .brand-copy > .brand-motto{
-  text-decoration:none !important;
-  order:2 !important;
-  direction:rtl !important;
-  text-align:right !important;
-  width:100% !important;
-  margin-top:4px !important;
-  white-space:normal !important;
-  overflow-wrap:anywhere !important;
-}
-
-/* Arabic: keep the logo/name/motto lockup LTR while Arabic content remains RTL. */
-html[dir="rtl"] .brand{
-  direction:ltr !important;
-  flex-direction:row !important;
-  justify-content:flex-start !important;
-  unicode-bidi:isolate !important;
-}
-html[dir="rtl"] .brand > .mark-img{
-  order:1 !important;
-}
-html[dir="rtl"] .brand > .brand-copy{
-  order:2 !important;
-  direction:ltr !important;
-  align-items:flex-start !important;
-  text-align:left !important;
-}
-html[dir="rtl"] .brand > .brand-copy > .brand-name{
-  direction:ltr !important;
-  text-align:left !important;
-}
-html[dir="rtl"] .brand > .brand-copy > .brand-motto{
-  direction:rtl !important;
-  text-align:right !important;
-}
-
-/* Footer uses the exact same brand lockup. */
-footer .brand{
-  align-items:center !important;
-}
-footer .brand > span:not(.brand-copy){
-  order:2 !important;
-  direction:ltr !important;
-  text-align:left !important;
-  white-space:nowrap !important;
-}
-footer .brand::after{
-  display:none !important;
-}
-
-@media(max-width:700px){
-  .brand{
-    direction:ltr !important;
-    flex-direction:row !important;
-  }
-  html[dir="rtl"] .brand{
-    direction:ltr !important;
-    flex-direction:row !important;
-  }
-  .brand > .brand-copy{
-    max-width:calc(100% - 44px) !important;
-  }
-  .brand > .brand-copy > .brand-motto{
-    font-size:.5rem !important;
-    line-height:1.35 !important;
-  }
-}
-
-
-/* LUERI PREMIUM WORDMARK v5 — contained wordmark + motto
-   The complete motto lockup is constrained to the exact wordmark width.
-   The L mark remains physically first in every language and viewport. */
-.brand{
-  direction:ltr !important;
-  align-items:center !important;
-  gap:11px !important;
-  min-width:0 !important;
-  max-width:100% !important;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:11px;
+  flex:0 1 auto;
+  min-width:0;
+  max-width:52%;
 }
 .brand .mark-img{
-  height:38px !important;
-  width:auto !important;
-  flex:0 0 auto !important;
+  order:1;
+  height:38px;
+  width:auto;
+  flex:0 0 auto;
 }
 .brand-copy{
-  min-width:0 !important;
-  width:max-content !important;
-  max-width:calc(100% - 49px) !important;
-  display:flex !important;
-  flex-direction:column !important;
-  justify-content:center !important;
-  align-items:stretch !important;
-  gap:3px !important;
+  order:2;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  min-width:0;
+  max-width:calc(100% - 49px);
+  gap:3px;
 }
 .brand-name{
-  display:block !important;
-  width:100% !important;
-  max-width:100% !important;
-  font-family:'Oswald',sans-serif !important;
-  font-weight:700 !important;
-  font-size:1.18rem !important;
-  letter-spacing:.02em !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
-  overflow:hidden !important;
-  text-overflow:clip !important;
+  display:block;
+  max-width:100%;
+  font-family:'Oswald', sans-serif;
+  font-weight:700;
+  font-size:1.18rem;
+  letter-spacing:.02em;
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis; /* was "clip" before — cut names mid-word, which read as broken, not stylistic */
+  text-align:left;
 }
 .brand-motto{
-  display:grid !important;
-  grid-template-columns:minmax(10px,1fr) auto minmax(10px,1fr) !important;
-  align-items:center !important;
-  width:100% !important;
-  max-width:100% !important;
-  min-width:0 !important;
-  margin-top:2px !important;
-  gap:6px !important;
-  font-family:'IBM Plex Sans',sans-serif !important;
-  font-size:.58rem !important;
-  font-weight:600 !important;
-  letter-spacing:.045em !important;
-  line-height:1 !important;
-  white-space:nowrap !important;
-  color:var(--ink) !important;
-  opacity:.86 !important;
-  text-decoration:none !important;
+  display:grid;
+  grid-template-columns:minmax(8px,1fr) auto minmax(8px,1fr);
+  align-items:center;
+  gap:6px;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin-top:2px;
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:.58rem;
+  font-weight:600;
+  letter-spacing:.045em;
+  line-height:1;
+  white-space:nowrap;
+  color:var(--ink);
+  opacity:.86;
 }
 .brand-motto > span{
-  display:block !important;
-  min-width:0 !important;
-  max-width:100% !important;
-  overflow:hidden !important;
-  text-overflow:clip !important;
-  white-space:nowrap !important;
-  text-decoration:none !important;
-  text-align:center !important;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:center;
 }
 .brand-motto::before,
 .brand-motto::after{
-  content:"" !important;
-  display:block !important;
-  width:100% !important;
-  min-width:10px !important;
-  height:1px !important;
-  background:currentColor !important;
-  opacity:.72 !important;
+  content:"";
+  display:block;
+  height:1px;
+  min-width:8px;
+  background:currentColor;
+  opacity:.72;
 }
+
+/* Arabic pages: content flips RTL, but the logo/name/motto lockup itself never does */
 html[dir="rtl"] .brand{
-  direction:ltr !important;
-  flex-direction:row !important;
+  direction:ltr;
+  flex-direction:row;
+  justify-content:flex-start;
 }
 html[dir="rtl"] .brand-copy{
-  direction:ltr !important;
-  align-items:stretch !important;
+  direction:ltr;
+  align-items:flex-start;
+  text-align:left;
 }
 html[dir="rtl"] .brand-name{
-  direction:ltr !important;
-  text-align:left !important;
-}
-html[dir="rtl"] .brand-motto{
-  direction:ltr !important;
+  direction:ltr;
+  text-align:left;
 }
 html[dir="rtl"] .brand-motto > span{
-  direction:rtl !important;
-  text-align:center !important;
-}
-footer .brand{
-  align-items:center !important;
-}
-footer .brand::after{
-  display:none !important;
-}
-@media(max-width:700px){
-  .brand{
-    gap:8px !important;
-  }
-  .brand .mark-img{
-    height:32px !important;
-  }
-  .brand-copy{
-    max-width:calc(100% - 40px) !important;
-  }
-  .brand-name{
-    font-size:1rem !important;
-    letter-spacing:.015em !important;
-  }
-  .brand-motto{
-    font-size:.5rem !important;
-    gap:5px !important;
-    letter-spacing:.025em !important;
-  }
-  .brand-motto::before,
-  .brand-motto::after{
-    min-width:8px !important;
-  }
-}
-@media(max-width:380px){
-  .brand-copy{
-    max-width:calc(100% - 38px) !important;
-  }
-  .brand-name{
-    font-size:.92rem !important;
-  }
-  .brand-motto{
-    font-size:.46rem !important;
-    gap:4px !important;
-  }
+  direction:rtl;
+  text-align:center;
 }
 
+footer .brand{ align-items:center; }
+footer .brand::after{ display:none; }
 
-/* ============================================================
-   HOMEPAGE HEADER — CORPORATE RESPONSIVE LOCKUP v2
-   ============================================================ */
-header{overflow:visible !important;}
-.navbar.wrap{box-sizing:border-box !important;width:100% !important;max-width:1200px !important;margin:0 auto !important;padding:12px 28px !important;min-height:76px !important;display:flex !important;align-items:center !important;justify-content:space-between !important;flex-wrap:nowrap !important;gap:24px !important;}
-.navbar .brand{flex:0 1 auto !important;width:auto !important;max-width:52% !important;min-width:0 !important;}
-.brand-copy{width:auto !important;max-width:100% !important;min-width:0 !important;}
-.brand-name{overflow:visible !important;white-space:nowrap !important;}
-.brand-motto{box-sizing:border-box !important;width:100% !important;max-width:100% !important;}
-.nav-controls{flex:0 0 auto !important;width:auto !important;min-width:0 !important;display:flex !important;align-items:center !important;justify-content:flex-end !important;flex-wrap:nowrap !important;gap:10px !important;}
-.nav-controls>*{flex:0 0 auto !important;}
-.menu-trigger,.theme-toggle,.language-selector,.nav-cta{height:46px !important;box-sizing:border-box !important;}
-.language-selector{min-width:150px !important;max-width:190px !important;margin:0 !important;padding:0 12px !important;font-size:.78rem !important;}
-.nav-cta{display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:0 18px !important;white-space:nowrap !important;}
-@media (max-width:900px){
-  .navbar.wrap{max-width:none !important;padding:11px 18px !important;gap:14px !important;}
-  .navbar .brand{max-width:52% !important;}
-  .brand .mark-img{height:34px !important;}
-  .brand-name{font-size:1.05rem !important;}
-  .brand-motto{font-size:.50rem !important;gap:5px !important;}
-  .nav-controls{gap:7px !important;}
-  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{height:44px !important;}
-  .language-selector{min-width:126px !important;max-width:170px !important;font-size:.74rem !important;}
-  .nav-cta{padding:0 14px !important;font-size:.72rem !important;}
-}
-@media (max-width:600px){
-  .navbar.wrap{display:grid !important;grid-template-columns:minmax(0,1fr) !important;gap:9px !important;padding:10px 14px 11px !important;max-width:none !important;}
-  .navbar .brand{width:100% !important;max-width:100% !important;justify-self:start !important;}
-  .brand .mark-img{height:32px !important;}
-  .brand-copy{max-width:calc(100% - 42px) !important;}
-  .brand-name{font-size:1rem !important;letter-spacing:.01em !important;}
-  .brand-motto{font-size:.48rem !important;gap:4px !important;letter-spacing:.02em !important;}
-  .nav-controls{width:100% !important;display:grid !important;grid-template-columns:auto auto minmax(0,1fr) auto !important;gap:7px !important;}
-  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{height:42px !important;}
-  .menu-trigger{padding:0 11px !important;}
-  .theme-toggle{width:42px !important;padding:0 !important;}
-  .language-selector{width:100% !important;min-width:0 !important;max-width:none !important;padding:0 8px !important;font-size:.72rem !important;}
-  .nav-cta{padding:0 12px !important;font-size:.68rem !important;letter-spacing:.035em !important;}
-}
-@media (max-width:390px){
-  .navbar.wrap{padding-left:12px !important;padding-right:12px !important;}
-  .brand .mark-img{height:30px !important;}
-  .brand-name{font-size:.94rem !important;}
-  .brand-motto{font-size:.44rem !important;}
-  .nav-controls{grid-template-columns:auto auto minmax(0,1fr) !important;}
-  .nav-cta{grid-column:1 / -1 !important;width:100% !important;}
-}
-html[dir="rtl"] .navbar{direction:ltr !important;}
-html[dir="rtl"] .nav-controls{direction:ltr !important;}
-html[dir="rtl"] .brand-copy{direction:ltr !important;}
-
-
-/* LUERI HEADER — NEW CHANGE v3 */
-/* Final responsive header override: compact, corporate, and collision-safe. */
-header{overflow:visible !important;}
-.navbar.wrap{
-  width:100% !important;
-  max-width:1200px !important;
-  margin:0 auto !important;
-  min-height:76px !important;
-  padding:12px 28px !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:space-between !important;
-  flex-wrap:nowrap !important;
-  gap:24px !important;
-}
-.navbar .brand{
-  flex:0 1 auto !important;
-  width:auto !important;
-  max-width:52% !important;
-  min-width:0 !important;
-}
-.brand-copy{width:auto !important;max-width:100% !important;min-width:0 !important;}
-.brand-name{white-space:nowrap !important;overflow:visible !important;}
-.brand-motto{box-sizing:border-box !important;max-width:100% !important;}
 .nav-controls{
-  flex:0 0 auto !important;
-  width:auto !important;
-  min-width:0 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:flex-end !important;
-  flex-wrap:nowrap !important;
-  gap:10px !important;
+  flex:0 0 auto;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:nowrap;
+  gap:10px;
 }
-.nav-controls>*{flex:0 0 auto !important;}
+.nav-controls > *{ flex:0 0 auto; }
 .menu-trigger,.theme-toggle,.language-selector,.nav-cta{
-  height:46px !important;
-  box-sizing:border-box !important;
+  height:46px;
+  box-sizing:border-box;
 }
 .language-selector{
-  min-width:150px !important;
-  max-width:190px !important;
-  margin:0 !important;
-  padding:0 12px !important;
-  font-size:.78rem !important;
+  min-width:150px;
+  max-width:190px;
+  margin:0;
+  padding:0 12px;
+  font-size:.78rem;
 }
 .nav-cta{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:0 18px !important;
-  white-space:nowrap !important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 18px;
+  white-space:nowrap;
 }
+
 @media (max-width:900px){
-  .navbar.wrap{max-width:none !important;padding:11px 18px !important;gap:14px !important;}
-  .navbar .brand{max-width:52% !important;}
-  .brand .mark-img{height:34px !important;}
-  .brand-name{font-size:1.05rem !important;}
-  .brand-motto{font-size:.50rem !important;gap:5px !important;}
-  .nav-controls{gap:7px !important;}
-  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{height:44px !important;}
-  .language-selector{min-width:126px !important;max-width:170px !important;font-size:.74rem !important;}
-  .nav-cta{padding:0 14px !important;font-size:.72rem !important;}
+  .navbar.wrap{ padding:11px 18px; gap:14px; }
+  .brand .mark-img{ height:34px; }
+  .brand-name{ font-size:1.05rem; }
+  .brand-motto{ font-size:.50rem; gap:5px; }
+  .nav-controls{ gap:7px; }
+  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{ height:44px; }
+  .language-selector{ min-width:126px; max-width:170px; font-size:.74rem; }
+  .nav-cta{ padding:0 14px; font-size:.72rem; }
 }
+
 @media (max-width:600px){
   .navbar.wrap{
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) !important;
-    gap:9px !important;
-    padding:10px 14px 11px !important;
-    max-width:none !important;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+    row-gap:10px;
+    padding:10px 14px 11px;
   }
-  .navbar .brand{width:100% !important;max-width:100% !important;justify-self:start !important;}
-  .brand .mark-img{height:32px !important;}
-  .brand-copy{max-width:calc(100% - 42px) !important;}
-  .brand-name{font-size:1rem !important;letter-spacing:.01em !important;}
-  .brand-motto{font-size:.48rem !important;gap:4px !important;letter-spacing:.02em !important;}
+  .brand{ width:100%; max-width:100%; }
+  .brand .mark-img{ height:32px; }
+  .brand-copy{ max-width:calc(100% - 42px); }
+  .brand-name{ font-size:1rem; letter-spacing:.01em; }
+  .brand-motto{ font-size:.48rem; gap:4px; letter-spacing:.02em; }
   .nav-controls{
-    width:100% !important;
-    display:grid !important;
-    grid-template-columns:auto auto minmax(0,1fr) auto !important;
-    gap:7px !important;
+    width:100%;
+    display:grid;
+    grid-template-columns:auto auto minmax(0,1fr) auto;
+    gap:7px;
   }
-  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{height:42px !important;}
-  .menu-trigger{padding:0 11px !important;}
-  .theme-toggle{width:42px !important;padding:0 !important;}
-  .language-selector{width:100% !important;min-width:0 !important;max-width:none !important;padding:0 8px !important;font-size:.72rem !important;}
-  .nav-cta{padding:0 12px !important;font-size:.68rem !important;letter-spacing:.035em !important;}
+  .menu-trigger,.theme-toggle,.language-selector,.nav-cta{ height:42px; }
+  .menu-trigger{ padding:0 11px; }
+  .theme-toggle{ width:42px; padding:0; }
+  .language-selector{ width:100%; min-width:0; max-width:none; padding:0 8px; font-size:.72rem; }
+  .nav-cta{ padding:0 12px; font-size:.68rem; letter-spacing:.035em; }
 }
+
 @media (max-width:390px){
-  .navbar.wrap{padding-left:12px !important;padding-right:12px !important;}
-  .brand .mark-img{height:30px !important;}
-  .brand-name{font-size:.94rem !important;}
-  .brand-motto{font-size:.44rem !important;}
-  .nav-controls{grid-template-columns:auto auto minmax(0,1fr) !important;}
-  .nav-cta{grid-column:1 / -1 !important;width:100% !important;}
+  .navbar.wrap{ padding-left:12px; padding-right:12px; }
+  .brand .mark-img{ height:30px; }
+  .brand-name{ font-size:.94rem; }
+  .brand-motto{ font-size:.44rem; }
+  .nav-controls{ grid-template-columns:auto auto minmax(0,1fr); }
+  .nav-cta{ grid-column:1 / -1; width:100%; }
 }
+
 html[dir="rtl"] .navbar,
-html[dir="rtl"] .nav-controls,
-html[dir="rtl"] .brand{direction:ltr !important;}
-html[dir="rtl"] .brand-copy{direction:ltr !important;}
-html[dir="rtl"] .brand-motto > span{direction:rtl !important;}
+html[dir="rtl"] .nav-controls{ direction:ltr; }
