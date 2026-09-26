@@ -197,7 +197,9 @@ function renderPendingPhotoAction(){
             customer_email:payload.customer_email||'',
             preferred_time:payload.preferred_time||'',
             member_id:payload.member_id||null,
-            parcel_photo_path:payload.parcel_photo_path||null
+            parcel_photo_path:payload.parcel_photo_path||null,
+            delivery_type:payload.delivery_type||'one_off',
+            trip_count:Number(payload.trip_count||1)
           })
         });
         const data=await res.json().catch(()=>({}));
@@ -205,7 +207,7 @@ function renderPendingPhotoAction(){
 
         if(data.paymentMethod==='ncba_till'){
           const labels={
-            en:{title:'Delivery payment ready',intro:'Your booking is created. Complete the payment using the NCBA Till details below.',amount:'Amount',paybill:'NCBA PayBill',account:'Till / account',reference:'Reference',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → enter 880100 → enter the Lueri Till short code → enter the reference/narration.',wait:'Your booking stays pending until the NCBA transaction is confirmed and reconciled by Lueri.'},
+            en:{title:'Delivery payment ready',intro:'Your booking is created. Complete the payment using the NCBA Till details below.',amount:'Amount',paybill:'NCBA PayBill',account:'Account / Till short code',reference:'Reference',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → enter Business No. 880100 → enter Account No. PAYLUERIINT → add the booking reference after a space as the narration → enter PIN → OK.',wait:'Your booking stays pending until the NCBA transaction is confirmed and reconciled by Lueri.'},
             sw:{title:'Malipo ya delivery yako yako tayari',intro:'Booking yako imeundwa. Kamilisha malipo ukitumia maelezo ya NCBA Till hapa chini.',amount:'Kiasi',paybill:'NCBA PayBill',account:'Till / akaunti',reference:'Reference',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → weka 880100 → weka Till ya Lueri → weka reference/narration.',wait:'Booking yako itabaki ikisubiri hadi muamala wa NCBA uthibitishwe na kulinganishwa na Lueri.'},
             fr:{title:'Paiement de livraison prêt',intro:'Votre réservation est créée. Effectuez le paiement avec les informations NCBA Till ci-dessous.',amount:'Montant',paybill:'NCBA PayBill',account:'Till / compte',reference:'Référence',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → saisissez 880100 → saisissez le Till Lueri → saisissez la référence/narration.',wait:'La réservation reste en attente jusqu’à la confirmation et au rapprochement du paiement NCBA par Lueri.'},
             es:{title:'Pago de entrega listo',intro:'Tu reserva está creada. Completa el pago con los datos de NCBA Till que aparecen abajo.',amount:'Importe',paybill:'NCBA PayBill',account:'Till / cuenta',reference:'Referencia',steps:'M-Pesa → Lipa na M-Pesa → Pay Bill → introduce 880100 → introduce el Till de Lueri → introduce la referencia/narración.',wait:'La reserva queda pendiente hasta que Lueri confirme y concilie el pago de NCBA.'},
