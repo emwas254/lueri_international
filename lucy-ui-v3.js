@@ -217,9 +217,8 @@ function renderPendingPhotoAction(){
           };
           const l=labels[locale]||labels.en;
           const text=l.title+'\n\n'+l.intro+'\n\n'+l.amount+': KES '+Number(data.amount||0).toLocaleString()+'\n'+l.paybill+': '+String(data.paybill||'880100')+'\n'+l.account+': '+String(data.tillShortCode||'')+'\n'+l.reference+': '+String(data.bookingReference||'')+'\n\n'+l.steps+'\n\n'+l.wait;
-          addMessage(text,'bot');
           clearSession();
-          if(input)input.focus();
+          window.location.assign('/delivery-checkout.html?reference='+encodeURIComponent(String(data.bookingReference||'')));
           return;
         }
 
