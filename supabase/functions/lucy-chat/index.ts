@@ -1,9 +1,15 @@
 // Lucy v3.2: multilingual Lueri support with deterministic delivery booking state.
 // Public-support assistant only: no private account/order/payment lookup or tool use.
 
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+// NEW — geocoding is entirely optional. If this secret isn't set, the
+// confirmation map is simply skipped; the booking flow is unaffected.
+const LOCATIONIQ_API_KEY = Deno.env.get("LOCATIONIQ_API_KEY") ?? "";
 // OpenAI GPT-5.6 Luna is used for cost-sensitive, high-volume customer support.
 const MODEL = "gpt-5.6-luna";
 const MAX_MESSAGE_LEN = 500;
@@ -36,6 +42,75 @@ const FALLBACK: Record<string, {setup:string; tooLong:string; api:string; unknow
   pt: { setup: `A Lucy está temporariamente indisponível. Fale diretamente com a Lueri pelo WhatsApp: ${WA}`, tooLong: `Essa pergunta está um pouco longa. Encurte-a ou fale com a Lueri pelo WhatsApp: ${WA}`, api: `A Lucy está com um problema no momento. Fale com a Lueri pelo WhatsApp: ${WA}`, unknown: `Não tenho certeza sobre essa informação. Fale com a Lueri pelo WhatsApp: ${WA}`, error: `Ocorreu um erro. Fale com a Lueri pelo WhatsApp: ${WA}`, method: "Essa solicitação não é compatível. Tente novamente.", empty: `Não tenho certeza de como responder a isso. Fale com a Lueri pelo WhatsApp: ${WA}` },
   zh: { setup: `露西暂时无法使用。请直接通过 WhatsApp 联系 Lueri：${WA}`, tooLong: `这个问题有点长。请缩短问题，或通过 WhatsApp 联系 Lueri：${WA}`, api: `露西目前遇到了一点问题。请通过 WhatsApp 联系 Lueri：${WA}`, unknown: `我不确定这个信息。请通过 WhatsApp 联系 Lueri：${WA}`, error: `发生了一些问题。请通过 WhatsApp 联系 Lueri：${WA}`, method: "暂不支持此请求。请再试一次。", empty: `我不确定该如何回答。请通过 WhatsApp 联系 Lueri：${WA}` }
 };
+// ============================================================
+// NEW — best-effort landmark geocoding for the booking-review
+// confirmation map. Shares the same location_landmarks cache
+// table as delivery-payment-initiate, so a landmark resolved
+// here costs nothing when delivery-payment-initiate looks it
+// up again later. Never throws: any failure resolves to null
+// coordinates, and the review step proceeds exactly as it did
+// before this change — this never blocks or alters a booking.
+// ============================================================
+type GeocodeResult = { lat: number | null; lng: number | null; landmarkId: string | null };
+
+async function resolveLandmark(rawText: string): Promise<GeocodeResult> {
+  const empty: GeocodeResult = { lat: null, lng: null, landmarkId: null };
+  if (!rawText) return empty;
+
+  try {
+    const cleaned = rawText.trim().toLowerCase();
+
+    const { data: cached, error: cacheErr } = await supabaseAdmin
+      .from("location_landmarks")
+      .select("id, lat, lng")
+      .contains("aliases", [cleaned])
+      .limit(1);
+
+    if (cacheErr) {
+      console.error("location_landmarks lookup failed (non-blocking)", cacheErr);
+      return empty;
+    }
+    if (cached && cached.length > 0) {
+      return { lat: cached[0].lat, lng: cached[0].lng, landmarkId: cached[0].id };
+    }
+
+    if (!LOCATIONIQ_API_KEY) return empty; // not configured yet — skip quietly
+
+    const url =
+      `https://us1.locationiq.com/v1/search.php` +
+      `?key=${LOCATIONIQ_API_KEY}` +
+      `&q=${encodeURIComponent(rawText + ", Nairobi, Kenya")}` +
+      `&format=json&limit=1`;
+
+    const resp = await fetch(url);
+    if (!resp.ok) return empty;
+
+    const results = await resp.json();
+    if (!Array.isArray(results) || results.length === 0) return empty;
+
+    const { lat, lon } = results[0];
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lon);
+    if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) return empty;
+
+    const { data: inserted, error: insertErr } = await supabaseAdmin
+      .from("location_landmarks")
+      .insert({ name: rawText, aliases: [cleaned], lat: parsedLat, lng: parsedLng, verified: false, source: "locationiq" })
+      .select("id")
+      .single();
+
+    if (insertErr) {
+      console.error("location_landmarks insert failed (non-blocking)", insertErr);
+      return { lat: parsedLat, lng: parsedLng, landmarkId: null };
+    }
+
+    return { lat: parsedLat, lng: parsedLng, landmarkId: inserted.id };
+  } catch (err) {
+    console.error("resolveLandmark failed (non-blocking)", err);
+    return empty;
+  }
+}
+
 async function uploadParcelPhoto(dataUrl: string) {
   const match = dataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);
   if (!match || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return null;
@@ -194,6 +269,10 @@ async function handle(req: Request): Promise<Response> {
     let reply = "";
     let action = "CHAT";
     let payload: Record<string, unknown> | null = null;
+    // NEW — only populated at the REVIEW step, only when both pickup and
+    // dropoff resolved to real coordinates. Frontend renders the
+    // confirmation map when present and simply omits it otherwise.
+    let mapData: { pickup: { lat: number; lng: number }; dropoff: { lat: number; lng: number } } | null = null;
     const imageData = typeof body?.image_data === "string" ? body.image_data : "";
 
     // Deterministic Lueri product/service answers: these do not depend on the AI provider.
@@ -533,7 +612,24 @@ Identify only visible logistics details. Never invent weight, dimensions, value,
           else reply = flow(validLocale, "invalidPhone");
           break;
         case "EMAIL":
-          if (validEmail(message)) { state.customer_email = message.toLowerCase(); state.step = "REVIEW"; reply = fill(flow(validLocale, "review"), state, validLocale); }
+          if (validEmail(message)) {
+            state.customer_email = message.toLowerCase();
+            state.step = "REVIEW";
+            // NEW — geocode pickup/dropoff now, before the customer commits,
+            // so the confirmation map can render alongside this summary.
+            // Best-effort only: a miss here never blocks the review step.
+            const [pickupGeo, dropoffGeo] = await Promise.all([
+              resolveLandmark(state.pickup ?? ""),
+              resolveLandmark(state.dropoff ?? "")
+            ]);
+            if (pickupGeo.lat != null && pickupGeo.lng != null && dropoffGeo.lat != null && dropoffGeo.lng != null) {
+              mapData = {
+                pickup: { lat: pickupGeo.lat, lng: pickupGeo.lng },
+                dropoff: { lat: dropoffGeo.lat, lng: dropoffGeo.lng }
+              };
+            }
+            reply = fill(flow(validLocale, "review"), state, validLocale);
+          }
           else reply = flow(validLocale, "invalidEmail");
           break;
         case "REVIEW":
@@ -596,7 +692,7 @@ Identify only visible logistics details. Never invent weight, dimensions, value,
         .replace(/https:\/\/lueriinternational\.com\/rewards\.html(?:\?[^\s)]+)?/g, localizedRewardsUrl)
         .replace(/https:\/\/lueriinternational\.com\/corporate\.html(?:\?[^\s)]+)?/g, localizedCorporateUrl);
     }
-    return json({ reply, action, payload, delivery_state: state });
+    return json({ reply, action, payload, delivery_state: state, map: mapData });
   } catch (err) {
     console.error("lucy-chat error", err);
     return json({ reply: fallback(requestLocale, "error") });
