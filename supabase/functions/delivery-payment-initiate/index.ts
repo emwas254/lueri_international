@@ -4,6 +4,9 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const NCBA_TILL_SHORT_CODE = (Deno.env.get("NCBA_TILL_SHORT_CODE") ?? "PAYLUERIINT").trim();
 const NCBA_TILL_PAYBILL = (Deno.env.get("NCBA_TILL_PAYBILL") ?? "880100").trim();
+// NEW — geocoding is entirely optional. If this secret isn't set, geocoding
+// is skipped silently and booking/payment behave exactly as before.
+const LOCATIONIQ_API_KEY = Deno.env.get("LOCATIONIQ_API_KEY") ?? "";
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const CORS_HEADERS = {
@@ -57,6 +60,87 @@ async function getAuthoritativePrice(pickup: string, dropoff: string, details: s
   }
 
   return amount;
+}
+
+// ============================================================
+// NEW — best-effort landmark geocoding for confirmation-map
+// display only. Never throws out of this function: any failure
+// (missing key, LocationIQ down, unresolvable text) resolves to
+// null fields and the booking proceeds exactly as it did before
+// this patch. Pricing is computed separately via
+// getAuthoritativePrice() above and is never affected by this.
+// ============================================================
+type GeocodeResult = {
+  lat: number | null;
+  lng: number | null;
+  landmarkId: string | null;
+};
+
+async function resolveLandmark(rawText: string): Promise<GeocodeResult> {
+  const empty: GeocodeResult = { lat: null, lng: null, landmarkId: null };
+  if (!rawText) return empty;
+
+  try {
+    const cleaned = rawText.trim().toLowerCase();
+
+    const { data: cached, error: cacheErr } = await supabaseAdmin
+      .from("location_landmarks")
+      .select("id, lat, lng")
+      .contains("aliases", [cleaned])
+      .limit(1);
+
+    if (cacheErr) {
+      console.error("location_landmarks lookup failed (non-blocking)", cacheErr);
+      return empty;
+    }
+    if (cached && cached.length > 0) {
+      return { lat: cached[0].lat, lng: cached[0].lng, landmarkId: cached[0].id };
+    }
+
+    if (!LOCATIONIQ_API_KEY) return empty; // not configured yet — skip quietly
+
+    const url =
+      `https://us1.locationiq.com/v1/search.php` +
+      `?key=${LOCATIONIQ_API_KEY}` +
+      `&q=${encodeURIComponent(rawText + ", Nairobi, Kenya")}` +
+      `&format=json&limit=1`;
+
+    const resp = await fetch(url);
+    if (!resp.ok) return empty;
+
+    const results = await resp.json();
+    if (!Array.isArray(results) || results.length === 0) return empty;
+
+    const { lat, lon } = results[0];
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lon);
+    if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) return empty;
+
+    const { data: inserted, error: insertErr } = await supabaseAdmin
+      .from("location_landmarks")
+      .insert({
+        name: rawText,
+        aliases: [cleaned],
+        lat: parsedLat,
+        lng: parsedLng,
+        verified: false,
+        source: "locationiq"
+      })
+      .select("id")
+      .single();
+
+    if (insertErr) {
+      // Geocoded successfully but couldn't cache it — still return the
+      // coordinate for this booking, just skip the id reference.
+      console.error("location_landmarks insert failed (non-blocking)", insertErr);
+      return { lat: parsedLat, lng: parsedLng, landmarkId: null };
+    }
+
+    return { lat: parsedLat, lng: parsedLng, landmarkId: inserted.id };
+  } catch (err) {
+    console.error("resolveLandmark failed (non-blocking)", err);
+    return empty;
+  }
 }
 
 async function handle(req: Request): Promise<Response> {
@@ -113,6 +197,14 @@ async function handle(req: Request): Promise<Response> {
     const amount = baseAmount * effectiveTripCount;
     const internalReference = "LR-DEL-" + Date.now() + "-" + crypto.randomUUID().slice(0, 8);
 
+    // NEW — resolved in parallel, after pricing, never blocking on failure.
+    // If either lookup fails or LOCATIONIQ_API_KEY isn't set yet, both
+    // resolve to nulls and the insert below behaves exactly as before.
+    const [pickupGeo, dropoffGeo] = await Promise.all([
+      resolveLandmark(pickup),
+      resolveLandmark(dropoff)
+    ]);
+
     const { data: booking, error: bookingInsertError } = await supabaseAdmin
       .from("bookings")
       .insert({
@@ -129,7 +221,14 @@ async function handle(req: Request): Promise<Response> {
         trip_count: effectiveTripCount,
         status: "pending_payment",
         quoted_amount_kes: amount,
-        reference: internalReference
+        reference: internalReference,
+        // NEW — best-effort, nullable, display-only:
+        pickup_lat: pickupGeo.lat,
+        pickup_lng: pickupGeo.lng,
+        pickup_landmark_id: pickupGeo.landmarkId,
+        dropoff_lat: dropoffGeo.lat,
+        dropoff_lng: dropoffGeo.lng,
+        dropoff_landmark_id: dropoffGeo.landmarkId
       })
       .select("id")
       .single();
@@ -178,6 +277,10 @@ async function handle(req: Request): Promise<Response> {
       paymentAccount: NCBA_TILL_SHORT_CODE,
       narration: internalReference,
       status: "pending",
+      // NEW — present only when resolved; frontend can render a confirmation
+      // map when both are non-null, and should simply omit the map otherwise.
+      pickupLocation: pickupGeo.lat != null ? { lat: pickupGeo.lat, lng: pickupGeo.lng } : null,
+      dropoffLocation: dropoffGeo.lat != null ? { lat: dropoffGeo.lat, lng: dropoffGeo.lng } : null,
       message: "Payment instructions created. The booking remains pending until NCBA payment confirmation is reconciled."
     });
   } catch (err) {
