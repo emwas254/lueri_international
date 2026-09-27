@@ -191,10 +191,23 @@ async function handle(req: Request): Promise<Response> {
     if (!validPhone(phone)) return json({ error: "Invalid Kenyan phone number." }, 400);
     if (customerEmail && !validEmail(customerEmail)) return json({ error: "Invalid email address." }, 400);
 
-    const baseAmount = await getAuthoritativePrice(pickup, dropoff, details);
+    // NEW — pricing failure no longer dead-ends the customer. get_delivery_price
+    // deliberately fails closed for any route it doesn't have configured (see
+    // its own "NO DEFAULT FALLBACK" comment) — that safety behavior is left
+    // untouched. What changes is what THIS function does with that failure:
+    // instead of rejecting the booking outright, it's saved as awaiting_quote
+    // with no price and no payment record, and staff follow up with a real
+    // number. This never invents a KES figure anywhere.
+    let baseAmount: number | null = null;
+    try {
+      baseAmount = await getAuthoritativePrice(pickup, dropoff, details);
+    } catch (pricingErr) {
+      console.error("No configured price for this route — falling back to awaiting_quote", (pricingErr as Error).message);
+    }
+
     // Until dedicated round/multi-trip tariff tables are configured, each trip uses the authoritative one-way route price. Round trip = 2 trips; multi-trip = requested number of trips.
     const effectiveTripCount = deliveryType === "round_trip" ? 2 : tripCount;
-    const amount = baseAmount * effectiveTripCount;
+    const amount = baseAmount != null ? baseAmount * effectiveTripCount : null;
     const internalReference = "LR-DEL-" + Date.now() + "-" + crypto.randomUUID().slice(0, 8);
 
     // NEW — resolved in parallel, after pricing, never blocking on failure.
@@ -219,7 +232,7 @@ async function handle(req: Request): Promise<Response> {
         parcel_photo_path: parcelPhotoPath,
         delivery_type: deliveryType,
         trip_count: effectiveTripCount,
-        status: "pending_payment",
+        status: amount != null ? "pending_payment" : "awaiting_quote",
         quoted_amount_kes: amount,
         reference: internalReference,
         // NEW — best-effort, nullable, display-only:
@@ -236,6 +249,24 @@ async function handle(req: Request): Promise<Response> {
     if (bookingInsertError || !booking) {
       console.error("booking insert failed", bookingInsertError);
       return json({ error: "Could not create the booking." }, 500);
+    }
+
+    // NEW — no price means nothing to charge yet. Skip the payments row
+    // entirely (payments.amount is NOT NULL in this schema — inserting a
+    // placeholder amount here would be worse than not inserting at all)
+    // and tell the customer their booking is saved and awaiting a quote.
+    if (amount == null) {
+      return json({
+        success: true,
+        status: "awaiting_quote",
+        bookingId: booking.id,
+        bookingReference: internalReference,
+        deliveryType,
+        tripCount: effectiveTripCount,
+        pickupLocation: pickupGeo.lat != null ? { lat: pickupGeo.lat, lng: pickupGeo.lng } : null,
+        dropoffLocation: dropoffGeo.lat != null ? { lat: dropoffGeo.lat, lng: dropoffGeo.lng } : null,
+        message: "This route isn't in our automatic pricing yet. Your booking is saved and a Lueri team member will confirm your price and follow up shortly."
+      });
     }
 
     const { data: payment, error: paymentInsertError } = await supabaseAdmin
