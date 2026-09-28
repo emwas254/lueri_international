@@ -11,6 +11,35 @@
     --card-bg: var(--paper);
     --paper-rgb: 240,234,216;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Motion tokens — same easing family as --transition, split by duration
+       so fast feedback (button press) isn't stuck waiting on a 0.3s default
+       built for section reveals. Nothing above uses these yet; wire them in
+       incrementally rather than replacing --transition wholesale. */
+    --duration-fast: 120ms;
+    --duration-normal: 240ms;
+    --duration-slow: 400ms;
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Elevation tokens — same idiom as .docket's existing hard offset
+       shadow (no blur, stamped-paper look), just given names so new
+       components reuse the identity instead of inventing ad hoc shadows. */
+    --shadow-1: 6px 6px 0 rgba(27,38,32,0.08);
+    --shadow-2: 12px 12px 0 rgba(27,38,32,0.08);
+    --shadow-3: 16px 16px 0 rgba(27,38,32,0.1);
+
+    /* Spacing scale — additive only. Existing layout uses hand-set px
+       values throughout; don't force a reflow onto this. Available for
+       new sections/components going forward. */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+    --space-6: 48px;
+    --space-7: 64px;
+    --space-8: 96px;
   }
   [data-theme="dark"] {
     --ink:#F0EAD8;
@@ -119,9 +148,9 @@
   .hero{ padding:80px 0 60px; }
   .docket{
     background:var(--paper); border:1.5px solid var(--ink); position:relative; padding:48px 40px;
-    box-shadow: 12px 12px 0 rgba(27,38,32,0.08); transition: var(--transition);
+    box-shadow: var(--shadow-2); transition: var(--transition);
   }
-  .docket:hover { transform: translate(-4px, -4px); box-shadow: 16px 16px 0 rgba(27,38,32,0.1); }
+  .docket:hover { transform: translate(-4px, -4px); box-shadow: var(--shadow-3); }
   .docket::before, .docket::after{
     content:""; position:absolute; width:12px; height:12px; border:1.5px solid var(--ink);
     border-radius:50%; background:var(--paper-dim); top:16px;
@@ -319,7 +348,22 @@
  .hero-polished .hero-copy-kicker{align-items:flex-start;flex-direction:column;gap:10px;}
  .hero-polished .hero-copy .title{font-size:clamp(2.7rem,12vw,4.4rem);}
 }
-@media(prefers-reduced-motion:reduce){.hero-polished .hero-art-image{transition:none;}}
+@media(prefers-reduced-motion:reduce){
+  .hero-polished .hero-art-image{transition:none;}
+  /* Previously only the hero image respected this — .reveal and .docket
+     still slid/lifted regardless of the setting. Covering them here,
+     not by editing each rule, so anything added later inherits it too. */
+  .reveal{ transition:none; opacity:1; transform:none; }
+  .docket, .docket:hover, .btn:hover{ transition:none; transform:none; }
+}
+
+/* Header uses backdrop-filter for a translucent-on-scroll effect; drop it
+   cleanly for people who've asked their OS for less transparency, rather
+   than leaving it forced on. */
+@media(prefers-reduced-transparency:reduce){
+  header{ background:var(--paper); backdrop-filter:none; -webkit-backdrop-filter:none; }
+  [data-theme="dark"] header{ background:var(--paper); }
+}
 
 /* MOBILE POLISH — prevent squeezed navigation and oversized hero typography */
 @media (max-width:700px){
