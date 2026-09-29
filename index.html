@@ -26,13 +26,13 @@
 <link rel="preconnect" href="https://ylifvexqamxvwzvhmwex.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js"></script>
-<script src="lueri-common.js"></script>
+<script src="lueri-common.js?v=20260929-02"></script>
 <script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="assets/site.css?v=20260929-header-v3">
-<link rel="stylesheet" href="assets/mobile-header.css?v=20260929-m1">
-<link rel="stylesheet" href="i18n-content.css">
+<link rel="stylesheet" href="assets/mobile-header.css?v=20260929-02">
+<link rel="stylesheet" href="i18n-content.css?v=20260929-02">
 <style>
   body.rtl { text-align: right; direction: rtl; }
   body.rtl .language-selector { margin-left: 8px; margin-right: 0; }
@@ -68,16 +68,6 @@
 <body>
 <script>
 (function(){
-  // STOPGAP ONLY — this masks a bug, it does not fix it.
-  // Root cause is almost certainly a raw escaped "\n" landing in translated
-  // copy somewhere in the i18n-*.js chain or an async content fetch
-  // (lucy.js / lueri.boot / Supabase). Find and fix that; this observer is
-  // just here so visitors stop seeing the literal characters while you do.
-  //
-  // Previous version only ran once on DOMContentLoaded, so any "\n" text
-  // node inserted AFTER that point (async translations, async widget
-  // content, etc.) was never caught — which is exactly what the reported
-  // screenshot shows. This version watches for the life of the page.
   function isStrayNewline(node){
     return node.nodeValue && node.nodeValue.trim() === "\\n";
   }
@@ -91,7 +81,7 @@
   }
   function start(){
     sweep(document.body);
-    if (!window.MutationObserver) return; // very old browsers: one-shot sweep only
+    if (!window.MutationObserver) return;
     var observer = new MutationObserver(function(mutations){
       mutations.forEach(function(m){
         m.addedNodes && m.addedNodes.forEach(function(n){
@@ -137,11 +127,11 @@
         <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
         <span id="menuTriggerLabel" data-i18n="nav.menu">Menu</span>
       </button>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode" data-i18n-aria="nav.themeToggle">
         <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="4.22"></line></svg>
         <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
-      <select id="languageSelector" class="language-selector" aria-label="Select language">
+      <select id="languageSelector" class="language-selector" aria-label="Select language" data-i18n-aria="nav.languageSelect">
         <option value="en">EN</option><option value="zh">ZH</option><option value="sw">SW</option><option value="fr">FR</option><option value="es">ES</option><option value="ar">AR</option><option value="pt">PT</option>
       </select>
       <a class="nav-cta" href="#contact" data-i18n="nav.book">Book Pickup</a>
@@ -189,11 +179,10 @@
         <div class="hero-copy-kicker"><span class="eyebrow-mono" data-i18n="hero.dispatch">Dispatch / Nairobi &amp; environs</span><span class="waybill-no" data-i18n="hero.waybill">WAYBILL NO. LI&#8211;2026</span></div>
         <h1 class="title" data-i18n="hero.title" style="white-space:pre-line;">Errands and deliveries<br>across Nairobi,<br>done today.</h1>
         <p class="subtitle" data-i18n="hero.subtitle">Tell us what you need on WhatsApp. We will collect it, check it, buy it or deliver it, and confirm with you before we move. Parcels, documents, Eastleigh stock checks, bulk buys like 15 kg of rice, and same-day runs across Nairobi.</p>
-        <div class="cta-row"><a href="#contact" class="btn btn-primary" data-i18n="hero.bookBtn">Book a Pickup</a><a href="https://wa.link/qk7m3b" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" data-i18n="hero.whatsappBtn">WhatsApp Us</a></div>
+        <div class="cta-row"><a href="#contact" class="btn btn-primary" data-i18n="hero.bookBtn">Book a Pickup</a><a href="https://wa.link/qk7m3b" target="_blank"  rel="noopener noreferrer" class="btn btn-secondary" data-i18n="hero.whatsappBtn">WhatsApp Us</a></div>
       </div>
     </div>
   </section>
-
   <section id="services" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">01</span><h2 data-i18n="services.title">Services</h2></div><p class="section-intro" data-i18n="services.subtitle">Practical delivery services built around speed, reliability, and clear communication.</p>
     <div class="grid3">
       <div class="card"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"></path><path d="M16 3H8a2 2 0 0 0-2 2v3h12V5a2 2 0 0 0-2-2z"></path><line x1="10" y1="12" x2="14" y2="12"></line></svg></div><h3 data-i18n="services.parcelTitle">Errands &amp; stock checks</h3><p data-i18n="services.parcelText">Can't get to town? We go to the shop (Eastleigh fabric, spare parts, stock), check it, confirm with you by call or WhatsApp, then ship or deliver it.</p></div>
@@ -201,11 +190,9 @@
       <div class="card"><div class="icon-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><h3 data-i18n="services.urgentTitle">Parcels, documents &amp; CBD runs</h3><p data-i18n="services.urgentText">Same-day point-to-point delivery within Nairobi: parcels, documents, cheques, and CBD runs from KES 350 (Standard, shared route) or KES 800 (Express, dedicated rider). Applies only within the Nairobi CBD boundary — anywhere further is quoted by zone before we move.</p></div>
     </div>
   </div></section>
-
   <section id="coverage" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">02</span><h2 data-i18n="coverage.title">Coverage</h2></div><p class="section-intro" data-i18n="coverage.subtitle">Nairobi and surrounding areas, with dispatch planned around the route and service requirements.</p>
     <div class="coverage-wrap"><div class="coverage-list"><div data-i18n="zones.cbd">Nairobi CBD</div><div data-i18n="zones.westlands">Westlands</div><div data-i18n="zones.kilimani">Kilimani</div><div data-i18n="zones.kasarani">Kasarani</div><div data-i18n="zones.south">South B / South C</div><div data-i18n="zones.embakasi">Embakasi</div><div data-i18n="zones.ngong">Ngong Road</div><div data-i18n="zones.thika">Thika Road</div><div data-i18n="zones.eastleigh">Eastleigh</div><div data-i18n="zones.kariobangi">Kariobangi</div></div><div class="coverage-note"><div class="eyebrow-mono" data-i18n="coverage.noteTitle">Not on this list?</div><p data-i18n="coverage.body">Lueri runs delivery across Nairobi and its surrounding towns. If your point isn't listed, message us directly — most routes are covered.</p></div></div>
   </div></section>
-
   <section id="pricing" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">03</span><h2 data-i18n="pricing.title">Pricing</h2></div><p class="section-intro" data-i18n="pricing.subtitle">Clear quoted rates with no hidden fees.</p>
     <div class="pricing-grid">
       <div class="pricing-card"><div class="tier" data-i18n="pricing.onDemand">On-demand</div><h3 data-i18n="pricing.single">Single delivery</h3><div class="price" data-i18n="pricing.priceFrom">KES 350–800</div><p data-i18n="pricing.singleText">KES 350 for a shared-route Standard delivery when both pickup and drop-off are within Nairobi CBD. Documents and cheques are KES 400. Need it moving right now? Express (dedicated rider) is KES 800. Anything outside the Nairobi CBD boundary, or heavier/larger, is quoted separately by zone and size before we move.</p></div>
@@ -221,26 +208,21 @@
       <div class="sla-item"><div class="label" data-i18n="pricing.serviceTitle">Service level</div><p data-i18n="pricing.serviceBody">Delivery timeframes are estimates, not guarantees. We communicate delays proactively when traffic or weather affects your route.</p></div>
     </div>
   </div></section>
-
   <section id="why" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">04</span><h2 data-i18n="why.title">Why Lueri</h2></div><p class="section-intro" data-i18n="why.subtitle">A straightforward delivery service built for people and businesses that value reliability.</p>
     <ul class="why-list"><li><span class="n">01</span><div><h3 data-i18n="why.oneTitle">Direct line to the dispatcher</h3><p data-i18n="why.oneText">You speak to the person moving your parcel, not a call centre — every job is coordinated directly on WhatsApp or phone.</p></div></li><li><span class="n">02</span><div><h3 data-i18n="why.twoTitle">Same-day turnaround</h3><p data-i18n="why.twoText">Most pickups within Nairobi are delivered the same day they're booked, when confirmed before the daily cut-off.</p></div></li><li><span class="n">03</span><div><h3 data-i18n="why.threeTitle">Built for repeat business</h3><p data-i18n="why.threeText">Shops and online sellers get a consistent dispatch routine — not a fresh booking and re-brief with a new rider every day.</p></div></li></ul>
     <div id="customerReviews" class="reviews-grid" hidden></div>
-    <div class="trust-banner"><p data-i18n="why.reviewText">Used Lueri? A short, honest review helps other Nairobi customers know who to trust.</p><a class="btn btn-secondary review-cta" href="https://www.facebook.com/LueriInt/reviews" target="_blank" rel="noopener noreferrer">Leave a review on Facebook</a></div>
+    <div class="trust-banner"><p data-i18n="why.reviewText">Used Lueri? A short, honest review helps other Nairobi customers know who to trust.</p><a class="btn btn-secondary review-cta" href="https://www.facebook.com/LueriInt/reviews" target="_blank" rel="noopener noreferrer" data-i18n="why.reviewBtn">Leave a review on Facebook</a></div>
   </div></section>
-
-  <section id="proof" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">05</span><h2 data-i18n="pod.title">Proof of delivery</h2></div><p class="section-intro" data-i18n="pod.subtitle">Visibility from dispatch to handover.</p><div class="pod-steps"><div class="pod-step"><div class="step-num" data-i18n="pod.step1Label">Step 01</div><h3 data-i18n="pod.step1Title">Quote before pickup</h3><p data-i18n="pod.step1Text">You receive a confirmed price and estimated delivery window on WhatsApp before we dispatch — no surprises after collection.</p></div><div class="pod-step"><div class="step-num" data-i18n="pod.step2Label">Step 02</div><h3 data-i18n="pod.step2Title">Status updates</h3><p data-i18n="pod.step2Text">We message you when your parcel is picked up and when it's out for delivery. You're never left guessing where it is.</p></div><div class="pod-step"><div class="step-num" data-i18n="pod.step3Label">Step 03</div><h3 data-i18n="pod.step3Title">Delivery confirmation</h3><p data-i18n="pod.step3Text">Every completed job includes confirmation that your parcel reached the recipient — photo or written confirmation on request.</p></div></div></div></section>
-
+  <section id="proof" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">05</span><h2 data-i18n="pod.title">Proof of delivery</h2></div><p class="section-intro" data-i18n="pod.subtitle">Visibility from dispatch to handover.</p><div class="pod-steps"><div class="pod-step"><div class="step-num" data-i18n="pod.step1Label">Step 01</div><h3 data-i18n="pod.step1Title">Quote before pickup</h3><p data-i18n="pod.step1Text">You receive a confirmed price and estimated delivery window on WhatsApp before we dispatch — no surprises after collection.</p></div><div class="pod-step"><div class="step-num" data-i18n="pod.step2Label">Step 02</div><h3 data-i18n="pod.step2Title">Status updates</h3><p data-i18n="pod.step2Text">We message you when your parcel is picked up and when it's out  for delivery. You're never left guessing where it is.</p></div><div class="pod-step"><div class="step-num" data-i18n="pod.step3Label">Step 03</div><h3 data-i18n="pod.step3Title">Delivery confirmation</h3><p data-i18n="pod.step3Text">Every completed job includes confirmation that your parcel reached the recipient — photo or written confirmation on request.</p></div></div></div></section>
   <section id="rewards-promo" class="reveal"><div class="wrap"><div class="coverage-note" style="max-width:none;"><div class="eyebrow-mono" data-i18n="rewards.eyebrow">Lueri Rewards</div><h2 style="font-size:1.8rem;margin:10px 0 12px;" data-i18n="rewards.title">Earn on every delivery.</h2><p style="opacity:.85;line-height:1.6;max-width:640px;" data-i18n="rewards.body">Every delivery earns points — after each delivery, message us your member number and we'll log your points. Free to join, no card needed. Paid membership tiers are also available for businesses that dispatch regularly.</p><a href="rewards.html" class="btn btn-primary" style="margin-top:20px;" data-i18n="rewards.cta">Join Lueri Rewards</a></div></div></section>
-
   <section id="faq" class="reveal"><div class="wrap"><div class="section-head"><span class="section-num">06</span><h2 data-i18n="faq.title">FAQ</h2></div><div class="faq-list">
     <details class="faq-item"><summary data-i18n="faq.q1">What does "International" in the name mean?</summary><p data-i18n="faq.a1">Lueri International is a Nairobi-born logistics and last-mile delivery company built with a global ambition. We provide reliable, professional, technology-driven delivery solutions that connect businesses with their customers efficiently and seamlessly. While our operations currently focus on Nairobi and its surrounding towns, our vision extends far beyond Kenya — we're building the systems, service standards, technology, and operational capacity required to scale into a trusted global logistics and delivery brand. Our immediate focus is to become a leading last-mile delivery partner in Nairobi, while laying the foundation for expansion across Kenya, Africa, and ultimately international markets. Our goal is simple: start local, build world-class, and go global.</p></details>
     <details class="faq-item"><summary data-i18n="faq.q2">What can and can't you deliver?</summary><p data-i18n="faq.a2">We carry parcels, documents, e-commerce orders, and personal items within Nairobi. We do not transport illegal goods, hazardous materials, cash, or items prohibited under Kenyan law. Fragile or high-value items should be declared at booking so we can confirm we can carry them safely.</p></details>
-    <details class="faq-item"><summary data-i18n="faq.q3">How do I pay?</summary><p data-i18n="faq.a3">Most customers pay via M-Pesa after the quote is confirmed and before or at pickup. Repeat business clients can arrange invoicing — ask us when setting up a standing dispatch arrangement.</p></details>
+    <details class="faq-item"><summary data-i18n="faq.q3">How do I pay?</summary><p data-i18n="faq.a3">Most customers pay via M-Pesa after the quote is confirmed and before or at  pickup. Repeat business clients can arrange invoicing — ask us when setting up a standing dispatch arrangement.</p></details>
     <details class="faq-item"><summary data-i18n="faq.q4">Is same-day delivery guaranteed?</summary><p data-i18n="faq.a4">No. We aim for same-day delivery on most Nairobi routes, but timeframes are estimates — not guarantees. Traffic, weather, and after-hours bookings can affect delivery time. We communicate delays as soon as we know about them.</p></details>
     <details class="faq-item"><summary data-i18n="faq.q5">What if my parcel is lost or damaged?</summary><p data-i18n="faq.a5">We take reasonable care of every item. Liability for loss or damage is limited to the lower of the declared value or KES 5,000 unless otherwise agreed in writing. See our Terms of Service for full details.</p></details>
     <details class="faq-item"><summary data-i18n="faq.q6">Do you offer business contracts?</summary><p data-i18n="faq.a6">Yes. If you dispatch daily or several times a week, we can set up a recurring pickup arrangement with agreed rates and a single point of contact. Apply for a business account and our team will confirm pickup details once we review your application.</p></details>
   </div></div></section>
-
   <section id="contact" class="reveal"><div class="wrap"><div class="contact-shell"><div class="section-head"><span class="section-num">07</span><h2 data-i18n="booking.title">Book a pickup</h2></div>
     <div class="contact-grid"><div class="contact-card" data-copy="254713261719" data-copy-label="WhatsApp"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.whatsapp">WhatsApp</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></div></div><div class="contact-card" data-href="tel:+254713261719"><div class="label" data-i18n="contact.call">Call</div><div class="value phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></div></div><div class="contact-card" data-copy="info@lueriinternational.com" data-copy-label="Email"><span class="copy-hint" data-i18n="contact.copy">Click to copy</span><div class="label" data-i18n="contact.email">Email</div><div class="value">info@lueriinternational.com</div></div></div>
     <form id="bookingForm" style="margin-top:40px;" novalidate>
@@ -257,11 +239,23 @@
   </div></div></section>
 </main>
 <footer class="wrap"><div class="legal-block"><div><strong data-i18n="footer.registered">Registered business</strong><br><span data-i18n="footer.location">Lueri International · Nairobi, Kenya</span><br><span data-i18n="footer.founded">Founded 13 December 2023</span><br><span data-i18n="footer.registration">Registration details available on request for B2B clients</span></div><div><strong data-i18n="footer.contact">Contact</strong><br><a href="tel:+254713261719" class="phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div><div><strong data-i18n="footer.hours">Hours</strong><br><span data-i18n="footer.weekdays">Mon–Fri, 8:00 AM – 5:00 PM</span><br><span data-i18n="footer.saturday">Sat, 8:00 AM – 3:00 PM</span><br><span data-i18n="footer.sunday">Closed Sunday</span></div></div><div class="footer-row" style="margin-top:40px;"><div class="brand"><img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International"><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span class="brand-copy"><span class="brand-name">Lueri International</span><span class="brand-motto"><span data-i18n="hero.motto">Until the seal is broken</span></span></span></div><div class="mono" style="opacity:.6;" data-i18n="footer.copyright">© 2026 Nairobi, Kenya</div><div class="social-links"><a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" data-i18n="footer.facebook">Facebook</a><a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.instagram">Instagram</a><a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" data-i18n="footer.x">X</a><a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" data-i18n="footer.linkedin">LinkedIn</a><a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.tiktok">TikTok</a></div><div class="foot-stamp" data-i18n="footer.ready">DISPATCH READY</div></div></footer>
-<script src="i18n-translations.js?v=20260929-01"></script><script src="i18n-completion.js?v=20260929-01"></script><script src="i18n-copy-patch.js?v=20260929-01"></script><script src="i18n-strict.js?v=20260929-01"></script><script src="i18n.js?v=20260929-01"></script><script src="i18n-coverage-fix.js?v=20260929-01"></script><script src="lucy-v3.js?v=20260929-01"></script>
-<script src="reviews.js?v=20260929-01" defer></script>
-<script src="analytics.js?v=20260929-01" defer></script>
+
+<!-- Capture English HTML as source of truth BEFORE any i18n script rewrites it -->
 <script>
-// Hide the mobile sticky "Book Pickup" bar while the booking form is on screen.
+document.querySelectorAll('[data-i18n]').forEach(function(e){e.setAttribute('data-en',e.innerHTML);});
+document.querySelectorAll('[data-i18n-placeholder]').forEach(function(e){e.setAttribute('data-en-placeholder',e.getAttribute('placeholder')||'');});
+document.querySelectorAll('[data-i18n-aria]').forEach(function(e){e.setAttribute('data-en-aria',e.getAttribute('aria-label')||'');});
+</script>
+
+<script src="i18n-translations.js?v=20260929-02"></script>
+<script src="i18n-completion.js?v=20260929-02"></script>
+<script src="i18n-copy-patch.js?v=20260929-02"></script>
+<script src="i18n.js?v=20260929-02"></script>
+<script src="i18n-coverage-fix.js?v=20260929-02"></script>
+<script src="lucy-v3.js?v=20260929-02"></script>
+<script src="reviews.js?v=20260929-02" defer></script>
+<script src="analytics.js?v=20260929-02" defer></script>
+<script>
 (function(){
   var c = document.getElementById('contact');
   if (!c || !('IntersectionObserver' in window)) return;
