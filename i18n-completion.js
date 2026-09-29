@@ -1,6 +1,13 @@
 /* Lueri International — completion dictionary for the customer-facing homepage. */
 (function(){
 'use strict';
+
+/* I18N FOUNDATION — initialize the shared translation store before any patch layer runs. */
+window.LueriI18n = window.LueriI18n || { translations: {} };
+window.LueriI18n.translations = window.LueriI18n.translations || {};
+['en','zh','sw','fr','es','ar','pt'].forEach(function(locale){
+  window.LueriI18n.translations[locale] = window.LueriI18n.translations[locale] || {};
+});
 var add={
 fr:{
 services:{title:'Services',subtitle:'Des services de livraison pratiques conçus autour de la rapidité, de la fiabilité et d\'une communication claire.',parcelTitle:'Courses et vérifications de stock',parcelText:'Vous ne pouvez pas vous déplacer ? Nous allons au magasin (tissus d\'Eastleigh, pièces détachées, stock), nous vérifions, nous confirmons avec vous par appel ou WhatsApp, puis nous expédions ou livrons.',ecommerceTitle:'Achats en gros et collectes',ecommerceText:'Riz, courses ou fournitures achetés ou collectés en ville et livrés à votre porte à un prix tout compris.',urgentTitle:'Colis, documents et courses au CBD',urgentText:'Livraison de point à point le jour même dans Nairobi : colis, documents, chèques et courses au CBD à partir de KES 350 (Standard, trajet partagé) ou KES 800 (Express, livreur dédié).'},
@@ -82,6 +89,52 @@ Object.keys(finalMissing).forEach(function(l){merge(window.LueriI18n.translation
     window.LueriI18n.translations[l].why.reviewBtn=reviewBtn[l];
   });
 })();
+
+/* HOMEPAGE LANGUAGE COMPLETENESS — Chinese + Swahili.
+   These locales previously contained only booking/rewards/pricing fragments,
+   so the desktop homepage silently fell back to its English HTML source. */
+var completeLocales={
+zh:{
+  nav:{menu:'菜单',book:'预约取件',where:'接下来去哪里',services:'服务',servicesCaption:'我们运送什么，以及速度有多快',pricing:'价格',pricingCaption:'明确报价，无隐藏费用',business:'企业服务',businessCaption:'开设企业账户',coverage:'配送范围',coverageCaption:'我们在内罗毕的配送区域',why:'为什么选择 Lueri',whyCaption:'Lueri 的不同之处',faq:'常见问题',faqCaption:'常见问题与解答',rewards:'奖励计划',rewardsCaption:'每次配送都可获得积分',careers:'招聘',careersCaption:'Lueri 的工作机会',bookCaption:'立即提交取件请求'},
+  hero:{motto:'直到封印被打破',pickup:'取件',dropoff:'送达',dispatch:'配送 / 内罗毕及周边地区',waybill:'运单号 LI–2026',title:'今天，
+送达内罗毕
+各地。',subtitle:'Lueri International 为个人和企业提供专业的最后一公里配送与快递服务——包裹、文件和电商订单，均可在内罗毕当天取件并配送。',bookBtn:'预约取件',whatsappBtn:'通过 WhatsApp 联系我们'},
+  services:{title:'服务',subtitle:'以速度、可靠性和清晰沟通为核心的实用配送服务。',parcelTitle:'跑腿与库存核查',parcelText:'无法亲自进城？我们可以前往商店（Eastleigh 面料、配件、库存），核查商品，通过电话或 WhatsApp 与您确认，然后代为运输或配送。',ecommerceTitle:'批量采购与取件',ecommerceText:'大米、杂货或其他用品可在市区采购或取件，再以一个透明的全包报价送到您家门口。',urgentTitle:'包裹、文件与 CBD 配送',urgentText:'内罗毕市区当天点对点配送：包裹、文件、支票及 CBD 配送，标准共享路线从 KES 350 起，专属骑手 Express 从 KES 800 起。超出 CBD 范围的订单将根据区域报价。'},
+  coverage:{title:'配送范围',subtitle:'覆盖内罗毕及周边地区，根据路线和服务需求安排配送。',body:'Lueri 在内罗毕及周边城镇提供配送服务。如果您的地点不在列表中，请直接联系我们——大多数路线都可以安排。',noteTitle:'不在列表中？'},
+  zones:{eastleigh:'东利',kariobangi:'卡里奥班吉'},
+  why:{title:'为什么选择 Lueri',subtitle:'为重视可靠性的个人和企业打造的直接配送服务。',oneTitle:'直接联系调度员',oneText:'您直接与负责配送的人沟通，而不是呼叫中心——每项配送都通过 WhatsApp 或电话直接协调。',twoTitle:'当天周转',twoText:'在每日截止时间前确认的内罗毕大多数取件订单都可当天完成配送。',threeTitle:'为长期业务而设计',threeText:'商店和网店可以建立稳定的配送流程，而不必每天重新预订并重新向不同骑手说明。'},
+  pod:{title:'配送证明',subtitle:'从派送到交接，全程可见。'},
+  faq:{title:'常见问题',q1:'名称中的“International”是什么意思？',a1:'Lueri International 是一家源自内罗毕、具有全球发展愿景的物流和最后一公里配送公司。目前我们主要服务内罗毕及周边地区，同时正在建设未来扩展到肯尼亚、非洲及国际市场所需的系统和运营能力。',q2:'哪些物品可以或不能配送？',a2:'我们在内罗毕配送包裹、文件、电商订单和个人物品。不运输非法物品、危险材料、现金或肯尼亚法律禁止运输的物品。易碎或高价值物品应在预约时申报。',q3:'如何付款？',a3:'报价确认后，大多数客户通过 M-Pesa 在配送前或取件时付款。长期企业客户可以申请账单结算。',q4:'当天配送是否保证？',a4:'不保证。我们努力为大多数内罗毕路线提供当天配送，但交通、天气和非营业时间的订单可能影响时间。',q5:'如果包裹丢失或损坏怎么办？',a5:'我们会合理谨慎地处理每件物品。除非另有书面约定，丢失或损坏责任以申报价值或 KES 5,000 中较低者为限。完整规定请参阅服务条款。',q6:'是否提供企业合同？',a6:'提供。如果您每天或每周多次发货，我们可以设置固定取件安排、约定费率和专属联系人。'},
+  booking:{pickup:'取件地点',dropoff:'送达地点',name:'您的姓名',phone:'电话号码',submit:'发送预约'},
+  footer:{contact:'联系方式',hours:'营业时间'}
+},
+sw:{
+  nav:{menu:'Menyu',book:'Agiza Kuchukuliwa',where:'Tuelekee wapi',services:'Huduma',servicesCaption:'Tunachobeba na kasi yetu',pricing:'Bei',pricingCaption:'Bei zilizo wazi, bila gharama fiche',business:'Biashara',businessCaption:'Fungua akaunti ya biashara',coverage:'Maeneo ya Huduma',coverageCaption:'Tunakopeleka ndani ya Nairobi',why:'Kwa nini Lueri',whyCaption:'Kinachoitofautisha Lueri',faq:'Maswali Yanayoulizwa Mara kwa Mara',faqCaption:'Maswali ya kawaida na majibu',rewards:'Zawadi',rewardsCaption:'Pata pointi kwenye kila uwasilishaji',careers:'Ajira',careersCaption:'Nafasi za kazi Lueri',bookCaption:'Tuma ombi la kuchukuliwa sasa'},
+  hero:{motto:'Mpaka muhuri uvunjwe',pickup:'CHUKUA',dropoff:'FIKISHA',dispatch:'Usafirishaji / Nairobi na maeneo ya jirani',waybill:'NAMBA YA WAYBILL LI–2026',title:'Tunakuletea na kuchukua
+kote Nairobi,
+leo.',subtitle:'Lueri International hutoa huduma za delivery ya mwisho na courier kwa watu binafsi na biashara — vifurushi, nyaraka na oda za biashara mtandaoni, zikichukuliwa na kufikishwa siku hiyo hiyo Nairobi.',bookBtn:'Agiza Kuchukuliwa',whatsappBtn:'Wasiliana nasi WhatsApp'},
+  services:{title:'Huduma',subtitle:'Huduma za delivery zinazolenga kasi, uaminifu na mawasiliano yaliyo wazi.',parcelTitle:'Errands na ukaguzi wa mzigo',parcelText:'Huwezi kufika mjini? Tunaenda dukani (vitambaa Eastleigh, vipuri, stock), tunakagua, tunakuthibitishia kwa simu au WhatsApp, kisha tunatuma au kufikisha.',ecommerceTitle:'Ununuzi wa jumla na uchukuzi',ecommerceText:'Mchele, vyakula au bidhaa zinanunuliwa au kuchukuliwa mjini na kufikishwa kwako kwa bei moja kamili iliyotajwa.',urgentTitle:'Vifurushi, nyaraka na safari za CBD',urgentText:'Uwasilishaji wa siku hiyo hiyo ndani ya Nairobi: vifurushi, nyaraka, hundi na safari za CBD kuanzia KES 350 kwa Standard ya njia ya pamoja au KES 800 kwa Express yenye rider maalum. Nje ya CBD tunatoa bei kulingana na eneo.'},
+  coverage:{title:'Maeneo ya Huduma',subtitle:'Nairobi na maeneo ya jirani, kwa delivery iliyopangwa kulingana na njia na mahitaji ya huduma.',body:'Lueri hutoa delivery Nairobi na miji ya jirani. Eneo lako likikosekana kwenye orodha, tutumie ujumbe moja kwa moja — njia nyingi zinaweza kuhudumiwa.',noteTitle:'Haipo kwenye orodha?'},
+  zones:{eastleigh:'Eastleigh',kariobangi:'Kariobangi'},
+  why:{title:'Kwa nini Lueri',subtitle:'Huduma ya delivery ya moja kwa moja kwa watu na biashara zinazothamini uaminifu.',oneTitle:'Mawasiliano ya moja kwa moja na msimamizi',oneText:'Unaongea na mtu anayesimamia kifurushi chako, si call centre — kila kazi huratibiwa moja kwa moja kupitia WhatsApp au simu.',twoTitle:'Uwasilishaji wa siku hiyo hiyo',twoText:'Maagizo mengi ya kuchukuliwa Nairobi yaliyothibitishwa kabla ya muda wa mwisho huwasilishwa siku hiyo hiyo.',threeTitle:'Imejengwa kwa biashara zinazorudia',threeText:'Maduka na wauzaji mtandaoni hupata utaratibu thabiti wa delivery bila kuanza booking mpya na maelezo mapya kila siku.'},
+  pod:{title:'Uthibitisho wa Uwasilishaji',subtitle:'Ufuatiliaji kutoka kuchukua hadi kufikisha.'},
+  faq:{title:'Maswali Yanayoulizwa Mara kwa Mara',q1:'“International” katika jina inamaanisha nini?',a1:'Lueri International ni kampuni ya logistics na last-mile delivery iliyoanzishwa Nairobi yenye maono ya kimataifa. Kwa sasa tunazingatia Nairobi na maeneo ya jirani huku tukijenga mifumo na uwezo wa kupanuka Kenya, Afrika na masoko ya kimataifa.',q2:'Mnaweza na hamwezi kupeleka nini?',a2:'Tunasafirisha vifurushi, nyaraka, oda za biashara mtandaoni na vitu binafsi ndani ya Nairobi. Hatusafirishi bidhaa haramu, vifaa hatari, fedha taslimu au vitu vilivyokatazwa na sheria za Kenya. Vitu vya thamani au vinavyoweza kuvunjika vitangazwe wakati wa booking.',q3:'Nalipaje?',a3:'Baada ya bei kuthibitishwa, wateja wengi hulipa kupitia M-Pesa kabla au wakati wa kuchukua. Wateja wa biashara wanaorudia wanaweza kupanga ankara.',q4:'Je, delivery ya siku hiyo hiyo imehakikishwa?',a4:'Hapana. Tunalenga delivery ya siku hiyo hiyo kwenye njia nyingi za Nairobi, lakini msongamano, hali ya hewa na booking za baada ya saa za kazi zinaweza kuathiri muda.',q5:'Nifanye nini kifurushi kikikosekana au kuharibika?',a5:'Tunashughulikia kila bidhaa kwa uangalifu unaofaa. Isipokuwa imekubaliwa vinginevyo kwa maandishi, dhima ya upotevu au uharibifu ni kiasi cha chini kati ya thamani iliyotangazwa na KES 5,000. Tazama Masharti ya Huduma kwa maelezo kamili.',q6:'Mna mikataba ya biashara?',a6:'Ndiyo. Biashara zinazotuma kila siku au mara kadhaa kwa wiki zinaweza kupata mpango wa kuchukuliwa mara kwa mara, viwango vilivyokubaliwa na mtu mmoja wa mawasiliano.'},
+  booking:{pickup:'Mahali pa Kuchukua',dropoff:'Mahali pa Kufikisha',name:'Jina Lako',phone:'Nambari ya Simu',submit:'Tuma Booking'},
+  footer:{contact:'Mawasiliano',hours:'Saa za Huduma'}
+}
+};
+Object.keys(completeLocales).forEach(function(locale){merge(window.LueriI18n.translations[locale],completeLocales[locale]);});
+
+/* Missing fields in the four already-complete European/Arabic locales. */
+var sharedMissing={
+  fr:{hero:{motto:'Jusqu’à ce que le sceau soit brisé'},zones:{eastleigh:'Eastleigh',kariobangi:'Kariobangi'}},
+  es:{hero:{motto:'Hasta que se rompa el sello'},zones:{eastleigh:'Eastleigh',kariobangi:'Kariobangi'}},
+  ar:{hero:{motto:'حتى ينكسر الختم'},zones:{eastleigh:'إيستلي',kariobangi:'كاريوبانغي'}},
+  pt:{hero:{motto:'Até que o selo seja quebrado'},zones:{eastleigh:'Eastleigh',kariobangi:'Kariobangi'}},
+  en:{hero:{motto:'Until the seal is broken'},zones:{eastleigh:'Eastleigh',kariobangi:'Kariobangi'}}
+};
+Object.keys(sharedMissing).forEach(function(locale){merge(window.LueriI18n.translations[locale],sharedMissing[locale]);});
+
 window.LueriI18nCompletion={apply:function(locale){
   if(!window.LueriI18n||!window.LueriI18n.translations)return;
   Object.keys(add).forEach(function(l){merge(window.LueriI18n.translations[l],add[l]);});
