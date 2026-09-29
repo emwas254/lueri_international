@@ -47,6 +47,7 @@
       html:lang(zh),html:lang(zh) body,html:lang(zh) body *{font-family:'Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',Arial,sans-serif!important;}
       html:lang(zh) body{line-height:1.75;}
       html:lang(zh) h1,html:lang(zh) h2,html:lang(zh) h3{line-height:1.4;}
+      @media(max-width:760px){#lueriLanguageTrigger{font-size:.78rem!important;min-width:0!important}.lueri-language-list{max-width:calc(100vw - 24px)!important;min-width:190px!important;}}
       html[lang='sw'] body,html[lang='fr'] body,html[lang='es'] body,html[lang='pt'] body{line-height:1.6;}
       #pricing .pricing-grid{column-gap:24px;row-gap:24px;margin-bottom:36px;}
       #pricing .pricing-note{margin-top:0;}
