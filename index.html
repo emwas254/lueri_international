@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Lueri International — Nairobi Errands, Courier & Delivery</title>
 <meta name="description" content="Lueri International — Nairobi errands, stock checks, bulk pickups and same-day courier delivery. Quick Nairobi CBD deliveries from KES 350 (Standard) or KES 800 (Express). Quoted before we move. Book by WhatsApp, call, or form.">
 <meta property="og:title" content="Lueri International — Nairobi Errands, Courier & Delivery">
@@ -31,6 +31,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="assets/site.css?v=20260929-header-v3">
+<link rel="stylesheet" href="assets/mobile-header.css?v=20260929-m1">
 <link rel="stylesheet" href="i18n-content.css">
 <style>
   body.rtl { text-align: right; direction: rtl; }
@@ -140,8 +141,8 @@
         <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="4.22"></line></svg>
         <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
-      <select id="languageSelector" class="language-selector" aria-label="Select Language" data-i18n-aria="nav.menu" style="background:transparent; border:1px solid currentColor; border-radius:4px; padding:4px 8px; margin-right:8px; font-family:inherit; cursor:pointer; color:inherit;">
-        <option value="en">🇬🇧 EN</option><option value="zh">🇨🇳 ZH</option><option value="sw">🇰🇪 SW</option><option value="fr">🇫🇷 FR</option><option value="es">🇪🇸 ES</option><option value="ar">🇸🇦 AR</option><option value="pt">🇧🇷 PT</option>
+      <select id="languageSelector" class="language-selector" aria-label="Select language">
+        <option value="en">EN</option><option value="zh">ZH</option><option value="sw">SW</option><option value="fr">FR</option><option value="es">ES</option><option value="ar">AR</option><option value="pt">PT</option>
       </select>
       <a class="nav-cta" href="#contact" data-i18n="nav.book">Book Pickup</a>
     </div>
@@ -259,5 +260,15 @@
 <script src="i18n-translations.js?v=20260929-01"></script><script src="i18n-completion.js?v=20260929-01"></script><script src="i18n-copy-patch.js?v=20260929-01"></script><script src="i18n-strict.js?v=20260929-01"></script><script src="i18n.js?v=20260929-01"></script><script src="i18n-coverage-fix.js?v=20260929-01"></script><script src="lucy-v3.js?v=20260929-01"></script>
 <script src="reviews.js?v=20260929-01" defer></script>
 <script src="analytics.js?v=20260929-01" defer></script>
+<script>
+// Hide the mobile sticky "Book Pickup" bar while the booking form is on screen.
+(function(){
+  var c = document.getElementById('contact');
+  if (!c || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function(e){
+    document.body.classList.toggle('at-contact', e[0].isIntersecting);
+  }, { threshold: .15 }).observe(c);
+})();
+</script>
 </body>
 </html>
