@@ -160,6 +160,24 @@
         el.setAttribute(a[0], v || el.getAttribute(a[2]) || '');
       });
     });
+    /* Hard-bind the customer review CTA after every translation pass.
+       This prevents any later dictionary merge or stale fallback from restoring English. */
+    var reviewCTA = document.querySelector('[data-i18n="why.reviewBtn"]');
+    if (reviewCTA) {
+      var reviewLabels = {
+        en:'Leave a review on Facebook',
+        zh:'在 Facebook 上留下评价',
+        sw:'Acha maoni kwenye Facebook',
+        fr:'Laisser un avis sur Facebook',
+        es:'Dejar una reseña en Facebook',
+        ar:'اترك تقييمًا على فيسبوك',
+        pt:'Deixar uma avaliação no Facebook'
+      };
+      reviewCTA.textContent = reviewLabels[locale] || reviewLabels.en;
+      reviewCTA.setAttribute('lang', locale === 'zh' ? 'zh-CN' : locale);
+      reviewCTA.setAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
+    }
+
     setDocumentLocale(locale);
     localizeSectionLinks(locale);
     try { localStorage.setItem(STORAGE_KEY, locale); } catch (_) {}
