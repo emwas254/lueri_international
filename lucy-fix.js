@@ -1,8 +1,9 @@
-/* Lueri Lucy production compatibility layer.
-   No Google Translate, no page reloads, no competing language runtime.
-   The native Lueri i18n runtime owns language selection; Lucy mirrors it. */
+/* Lueri International — Lucy production loader + language compatibility layer (v3.1)
+   Native Lueri i18n owns language selection; Lucy mirrors it.
+   Bump UI_VERSION whenever lucy-ui-v3.js changes so browsers fetch the new file. */
 (function(){
   'use strict';
+  const UI_VERSION='3.1';
   const LANG=['en','sw','fr','es','ar','pt','zh'];
   const KEY='lueri_language';
 
@@ -26,12 +27,10 @@
     document.documentElement.dataset.lueriLanguage=v;
     document.documentElement.lang=v==='zh'?'zh-CN':v;
     document.documentElement.dir=v==='ar'?'rtl':'ltr';
-    if(window.LucyChatbot&&typeof window.LucyChatbot.setLanguage==='function'){
-      window.LucyChatbot.setLanguage(v);
-    }
+    if(window.LucyChatbot&&typeof window.LucyChatbot.setLanguage==='function')window.LucyChatbot.setLanguage(v);
   }
 
-  function install(){
+  function installLanguage(){
     sync();
     window.addEventListener('lueri:languagechange',e=>sync(e&&e.detail&&e.detail.language));
     document.addEventListener('lueri:languagechange',e=>sync(e&&e.detail&&e.detail.language));
@@ -42,6 +41,14 @@
     });
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
-  else install();
+  function loadUI(){
+    if(window.__lucyUiV3||document.querySelector('script[data-lucy-ui-v3]'))return;
+    const s=document.createElement('script');
+    s.src='lucy-ui-v3.js?v='+UI_VERSION;
+    s.dataset.lucyUiV3='true';
+    document.head.appendChild(s);
+  }
+
+  function start(){installLanguage();loadUI();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
