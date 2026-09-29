@@ -1,0 +1,141 @@
+/* ============================================================
+   MOBILE HEADER v4 — load AFTER assets/site.css
+   One slim row (56px): brand left, menu / theme / language right.
+   "Book Pickup" becomes a sticky bottom bar (thumb zone).
+   Only applies at <=600px; desktop is untouched.
+   ============================================================ */
+
+/* Language select base look (moved out of inline style; applies at all sizes) */
+.language-selector{
+  background:transparent;
+  border:1px solid currentColor;
+  border-radius:4px;
+  font-family:inherit;
+  cursor:pointer;
+  color:inherit;
+}
+
+@media (max-width:600px){
+
+  /* Fixed children are trapped inside an element with backdrop-filter,
+     so the blur has to go on mobile for the sticky CTA to work. */
+  header{
+    background:var(--paper);
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+  }
+
+  /* --- One row, ~56px --------------------------------------- */
+  .navbar.wrap{
+    display:flex;
+    flex-wrap:nowrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    min-height:56px;
+    padding:6px 12px;
+  }
+  .brand{
+    flex:1 1 auto;
+    min-width:0;
+    max-width:none;
+    gap:8px;
+  }
+  .brand .mark-img{ height:32px; }
+  .brand-copy{ width:auto; max-width:none; min-width:0; }
+  .brand-name{
+    font-size:.98rem;
+    overflow:hidden;
+    text-overflow:ellipsis;   /* safety net on very narrow phones */
+  }
+  /* Tagline leaves the header (footer keeps it). Show it in the hero instead. */
+  header .brand-motto{ display:none; }
+
+  .nav-controls{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    width:auto;
+    margin-left:0;
+  }
+
+  /* --- Icon-only menu button (label stays for screen readers) - */
+  .menu-trigger{
+    width:44px; height:44px;
+    padding:0;
+    justify-content:center;
+  }
+  .menu-trigger #menuTriggerLabel{
+    position:absolute;
+    width:1px; height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+  }
+
+  /* --- Theme toggle: visible border, 44px target ------------ */
+  .theme-toggle{
+    width:44px; height:44px;
+    border-color:rgba(27,38,32,.45);
+  }
+  [data-theme="dark"] .theme-toggle{ border-color:rgba(240,234,216,.5); }
+
+  /* --- Language: compact chip, no more full-width dropdown --- */
+  .language-selector{
+    width:64px; min-width:0; max-width:none;
+    height:44px;
+    margin:0;
+    padding:0 4px 0 8px;
+    font-size:.78rem;
+    font-weight:600;
+    background:transparent;
+    color:var(--ink);
+    border:1.5px solid var(--ink);
+    border-radius:2px;
+  }
+
+  /* --- Book Pickup: sticky bottom bar ----------------------- */
+  .nav-cta{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:150;
+    width:100%;
+    height:auto;
+    min-height:56px;
+    padding:14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+    border-radius:0;
+    justify-content:center;
+    font-size:.9rem;
+    letter-spacing:.06em;
+    background:var(--route);
+    color:var(--paper);
+    box-shadow:0 -6px 18px rgba(27,38,32,.14);
+    transition:transform var(--duration-normal,240ms) var(--ease-standard,ease);
+    grid-column:auto;
+  }
+  /* Hide the bar when it would cover the form or the open menu */
+  body.at-contact .nav-cta{ transform:translateY(110%); }
+  header:has(.menu-panel.open) .nav-cta{ transform:translateY(110%); }
+
+  /* Keep the last bit of the page reachable above the bar */
+  body{ padding-bottom:calc(56px + env(safe-area-inset-bottom, 0px)); }
+
+  /* --- Menu drawer: must scroll on short screens ------------ */
+  .menu-panel.open .menu-panel-inner{
+    max-height:calc(100dvh - 68px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .menu-panel-eyebrow{ padding:12px 16px 2px; }
+  .menu-link{ padding:13px 16px; gap:12px; }
+  .menu-link-title{ font-size:1.1rem; }
+}
+
+@media (max-width:360px){
+  .brand .mark-img{ height:28px; }
+  .brand-name{ font-size:.9rem; }
+  .nav-controls{ gap:4px; }
+  .menu-trigger, .theme-toggle{ width:42px; }
+  .language-selector{ width:58px; }
+}
