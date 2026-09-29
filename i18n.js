@@ -1,6 +1,5 @@
-/* Lueri International — i18next-powered seven-language bootstrap
-   Static HTML site: i18next is used directly; react-i18next is not loaded because React is not used.
-   No Google Translate. No third-party translation widget.
+/* Lueri International — seven-language bootstrap
+   Static HTML site. No Google Translate. No third-party widget.
 */
 (function () {
   'use strict';
@@ -44,6 +43,7 @@
       html:lang(ar) .menu-panel-grid,html:lang(ar) .why-list{direction:rtl;}
       html:lang(ar) .menu-link-body{text-align:right;}
       html:lang(ar) .cta-row,html:lang(ar) .form-actions,html:lang(ar) .nav-controls{direction:rtl;}
+      html:lang(ar) .btn{letter-spacing:normal;}
       html:lang(zh),html:lang(zh) body,html:lang(zh) body *{font-family:'Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',Arial,sans-serif!important;}
       html:lang(zh) body{line-height:1.75;}
       html:lang(zh) h1,html:lang(zh) h2,html:lang(zh) h3{line-height:1.4;}
@@ -93,16 +93,6 @@
     if(trigger){trigger.innerHTML='<span><span class="lueri-language-flag" aria-hidden="true">'+meta.flag+'</span> '+meta.name+'</span><span aria-hidden="true"> ⌄ </span>';}
     menu.querySelectorAll('.lueri-language-option').forEach(function(b){b.setAttribute('aria-selected',String(b.dataset.locale===current));});
   }
-  function flatten(obj, prefix, out) {
-    out = out || {};
-    Object.keys(obj || {}).forEach(function (key) {
-      var value = obj[key];
-      var full = prefix ? prefix + '.' + key : key;
-      if (value && typeof value === 'object' && !Array.isArray(value)) flatten(value, full, out);
-      else out[full] = value;
-    });
-    return out;
-  }
   function setDocumentLocale(locale) {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
@@ -133,8 +123,9 @@
     var missing = [];
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var v = locale === 'en' ? '' : lookup(locale, el.getAttribute('data-i18n'));
-      if (v) el.textContent = v;
-      else {
+      if (v) {
+        el.textContent = v;
+      } else {
         if (locale !== 'en') missing.push(el.getAttribute('data-i18n'));
         var en = el.getAttribute('data-en');
         if (en !== null) el.innerHTML = en;
