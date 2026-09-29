@@ -1,0 +1,90 @@
+// supabase/functions/_shared/lucy-schemas.ts
+// Lucy wire-contract validation. Derived from lucy-ui-v3.js v3.1 (what the browser actually sends).
+// Deno / Supabase Edge Functions: npm: specifiers are supported.
+import { z } from "npm:zod@3.23.8";
+
+export const LOCALES = ["en", "sw", "fr", "es", "ar", "pt", "zh"] as const;
+export const Locale = z.enum(LOCALES);
+
+// Matches the intents the front-end topic buttons send ("" = free typing).
+export const TOPIC_INTENTS = [
+  "", "PRICING", "CORPORATE", "REWARDS", "COVERAGE", "HOURS", "TRACK", "BOOK",
+] as const;
+
+const HistoryItem = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().max(2000),
+});
+
+// The client owns this object today, so treat it as UNTRUSTED input.
+// Only "step" is known from the front-end; other keys pass through, size-capped.
+// TODO: replace z.string() with z.enum([...]) once you list every step the server uses.
+const DeliveryState = z
+  .object({ step: z.string().max(40).default("IDLE") })
+  .passthrough()
+  .refine((s) => JSON.stringify(s).length <= 8000, "delivery_state too large");
+
+// POST /lucy-chat
+export const LucyChatRequest = z.object({
+  message: z.string().trim().min(1).max(1500),
+  locale: Locale.default("en"),
+  topic_intent: z.enum(TOPIC_INTENTS).default(""),
+  delivery_state: DeliveryState.default({ step: "IDLE" }),
+  history: z.array(HistoryItem).max(10).default([]),
+  // Front-end compresses to <= ~4 MB JPEG data URL. Cap it here too.
+  image_data: z
+    .string()
+    .max(4_200_000)
+    .regex(/^data:image\/(jpeg|png|webp);base64,/)
+    .optional(),
+});
+
+// POST /delivery-payment-initiate  (note: NO amount field, price must be computed server-side)
+const KE_PHONE = /^(?:\+?254|0)[71]\d{8}$/;
+
+export const DeliveryPaymentInitiateRequest = z.object({
+  pickup: z.string().trim().min(3).max(200),
+  dropoff: z.string().trim().min(3).max(200),
+  details: z.string().trim().max(1000).default(""),
+  customer_name: z.string().trim().min(2).max(100),
+  customer_phone: z.string().trim().regex(KE_PHONE, "invalid Kenyan phone"),
+  customer_email: z.union([z.literal(""), z.string().email().max(120)]).default(""),
+  preferred_time: z.string().trim().max(100).default(""),
+  // Client-supplied: never grant discounts/points on this alone, verify server-side.
+  member_id: z.string().max(64).nullable().default(null),
+  // Must be verified to belong to this session/booking before use.
+  parcel_photo_path: z
+    .string()
+    .max(300)
+    .refine((p) => !p.includes("..") && !p.startsWith("/"), "bad path")
+    .nullable()
+    .default(null),
+  // TODO: tighten to z.enum([...]) once the accepted values are confirmed.
+  delivery_type: z.string().regex(/^[a-z_]{3,20}$/).default("one_off"),
+  trip_count: z.number().int().min(1).max(20).default(1),
+});
+
+export type LucyChatRequestT = z.infer<typeof LucyChatRequest>;
+export type DeliveryPaymentInitiateRequestT = z.infer<typeof DeliveryPaymentInitiateRequest>;
+
+export function parseBody<S extends z.ZodTypeAny>(schema: S, body: unknown) {
+  const r = schema.safeParse(body);
+  if (r.success) return { ok: true as const, data: r.data as z.infer<S> };
+  return {
+    ok: false as const,
+    issues: r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`),
+  };
+}
+
+/* Usage at the top of each Edge Function handler:
+
+  const raw = await req.json().catch(() => null);
+  const parsed = parseBody(LucyChatRequest, raw);
+  if (!parsed.ok) {
+    console.warn("lucy-chat bad request", parsed.issues); // log detail server-side only
+    return new Response(JSON.stringify({ error: "Invalid request" }), {
+      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const { message, locale, topic_intent, delivery_state, history, image_data } = parsed.data;
+*/
