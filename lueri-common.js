@@ -120,7 +120,7 @@
   function getMemberSummary(phone,memberNumber){const p=normalizePhone(phone);return rpc('get_member_summary',{p_phone:p||phone||null,p_member_number:memberNumber||null});}
   function registerMember(input){const p=normalizePhone(input.phone);return rpc('register_member',{p_name:input.name,p_phone:p||String(input.phone||'').trim(),p_email:input.email||null});}
   function addTransaction(input){return rpc('add_transaction',{p_member_ref:input.memberRef,p_amount:input.amount,p_type:input.type,p_confirmed_member_id:input.confirmedMemberId||null});}
-  function loadI18n(){if(document.querySelector('script[data-lueri-i18n-loader]')||global.LueriI18n)return;const s=document.createElement('script');s.src='lueri-i18n.js';s.defer=true;s.setAttribute('data-lueri-i18n-loader','');document.head.appendChild(s);}
+  function loadI18n(){return false;}
   function boot(){document.documentElement.classList.add('js');bootTheme();initThemeToggle(document.getElementById('themeToggle'));initMenu();initReveal();loadI18n();}
   global.LUERI=LUERI;global.LUERI_TIERS=TIER_CATALOG;global.LUERI_PLANS=PURCHASE_TIERS;global.lueriBootTheme=bootTheme;global.lueriIsValidPhone=isValidPhone;global.lueriNormalizePhone=normalizePhone;global.lueriOpenWhatsApp=openWhatsApp;global.lueriCopyToClipboard=copyToClipboard;global.lueri={boot,supabase:()=>supabase,rpc,fmt,escapeHTML,formatDateTime,formatKES,showToast,vatBreakdown,docs:{receiptHTML,invoiceHTML,openDoc},booking:{create:createBooking},rewards:{getMemberSummary,registerMember,addTransaction}};
 })(window);
