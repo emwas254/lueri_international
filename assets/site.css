@@ -702,3 +702,16 @@ footer .brand::after{ display:none; }
 
 html[dir="rtl"] .navbar,
 html[dir="rtl"] .nav-controls{ direction:ltr; }
+
+/* ============================================================
+   HEADER FIX — company name is never clipped, motto sits under it.
+   Kept as its own block at the end so it can be tested or removed
+   on its own. It overrides the rules above (same specificity, later
+   in the file), so nothing above needed to change.
+   ============================================================ */
+.navbar.wrap{ flex-wrap:wrap; row-gap:10px; }
+.brand{ flex:0 0 auto; max-width:100%; }
+.brand-copy{ width:max-content; max-width:none; }
+.brand-name{ overflow:visible; text-overflow:clip; }
+.brand-motto > span{ overflow:visible; text-overflow:clip; }
+.nav-controls{ margin-left:auto; }
