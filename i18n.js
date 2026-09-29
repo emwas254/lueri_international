@@ -105,6 +105,20 @@
   }
 
   function lookup(locale, key) {
+    /* Critical customer-facing CTA: keep this mapping local to the runtime so the
+       review button can never fall back to English because of dictionary load order. */
+    if (key === 'why.reviewBtn') {
+      var reviewLabels = {
+        en: 'Leave a review on Facebook',
+        zh: '在 Facebook 上留下评价',
+        sw: 'Acha maoni kwenye Facebook',
+        fr: 'Laisser un avis sur Facebook',
+        es: 'Dejar una reseña en Facebook',
+        ar: 'اترك تقييمًا على فيسبوك',
+        pt: 'Deixar uma avaliação no Facebook'
+      };
+      return reviewLabels[locale] || reviewLabels.en;
+    }
     var source = window.LueriI18n && window.LueriI18n.translations && window.LueriI18n.translations[locale];
     if (!source) return '';
     return key.split('.').reduce(function (obj, part) { return obj && obj[part]; }, source) || '';
