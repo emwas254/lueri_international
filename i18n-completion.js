@@ -72,6 +72,16 @@ pt:{pricing:{priceFrom:'KES 350–800',priceCustom:'Tarifas personalizadas',pric
 };
 Object.keys(finalMissing).forEach(function(l){merge(window.LueriI18n.translations[l],finalMissing[l]);});
 
+/* FINAL REVIEW CTA TRANSLATIONS — 2026-09-29 */
+(function(){
+  if(!window.LueriI18n||!window.LueriI18n.translations)return;
+  var reviewBtn={en:'Leave a review on Facebook',fr:'Avis sur Facebook',es:'Dejar una reseña en Facebook',ar:'ترك تقييم على فيسبوك',zh:'在 Facebook 上留下评价',sw:'Acha maoni kwenye Facebook',pt:'Deixar uma avaliação no Facebook'};
+  Object.keys(reviewBtn).forEach(function(l){
+    window.LueriI18n.translations[l]=window.LueriI18n.translations[l]||{};
+    window.LueriI18n.translations[l].why=window.LueriI18n.translations[l].why||{};
+    window.LueriI18n.translations[l].why.reviewBtn=reviewBtn[l];
+  });
+})();
 window.LueriI18nCompletion={apply:function(locale){
   if(!window.LueriI18n||!window.LueriI18n.translations)return;
   Object.keys(add).forEach(function(l){merge(window.LueriI18n.translations[l],add[l]);});
