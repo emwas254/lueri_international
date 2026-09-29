@@ -104,7 +104,8 @@ zh:{
   pod:{title:'配送证明',subtitle:'从派送到交接，全程可见。'},
   faq:{title:'常见问题',q1:'名称中的“International”是什么意思？',a1:'Lueri International 是一家源自内罗毕、具有全球发展愿景的物流和最后一公里配送公司。目前我们主要服务内罗毕及周边地区，同时正在建设未来扩展到肯尼亚、非洲及国际市场所需的系统和运营能力。',q2:'哪些物品可以或不能配送？',a2:'我们在内罗毕配送包裹、文件、电商订单和个人物品。不运输非法物品、危险材料、现金或肯尼亚法律禁止运输的物品。易碎或高价值物品应在预约时申报。',q3:'如何付款？',a3:'报价确认后，大多数客户通过 M-Pesa 在配送前或取件时付款。长期企业客户可以申请账单结算。',q4:'当天配送是否保证？',a4:'不保证。我们努力为大多数内罗毕路线提供当天配送，但交通、天气和非营业时间的订单可能影响时间。',q5:'如果包裹丢失或损坏怎么办？',a5:'我们会合理谨慎地处理每件物品。除非另有书面约定，丢失或损坏责任以申报价值或 KES 5,000 中较低者为限。完整规定请参阅服务条款。',q6:'是否提供企业合同？',a6:'提供。如果您每天或每周多次发货，我们可以设置固定取件安排、约定费率和专属联系人。'},
   booking:{pickup:'取件地点',dropoff:'送达地点',name:'您的姓名',phone:'电话号码',submit:'发送预约'},
-  footer:{contact:'联系方式',hours:'营业时间'}
+  footer:{contact:'联系方式',hours:'营业时间'},
+  pricing:{title:'价格',subtitle:'明确报价，无隐藏费用'}
 },
 sw:{
   nav:{menu:'Menyu',book:'Agiza Kuchukuliwa',where:'Tuelekee wapi',services:'Huduma',servicesCaption:'Tunachobeba na kasi yetu',pricing:'Bei',pricingCaption:'Bei zilizo wazi, bila gharama fiche',business:'Biashara',businessCaption:'Fungua akaunti ya biashara',coverage:'Maeneo ya Huduma',coverageCaption:'Tunakopeleka ndani ya Nairobi',why:'Kwa nini Lueri',whyCaption:'Kinachoitofautisha Lueri',faq:'Maswali Yanayoulizwa Mara kwa Mara',faqCaption:'Maswali ya kawaida na majibu',rewards:'Zawadi',rewardsCaption:'Pata pointi kwenye kila uwasilishaji',careers:'Ajira',careersCaption:'Nafasi za kazi Lueri',bookCaption:'Tuma ombi la kuchukuliwa sasa'},
@@ -116,11 +117,16 @@ sw:{
   pod:{title:'Uthibitisho wa Uwasilishaji',subtitle:'Ufuatiliaji kutoka kuchukua hadi kufikisha.'},
   faq:{title:'Maswali Yanayoulizwa Mara kwa Mara',q1:'“International” katika jina inamaanisha nini?',a1:'Lueri International ni kampuni ya logistics na last-mile delivery iliyoanzishwa Nairobi yenye maono ya kimataifa. Kwa sasa tunazingatia Nairobi na maeneo ya jirani huku tukijenga mifumo na uwezo wa kupanuka Kenya, Afrika na masoko ya kimataifa.',q2:'Mnaweza na hamwezi kupeleka nini?',a2:'Tunasafirisha vifurushi, nyaraka, oda za biashara mtandaoni na vitu binafsi ndani ya Nairobi. Hatusafirishi bidhaa haramu, vifaa hatari, fedha taslimu au vitu vilivyokatazwa na sheria za Kenya. Vitu vya thamani au vinavyoweza kuvunjika vitangazwe wakati wa booking.',q3:'Nalipaje?',a3:'Baada ya bei kuthibitishwa, wateja wengi hulipa kupitia M-Pesa kabla au wakati wa kuchukua. Wateja wa biashara wanaorudia wanaweza kupanga ankara.',q4:'Je, delivery ya siku hiyo hiyo imehakikishwa?',a4:'Hapana. Tunalenga delivery ya siku hiyo hiyo kwenye njia nyingi za Nairobi, lakini msongamano, hali ya hewa na booking za baada ya saa za kazi zinaweza kuathiri muda.',q5:'Nifanye nini kifurushi kikikosekana au kuharibika?',a5:'Tunashughulikia kila bidhaa kwa uangalifu unaofaa. Isipokuwa imekubaliwa vinginevyo kwa maandishi, dhima ya upotevu au uharibifu ni kiasi cha chini kati ya thamani iliyotangazwa na KES 5,000. Tazama Masharti ya Huduma kwa maelezo kamili.',q6:'Mna mikataba ya biashara?',a6:'Ndiyo. Biashara zinazotuma kila siku au mara kadhaa kwa wiki zinaweza kupata mpango wa kuchukuliwa mara kwa mara, viwango vilivyokubaliwa na mtu mmoja wa mawasiliano.'},
   booking:{pickup:'Mahali pa Kuchukua',dropoff:'Mahali pa Kufikisha',name:'Jina Lako',phone:'Nambari ya Simu',submit:'Tuma Booking'},
-  footer:{contact:'Mawasiliano',hours:'Saa za Huduma'}
+  footer:{contact:'Mawasiliano',hours:'Saa za Huduma'},
+  pricing:{title:'Bei',subtitle:'Bei zilizo wazi, bila gharama fiche'}
 }
 };
 Object.keys(completeLocales).forEach(function(locale){merge(window.LueriI18n.translations[locale],completeLocales[locale]);});
 
+
+/* Form placeholders + accessibility labels for Chinese and Swahili. */
+merge(window.LueriI18n.translations.zh,{booking:{pickupPlaceholder:'输入取件地点',dropoffPlaceholder:'输入送达地点',namePlaceholder:'输入您的姓名',phonePlaceholder:'例如 0712 345 678'},nav:{themeToggle:'切换深色模式',languageSelect:'选择语言'}});
+merge(window.LueriI18n.translations.sw,{booking:{pickupPlaceholder:'Ingiza mahali pa kuchukua',dropoffPlaceholder:'Ingiza mahali pa kufikisha',namePlaceholder:'Ingiza jina lako kamili',phonePlaceholder:'mf. 0712 345 678'},nav:{themeToggle:'Badilisha hali ya giza',languageSelect:'Chagua lugha'}});
 /* Missing fields in the four already-complete European/Arabic locales. */
 var sharedMissing={
   fr:{hero:{motto:'Jusqu’à ce que le sceau soit brisé'},zones:{eastleigh:'Eastleigh',kariobangi:'Kariobangi'}},
