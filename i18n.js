@@ -4,19 +4,17 @@
 */
 (function () {
   'use strict';
-
   var NATIVE = {
-    en: { flag:'🇬🇧', name:'English' },
-    zh: { flag:'🇨🇳', name:'中文' },
-    sw: { flag:'🇰🇪', name:'Kiswahili' },
-    fr: { flag:'🇫🇷', name:'Français' },
-    es: { flag:'🇪🇸', name:'Español' },
-    ar: { flag:'🇸🇦', name:'العربية' },
-    pt: { flag:'🇧🇷', name:'Português' }
+    en: { flag:' 🇬🇧 ', name:'English' },
+    zh: { flag:' 🇨🇳 ', name:' 中文 ' },
+    sw: { flag:' 🇰🇪 ', name:'Kiswahili' },
+    fr: { flag:' 🇫🇷 ', name:'Français' },
+    es: { flag:' 🇪🇸 ', name:'Español' },
+    ar: { flag:' 🇸🇦 ', name:'العربية' },
+    pt: { flag:' 🇧🇷 ', name:'Português' }
   };
   var LANGS = Object.keys(NATIVE);
   var STORAGE_KEY = 'lueri_language';
-
   function installStyles() {
     if (document.getElementById('lueri-i18next-styles')) return;
     var s = document.createElement('style');
@@ -37,25 +35,19 @@
       #languageSelector option{background:#f4efe4!important;color:#1b2620!important;font-family:'IBM Plex Sans','Noto Sans',Arial,sans-serif!important;font-weight:700!important;font-size:.95rem!important;}
       [data-theme='dark'] #languageSelector{background:var(--paper,#1b2620)!important;color:var(--ink,#f0ead8)!important;border-color:var(--ink,#f0ead8)!important;color-scheme:dark;}
       [data-theme='dark'] #languageSelector option{background:#1b2620!important;color:#f0ead8!important;}
-
       html:lang(ar),html:lang(ar) body,html:lang(ar) body *{font-family:'Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif!important;}
       html:lang(ar) body{direction:rtl;text-align:right;line-height:1.75;}
       html:lang(ar) h1,html:lang(ar) h2,html:lang(ar) h3{font-weight:800;line-height:1.45;}
       html:lang(ar) input,html:lang(ar) textarea,html:lang(ar) select{text-align:right;}
-      html:lang(ar) .section-head{flex-direction:row-reverse;}
       html:lang(ar) .pricing-grid{direction:rtl;}
       html:lang(ar) .pricing-card,html:lang(ar) .pricing-note,html:lang(ar) .sla-item{text-align:right;}
       html:lang(ar) .menu-panel-grid,html:lang(ar) .why-list{direction:rtl;}
-      html:lang(ar) .menu-link{flex-direction:row-reverse;}
       html:lang(ar) .menu-link-body{text-align:right;}
       html:lang(ar) .cta-row,html:lang(ar) .form-actions,html:lang(ar) .nav-controls{direction:rtl;}
-
       html:lang(zh),html:lang(zh) body,html:lang(zh) body *{font-family:'Noto Sans SC','Noto Sans CJK SC','Microsoft YaHei',Arial,sans-serif!important;}
       html:lang(zh) body{line-height:1.75;}
       html:lang(zh) h1,html:lang(zh) h2,html:lang(zh) h3{line-height:1.4;}
       html[lang='sw'] body,html[lang='fr'] body,html[lang='es'] body,html[lang='pt'] body{line-height:1.6;}
-
-      /* Pricing separation + gentle motion. */
       #pricing .pricing-grid{column-gap:24px;row-gap:24px;margin-bottom:36px;}
       #pricing .pricing-note{margin-top:0;}
       #pricing .pricing-note + .pricing-note{margin-top:24px;}
@@ -71,7 +63,6 @@
     `;
     document.head.appendChild(s);
   }
-
   function labelSelector() {
     var selector = document.getElementById('languageSelector');
     if (!selector) return;
@@ -99,10 +90,9 @@
     }
     var current=selector.value||'en', meta=NATIVE[current]||NATIVE.en;
     var trigger=document.getElementById('lueriLanguageTrigger');
-    if(trigger){trigger.innerHTML='<span><span class="lueri-language-flag" aria-hidden="true">'+meta.flag+'</span> '+meta.name+'</span><span aria-hidden="true">⌄</span>';}
+    if(trigger){trigger.innerHTML='<span><span class="lueri-language-flag" aria-hidden="true">'+meta.flag+'</span> '+meta.name+'</span><span aria-hidden="true"> ⌄ </span>';}
     menu.querySelectorAll('.lueri-language-option').forEach(function(b){b.setAttribute('aria-selected',String(b.dataset.locale===current));});
   }
-
   function flatten(obj, prefix, out) {
     out = out || {};
     Object.keys(obj || {}).forEach(function (key) {
@@ -113,20 +103,17 @@
     });
     return out;
   }
-
   function setDocumentLocale(locale) {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === 'ar' ? 'rtl' : 'ltr';
     if (document.body) document.body.classList.toggle('rtl', locale === 'ar');
     labelSelector();
   }
-
   function lookup(locale, key) {
     var source = window.LueriI18n && window.LueriI18n.translations && window.LueriI18n.translations[locale];
     if (!source) return '';
     return key.split('.').reduce(function (obj, part) { return obj && obj[part]; }, source) || '';
   }
-
   function localizeSectionLinks(locale) {
     document.querySelectorAll('a[href]').forEach(function (a) {
       var href = a.getAttribute('href');
@@ -141,58 +128,40 @@
       } catch (_) {}
     });
   }
-
-  function localizeRewardsLinks(locale) {
-    document.querySelectorAll('a[href]').forEach(function (a) {
-      var href = a.getAttribute('href');
-      if (!href || href.indexOf('rewards.html') === -1) return;
-      try {
-        var url = new URL(href, window.location.href);
-        if (url.pathname.endsWith('/rewards.html') || url.pathname.endsWith('rewards.html')) {
-          url.searchParams.set('lang', locale);
-          a.setAttribute('href', url.pathname + '?' + url.searchParams.toString() + (url.hash || ''));
-        }
-      } catch (_) {}
-    });
-  }
-
   function applyI18next(locale) {
     if (!window.LueriI18n || !window.LueriI18n.translations) return;
+    var missing = [];
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      var value = lookup(locale, key);
-      if (value) el.textContent = value;
+      var v = locale === 'en' ? '' : lookup(locale, el.getAttribute('data-i18n'));
+      if (v) el.textContent = v;
+      else {
+        if (locale !== 'en') missing.push(el.getAttribute('data-i18n'));
+        var en = el.getAttribute('data-en');
+        if (en !== null) el.innerHTML = en;
+      }
     });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-placeholder');
-      var value = lookup(locale, key);
-      if (value) el.setAttribute('placeholder', value);
+    [['placeholder','data-i18n-placeholder','data-en-placeholder'],['aria-label','data-i18n-aria','data-en-aria']].forEach(function (a) {
+      document.querySelectorAll('['+a[1]+']').forEach(function (el) {
+        var v = locale === 'en' ? '' : lookup(locale, el.getAttribute(a[1]));
+        el.setAttribute(a[0], v || el.getAttribute(a[2]) || '');
+      });
     });
-    document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-aria');
-      var value = lookup(locale, key);
-      if (value) el.setAttribute('aria-label', value);
-    });
+    if (missing.length && /[?&]i18n-debug/.test(location.search)) console.warn('Untranslated in ' + locale, missing);
     setDocumentLocale(locale);
     localizeSectionLinks(locale);
-    localizeRewardsLinks(locale);
     if (window.LueriI18nCompletion && typeof window.LueriI18nCompletion.apply === 'function') window.LueriI18nCompletion.apply(locale);
   }
-
   function start() {
     installStyles();
     labelSelector();
     if (!window.LueriI18n || !window.LueriI18n.translations) return;
-
     var requested = 'en';
     try { requested = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (_) {}
     if (LANGS.indexOf(requested) < 0) requested = 'en';
-
     var selector = document.getElementById('languageSelector');
     if (selector) selector.value = requested;
     labelSelector();
     applyI18next(requested);
-
     if (selector && selector.dataset.lueriLanguageWired !== 'true') {
       selector.dataset.lueriLanguageWired = 'true';
       selector.addEventListener('change', function () {
@@ -204,8 +173,6 @@
       });
     }
   }
-
-  /* Translation dependencies are loaded explicitly before this runtime by the page. */
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();
