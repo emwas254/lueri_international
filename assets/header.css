@@ -1,0 +1,171 @@
+/* ==========================================================================
+   Lueri International — site header (mobile-first)  ·  assets/header.css
+   Replaces the stacked override layers in assets/mobile-header.css and the
+   header blocks at the end of assets/site.css for pages using <header class="lh">.
+
+   Why this doesn't fight the old CSS: every element uses NEW class names
+   (lh-*). The old rules target .navbar / .brand / .nav-controls / .nav-cta,
+   so none of them match. No !important anywhere in this file.
+
+   Load order:  site.css  →  header.css  (after site.css, before page CSS)
+   ========================================================================== */
+
+:root { --lh-h: 56px; --lh-on-route: #F0EAD8; }
+html  { scroll-padding-top: calc(var(--lh-h) + 8px); }
+
+/* ---------- shell ---------- */
+header.lh {
+  position: sticky; top: 0; z-index: 250;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top, 0px);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+
+/* ---------- bar: one row (brand | actions); utilities drop to row 2 ---------- */
+.lh-bar {
+  direction: ltr;                         /* the logo lockup never mirrors in RTL */
+  max-width: 1200px; margin: 0 auto;
+  padding: 8px max(14px, env(safe-area-inset-left, 0px)) 8px max(14px, env(safe-area-inset-right, 0px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "brand actions" "utils utils";
+  align-items: center;
+  column-gap: 10px; row-gap: 0;
+  min-height: var(--lh-h);
+}
+
+/* ---------- brand ---------- */
+.lh-brand {
+  grid-area: brand;
+  display: flex; align-items: center; gap: 9px;
+  min-width: 0; text-decoration: none; color: var(--ink);
+}
+.lh-brand .mark-img { height: 32px; width: auto; flex: 0 0 auto; display: block; }
+.lh-brand .mark-dark-img { display: none; }
+[data-theme="dark"] .lh-brand .mark-light { display: none; }
+[data-theme="dark"] .lh-brand .mark-dark-img { display: block; }
+
+.lh-brand-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lh-name {
+  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-size: clamp(.94rem, 4.3vw, 1.15rem); line-height: 1; letter-spacing: .02em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.lh-motto {
+  font-family: 'IBM Plex Sans', sans-serif; font-weight: 600;
+  font-size: .58rem; line-height: 1.1; letter-spacing: .04em;
+  color: var(--slate);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+html[dir="rtl"] .lh-motto { direction: rtl; text-align: left; }
+
+/* ---------- actions: Book + Menu ---------- */
+.lh-actions { grid-area: actions; display: flex; align-items: center; gap: 8px; }
+
+header.lh .lh-book {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 40px; padding: 0 11px; box-sizing: border-box;
+  background: var(--route); color: var(--lh-on-route);   /* fixed cream: passes 4.5:1 in both themes */
+  border-radius: 4px; text-decoration: none; white-space: nowrap;
+  font-family: 'IBM Plex Sans', sans-serif; font-weight: 700;
+  font-size: .68rem; letter-spacing: .05em; text-transform: uppercase;
+}
+header.lh .lh-book:hover { filter: brightness(1.08); }
+
+/* Menu button: icon-only on phones, label stays in the DOM for screen readers
+   and for whatever script updates #menuTriggerLabel. */
+header.lh .menu-trigger {
+  height: 40px; min-width: 40px; box-sizing: border-box;
+  padding: 0 10px; gap: 0; justify-content: center;
+}
+header.lh .menu-trigger #menuTriggerLabel {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- utilities (theme + language) ---------- */
+.lh-utils {
+  grid-area: utils;
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
+}
+header.lh .theme-toggle {
+  flex: 0 0 auto; width: 40px; height: 40px; box-sizing: border-box; padding: 0; margin: 0;
+}
+header.lh .lh-utils select {
+  flex: 1 1 auto; min-width: 0; max-width: none; height: 40px; margin: 0; padding: 0 10px; font-size: .8rem;
+}
+/* plain <select> fallback for pages that don't load site.css (corporate, careers) */
+header.lh .lh-utils select {
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--ink); border-radius: 6px;
+  font: 600 .8rem/1.2 'IBM Plex Sans', sans-serif; cursor: pointer;
+}
+/* the script-built language dropdown (replaces the <select>) */
+header.lh .lh-utils .lueri-language-menu { flex: 1 1 auto; min-width: 0; width: auto; }
+header.lh .lh-utils .lueri-language-trigger {
+  width: 100%; min-width: 0; height: 40px; min-height: 40px; box-sizing: border-box; padding: 0 10px;
+}
+header.lh .lueri-language-list { z-index: 4000; }
+
+/* Phones: keep the bar to one row. Utilities appear only while the menu is open.
+   Browsers without :has() simply keep them visible — nothing becomes unreachable. */
+@supports selector(:has(*)) {
+  header.lh .lh-utils { display: none; }
+  header.lh:has(#menuPanel.open) .lh-utils { display: flex; }
+}
+
+/* ---------- menu panel (rules from site.css stay; these make it usable on phones) ---------- */
+header.lh .menu-panel-inner {
+  max-height: calc(100vh - 130px);
+  max-height: calc(100dvh - 130px);
+  overflow-y: auto; overscroll-behavior: contain;
+}
+header.lh .menu-panel-eyebrow { padding: 14px 18px 4px; }
+header.lh .menu-link { padding: 14px 18px; }
+@media (hover: none) {
+  header.lh .menu-link:hover { padding-left: 18px; }   /* no sticky "slide" after a tap */
+}
+
+/* ---------- very narrow phones (≤ 359px): trade a little padding for a one-row bar ---------- */
+@media (max-width: 359px) {
+  .lh-bar { padding-left: 10px; padding-right: 10px; column-gap: 8px; }
+  .lh-brand { gap: 7px; }
+  .lh-brand .mark-img { height: 28px; }
+  .lh-name { font-size: .9rem; }
+  header.lh .lh-book { padding: 0 8px; font-size: .6rem; letter-spacing: .03em; }
+  header.lh .menu-trigger { min-width: 36px; padding: 0 8px; }
+}
+
+/* ---------- ≥ 480px: menu button gets its label back ---------- */
+@media (min-width: 480px) {
+  header.lh .menu-trigger { padding: 0 14px 0 12px; gap: 10px; }
+  header.lh .menu-trigger #menuTriggerLabel {
+    position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto;
+  }
+  header.lh .lh-book { padding: 0 16px; font-size: .74rem; }
+  .lh-brand .mark-img { height: 36px; }
+}
+
+/* ---------- ≥ 901px: single row, utilities inline, nothing hidden ---------- */
+@media (min-width: 901px) {
+  :root { --lh-h: 72px; }
+  .lh-bar {
+    padding: 12px 28px;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "brand utils actions";
+    column-gap: 16px;
+  }
+  .lh-brand .mark-img { height: 40px; }
+  .lh-name  { font-size: 1.2rem; }
+  .lh-motto { font-size: .62rem; }
+  header.lh .lh-utils { display: flex; margin-top: 0; padding-top: 0; border-top: 0; }
+  header.lh .lh-utils select,
+  header.lh .lh-utils .lueri-language-menu { flex: 0 0 auto; min-width: 150px; max-width: 190px; }
+  header.lh .lh-book { height: 44px; }
+  header.lh .menu-trigger { height: 44px; }
+  header.lh .theme-toggle { width: 44px; height: 44px; }
+  header.lh .lh-utils .lueri-language-trigger { height: 44px; min-height: 44px; }
+  header.lh .menu-panel-inner { max-height: calc(100dvh - 90px); }
+}
