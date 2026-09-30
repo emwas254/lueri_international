@@ -64,6 +64,35 @@
   ]
 }
 </script>
+<style id="lueri-brand-lockup-hotfix">
+/* Production hotfix: footer motto must never render decorative separators. */
+footer .footer-brand .footer-brand-motto,
+footer .footer-brand .footer-brand-motto > span{
+  display:block !important;
+  width:auto !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+footer .footer-brand .footer-brand-motto::before,
+footer .footer-brand .footer-brand-motto::after,
+footer .footer-brand .footer-brand-motto > span::before,
+footer .footer-brand .footer-brand-motto > span::after{
+  content:none !important;
+  display:none !important;
+  width:0 !important;
+  height:0 !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:none !important;
+}
+</style>
 </head>
 <body>
 <script>
