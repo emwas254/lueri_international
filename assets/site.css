@@ -910,3 +910,34 @@ html[lang="ar"] .faq-list > *{
   .footer-brand .brand-name{ font-size:1rem; }
   .footer-brand .brand-motto{ font-size:.56rem; }
 }
+
+/* FINAL BRAND RULE — footer motto is text only; never render decorative separators */
+footer .footer-brand-motto,
+footer .footer-brand-motto > span{
+  display:block !important;
+  width:auto !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:.58rem;
+  font-weight:600;
+  line-height:1.1;
+  letter-spacing:.04em;
+  color:var(--slate);
+}
+footer .footer-brand-motto::before,
+footer .footer-brand-motto::after{
+  content:none !important;
+  display:none !important;
+  width:0 !important;
+  height:0 !important;
+  min-width:0 !important;
+  background:none !important;
+  border:0 !important;
+}
