@@ -19,6 +19,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js"></script>
 <script src="lueri-common.js"></script>
+<script src="careers-i18n.js?v=20260930-01" defer></script>
+<script src="i18n.js?v=20260929-04" defer></script>
 <script>
   if (typeof lueriBootTheme === 'function') {
     lueriBootTheme();
@@ -296,63 +298,66 @@
     <div class="nav-controls">
       <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
         <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
-        <span id="menuTriggerLabel">Menu</span>
+        <span id="menuTriggerLabel" data-careers-i18n="nav.menu">Menu</span>
       </button>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode" data-careers-aria="nav.theme">
         <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
-      <a class="nav-cta" href="index.html#contact">Book Pickup</a>
+      <select id="languageSelector" class="language-selector" aria-label="Select language" data-careers-aria="nav.languageSelect">
+        <option value="en">EN</option><option value="zh">ZH</option><option value="sw">SW</option><option value="fr">FR</option><option value="es">ES</option><option value="ar">AR</option><option value="pt">PT</option>
+      </select>
+      <a class="nav-cta" href="index.html#contact" data-careers-i18n="nav.bookPickup">Book Pickup</a>
     </div>
   </div>
 
   <div class="menu-panel" id="menuPanel">
     <div class="menu-panel-inner">
-      <div class="menu-panel-eyebrow">Where to next</div>
+      <div class="menu-panel-eyebrow" data-careers-i18n="nav.where">Where to next</div>
       <div class="menu-panel-grid">
         <a href="index.html#services" class="menu-link" data-close-menu>
           <span class="menu-link-tag">SVC</span>
-          <span class="menu-link-body"><span class="menu-link-title">Services</span><span class="menu-link-caption">What we carry, and how fast</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.services">Services</span><span class="menu-link-caption" data-careers-i18n="nav.servicesCaption">What we carry, and how fast</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="index.html#pricing" class="menu-link" data-close-menu>
           <span class="menu-link-tag">PRC</span>
-          <span class="menu-link-body"><span class="menu-link-title">Pricing</span><span class="menu-link-caption">Quoted rates, no hidden fees</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.pricing">Pricing</span><span class="menu-link-caption" data-careers-i18n="nav.pricingCaption">Quoted rates, no hidden fees</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="corporate.html" class="menu-link" aria-current="page" data-close-menu>
           <span class="menu-link-tag">BIZ</span>
-          <span class="menu-link-body"><span class="menu-link-title">Business</span><span class="menu-link-caption">Set up a corporate account</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.business">Business</span><span class="menu-link-caption" data-careers-i18n="nav.businessCaption">Set up a corporate account</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="index.html#coverage" class="menu-link" data-close-menu>
           <span class="menu-link-tag">CVG</span>
-          <span class="menu-link-body"><span class="menu-link-title">Coverage</span><span class="menu-link-caption">Where we deliver in Nairobi</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.coverage">Coverage</span><span class="menu-link-caption" data-careers-i18n="nav.coverageCaption">Where we deliver in Nairobi</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="index.html#why" class="menu-link" data-close-menu>
           <span class="menu-link-tag">WHY</span>
-          <span class="menu-link-body"><span class="menu-link-title">Why Us</span><span class="menu-link-caption">What makes Lueri different</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.why">Why Us</span><span class="menu-link-caption" data-careers-i18n="nav.whyCaption">What makes Lueri different</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="index.html#faq" class="menu-link" data-close-menu>
           <span class="menu-link-tag">FAQ</span>
-          <span class="menu-link-body"><span class="menu-link-title">FAQ</span><span class="menu-link-caption">Common questions, answered</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.faq">FAQ</span><span class="menu-link-caption" data-careers-i18n="nav.faqCaption">Common questions, answered</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="rewards.html" class="menu-link" data-close-menu>
           <span class="menu-link-tag">RWD</span>
-          <span class="menu-link-body"><span class="menu-link-title">Rewards</span><span class="menu-link-caption">Earn points on every delivery</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.rewards">Rewards</span><span class="menu-link-caption" data-careers-i18n="nav.rewardsCaption">Earn points on every delivery</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="careers.html" class="menu-link" data-close-menu>
           <span class="menu-link-tag">CAR</span>
-          <span class="menu-link-body"><span class="menu-link-title">Careers</span><span class="menu-link-caption">Future roles at Lueri</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.careers">Careers</span><span class="menu-link-caption" data-careers-i18n="nav.careersCaption">Future roles at Lueri</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
         <a href="index.html#contact" class="menu-link" data-close-menu>
           <span class="menu-link-tag">BK</span>
-          <span class="menu-link-body"><span class="menu-link-title">Book</span><span class="menu-link-caption">Send a pickup request now</span></span>
+          <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.book">Book</span><span class="menu-link-caption" data-careers-i18n="nav.bookCaption">Send a pickup request now</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
       </div>
@@ -365,14 +370,14 @@
     <div class="wrap">
       <div class="docket">
         <div class="docket-row">
-          <div class="eyebrow-mono">People / Careers</div>
-          <div class="waybill-no">FORM NO. HR–2026</div>
+          <div class="eyebrow-mono" data-careers-i18n="hero.eyebrow">People / Careers</div>
+          <div class="waybill-no" data-careers-i18n="hero.form">FORM NO. HR–2026</div>
         </div>
-        <h1 class="title">BUILD THE<br>NETWORK.<br>MOVE WITH US.</h1>
-        <p class="subtitle">This is Lueri International's recruitment desk. See genuine open positions, read the role requirements, and apply directly. Corporate accounts belong on the Business page.</p>
+        <h1 class="title" data-careers-i18n="hero.title">BUILD THE<br>NETWORK.<br>MOVE WITH US.</h1>
+        <p class="subtitle" data-careers-i18n="hero.subtitle">This is Lueri International's recruitment desk. See genuine open positions, read the role requirements, and apply directly. Corporate accounts belong on the Business page.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#open-roles">View open roles</a>
-          <a class="btn btn-secondary" href="#talent-pool">Future opportunities</a>
+          <a class="btn btn-primary" href="#open-roles" data-careers-i18n="hero.open">View open roles</a>
+          <a class="btn btn-secondary" href="#talent-pool" data-careers-i18n="hero.future">Future opportunities</a>
         </div>
       </div>
     </div>
@@ -382,14 +387,14 @@
     <div class="wrap">
       <div class="section-head">
         <span class="section-num">01</span>
-        <h2>Open positions</h2>
+        <h2 data-careers-i18n="roles.heading">Open positions</h2>
       </div>
       <div id="openRoles" class="pricing-grid" aria-live="polite">
-        <div class="pricing-note" style="grid-column:1/-1;">Loading current openings…</div>
+        <div class="pricing-note" style="grid-column:1/-1;" data-careers-i18n="roles.loading">Loading current openings…</div>
       </div>
       <div id="rolesEmpty" class="pricing-note" style="display:none;">
-        <strong>No current openings</strong><br>
-        Lueri does not have a confirmed public vacancy at this time. New positions will appear here when recruitment opens.
+        <strong data-careers-i18n="roles.emptyTitle">No current openings</strong><br>
+        <span data-careers-i18n="roles.emptyText">Lueri does not have a confirmed public vacancy at this time. New positions will appear here when recruitment opens.</span>
       </div>
     </div>
   </section>
@@ -398,13 +403,13 @@
     <div class="wrap">
       <div class="section-head">
         <span class="section-num">02</span>
-        <h2>What we look for</h2>
+        <h2 data-careers-i18n="values.heading">What we look for</h2>
       </div>
       <ul class="why-list">
-        <li><span class="n">01</span><div><h3>Ownership</h3><p>Follow work through, communicate early when something is blocked, and take responsibility for the outcome.</p></div></li>
-        <li><span class="n">02</span><div><h3>Customer discipline</h3><p>Be clear, calm and useful when a customer is in a hurry or a delivery has gone off-plan.</p></div></li>
-        <li><span class="n">03</span><div><h3>Operational accuracy</h3><p>Addresses, phone numbers, delivery status and handover records need careful handling.</p></div></li>
-        <li><span class="n">04</span><div><h3>Learning speed</h3><p>We use technology and automation aggressively. The ability to learn new workflows and tools matters.</p></div></li>
+        <li><span class="n">01</span><div><h3 data-careers-i18n="values.ownership">Ownership</h3><p data-careers-i18n="values.ownershipText">Follow work through, communicate early when something is blocked, and take responsibility for the outcome.</p></div></li>
+        <li><span class="n">02</span><div><h3 data-careers-i18n="values.customer">Customer discipline</h3><p data-careers-i18n="values.customerText">Be clear, calm and useful when a customer is in a hurry or a delivery has gone off-plan.</p></div></li>
+        <li><span class="n">03</span><div><h3 data-careers-i18n="values.accuracy">Operational accuracy</h3><p data-careers-i18n="values.accuracyText">Addresses, phone numbers, delivery status and handover records need careful handling.</p></div></li>
+        <li><span class="n">04</span><div><h3 data-careers-i18n="values.learning">Learning speed</h3><p data-careers-i18n="values.learningText">We use technology and automation aggressively. The ability to learn new workflows and tools matters.</p></div></li>
       </ul>
     </div>
   </section>
@@ -413,11 +418,11 @@
     <div class="wrap">
       <div class="section-head">
         <span class="section-num">03</span>
-        <h2>Future opportunities</h2>
+        <h2 data-careers-i18n="future.heading">Future opportunities</h2>
       </div>
       <div class="contact-shell">
-        <p style="margin-top:0; max-width:760px; font-size:1.05rem; line-height:1.7;">No current vacancy fits? You can still submit your details for future recruitment in operations, customer experience, sales, technology, finance or administration.</p>
-        <button id="futureApplyBtn" class="btn btn-primary" type="button">Join the talent pool</button>
+        <p style="margin-top:0; max-width:760px; font-size:1.05rem; line-height:1.7;" data-careers-i18n="future.text">No current vacancy fits? You can still submit your details for future recruitment in operations, customer experience, sales, technology, finance or administration.</p>
+        <button id="futureApplyBtn" class="btn btn-primary" type="button" data-careers-i18n="future.join">Join the talent pool</button>
       </div>
     </div>
   </section>
@@ -427,63 +432,63 @@
       <div class="contact-shell">
         <div class="section-head">
           <span class="section-num">04</span>
-          <h2>Apply</h2>
+          <h2 data-careers-i18n="form.heading">Apply</h2>
         </div>
         <form id="careerForm" novalidate>
           <div class="form-group">
-            <label class="form-label" for="role">Role</label>
+            <label class="form-label" for="role" data-careers-i18n="form.role">Role</label>
             <select class="form-input" id="role" name="role" required>
               <option value="" disabled selected>Loading roles…</option>
             </select>
           </div>
           <div class="form-row2">
             <div class="form-group">
-              <label class="form-label" for="candidateName">Full Name</label>
+              <label class="form-label" for="candidateName" data-careers-i18n="form.name">Full Name</label>
               <input class="form-input" id="candidateName" name="name" autocomplete="name" maxlength="160" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="candidatePhone">Phone</label>
-              <input class="form-input" id="candidatePhone" name="phone" type="tel" inputmode="tel" maxlength="40" placeholder="07xx xxx xxx" required>
+              <label class="form-label" for="candidatePhone" data-careers-i18n="form.phone">Phone</label>
+              <input class="form-input" id="candidatePhone" name="phone" type="tel" inputmode="tel" maxlength="40" placeholder="07xx xxx xxx" data-careers-placeholder="form.phonePlaceholder" required>
             </div>
           </div>
           <div class="form-row2">
             <div class="form-group">
-              <label class="form-label" for="candidateEmail">Email</label>
+              <label class="form-label" for="candidateEmail" data-careers-i18n="form.email">Email</label>
               <input class="form-input" id="candidateEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="candidateLocation">Location</label>
-              <input class="form-input" id="candidateLocation" name="location" maxlength="160" placeholder="e.g. Nairobi">
+              <label class="form-label" for="candidateLocation" data-careers-i18n="form.location">Location</label>
+              <input class="form-input" id="candidateLocation" name="location" maxlength="160" placeholder="e.g. Nairobi" data-careers-placeholder="form.locationPlaceholder">
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="candidateSummary">Relevant experience / why you're a fit</label>
-            <textarea class="form-input" id="candidateSummary" name="summary" rows="6" maxlength="3000" placeholder="Briefly describe your relevant experience, skills, availability and what you would bring to Lueri." required></textarea>
+            <label class="form-label" for="candidateSummary" data-careers-i18n="form.summary">Relevant experience / why you’re a fit</label>
+            <textarea class="form-input" id="candidateSummary" name="summary" rows="6" maxlength="3000" placeholder="Briefly describe your relevant experience, skills, availability and what you would bring to Lueri." data-careers-placeholder="form.summaryPlaceholder" required></textarea>
           </div>
           <div class="form-row2">
             <div class="form-group">
-              <label class="form-label" for="cvUrl">CV / Portfolio Link</label>
+              <label class="form-label" for="cvUrl" data-careers-i18n="form.cv">CV / Portfolio Link</label>
               <input class="form-input" id="cvUrl" name="cvUrl" type="url" maxlength="1000" placeholder="https://...">
             </div>
             <div class="form-group">
-              <label class="form-label" for="linkedinUrl">LinkedIn (optional)</label>
+              <label class="form-label" for="linkedinUrl" data-careers-i18n="form.linkedin">LinkedIn (optional)</label>
               <input class="form-input" id="linkedinUrl" name="linkedinUrl" type="url" maxlength="1000" placeholder="https://linkedin.com/in/...">
             </div>
           </div>
           <div class="form-row2">
             <div class="form-group">
-              <label class="form-label" for="availability">Availability (optional)</label>
-              <input class="form-input" id="availability" name="availability" maxlength="160" placeholder="e.g. Immediately / 30 days">
+              <label class="form-label" for="availability" data-careers-i18n="form.availability">Availability (optional)</label>
+              <input class="form-input" id="availability" name="availability" maxlength="160" placeholder="e.g. Immediately / 30 days" data-careers-placeholder="form.availabilityPlaceholder">
             </div>
             <div class="form-group">
-              <label class="form-label" for="expectedSalary">Expected salary (optional)</label>
-              <input class="form-input" id="expectedSalary" name="expectedSalary" maxlength="160" placeholder="Optional">
+              <label class="form-label" for="expectedSalary" data-careers-i18n="form.salary">Expected salary (optional)</label>
+              <input class="form-input" id="expectedSalary" name="expectedSalary" maxlength="160" placeholder="Optional" data-careers-placeholder="form.salaryPlaceholder">
             </div>
           </div>
-          <button id="careerSubmit" type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit application</button>
+          <button id="careerSubmit" type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" data-careers-i18n="form.submit">Submit application</button>
           <p id="careerError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:.9rem;"></p>
           <p id="careerSuccess" role="status" aria-live="polite" style="display:none; margin:16px 0 0; color:var(--signal); font-size:.95rem; line-height:1.6;"></p>
-          <p style="margin:16px 0 0; font-size:.82rem; opacity:.65; line-height:1.5;">We only request information needed for recruitment. Do not submit passwords, KRA PINs, national ID numbers, bank details or other sensitive identity documents at this stage.</p>
+          <p style="margin:16px 0 0; font-size:.82rem; opacity:.65; line-height:1.5;" data-careers-i18n="form.privacy">We only request information needed for recruitment. Do not submit passwords, KRA PINs, national ID numbers, bank details or other sensitive identity documents at this stage.</p>
         </form>
       </div>
     </div>
@@ -493,18 +498,18 @@
 <footer class="wrap">
   <div class="legal-block">
     <div>
-      <strong>Registered business</strong>
+      <strong data-careers-i18n="footer.registered">Registered business</strong>
       Lueri International · Nairobi, Kenya<br>
       Founded 13 December 2023<br>
       Registration details available on request for B2B clients
     </div>
     <div>
-      <strong>Contact</strong>
+      <strong data-careers-i18n="footer.contact">Contact</strong>
       <a href="tel:+254713261719">+254 713 261 719</a><br>
       <a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a>
     </div>
     <div>
-      <strong>Hours</strong>
+      <strong data-careers-i18n="footer.hours">Hours</strong>
       Mon–Fri, 8:00 AM – 5:00 PM<br>
       Sat, 8:00 AM – 3:00 PM<br>
       Closed Sunday
