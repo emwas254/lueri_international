@@ -26,6 +26,6 @@
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', apply, {once:true});
   } else { apply(); }
-  window.addEventListener('lueri:language-changed', apply);
+  window.addEventListener('lueri:language-changed', apply);\n  var selector = document.getElementById('languageSelector');\n  if(selector) selector.addEventListener('change', function(){ setTimeout(apply, 0); });\n  if(window.MutationObserver){\n    new MutationObserver(apply).observe(document.documentElement, {attributes:true, attributeFilter:['data-lueri-language','lang','dir']});\n  }
   window.lueriBrand = { apply: apply, motto: MOTTO };
 })();
