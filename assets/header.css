@@ -87,14 +87,15 @@ header.lh .menu-trigger #menuTriggerLabel {
 /* ---------- utilities (theme + language) ---------- */
 .lh-utils {
   grid-area: utils;
-  display: flex; align-items: center; gap: 8px; min-width: 0;
-  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  margin-top: 8px; padding: 10px 0 4px; border-top: 1px solid var(--line);
 }
 header.lh .theme-toggle {
-  flex: 0 0 auto; width: 40px; height: 40px; box-sizing: border-box; padding: 0; margin: 0;
+  flex: 0 0 auto; width: 44px; height: 44px; box-sizing: border-box; padding: 0; margin: 0;
+  border-radius: 50%;
 }
 header.lh .lh-utils select {
-  flex: 1 1 auto; min-width: 0; max-width: none; height: 40px; margin: 0; padding: 0 10px; font-size: .8rem;
+  flex: 1 1 auto; min-width: 0; max-width: none; height: 44px; margin: 0; padding: 0 10px; font-size: .8rem;
 }
 /* plain <select> fallback for pages that don't load site.css (corporate, careers) */
 header.lh .lh-utils select {
@@ -105,7 +106,7 @@ header.lh .lh-utils select {
 /* the script-built language dropdown (replaces the <select>) */
 header.lh .lh-utils .lueri-language-menu { flex: 1 1 auto; min-width: 0; width: auto; }
 header.lh .lh-utils .lueri-language-trigger {
-  width: 100%; min-width: 0; height: 40px; min-height: 40px; box-sizing: border-box; padding: 0 10px;
+  width: 100%; min-width: 0; height: 44px; min-height: 44px; box-sizing: border-box; padding: 0 12px;
 }
 header.lh .lueri-language-list { z-index: 4000; }
 
@@ -160,7 +161,7 @@ header.lh .menu-link { padding: 14px 18px; }
   .lh-brand .mark-img { height: 40px; }
   .lh-name  { font-size: 1.2rem; }
   .lh-motto { font-size: .62rem; }
-  header.lh .lh-utils { display: flex; margin-top: 0; padding-top: 0; border-top: 0; }
+  header.lh .lh-utils { display: flex; margin-top: 0; padding: 0; border-top: 0; gap: 8px; }
   header.lh .lh-utils select,
   header.lh .lh-utils .lueri-language-menu { flex: 0 0 auto; min-width: 150px; max-width: 190px; }
   header.lh .lh-book { height: 44px; }
