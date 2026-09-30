@@ -260,6 +260,7 @@
 
 <style id="lueriCorporatePaymentPanelStyles">.lueri-payment-panel{position:fixed;inset:0;z-index:10050;background:rgba(27,38,32,.76);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:18px}.lueri-payment-panel.active{display:flex}.lueri-payment-card{width:min(780px,100%);height:min(92vh,880px);background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.35)}.lueri-payment-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 18px;background:var(--ink);color:var(--paper)}.lueri-payment-head strong{font-family:'Oswald',sans-serif}.lueri-payment-head small{display:block;opacity:.72;margin-top:3px}.lueri-payment-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(240,234,216,.35);background:transparent;color:var(--paper);font-size:1.3rem;cursor:pointer}.lueri-payment-body{position:relative;flex:1;min-height:0}.lueri-payment-body iframe{width:100%;height:100%;border:0}.lueri-payment-loading{position:absolute;inset:0;display:grid;place-items:center;background:#fff;color:var(--slate);font-family:'IBM Plex Mono',monospace;font-size:.78rem;z-index:2}.lueri-payment-loading.hidden{display:none}.lueri-payment-status{text-align:center;padding:9px 14px;background:var(--paper);color:var(--slate);font-size:.72rem;border-top:1px solid var(--line)}@media(max-width:600px){.lueri-payment-panel{padding:0}.lueri-payment-card{width:100%;height:100%;border-radius:0}}
 </style>
+<link rel="stylesheet" href="assets/header.css?v=20260930-01">
 </head>
 <body>
 
@@ -286,14 +287,22 @@
   </div>
 </div>
 
-<header>
-  <div class="navbar wrap">
-    <a class="brand" href="index.html" style="text-decoration:none;">
-      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+<header class="lh" id="siteHeader">
+  <div class="lh-bar">
+    <a class="lh-brand" href="index.html" aria-label="Lueri International — home">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="">
       <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
-      <span>Lueri International</span>
+      <span class="lh-brand-copy">
+        <span class="lh-name">Lueri International</span>
+        <span class="lh-motto" data-i18n="hero.motto">Until the seal is broken</span>
+      </span>
     </a>
-    <div class="nav-controls">
+
+    <div class="lh-utils">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
       <select id="languageSelector" class="language-selector-native" aria-label="Select Language">
         <option value="en">🇬🇧 English</option>
         <option value="zh">🇨🇳 中文</option>
@@ -303,15 +312,14 @@
         <option value="ar">🇸🇦 العربية</option>
         <option value="pt">🇧🇷 Português</option>
       </select>
+    </div>
+
+    <div class="lh-actions">
+      <a class="nav-cta lh-book" href="index.html#contact">Book Pickup</a>
       <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
         <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
         <span id="menuTriggerLabel">Menu</span>
       </button>
-      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-      <a class="nav-cta" href="index.html#contact">Book Pickup</a>
     </div>
   </div>
 
@@ -641,5 +649,6 @@
 <script src="corporate-signup.js?v=20260916-02"></script>
 <script src="lucy-v3.js" defer></script>
 <script src="analytics.js?v=20260921-01" defer></script>
+<script src="assets/header.js?v=20260930-01" defer></script>
 </body>
 </html>
