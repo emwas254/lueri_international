@@ -87,15 +87,14 @@ header.lh .menu-trigger #menuTriggerLabel {
 /* ---------- utilities (theme + language) ---------- */
 .lh-utils {
   grid-area: utils;
-  display: flex; align-items: center; gap: 10px; min-width: 0;
-  margin-top: 8px; padding: 10px 0 4px; border-top: 1px solid var(--line);
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
 }
 header.lh .theme-toggle {
-  flex: 0 0 auto; width: 44px; height: 44px; box-sizing: border-box; padding: 0; margin: 0;
-  border-radius: 50%;
+  flex: 0 0 auto; width: 40px; height: 40px; box-sizing: border-box; padding: 0; margin: 0;
 }
 header.lh .lh-utils select {
-  flex: 1 1 auto; min-width: 0; max-width: none; height: 44px; margin: 0; padding: 0 10px; font-size: .8rem;
+  flex: 0 0 auto; width: 150px; max-width: 50%; min-width: 0; height: 40px; margin: 0 0 0 auto; padding: 0 10px; font-size: .8rem;
 }
 /* plain <select> fallback for pages that don't load site.css (corporate, careers) */
 header.lh .lh-utils select {
@@ -104,11 +103,11 @@ header.lh .lh-utils select {
   font: 600 .8rem/1.2 'IBM Plex Sans', sans-serif; cursor: pointer;
 }
 /* the script-built language dropdown (replaces the <select>) */
-header.lh .lh-utils .lueri-language-menu { flex: 1 1 auto; min-width: 0; width: auto; }
+header.lh .lh-utils .lueri-language-menu { flex: 0 0 auto; width: 150px; max-width: 50%; min-width: 0; margin-left: auto; }
 header.lh .lh-utils .lueri-language-trigger {
-  width: 100%; min-width: 0; height: 44px; min-height: 44px; box-sizing: border-box; padding: 0 12px;
+  width: 100%; min-width: 0; height: 40px; min-height: 40px; box-sizing: border-box; padding: 0 10px;
 }
-header.lh .lueri-language-list { z-index: 4000; }
+header.lh .lueri-language-list { z-index: 4000; left: auto; right: 0; min-width: 100%; width: max-content; max-width: calc(100vw - 28px); }
 
 /* Phones: keep the bar to one row. Utilities appear only while the menu is open.
    Browsers without :has() simply keep them visible — nothing becomes unreachable. */
@@ -161,84 +160,12 @@ header.lh .menu-link { padding: 14px 18px; }
   .lh-brand .mark-img { height: 40px; }
   .lh-name  { font-size: 1.2rem; }
   .lh-motto { font-size: .62rem; }
-  header.lh .lh-utils { display: flex; margin-top: 0; padding: 0; border-top: 0; gap: 8px; }
+  header.lh .lh-utils { display: flex; margin-top: 0; padding-top: 0; border-top: 0; }
   header.lh .lh-utils select,
-  header.lh .lh-utils .lueri-language-menu { flex: 0 0 auto; min-width: 150px; max-width: 190px; }
+  header.lh .lh-utils .lueri-language-menu { flex: 0 0 auto; min-width: 150px; max-width: 190px; margin-left: 0; }
   header.lh .lh-book { height: 44px; }
   header.lh .menu-trigger { height: 44px; }
   header.lh .theme-toggle { width: 44px; height: 44px; }
   header.lh .lh-utils .lueri-language-trigger { height: 44px; min-height: 44px; }
   header.lh .menu-panel-inner { max-height: calc(100dvh - 90px); }
-}
-
-/* ---------- RTL viewport containment: Arabic header must never create horizontal scroll ---------- */
-html[dir="rtl"] header.lh,
-html[lang="ar"] header.lh{
-  width:100%;
-  max-width:100%;
-  overflow-x:clip;
-}
-html[dir="rtl"] .lh-bar,
-html[lang="ar"] .lh-bar{
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  grid-template-columns:minmax(0,1fr) auto;
-}
-html[dir="rtl"] .lh-brand,
-html[lang="ar"] .lh-brand,
-html[dir="rtl"] .lh-brand-copy,
-html[lang="ar"] .lh-brand-copy{
-  min-width:0;
-  max-width:100%;
-}
-html[dir="rtl"] .lh-name,
-html[lang="ar"] .lh-name,
-html[dir="rtl"] .lh-motto,
-html[lang="ar"] .lh-motto{
-  min-width:0;
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-html[dir="rtl"] .lh-motto,
-html[lang="ar"] .lh-motto{
-  white-space:nowrap;
-  font-size:clamp(.48rem,2.1vw,.62rem);
-  letter-spacing:0;
-}
-html[dir="rtl"] .lh-actions,
-html[lang="ar"] .lh-actions{
-  min-width:0;
-  max-width:100%;
-  flex-shrink:0;
-}
-@media (max-width:480px){
-  html[dir="rtl"] .lh-bar,
-  html[lang="ar"] .lh-bar{
-    padding-left:10px;
-    padding-right:10px;
-    column-gap:7px;
-  }
-  html[dir="rtl"] .lh-brand,
-  html[lang="ar"] .lh-brand{
-    gap:7px;
-  }
-  html[dir="rtl"] .lh-brand .mark-img,
-  html[lang="ar"] .lh-brand .mark-img{
-    height:30px;
-  }
-  html[dir="rtl"] .lh-book,
-  html[lang="ar"] .lh-book{
-    padding-left:8px;
-    padding-right:8px;
-    font-size:.62rem;
-    letter-spacing:0;
-  }
-  html[dir="rtl"] .menu-trigger,
-  html[lang="ar"] .menu-trigger{
-    min-width:38px;
-    padding-left:8px;
-    padding-right:8px;
-  }
 }
