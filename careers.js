@@ -78,7 +78,7 @@
       console.error('Careers roles load failed:',err);
       openRolesEl.innerHTML='';
       emptyEl.style.display='block';
-      emptyEl.innerHTML='<strong>'+esc(t('messages.unavailableTitle'))+'</strong><br>'+t('roles.unavailable').replace(/<br\s*\/?>(?)/i,'');
+      emptyEl.innerHTML='<strong>'+esc(t('messages.unavailableTitle'))+'</strong><br>'+t('roles.unavailable').replace(/^.*?<br\s*\/?>(?:\s*)?/i,'');
       roleSelect.innerHTML='<option value="" selected>'+esc(t('messages.unavailableTitle'))+'</option>';
       roleSelect.disabled=true;
     }
