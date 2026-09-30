@@ -739,7 +739,7 @@ header{position:sticky;top:0;z-index:250;}
 .brand-motto>span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .nav-controls{width:100%;min-width:0;display:grid;grid-template-columns:44px 44px minmax(0,1fr);gap:7px;align-items:center;}
 .nav-controls .nav-cta{grid-column:1/-1;width:100%;}
-.menu-trigger,.theme-toggle{width:100%!important;min-width:0!important;height:42px;}
+.nav-controls .menu-trigger,.nav-controls .theme-toggle{width:100%!important;min-width:0!important;height:42px;}
 .nav-controls .lueri-language-menu{width:100%;min-width:0!important;}
 .nav-controls .lueri-language-trigger{width:100%;min-width:0!important;max-width:none;min-height:42px;height:42px;padding:7px 8px;}
 .hero-route-endpoint{min-width:0;max-width:50%;white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.25;}
