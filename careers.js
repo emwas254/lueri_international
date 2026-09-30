@@ -169,7 +169,8 @@
           invalid_summary: 'Please provide a little more information about your experience and fit.',
           invalid_cv_url: 'Please check your CV / portfolio link.',
           invalid_linkedin_url: 'Please check your LinkedIn link.',
-          duplicate_recent_application: 'We already received an application from this email for this role in the last 24 hours.'
+          duplicate_recent_application: 'We already received an application from this email for this role in the last 24 hours.',
+          rate_limited: 'Too many application attempts were made from this connection. Please try again later.'
         };
         throw new Error(messages[result.error] || 'We could not submit the application. Please try again.');
       }
