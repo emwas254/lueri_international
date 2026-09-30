@@ -31,7 +31,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="assets/site.css?v=20260929-03">
-<link rel="stylesheet" href="assets/mobile-header.css?v=20260929-04">
+<link rel="stylesheet" href="assets/header.css?v=20260930-01">
 <link rel="stylesheet" href="i18n-content.css?v=20260929-03">
 <style>
   body.rtl { text-align: right; direction: rtl; }
@@ -112,31 +112,36 @@
     <button type="button" id="successClose" class="btn btn-primary" data-i18n="booking.close">Close</button>
   </div>
 </div>
-<header>
-  <div class="navbar wrap">
-    <a class="brand" href="index.html">
-      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+<header class="lh" id="siteHeader">
+  <div class="lh-bar">
+    <a class="lh-brand" href="index.html" aria-label="Lueri International — home">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="">
       <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
-      <span class="brand-copy">
-        <span class="brand-name">Lueri International</span>
-        <span class="brand-motto"><span data-i18n="hero.motto">Until the seal is broken</span></span>
+      <span class="lh-brand-copy">
+        <span class="lh-name">Lueri International</span>
+        <span class="lh-motto" data-i18n="hero.motto">Until the seal is broken</span>
       </span>
     </a>
-    <div class="nav-controls">
-      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
-        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
-        <span id="menuTriggerLabel" data-i18n="nav.menu">Menu</span>
-      </button>
+
+    <div class="lh-utils">
       <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode" data-i18n-aria="nav.themeToggle">
-        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="4.22"></line></svg>
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       </button>
       <select id="languageSelector" class="language-selector" aria-label="Select language" data-i18n-aria="nav.languageSelect">
         <option value="en">EN</option><option value="zh">ZH</option><option value="sw">SW</option><option value="fr">FR</option><option value="es">ES</option><option value="ar">AR</option><option value="pt">PT</option>
       </select>
-      <a class="nav-cta" href="#contact" data-i18n="nav.book">Book Pickup</a>
+    </div>
+
+    <div class="lh-actions">
+      <a class="lh-book" href="#contact" data-i18n="nav.book">Book Pickup</a>
+      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
+        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
+        <span id="menuTriggerLabel" data-i18n="nav.menu">Menu</span>
+      </button>
     </div>
   </div>
+
   <div class="menu-panel" id="menuPanel">
     <div class="menu-panel-inner">
       <div class="menu-panel-eyebrow" data-i18n="nav.where">Where to next</div>
