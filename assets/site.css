@@ -772,3 +772,98 @@ html[dir="rtl"] .brand-motto>span{direction:rtl;}
   header .nav-controls .theme-toggle{width:42px!important;min-width:42px!important;height:42px!important;}
   header .nav-controls .lueri-language-trigger{height:42px!important;min-height:42px!important;font-size:.72rem!important;padding-inline:8px!important;}
 }
+
+/* FINAL RTL VIEWPORT GUARANTEE — Arabic content must fit the viewport */
+html[lang="ar"],
+html[lang="ar"] body{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:clip;
+}
+html[lang="ar"] *,
+html[lang="ar"] *::before,
+html[lang="ar"] *::after{
+  box-sizing:border-box;
+  min-width:0;
+  max-width:100%;
+}
+html[lang="ar"] img,
+html[lang="ar"] svg,
+html[lang="ar"] video,
+html[lang="ar"] canvas,
+html[lang="ar"] iframe{
+  max-width:100%;
+  height:auto;
+}
+html[lang="ar"] .hero-route-bar{
+  width:100%;
+  max-width:1080px;
+  min-width:0;
+  flex-wrap:wrap;
+  justify-content:space-between;
+}
+html[lang="ar"] .hero-route-endpoint,
+html[lang="ar"] .hero-route-label{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+html[lang="ar"] .hero-route-label{
+  flex:1 1 120px;
+}
+html[lang="ar"] .hero-polished .hero-copy,
+html[lang="ar"] .hero-polished .hero-copy-kicker,
+html[lang="ar"] .hero-polished .hero-copy .title,
+html[lang="ar"] .hero-polished .hero-copy .subtitle{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+html[lang="ar"] .cta-row,
+html[lang="ar"] .form-actions,
+html[lang="ar"] .footer-row,
+html[lang="ar"] .social-links{
+  max-width:100%;
+  min-width:0;
+  flex-wrap:wrap;
+}
+html[lang="ar"] .legal-block,
+html[lang="ar"] .pricing-grid,
+html[lang="ar"] .grid3,
+html[lang="ar"] .coverage-wrap,
+html[lang="ar"] .contact-grid,
+html[lang="ar"] .sla-grid,
+html[lang="ar"] .pod-steps,
+html[lang="ar"] .faq-list{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+}
+html[lang="ar"] .legal-block > *,
+html[lang="ar"] .pricing-grid > *,
+html[lang="ar"] .grid3 > *,
+html[lang="ar"] .coverage-wrap > *,
+html[lang="ar"] .contact-grid > *,
+html[lang="ar"] .sla-grid > *,
+html[lang="ar"] .pod-steps > *,
+html[lang="ar"] .faq-list > *{
+  min-width:0;
+  max-width:100%;
+}
+@media(max-width:760px){
+  html[lang="ar"] .hero-route-bar{
+    padding-left:12px;
+    padding-right:12px;
+    gap:8px;
+  }
+  html[lang="ar"] .hero-route-endpoint{
+    flex:1 1 110px;
+  }
+  html[lang="ar"] .hero-route-label{
+    flex:1 1 100%;
+    order:3;
+    text-align:center;
+  }
+}
