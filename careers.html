@@ -276,30 +276,31 @@
   }
   @media (max-width:860px){ .pricing-grid{ grid-template-columns:1fr; } }
 
-  /* Mobile header CTA — hide only header Book Pickup, keep 44px menu target */
+  /* Menu button keeps a 44px touch target on phones. (The old rule that hid the
+     header "Book Pickup" button on phones was removed: the new header shows it.) */
   body.menu-open{ overflow:hidden; }
   @media (max-width:700px){
-    .nav-cta{ display:none; }
     .menu-trigger{ min-width:44px; min-height:44px; justify-content:center; }
   }
 </style>
+<link rel="stylesheet" href="assets/header.css?v=20260930-01">
 </head>
 <body>
 
 <a class="skip-link" href="#apply" data-careers-i18n="footer.skip">Skip to application form</a>
 
-<header>
-  <div class="navbar wrap">
-    <a class="brand" href="index.html" style="text-decoration:none;">
-      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+<header class="lh" id="siteHeader">
+  <div class="lh-bar">
+    <a class="lh-brand" href="index.html" aria-label="Lueri International — home">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="">
       <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
-      <span>Lueri International</span>
+      <span class="lh-brand-copy">
+        <span class="lh-name">Lueri International</span>
+        <span class="lh-motto" data-i18n="hero.motto">Until the seal is broken</span>
+      </span>
     </a>
-    <div class="nav-controls">
-      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
-        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
-        <span id="menuTriggerLabel" data-careers-i18n="nav.menu">Menu</span>
-      </button>
+
+    <div class="lh-utils">
       <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode" data-careers-aria="nav.theme">
         <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -307,7 +308,14 @@
       <select id="languageSelector" class="language-selector" aria-label="Select language" data-careers-aria="nav.languageSelect">
         <option value="en">EN</option><option value="zh">ZH</option><option value="sw">SW</option><option value="fr">FR</option><option value="es">ES</option><option value="ar">AR</option><option value="pt">PT</option>
       </select>
-      <a class="nav-cta" href="index.html#contact" data-careers-i18n="nav.bookPickup">Book Pickup</a>
+    </div>
+
+    <div class="lh-actions">
+      <a class="nav-cta lh-book" href="index.html#contact" data-careers-i18n="nav.bookPickup">Book Pickup</a>
+      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
+        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
+        <span id="menuTriggerLabel" data-careers-i18n="nav.menu">Menu</span>
+      </button>
     </div>
   </div>
 
@@ -325,7 +333,7 @@
           <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.pricing">Pricing</span><span class="menu-link-caption" data-careers-i18n="nav.pricingCaption">Quoted rates, no hidden fees</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
-        <a href="corporate.html" class="menu-link" aria-current="page" data-close-menu>
+        <a href="corporate.html" class="menu-link" data-close-menu>
           <span class="menu-link-tag">BIZ</span>
           <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.business">Business</span><span class="menu-link-caption" data-careers-i18n="nav.businessCaption">Set up a corporate account</span></span>
           <span class="menu-link-arrow">→</span>
@@ -350,7 +358,7 @@
           <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.rewards">Rewards</span><span class="menu-link-caption" data-careers-i18n="nav.rewardsCaption">Earn points on every delivery</span></span>
           <span class="menu-link-arrow">→</span>
         </a>
-        <a href="careers.html" class="menu-link" data-close-menu>
+        <a href="careers.html" class="menu-link" aria-current="page" data-close-menu>
           <span class="menu-link-tag">CAR</span>
           <span class="menu-link-body"><span class="menu-link-title" data-careers-i18n="nav.careers">Careers</span><span class="menu-link-caption" data-careers-i18n="nav.careersCaption">Future roles at Lueri</span></span>
           <span class="menu-link-arrow">→</span>
@@ -536,6 +544,7 @@
 <script src="careers.js?v=20260930-02" defer></script>
 <script src="lucy.js?v=20260920-02" defer></script>
 <script src="analytics.js?v=20260921-01" defer></script>
+<script src="assets/header.js?v=20260930-01" defer></script>
 
 <script>window.addEventListener("DOMContentLoaded", function(){ if(window.lueri && typeof window.lueri.boot === "function"){ window.lueri.boot(); } });</script>
 </body>
