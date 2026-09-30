@@ -277,18 +277,6 @@
 
 <a class="skip-link" href="#apply">Skip to application form</a>
 
-<div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
-  <div>
-    <div style="font-size: 4rem; color: var(--signal); margin-bottom: 20px;">✓</div>
-    <h2 id="successTitle" style="font-size: 2.5rem; margin-bottom: 10px;">Application ready</h2>
-    <p id="successCopy" style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 20px;">Opening WhatsApp to confirm your application...</p>
-    <p id="successFallback" style="display:none; margin-bottom: 24px;">
-      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open WhatsApp</a>
-    </p>
-    <button type="button" onclick="closeSuccess()" class="btn btn-primary">Close</button>
-  </div>
-</div>
-
 <header>
   <div class="navbar wrap">
     <a class="brand" href="index.html" style="text-decoration:none;">
@@ -372,10 +360,10 @@
           <div class="waybill-no">FORM NO. HR–2026</div>
         </div>
         <h1 class="title">BUILD THE<br>NETWORK.<br>MOVE WITH US.</h1>
-        <p class="subtitle">Lueri International is growing its Nairobi delivery operation. This is the place to see current openings, understand the work, and apply — not a corporate account form.</p>
+        <p class="subtitle">This is Lueri International's recruitment desk. See genuine open positions, read the role requirements, and apply directly. Corporate accounts belong on the Business page.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#open-roles">View open roles</a>
-          <a class="btn btn-secondary" href="#talent-pool">Send your CV</a>
+          <a class="btn btn-secondary" href="#talent-pool">Future opportunities</a>
         </div>
       </div>
     </div>
@@ -385,40 +373,14 @@
     <div class="wrap">
       <div class="section-head">
         <span class="section-num">01</span>
-        <h2>Current openings</h2>
+        <h2>Open positions</h2>
       </div>
-      <div class="pricing-grid">
-        <article class="pricing-card">
-          <div class="tier">OPERATIONS · NAIROBI</div>
-          <h3>Dispatch &amp; Operations Coordinator</h3>
-          <div class="price">Full-time</div>
-          <p>Coordinate daily pickups, rider dispatch, customer updates, delivery exceptions, and proof-of-delivery workflows. Strong organisation, communication, and comfort with WhatsApp/CRM tools required.</p>
-          <p style="margin-top:18px;"><strong>Key responsibilities</strong><br>Dispatch planning · Customer communication · Escalation handling · Delivery tracking · Daily reporting</p>
-          <a class="btn btn-primary role-apply" href="#apply" data-role="Dispatch &amp; Operations Coordinator" style="margin-top:22px;">Apply for this role</a>
-        </article>
-
-        <article class="pricing-card">
-          <div class="tier">CUSTOMER EXPERIENCE · NAIROBI</div>
-          <h3>Customer Support Representative</h3>
-          <div class="price">Full-time / Contract</div>
-          <p>Own customer conversations across WhatsApp, phone, email, and social channels. Resolve delivery questions quickly, keep records accurate, and protect the customer experience from booking through handover.</p>
-          <p style="margin-top:18px;"><strong>Key responsibilities</strong><br>Customer support · Issue resolution · Booking assistance · CRM updates · Service follow-up</p>
-          <a class="btn btn-primary role-apply" href="#apply" data-role="Customer Support Representative" style="margin-top:22px;">Apply for this role</a>
-        </article>
-
-        <article class="pricing-card">
-          <div class="tier">SALES · BUSINESS DEVELOPMENT</div>
-          <h3>Business Development Representative</h3>
-          <div class="price">Full-time / Commission</div>
-          <p>Build Lueri's B2B pipeline by identifying Nairobi businesses that need recurring delivery support, starting conversations with decision-makers, and converting qualified prospects into active accounts.</p>
-          <p style="margin-top:18px;"><strong>Key responsibilities</strong><br>Prospecting · Outreach · Qualification · Meetings · Pipeline follow-up · Account handover</p>
-          <a class="btn btn-primary role-apply" href="#apply" data-role="Business Development Representative" style="margin-top:22px;">Apply for this role</a>
-        </article>
+      <div id="openRoles" class="pricing-grid" aria-live="polite">
+        <div class="pricing-note" style="grid-column:1/-1;">Loading current openings…</div>
       </div>
-
-      <div class="pricing-note">
-        <strong>Hiring note</strong><br>
-        Vacancies are posted here when applications are open. Requirements, compensation structure, working arrangement, and closing dates are confirmed in the individual role before an application is submitted. Do not send confidential identity documents at this stage.
+      <div id="rolesEmpty" class="pricing-note" style="display:none;">
+        <strong>No current openings</strong><br>
+        Lueri does not have a confirmed public vacancy at this time. New positions will appear here when recruitment opens.
       </div>
     </div>
   </section>
@@ -430,9 +392,9 @@
         <h2>What we look for</h2>
       </div>
       <ul class="why-list">
-        <li><span class="n">01</span><div><h3>Ownership</h3><p>You follow a task through, communicate early when something is blocked, and do not wait for someone else to notice a problem.</p></div></li>
-        <li><span class="n">02</span><div><h3>Customer discipline</h3><p>You can be clear, calm, and useful when a customer is in a hurry or a delivery has gone off-plan.</p></div></li>
-        <li><span class="n">03</span><div><h3>Operational accuracy</h3><p>Addresses, phone numbers, delivery status, payment details, and handover records must be handled carefully.</p></div></li>
+        <li><span class="n">01</span><div><h3>Ownership</h3><p>Follow work through, communicate early when something is blocked, and take responsibility for the outcome.</p></div></li>
+        <li><span class="n">02</span><div><h3>Customer discipline</h3><p>Be clear, calm and useful when a customer is in a hurry or a delivery has gone off-plan.</p></div></li>
+        <li><span class="n">03</span><div><h3>Operational accuracy</h3><p>Addresses, phone numbers, delivery status and handover records need careful handling.</p></div></li>
         <li><span class="n">04</span><div><h3>Learning speed</h3><p>We use technology and automation aggressively. The ability to learn new workflows and tools matters.</p></div></li>
       </ul>
     </div>
@@ -442,11 +404,11 @@
     <div class="wrap">
       <div class="section-head">
         <span class="section-num">03</span>
-        <h2>Future roles</h2>
+        <h2>Future opportunities</h2>
       </div>
       <div class="contact-shell">
-        <p style="margin-top:0; max-width:760px; font-size:1.05rem; line-height:1.7;">No role that fits today? Send your CV for future openings in operations, customer experience, sales, technology, finance, and administration. We only use this route for recruitment enquiries.</p>
-        <a class="btn btn-primary" href="#apply">Send your CV</a>
+        <p style="margin-top:0; max-width:760px; font-size:1.05rem; line-height:1.7;">No current vacancy fits? You can still submit your details for future recruitment in operations, customer experience, sales, technology, finance or administration.</p>
+        <button id="futureApplyBtn" class="btn btn-primary" type="button">Join the talent pool</button>
       </div>
     </div>
   </section>
@@ -462,45 +424,57 @@
           <div class="form-group">
             <label class="form-label" for="role">Role</label>
             <select class="form-input" id="role" name="role" required>
-              <option value="" disabled selected>Select a role...</option>
-              <option>Dispatch &amp; Operations Coordinator</option>
-              <option>Customer Support Representative</option>
-              <option>Business Development Representative</option>
-              <option>General / Future Opportunity</option>
+              <option value="" disabled selected>Loading roles…</option>
             </select>
           </div>
           <div class="form-row2">
             <div class="form-group">
               <label class="form-label" for="candidateName">Full Name</label>
-              <input class="form-input" id="candidateName" name="name" autocomplete="name" required>
+              <input class="form-input" id="candidateName" name="name" autocomplete="name" maxlength="160" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="candidatePhone">Phone</label>
-              <input class="form-input" id="candidatePhone" name="phone" type="tel" inputmode="tel" placeholder="07xx xxx xxx" required>
+              <input class="form-input" id="candidatePhone" name="phone" type="tel" inputmode="tel" maxlength="40" placeholder="07xx xxx xxx" required>
             </div>
           </div>
           <div class="form-row2">
             <div class="form-group">
               <label class="form-label" for="candidateEmail">Email</label>
-              <input class="form-input" id="candidateEmail" name="email" type="email" autocomplete="email" required>
+              <input class="form-input" id="candidateEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="candidateLocation">Location</label>
-              <input class="form-input" id="candidateLocation" name="location" placeholder="e.g. Nairobi">
+              <input class="form-input" id="candidateLocation" name="location" maxlength="160" placeholder="e.g. Nairobi">
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="candidateSummary">Why are you a fit?</label>
-            <textarea class="form-input" id="candidateSummary" name="summary" rows="5" maxlength="1500" placeholder="Tell us briefly about your relevant experience, availability, and what you would bring to Lueri." required></textarea>
+            <label class="form-label" for="candidateSummary">Relevant experience / why you're a fit</label>
+            <textarea class="form-input" id="candidateSummary" name="summary" rows="6" maxlength="3000" placeholder="Briefly describe your relevant experience, skills, availability and what you would bring to Lueri." required></textarea>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="cvUrl">CV / Portfolio Link</label>
-            <input class="form-input" id="cvUrl" name="cvUrl" type="url" placeholder="https://...">
-            <span class="form-hint">Use a shareable link (Google Drive, OneDrive, portfolio, LinkedIn, etc.). Do not upload passwords, ID numbers, or other sensitive information.</span>
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="cvUrl">CV / Portfolio Link</label>
+              <input class="form-input" id="cvUrl" name="cvUrl" type="url" maxlength="1000" placeholder="https://...">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="linkedinUrl">LinkedIn (optional)</label>
+              <input class="form-input" id="linkedinUrl" name="linkedinUrl" type="url" maxlength="1000" placeholder="https://linkedin.com/in/...">
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Send application enquiry</button>
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="availability">Availability (optional)</label>
+              <input class="form-input" id="availability" name="availability" maxlength="160" placeholder="e.g. Immediately / 30 days">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="expectedSalary">Expected salary (optional)</label>
+              <input class="form-input" id="expectedSalary" name="expectedSalary" maxlength="160" placeholder="Optional">
+            </div>
+          </div>
+          <button id="careerSubmit" type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Submit application</button>
           <p id="careerError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:.9rem;"></p>
-          <p style="margin:16px 0 0; font-size:.82rem; opacity:.65; line-height:1.5;">We review applications against the requirements of the selected role. Shortlisted candidates are contacted using the details provided.</p>
+          <p id="careerSuccess" role="status" aria-live="polite" style="display:none; margin:16px 0 0; color:var(--signal); font-size:.95rem; line-height:1.6;"></p>
+          <p style="margin:16px 0 0; font-size:.82rem; opacity:.65; line-height:1.5;">We only request information needed for recruitment. Do not submit passwords, KRA PINs, national ID numbers, bank details or other sensitive identity documents at this stage.</p>
         </form>
       </div>
     </div>
@@ -541,91 +515,10 @@
       <a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on LinkedIn">LinkedIn</a>
       <a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on TikTok">TikTok</a>
     </div>
-    <div class="foot-stamp">ACCOUNTS DESK</div>
+    <div class="foot-stamp">PEOPLE &amp; CAREERS</div>
   </div>
 </footer>
 
-<script>
-  const themeToggle = document.getElementById('themeToggle');
-  const sunIcon = document.getElementById('sunIcon');
-  const moonIcon = document.getElementById('moonIcon');
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
-    moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
-  }
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    setTheme(currentTheme === 'light' ? 'dark' : 'light');
-  });
-  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  setTheme(savedTheme);
-
-  function reveal() {
-    var reveals = document.querySelectorAll(".reveal");
-    for (var i = 0; i < reveals.length; i++) {
-      var windowHeight = window.innerHeight;
-      var elementTop = reveals[i].getBoundingClientRect().top;
-      if (elementTop < windowHeight - 150) reveals[i].classList.add("active");
-    }
-  }
-  window.addEventListener("scroll", reveal);
-  reveal();
-
-  function closeSuccess() {
-    document.getElementById('successOverlay').classList.remove('active');
-    document.getElementById('successFallback').style.display = 'none';
-  }
-
-  const menuTrigger = document.getElementById('menuTrigger');
-  const menuPanel = document.getElementById('menuPanel');
-  const menuTriggerLabel = document.getElementById('menuTriggerLabel');
-  function closeMenu() {
-    menuTrigger.classList.remove('open'); menuPanel.classList.remove('open');
-    document.body.classList.remove('menu-open');
-    menuTrigger.setAttribute('aria-expanded', 'false'); menuTriggerLabel.textContent = 'Menu';
-    menuTrigger.focus();
-  }
-  function openMenu() {
-    menuTrigger.classList.add('open'); menuPanel.classList.add('open');
-    document.body.classList.add('menu-open');
-    menuTrigger.setAttribute('aria-expanded', 'true'); menuTriggerLabel.textContent = 'Close';
-  }
-  menuTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    menuPanel.classList.contains('open') ? closeMenu() : openMenu();
-  });
-  menuPanel.querySelectorAll('[data-close-menu]').forEach((link) => link.addEventListener('click', closeMenu));
-  document.addEventListener('click', (e) => {
-    if (menuPanel.classList.contains('open') && !menuPanel.contains(e.target) && !menuTrigger.contains(e.target)) closeMenu();
-  });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-</script>
-<script src="corporate-signup.js"></script>
-<script src="lucy.js?v=20260920-02" defer></script>
-<script src="analytics.js?v=20260921-01" defer></script>
-
-<script>
-(function(){
-  var role=document.getElementById('role');
-  document.querySelectorAll('.role-apply').forEach(function(btn){btn.addEventListener('click',function(){if(role){role.value=btn.getAttribute('data-role')||'';}});});
-  var form=document.getElementById('careerForm');
-  if(!form) return;
-  form.addEventListener('submit',function(e){
-    e.preventDefault();
-    var required=form.querySelectorAll('[required]');
-    var ok=true; required.forEach(function(el){el.classList.remove('invalid'); if(!el.value.trim()){el.classList.add('invalid'); ok=false;}});
-    var email=document.getElementById('candidateEmail'); if(email && email.value && !email.validity.valid){email.classList.add('invalid'); ok=false;}
-    var err=document.getElementById('careerError');
-    if(!ok){err.textContent='Please complete the required fields before sending your application.';err.style.display='block';return;}
-    err.style.display='none';
-    var roleVal=role.value, name=document.getElementById('candidateName').value.trim(), phone=document.getElementById('candidatePhone').value.trim(), emailVal=email.value.trim(), location=(document.getElementById('candidateLocation').value||'').trim(), summary=document.getElementById('candidateSummary').value.trim(), cv=(document.getElementById('cvUrl').value||'').trim();
-    var message='CAREERS APPLICATION — Lueri International\\n\\nRole: '+roleVal+'\\nName: '+name+'\\nPhone: '+phone+'\\nEmail: '+emailVal+'\\nLocation: '+location+'\\n\\nWhy fit:\\n'+summary+'\\n\\nCV / Portfolio: '+(cv||'Not provided');
-    var wa='https://wa.me/254713261719?text='+encodeURIComponent(message);
-    window.open(wa,'_blank','noopener,noreferrer');
-  });
-})();
-</script>
+<script>window.addEventListener("DOMContentLoaded", function(){ if(window.lueri && typeof window.lueri.boot === "function"){ window.lueri.boot(); } });</script>
 </body>
 </html>
