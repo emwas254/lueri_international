@@ -1,4 +1,7 @@
-/* Lueri International — mobile header stability layer (2026-09-29) */
+/* Lueri International — mobile header stability layer (2026-09-29)
+   NOTE: Mobile fixed "Book Pickup" bar removed. Book Pickup remains available
+   through the normal header/navigation CTA and page booking sections.
+*/
 .language-selector{background:transparent;border:1px solid currentColor;border-radius:4px;font-family:inherit;cursor:pointer;color:inherit;}
 @media(max-width:760px){
 header{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;position:sticky;top:0;z-index:250;}
@@ -13,8 +16,7 @@ header .brand-motto{display:flex!important;align-items:center;justify-content:ce
 .menu-trigger,.theme-toggle{width:100%!important;min-width:0!important;height:42px;}
 .nav-controls .lueri-language-menu{width:100%;min-width:0!important;}
 .nav-controls .lueri-language-trigger{width:100%;min-width:0!important;min-height:42px;height:42px;padding:7px 8px;font-size:.78rem;}
-.nav-cta{position:fixed;left:0;right:0;bottom:0;z-index:240;width:100%;min-height:56px;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));border-radius:0;justify-content:center;background:var(--route);color:var(--paper);}
-body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px));}
+body{padding-bottom:0;}
 }
 @media(max-width:390px){.brand-name{font-size:1.04rem;}.nav-controls{grid-template-columns:42px 42px minmax(0,1fr);gap:6px;}}
 
@@ -29,7 +31,6 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px));}
   header .nav-controls .lueri-language-menu{grid-column:3;width:100%!important;min-width:0!important;}
   header .nav-controls .lueri-language-trigger{width:100%!important;min-width:0!important;height:44px!important;min-height:44px!important;padding:8px 11px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
   header .nav-controls .lueri-language-trigger>span:first-child{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
-  header .nav-controls .nav-cta{grid-column:1/-1!important;width:100%!important;}
   html[dir="rtl"] header .nav-controls,html[lang="ar"] header .nav-controls{direction:ltr!important;}
   html[dir="rtl"] header .nav-controls .menu-trigger,html[lang="ar"] header .nav-controls .menu-trigger{direction:ltr!important;}
 }
@@ -40,193 +41,30 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px));}
   header .nav-controls .lueri-language-trigger{height:42px!important;min-height:42px!important;font-size:.72rem!important;padding-inline:8px!important;}
 }
 
-
-/* HEADER REPAIR — 2026-09-29
-   Keep the mobile/tablet header deterministic. The previous breakpoint allowed
-   the desktop flex layout to partially wrap, which caused MENU to collide with
-   the theme control and pushed Book Pickup into an unintended position.
-*/
+/* HEADER REPAIR — 2026-09-29 */
 @media (max-width: 900px){
-  header{
-    position:sticky;
-    top:0;
-    z-index:250;
-  }
-
-  header .navbar.wrap{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    width:100%!important;
-    min-width:0!important;
-    padding:10px 12px 12px!important;
-    row-gap:10px!important;
-    overflow:visible!important;
-  }
-
-  header .brand{
-    grid-column:1!important;
-    width:100%!important;
-    min-width:0!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:9px!important;
-  }
-
-  header .brand .mark-img{
-    width:auto!important;
-    height:40px!important;
-    flex:0 0 auto!important;
-  }
-
-  header .brand-copy{
-    min-width:0!important;
-    flex:1 1 auto!important;
-    width:auto!important;
-    max-width:none!important;
-  }
-
-  header .brand-name{
-    display:block!important;
-    min-width:0!important;
-    font-size:clamp(1.05rem,4.4vw,1.45rem)!important;
-    line-height:1.05!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-
-  header .brand-motto{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    width:100%!important;
-    min-width:0!important;
-    margin-top:2px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-    font-size:clamp(.52rem,2vw,.68rem)!important;
-  }
-
-  header .nav-controls{
-    grid-column:1!important;
-    width:100%!important;
-    min-width:0!important;
-    display:grid!important;
-    grid-template-columns:minmax(92px,auto) 44px minmax(150px,1fr)!important;
-    align-items:center!important;
-    gap:8px!important;
-    flex-wrap:nowrap!important;
-    direction:ltr!important;
-  }
-
-  header .nav-controls .menu-trigger{
-    grid-column:1!important;
-    width:100%!important;
-    min-width:0!important;
-    height:44px!important;
-    min-height:44px!important;
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:9px!important;
-    padding:8px 12px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    font-size:.74rem!important;
-  }
-
-  header .nav-controls .menu-trigger-bars{
-    width:18px!important;
-    flex:0 0 18px!important;
-  }
-
-  header .nav-controls .theme-toggle{
-    grid-column:2!important;
-    width:44px!important;
-    min-width:44px!important;
-    height:44px!important;
-    min-height:44px!important;
-    margin:0!important;
-    padding:0!important;
-  }
-
-  header .nav-controls .lueri-language-menu{
-    grid-column:3!important;
-    width:100%!important;
-    min-width:0!important;
-    display:block!important;
-  }
-
-  header .nav-controls .lueri-language-trigger{
-    width:100%!important;
-    min-width:0!important;
-    height:44px!important;
-    min-height:44px!important;
-    padding:8px 11px!important;
-    border-radius:8px!important;
-    overflow:hidden!important;
-  }
-
-  header .nav-controls .nav-cta{
-    grid-column:1/-1!important;
-    width:100%!important;
-    min-width:0!important;
-    min-height:56px!important;
-    justify-content:center!important;
-    margin-top:0!important;
-  }
-
-  header .lueri-language-list{
-    z-index:4000!important;
-  }
-
-  html[dir="rtl"] header .nav-controls,
-  html[lang="ar"] header .nav-controls{
-    direction:ltr!important;
-  }
-
-  html[dir="rtl"] header .nav-controls .menu-trigger,
-  html[lang="ar"] header .nav-controls .menu-trigger{
-    direction:ltr!important;
-  }
+  header{position:sticky;top:0;z-index:250;}
+  header .navbar.wrap{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;min-width:0!important;padding:10px 12px 12px!important;row-gap:10px!important;overflow:visible!important;}
+  header .brand{grid-column:1!important;width:100%!important;min-width:0!important;display:flex!important;align-items:center!important;gap:9px!important;}
+  header .brand .mark-img{width:auto!important;height:40px!important;flex:0 0 auto!important;}
+  header .brand-copy{min-width:0!important;flex:1 1 auto!important;width:auto!important;max-width:none!important;}
+  header .brand-name{display:block!important;min-width:0!important;font-size:clamp(1.05rem,4.4vw,1.45rem)!important;line-height:1.05!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+  header .brand-motto{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;min-width:0!important;margin-top:2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:clamp(.52rem,2vw,.68rem)!important;}
+  header .nav-controls{grid-column:1!important;width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:minmax(92px,auto) 44px minmax(150px,1fr)!important;align-items:center!important;gap:8px!important;flex-wrap:nowrap!important;direction:ltr!important;}
+  header .nav-controls .menu-trigger{grid-column:1!important;width:100%!important;min-width:0!important;height:44px!important;min-height:44px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;padding:8px 12px!important;white-space:nowrap!important;overflow:hidden!important;font-size:.74rem!important;}
+  header .nav-controls .menu-trigger-bars{width:18px!important;flex:0 0 18px!important;}
+  header .nav-controls .theme-toggle{grid-column:2!important;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;margin:0!important;padding:0!important;}
+  header .nav-controls .lueri-language-menu{grid-column:3!important;width:100%!important;min-width:0!important;display:block!important;}
+  header .nav-controls .lueri-language-trigger{width:100%!important;min-width:0!important;height:44px!important;min-height:44px!important;padding:8px 11px!important;border-radius:8px!important;overflow:hidden!important;}
+  header .lueri-language-list{z-index:4000!important;}
+  html[dir="rtl"] header .nav-controls,html[lang="ar"] header .nav-controls{direction:ltr!important;}
+  html[dir="rtl"] header .nav-controls .menu-trigger,html[lang="ar"] header .nav-controls .menu-trigger{direction:ltr!important;}
 }
-
 @media (max-width: 480px){
-  header .navbar.wrap{
-    padding-left:10px!important;
-    padding-right:10px!important;
-  }
-
-  header .nav-controls{
-    grid-template-columns:minmax(82px,auto) 42px minmax(120px,1fr)!important;
-    gap:6px!important;
-  }
-
-  header .nav-controls .menu-trigger{
-    height:42px!important;
-    min-height:42px!important;
-    padding-inline:9px!important;
-    gap:7px!important;
-    font-size:.70rem!important;
-  }
-
-  header .nav-controls .theme-toggle{
-    width:42px!important;
-    min-width:42px!important;
-    height:42px!important;
-    min-height:42px!important;
-  }
-
-  header .nav-controls .lueri-language-trigger{
-    height:42px!important;
-    min-height:42px!important;
-    padding-inline:8px!important;
-    font-size:.74rem!important;
-  }
-
-  header .nav-controls .lueri-language-trigger .lueri-language-flag{
-    width:20px!important;
-    height:14px!important;
-  }
+  header .navbar.wrap{padding-left:10px!important;padding-right:10px!important;}
+  header .nav-controls{grid-template-columns:minmax(82px,auto) 42px minmax(120px,1fr)!important;gap:6px!important;}
+  header .nav-controls .menu-trigger{height:42px!important;min-height:42px!important;padding-inline:9px!important;gap:7px!important;font-size:.70rem!important;}
+  header .nav-controls .theme-toggle{width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;}
+  header .nav-controls .lueri-language-trigger{height:42px!important;min-height:42px!important;padding-inline:8px!important;font-size:.74rem!important;}
+  header .nav-controls .lueri-language-trigger .lueri-language-flag{width:20px!important;height:14px!important;}
 }
