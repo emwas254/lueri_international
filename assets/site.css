@@ -567,11 +567,8 @@ header{ overflow:visible; }
   text-align:left;
 }
 .brand-motto{
-  display:grid;
-  grid-template-columns:minmax(8px,1fr) auto minmax(8px,1fr);
-  align-items:center;
-  gap:6px;
-  width:100%;
+  display:block;
+  width:auto;
   max-width:100%;
   min-width:0;
   margin-top:2px;
@@ -579,27 +576,24 @@ header{ overflow:visible; }
   font-size:.58rem;
   font-weight:600;
   letter-spacing:.045em;
-  line-height:1;
+  line-height:1.1;
   white-space:nowrap;
   color:var(--ink);
   opacity:.86;
 }
 .brand-motto > span{
+  display:inline;
   min-width:0;
   max-width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  text-align:center;
+  text-align:left;
 }
 .brand-motto::before,
 .brand-motto::after{
-  content:"";
-  display:block;
-  height:1px;
-  min-width:8px;
-  background:currentColor;
-  opacity:.72;
+  content:none;
+  display:none;
 }
 
 /* Arabic pages: content flips RTL, but the logo/name/motto lockup itself never does */
