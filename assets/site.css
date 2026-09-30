@@ -941,3 +941,48 @@ footer .footer-brand-motto::after{
   background:none !important;
   border:0 !important;
 }
+
+/* ============================================================
+   BRAND LOCKUP FINAL — motto is plain text, no separators
+   The old .brand-motto rule used pseudo-elements to draw lines.
+   That treatment is retired globally.
+   ============================================================ */
+.brand-motto,
+.footer-brand-motto{
+  display:block !important;
+  width:auto !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin-top:0 !important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.brand-motto::before,
+.brand-motto::after,
+.footer-brand-motto::before,
+.footer-brand-motto::after{
+  content:none !important;
+  display:none !important;
+  width:0 !important;
+  min-width:0 !important;
+  height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:none !important;
+  border:0 !important;
+}
+@media(max-width:760px){
+  .brand-motto,
+  .footer-brand-motto{
+    display:block !important;
+    width:auto !important;
+  }
+  .brand-motto::before,
+  .brand-motto::after,
+  .footer-brand-motto::before,
+  .footer-brand-motto::after{
+    display:none !important;
+    content:none !important;
+  }
+}
