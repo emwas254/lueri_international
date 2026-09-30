@@ -170,3 +170,75 @@ header.lh .menu-link { padding: 14px 18px; }
   header.lh .lh-utils .lueri-language-trigger { height: 44px; min-height: 44px; }
   header.lh .menu-panel-inner { max-height: calc(100dvh - 90px); }
 }
+
+/* ---------- RTL viewport containment: Arabic header must never create horizontal scroll ---------- */
+html[dir="rtl"] header.lh,
+html[lang="ar"] header.lh{
+  width:100%;
+  max-width:100%;
+  overflow-x:clip;
+}
+html[dir="rtl"] .lh-bar,
+html[lang="ar"] .lh-bar{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  grid-template-columns:minmax(0,1fr) auto;
+}
+html[dir="rtl"] .lh-brand,
+html[lang="ar"] .lh-brand,
+html[dir="rtl"] .lh-brand-copy,
+html[lang="ar"] .lh-brand-copy{
+  min-width:0;
+  max-width:100%;
+}
+html[dir="rtl"] .lh-name,
+html[lang="ar"] .lh-name,
+html[dir="rtl"] .lh-motto,
+html[lang="ar"] .lh-motto{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+html[dir="rtl"] .lh-motto,
+html[lang="ar"] .lh-motto{
+  white-space:nowrap;
+  font-size:clamp(.48rem,2.1vw,.62rem);
+  letter-spacing:0;
+}
+html[dir="rtl"] .lh-actions,
+html[lang="ar"] .lh-actions{
+  min-width:0;
+  max-width:100%;
+  flex-shrink:0;
+}
+@media (max-width:480px){
+  html[dir="rtl"] .lh-bar,
+  html[lang="ar"] .lh-bar{
+    padding-left:10px;
+    padding-right:10px;
+    column-gap:7px;
+  }
+  html[dir="rtl"] .lh-brand,
+  html[lang="ar"] .lh-brand{
+    gap:7px;
+  }
+  html[dir="rtl"] .lh-brand .mark-img,
+  html[lang="ar"] .lh-brand .mark-img{
+    height:30px;
+  }
+  html[dir="rtl"] .lh-book,
+  html[lang="ar"] .lh-book{
+    padding-left:8px;
+    padding-right:8px;
+    font-size:.62rem;
+    letter-spacing:0;
+  }
+  html[dir="rtl"] .menu-trigger,
+  html[lang="ar"] .menu-trigger{
+    min-width:38px;
+    padding-left:8px;
+    padding-right:8px;
+  }
+}
