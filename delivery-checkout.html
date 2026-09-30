@@ -1,92 +1,654 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>Lueri Delivery Checkout</title>
-<meta name="description" content="Lueri International delivery payment checkout.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Accounts — Lueri International</title>
+<meta name="description" content="Set up a Lueri International corporate delivery account — consolidated invoicing, priority dispatch, and compliant paperwork for registered companies.">
+<meta property="og:title" content="Business Accounts — Lueri International">
+<meta property="og:description" content="Consolidated invoicing, priority dispatch, and compliant paperwork for registered companies delivering through Lueri International.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lueriinternational.com/corporate.html">
+<meta property="og:site_name" content="Lueri International">
+<meta property="og:locale" content="en_KE">
+<link rel="canonical" href="https://lueriinternational.com/corporate.html">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="lueri-common.js"></script>
+<script>
+  if (typeof lueriBootTheme === 'function') {
+    lueriBootTheme();
+  } else {
+    console.warn('lueri-common.js did not define lueriBootTheme — check the <script src> path and that the file was deployed.');
+  }
+</script>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <style>
-:root{--ink:#18251f;--paper:#f7f4eb;--green:#274238;--accent:#b8321f;--muted:#66736d;--line:rgba(24,37,31,.14)}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef0eb,#f7f4eb);color:var(--ink);font-family:Arial,sans-serif;min-height:100vh}
-.wrap{width:min(720px,calc(100% - 28px));margin:28px auto}.brand{font-weight:900;letter-spacing:.06em;margin-bottom:18px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(24,37,31,.1)}
-.head{background:var(--green);color:var(--paper);padding:24px}.head h1{margin:0 0 7px;font-size:1.55rem}.head p{margin:0;opacity:.82;line-height:1.5}
-.body{padding:22px}.amount{font-size:2rem;font-weight:900;margin:4px 0 20px}.ref{font-family:monospace;color:var(--green);font-weight:800;word-break:break-all}
-.box{border:1px solid var(--line);border-radius:13px;padding:16px;margin:14px 0;background:#fafbf9}.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800}.value{font-size:1.15rem;font-weight:900;margin-top:6px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.copy{padding:8px 12px;font-size:.8rem;background:#e9efe9;color:var(--green)}
-.steps{line-height:1.7;margin:10px 0 0;padding-left:20px}.hint{background:#fff7df;border:1px solid #ead89a;border-radius:12px;padding:13px;line-height:1.5;font-size:.9rem;margin-top:14px}
-.status{margin-top:18px;padding:13px;border-radius:12px;background:#eef5f0;font-weight:700}.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}button,a.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:800;text-decoration:none;cursor:pointer;font-size:.95rem}button{background:var(--green);color:#fff}a.btn{background:#eee;color:var(--ink)}
-.error{background:#fff0ed;color:#8f2417;border:1px solid #e0b0a8;padding:14px;border-radius:12px}
-.small{font-size:.78rem;color:var(--muted);line-height:1.5;margin-top:16px}
+  :root{
+    --ink:#1B2620;
+    --paper:#F0EAD8;
+    --paper-dim:#e6dfc9;
+    --route:#B8321F;
+    --slate:#4A5A52;
+    --signal:#E8B93D;
+    --line: rgba(27,38,32,0.16);
+    --success: #2e7d32;
+    --error: #c62828;
+    --card-bg: var(--paper);
+    --paper-rgb: 240,234,216;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme="dark"] {
+    --ink:#F0EAD8;
+    --paper:#1B2620;
+    --paper-dim:#24312a;
+    --slate:#a0b0a7;
+    --line: rgba(240,234,216,0.16);
+    --card-bg: #24312a;
+    --paper-rgb: 27,38,32;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(27,38,32,0.03) 0, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(27,38,32,0.03) 0, transparent 40%);
+  }
+  .reveal { opacity: 0; transform: translateY(30px); transition: var(--transition); }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+  h1,h2,h3,.display{ font-family:'Oswald', sans-serif; text-transform:uppercase; letter-spacing:0.02em; margin:0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration: none; transition: var(--transition); }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+    outline:3px solid var(--signal); outline-offset:2px; border-radius:2px;
+  }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+  header{
+    position:sticky; top:0; z-index:100; background: rgba(var(--paper-rgb), 0.85);
+    border-bottom:1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Oswald', sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:0.03em; }
+  .brand .mark-img{ height:34px; width:auto; display:block; }
+  .brand .mark-dark-img{ display:none; }
+  [data-theme="dark"] .brand .mark-light{ display:none; }
+  [data-theme="dark"] .brand .mark-dark-img{ display:block; }
+  .nav-controls { display: flex; align-items: center; gap: 16px; }
+  .theme-toggle {
+    background: none; border: 1px solid var(--line); border-radius: 50%;
+    width: 34px; height: 34px; cursor: pointer; color: var(--ink);
+    display: flex; align-items: center; justify-content: center; transition: var(--transition);
+  }
+  .theme-toggle:hover { border-color: var(--ink); transform: rotate(15deg); }
+  .nav-cta{
+    display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:var(--paper);
+    padding:9px 16px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;
+    border-radius:2px; font-weight: 600;
+  }
+  .menu-trigger{
+    display:flex; align-items:center; gap:10px; background:none;
+    border:1.5px solid var(--ink); border-radius:2px; padding:8px 14px 8px 12px;
+    cursor:pointer; color:var(--ink); font-family:'IBM Plex Mono', monospace;
+    font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; transition: var(--transition);
+  }
+  .menu-trigger:hover{ border-color:var(--route); color:var(--route); }
+  .menu-trigger-bars{ position:relative; width:16px; height:11px; flex-shrink:0; }
+  .menu-trigger-bars span{ position:absolute; left:0; width:16px; height:2px; background:currentColor; transition: top .25s ease, transform .25s ease, opacity .2s ease; }
+  .menu-trigger-bars span:nth-child(1){ top:0; }
+  .menu-trigger-bars span:nth-child(2){ top:4.5px; }
+  .menu-trigger-bars span:nth-child(3){ top:9px; }
+  .menu-trigger.open .menu-trigger-bars span:nth-child(1){ top:4.5px; transform:rotate(45deg); }
+  .menu-trigger.open .menu-trigger-bars span:nth-child(2){ opacity:0; }
+  .menu-trigger.open .menu-trigger-bars span:nth-child(3){ top:4.5px; transform:rotate(-45deg); }
+  .menu-panel{
+    display:grid; grid-template-rows:0fr; background:var(--paper); border-bottom:1px solid transparent;
+    transition: grid-template-rows .45s cubic-bezier(0.4,0,0.2,1), border-color .45s ease;
+  }
+  .menu-panel.open{ grid-template-rows:1fr; border-bottom-color:var(--line); }
+  .menu-panel-inner{ overflow:hidden; }
+  .menu-panel-eyebrow{ padding:18px 24px 4px; font-family:'IBM Plex Mono', monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.12em; color:var(--slate); }
+  .menu-panel-grid{ display:grid; grid-template-columns:repeat(2,1fr); }
+  @media (max-width:700px){ .menu-panel-grid{ grid-template-columns:1fr; } }
+  .menu-link{
+    position:relative; display:flex; align-items:center; gap:16px; overflow:hidden;
+    padding:18px 24px; border-bottom:1px solid var(--line); border-right:1px solid var(--line);
+    color:var(--ink); z-index:1; transition: padding .3s cubic-bezier(0.4,0,0.2,1), color .3s ease;
+  }
+  @media (max-width:700px){ .menu-link{ border-right:none; } }
+  .menu-link::before{
+    content:""; position:absolute; inset:0; background:var(--route); transform:scaleX(0);
+    transform-origin:left; transition:transform .4s cubic-bezier(0.4,0,0.2,1); z-index:-1;
+  }
+  .menu-link:hover::before{ transform:scaleX(1); }
+  .menu-link:hover{ color:var(--paper); padding-left:34px; }
+  .menu-link-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:.68rem; letter-spacing:.06em; color:var(--route);
+    border:1px solid currentColor; border-radius:2px; padding:3px 6px; flex-shrink:0; transition: color .3s ease;
+  }
+  .menu-link:hover .menu-link-tag{ color:var(--signal); }
+  .menu-link-body{ flex:1; min-width:0; }
+  .menu-link-title{ display:block; font-family:'Oswald', sans-serif; font-size:1.25rem; text-transform:uppercase; letter-spacing:.02em; }
+  .menu-link-caption{ display:block; font-family:'IBM Plex Mono', monospace; font-size:.72rem; color:var(--slate); margin-top:2px; opacity:.85; transition: color .3s ease; }
+  .menu-link:hover .menu-link-caption{ color:var(--paper); opacity:.75; }
+  .menu-link-arrow{ flex-shrink:0; font-size:1.2rem; opacity:.4; transition: transform .3s cubic-bezier(0.4,0,0.2,1), opacity .3s ease; }
+  .menu-link:hover .menu-link-arrow{ transform:translateX(6px); opacity:1; }
+
+  .hero{ padding:80px 0 60px; }
+  .docket{
+    background:var(--paper); border:1.5px solid var(--ink); position:relative; padding:48px 40px;
+    box-shadow: 12px 12px 0 rgba(27,38,32,0.08); transition: var(--transition);
+  }
+  .docket:hover { transform: translate(-4px, -4px); box-shadow: 16px 16px 0 rgba(27,38,32,0.1); }
+  .docket::before, .docket::after{
+    content:""; position:absolute; width:12px; height:12px; border:1.5px solid var(--ink);
+    border-radius:50%; background:var(--paper-dim); top:16px;
+  }
+  .docket::before{ left:16px; }
+  .docket::after{ right:16px; }
+  .docket-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap; margin-bottom: 24px; }
+  .eyebrow-mono{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.1em; color:var(--slate); text-transform:uppercase; }
+  .waybill-no{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; border:1px dashed var(--ink); padding:8px 12px; white-space:nowrap; }
+  h1.title{ font-size:clamp(2.8rem, 8vw, 4.8rem); line-height:0.95; margin:0 0 12px; }
+  .subtitle{ max-width:580px; color:var(--slate); font-size:1.15rem; margin:16px 0; line-height: 1.6; }
+  .stamp{
+    display:inline-block; border:3px solid var(--route); color:var(--route); font-family:'Oswald', sans-serif;
+    font-weight:700; font-size:0.9rem; letter-spacing:0.1em; text-transform:uppercase; padding:8px 18px;
+    transform:rotate(-4deg); border-radius:4px; margin:24px 0;
+  }
+  .scope-tag{
+    display:inline-block; margin-top:8px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--slate); border:1px dashed var(--line); padding:6px 10px;
+  }
+  .cta-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:32px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px; padding:16px 28px; font-size:0.9rem;
+    text-transform:uppercase; letter-spacing:0.06em; border-radius:4px; font-weight:700;
+    font-family:'IBM Plex Sans', sans-serif; cursor: pointer; transition: var(--transition);
+  }
+  .btn-primary{ background:var(--route); color:var(--paper); border: none; }
+  .btn-secondary{ background:transparent; border:2px solid var(--ink); color:var(--ink); }
+  .btn:hover{ transform: translateY(-2px); filter:brightness(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .btn:active{ transform: translateY(0); }
+  section{ padding:80px 0; }
+  .section-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:48px; }
+  .section-num{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-size:1rem; font-weight: 600; }
+  .section-head h2{ font-size:2.4rem; }
+  .why-list{ list-style:none; margin:0; padding:0; }
+  .why-list li{ display:flex; gap:16px; padding:20px 0; border-bottom:1px solid var(--line); }
+  .why-list .n{ font-family:'IBM Plex Mono', monospace; color:var(--route); font-weight:600; width:36px; flex-shrink:0; }
+  .why-list h3{ font-size:1.05rem; text-transform:none; letter-spacing:0; margin:0 0 6px; }
+  .why-list p{ margin:0; color:var(--slate); font-size:0.95rem; line-height:1.6; }
+  .pricing-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .pricing-card{ background:var(--card-bg); border:1px solid var(--line); border-radius:4px; padding:28px; }
+  .pricing-card .tier{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--route); margin-bottom:10px; }
+  .pricing-card h3{ font-size:1.15rem; text-transform:none; letter-spacing:0; margin:0 0 8px; }
+  .pricing-card .price{ font-family:'Oswald', sans-serif; font-size:1.8rem; margin:12px 0; }
+  .pricing-card p{ color:var(--slate); font-size:0.92rem; margin:0; line-height:1.6; }
+  .pricing-card ul{ margin:16px 0 0; padding-left:18px; color:var(--slate); font-size:0.88rem; line-height:1.7; }
+  @media (max-width:860px){ .pricing-grid{ grid-template-columns:1fr; } }
+  .contact-shell{
+    background:var(--ink); color:var(--paper); padding:64px 48px; border-radius:4px; position:relative; overflow:hidden;
+  }
+  .contact-shell::before {
+    content: ""; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+    background: rgba(232, 185, 61, 0.05); border-radius: 50%;
+  }
+  .form-group { margin-bottom: 24px; }
+  .form-label{ display:block; margin-bottom:8px; color:var(--signal); font-family:'IBM Plex Mono', monospace; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; }
+  .form-input{
+    width:100%; padding:14px; border:1px solid rgba(240,234,216,0.2); background: rgba(255,255,255,0.03);
+    color:var(--paper); border-radius:4px; font-family:'IBM Plex Sans', sans-serif; font-size:1rem; transition: var(--transition);
+  }
+  .form-input:focus{ outline:none; border-color:var(--signal); background: rgba(255,255,255,0.08); }
+  .form-input.invalid { border-color: var(--error); }
+  .form-input::placeholder{ color: rgba(240,234,216,0.4); }
+  textarea.form-input{ resize: vertical; }
+  select.form-input{ cursor: pointer; }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:760px){ .form-row2{ grid-template-columns:1fr; } }
+  .form-hint{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color: rgba(240,234,216,0.55); margin-top:6px; display:block; }
+  /* Honeypot: invisible to people, present to bots that fill every field. */
+  .honeypot{ position:absolute !important; left:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none; }
+  .success-overlay {
+    position: fixed; inset: 0; background: rgba(27,38,32,0.95); z-index: 1000;
+    display: none; align-items: center; justify-content: center; text-align: center; color: var(--paper); padding: 24px;
+  }
+  .success-overlay.active { display: flex; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  footer{ padding:60px 0; border-top:1px solid var(--line); }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:32px; }
+  .foot-stamp{ font-family:'IBM Plex Mono', monospace; border:1px dashed var(--ink); padding:6px 14px; font-size:0.8rem; font-weight: 600; }
+  .social-links{ display:flex; gap:10px; align-items:center; }
+  .social-links a{
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    border:1px solid var(--line); border-radius:20px; padding:6px 14px; opacity:0.8;
+  }
+  .social-links a:hover{ opacity:1; border-color:var(--ink); color:var(--route); }
+  .legal-block{
+    margin-top:32px; padding-top:32px; border-top:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px;
+    font-size:0.88rem; color:var(--slate); line-height:1.6;
+  }
+  .legal-block strong{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--ink); margin-bottom:6px;
+  }
+  [data-theme="dark"] .legal-block strong{ color:var(--paper); }
+  .skip-link{
+    position:absolute; left:-9999px; top:0; z-index:200;
+    background:var(--ink); color:var(--paper); padding:12px 20px;
+    font-family:'IBM Plex Mono', monospace; font-size:.8rem; border-radius:0 0 4px 0;
+  }
+  .skip-link:focus{ left:0; }
+  @media (max-width:600px){
+    .hero{ padding:48px 0 32px; }
+    section{ padding:48px 0; }
+    .docket{ padding:32px 24px; }
+    .contact-shell{ padding:40px 24px; }
+    h1.title{ font-size:clamp(2.2rem, 9vw, 3.2rem); }
+  }
+
 </style>
+
+<style id="lueriCorporatePaymentPanelStyles">.lueri-payment-panel{position:fixed;inset:0;z-index:10050;background:rgba(27,38,32,.76);backdrop-filter:blur(7px);display:none;align-items:center;justify-content:center;padding:18px}.lueri-payment-panel.active{display:flex}.lueri-payment-card{width:min(780px,100%);height:min(92vh,880px);background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.35)}.lueri-payment-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 18px;background:var(--ink);color:var(--paper)}.lueri-payment-head strong{font-family:'Oswald',sans-serif}.lueri-payment-head small{display:block;opacity:.72;margin-top:3px}.lueri-payment-close{width:34px;height:34px;border-radius:50%;border:1px solid rgba(240,234,216,.35);background:transparent;color:var(--paper);font-size:1.3rem;cursor:pointer}.lueri-payment-body{position:relative;flex:1;min-height:0}.lueri-payment-body iframe{width:100%;height:100%;border:0}.lueri-payment-loading{position:absolute;inset:0;display:grid;place-items:center;background:#fff;color:var(--slate);font-family:'IBM Plex Mono',monospace;font-size:.78rem;z-index:2}.lueri-payment-loading.hidden{display:none}.lueri-payment-status{text-align:center;padding:9px 14px;background:var(--paper);color:var(--slate);font-size:.72rem;border-top:1px solid var(--line)}@media(max-width:600px){.lueri-payment-panel{padding:0}.lueri-payment-card{width:100%;height:100%;border-radius:0}}
+</style>
+<link rel="stylesheet" href="assets/header.css?v=20260930-02">
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">LUERI INTERNATIONAL</div>
-  <main class="card">
-    <section class="head"><h1 id="t-title">Delivery Checkout</h1><p id="t-sub">Complete your Lueri delivery payment using the NCBA Till.</p></section>
-    <section class="body" id="content"><p id="t-load">Loading your secure booking payment…</p></section>
-  </main>
+
+<a class="skip-link" href="#apply">Skip to application form</a>
+
+<div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div>
+    <div style="font-size: 4rem; color: var(--signal); margin-bottom: 20px;">✓</div>
+    <h2 id="successTitle" style="font-size: 2.5rem; margin-bottom: 10px;">Application ready</h2>
+    <p id="successCopy" style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 20px;">Opening WhatsApp to confirm your application...</p>
+    <p id="successFallback" style="display:none; margin-bottom: 24px;">
+      <a id="successWaLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open WhatsApp</a>
+    </p>
+    <button type="button" onclick="closeSuccess()" class="btn btn-primary">Close</button>
+  </div>
 </div>
+
+
+<div id="lueriPaymentPanel" class="lueri-payment-panel" aria-hidden="true">
+  <div class="lueri-payment-card" role="dialog" aria-modal="true" aria-labelledby="lueriPaymentTitle">
+    <div class="lueri-payment-head"><div><strong id="lueriPaymentTitle">Secure corporate payment</strong><small id="lueriPaymentPlan">Lueri International</small></div><button type="button" class="lueri-payment-close" id="lueriPaymentClose" aria-label="Close payment panel">&times;</button></div>
+    <div class="lueri-payment-body"><div class="lueri-payment-loading" id="lueriPaymentLoading">Preparing your secure payment…</div><iframe id="lueriPaymentFrame" title="Secure Pesapal corporate payment" allow="payment *" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <div class="lueri-payment-status" id="lueriPaymentStatus">Your payment is processed securely by Pesapal without leaving the Lueri checkout.</div>
+  </div>
+</div>
+
+<header class="lh" id="siteHeader">
+  <div class="lh-bar">
+    <a class="lh-brand" href="index.html" aria-label="Lueri International — home">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span class="lh-brand-copy">
+        <span class="lh-name">Lueri International</span>
+        <span class="lh-motto" data-i18n="hero.motto">Moving What Matters</span>
+      </span>
+    </a>
+
+    <div class="lh-utils">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg id="sunIcon" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="moonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <select id="languageSelector" class="language-selector-native" aria-label="Select Language">
+        <option value="en">🇬🇧 English</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="sw">🇰🇪 Kiswahili</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="pt">🇧🇷 Português</option>
+      </select>
+    </div>
+
+    <div class="lh-actions">
+      <a class="nav-cta lh-book" href="index.html#contact">Book Pickup</a>
+      <button class="menu-trigger" id="menuTrigger" aria-expanded="false" aria-controls="menuPanel">
+        <span class="menu-trigger-bars"><span></span><span></span><span></span></span>
+        <span id="menuTriggerLabel">Menu</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="menu-panel" id="menuPanel">
+    <div class="menu-panel-inner">
+      <div class="menu-panel-eyebrow">Where to next</div>
+      <div class="menu-panel-grid">
+        <a href="index.html#services" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">SVC</span>
+          <span class="menu-link-body"><span class="menu-link-title">Services</span><span class="menu-link-caption">What we carry, and how fast</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#pricing" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">PRC</span>
+          <span class="menu-link-body"><span class="menu-link-title">Pricing</span><span class="menu-link-caption">Quoted rates, no hidden fees</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="corporate.html" class="menu-link" aria-current="page" data-close-menu>
+          <span class="menu-link-tag">BIZ</span>
+          <span class="menu-link-body"><span class="menu-link-title">Business</span><span class="menu-link-caption">Set up a corporate account</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#coverage" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">CVG</span>
+          <span class="menu-link-body"><span class="menu-link-title">Coverage</span><span class="menu-link-caption">Where we deliver in Nairobi</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#why" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">WHY</span>
+          <span class="menu-link-body"><span class="menu-link-title">Why Us</span><span class="menu-link-caption">What makes Lueri different</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#faq" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">FAQ</span>
+          <span class="menu-link-body"><span class="menu-link-title">FAQ</span><span class="menu-link-caption">Common questions, answered</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="rewards.html" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">RWD</span>
+          <span class="menu-link-body"><span class="menu-link-title">Rewards</span><span class="menu-link-caption">Earn points on every delivery</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="careers.html" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">CAR</span>
+          <span class="menu-link-body"><span class="menu-link-title">Careers</span><span class="menu-link-caption">Future roles at Lueri</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+        <a href="index.html#contact" class="menu-link" data-close-menu>
+          <span class="menu-link-tag">BK</span>
+          <span class="menu-link-body"><span class="menu-link-title">Book</span><span class="menu-link-caption">Send a pickup request now</span></span>
+          <span class="menu-link-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero reveal">
+    <div class="wrap">
+      <div class="docket">
+        <div class="docket-row">
+          <div class="eyebrow-mono">Accounts / Corporate</div>
+          <div class="waybill-no">FORM NO. CB–2026</div>
+        </div>
+        <h1 class="title">One account.<br>Every parcel<br>accounted for.</h1>
+        <p class="subtitle">A Lueri business account gives your company a single point of contact, consolidated invoicing, and priority handling — instead of every staff member booking on their own.</p>
+        <span class="scope-tag">For registered companies · Individuals should use <a href="index.html#contact" style="color:inherit; text-decoration:underline;">Book a Pickup</a> instead</span>
+        <span class="stamp">Priority dispatch</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="why-business" class="reveal">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <h2>Why a business account</h2>
+      </div>
+      <ul class="why-list">
+        <li>
+          <span class="n">01</span>
+          <div><h3>Consolidated billing</h3><p>One invoice for the whole organisation, settled monthly or by bank transfer — not per-delivery payments from every staff member.</p></div>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <div><h3>Priority handling</h3><p>Business bookings are queued ahead of ad-hoc individual requests once your account is active.</p></div>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <div><h3>Compliant paperwork</h3><p>Your KRA PIN on file means every invoice we issue is tax-compliant from day one.</p></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="corporate-pricing" class="reveal">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2>Corporate plans</h2>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card" data-plan="biz_gold">
+          <div class="tier">Gold</div>
+          <h3>SMEs, schools, religious organizations, small NGOs</h3>
+          <div class="price">KES 25,000<span style="font-size:0.9rem; color:var(--slate);">/mo</span></div>
+          <p>5 standard deliveries included every month within the Nairobi metro area.</p>
+          <ul><li>KES 600/delivery after the 5 included</li><li>Consolidated monthly invoice</li><li>Priority support line, separate from the general queue</li><li>1 authorized booking contact</li></ul>
+        </div>
+        <div class="pricing-card" style="border-color:var(--route);" data-plan="biz_platinum">
+          <div class="tier">Platinum</div>
+          <h3>Mid-size corporates, hospitals, colleges</h3>
+          <div class="price">KES 45,000<span style="font-size:0.9rem; color:var(--slate);">/mo</span></div>
+          <p>12 standard deliveries included every month, with priority dispatch during peak hours.</p>
+          <ul><li>KES 550/delivery after the 12 included</li><li>Priority dispatch queue ahead of non-corporate bookings</li><li>Up to 3 authorized booking contacts</li><li>Monthly delivery report + quarterly account review</li></ul>
+        </div>
+        <div class="pricing-card" data-plan="biz_vip">
+          <div class="tier">VIP</div>
+          <h3>Banks, multinationals, large institutions</h3>
+          <div class="price">KES 75,000<span style="font-size:0.9rem; color:var(--slate);">/mo</span></div>
+          <p>25 standard deliveries included every month, plus a dedicated account manager and guaranteed same-day SLA.</p>
+          <ul><li>KES 500/delivery after the 25 included</li><li>2 emergency/after-hours dispatches included monthly</li><li>Unlimited authorized booking contacts</li><li>Weekly report; eligible for a custom Enterprise agreement beyond this allowance</li></ul>
+        </div>
+      </div>
+      <div class="pricing-note" style="margin-top:16px; padding:16px 24px; border:1px dashed var(--line); color:var(--slate); font-size:0.88rem; line-height:1.6;">
+        Need more than VIP covers — higher volume, intercity routes, or a custom SLA? We negotiate an <strong>Enterprise agreement</strong> on top of the VIP tier rather than inventing a fourth public plan. Mention it in the form below or ask us on WhatsApp.
+      </div>
+      <div class="pricing-note" style="margin-top:28px; padding:20px 24px; border:1px dashed var(--line); color:var(--slate); font-size:0.92rem; line-height:1.6;">
+        <strong style="font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--route);">How liability works</strong><br>
+        Every plan carries the same protection outlined in our <a href="terms-of-service.html" style="color:var(--route); text-decoration:underline; font-weight:600;">Terms of Service</a>: liability for loss or damage is limited to the lower of declared value or KES 5,000 per item, unless we've agreed something different with you in writing. If an account's claims experience runs materially above what a plan assumes, we'll come to you directly with the numbers and agree a revised arrangement together — never a silent policy change.
+      </div>
+    </div>
+  </section>
+
+  <section id="apply" class="reveal">
+    <div class="wrap">
+      <div class="contact-shell">
+        <div class="section-head">
+          <span class="section-num">03</span>
+          <h2>Apply for an account</h2>
+        </div>
+
+        <form id="corporateForm" novalidate style="margin-top:8px;">
+          <!-- Spam trap: real people never see or fill this in. Referenced by corporate-signup.js. -->
+          <input type="text" name="website" id="corpHoneypot" class="honeypot" autocomplete="off" tabindex="-1" aria-hidden="true">
+
+          <div class="form-group">
+            <label class="form-label" for="companyName">Company Name</label>
+            <input class="form-input" type="text" id="companyName" autocomplete="organization" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="plan">Preferred Plan</label>
+            <select class="form-input" id="plan" required>
+              <option value="" disabled selected>Select a plan...</option>
+              <option value="biz_gold">Gold — KES 25,000/mo</option>
+              <option value="biz_platinum">Platinum — KES 45,000/mo</option>
+              <option value="biz_vip">VIP — KES 75,000/mo</option>
+              <option value="enterprise">Enterprise — need a custom quote</option>
+            </select>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="kraPin">KRA PIN</label>
+              <input class="form-input" type="text" id="kraPin" placeholder="P051234567X" maxlength="11" autocapitalize="characters" spellcheck="false" pattern="^[A-Za-z]\d{9}[A-Za-z]$" aria-describedby="kraPinHint" required>
+              <span class="form-hint" id="kraPinHint">Used for invoicing only.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="volume">Est. Deliveries / Week</label>
+              <select class="form-input" id="volume" required>
+                <option value="" disabled selected>Select a range...</option>
+                <option value="1-5">1–5</option>
+                <option value="6-20">6–20</option>
+                <option value="21-50">21–50</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="address">Billing / Physical Address</label>
+            <textarea class="form-input" id="address" rows="2" required></textarea>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="contactName">Contact Person</label>
+              <input class="form-input" type="text" id="contactName" autocomplete="name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="jobTitle">Role at Company</label>
+              <input class="form-input" type="text" id="jobTitle" placeholder="Operations Manager">
+            </div>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label class="form-label" for="contactPhone">Phone Number</label>
+              <input class="form-input" type="tel" id="contactPhone" placeholder="07xx xxx xxx" inputmode="tel" maxlength="13" pattern="^(?:\+254|0)(7|1)\d{8}$" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="contactEmail">Company Email</label>
+              <input class="form-input" type="email" id="contactEmail" autocomplete="email" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; background:var(--signal); color:var(--ink); border:none;">
+            Submit Application
+          </button>
+          <p id="corporateError" role="alert" aria-live="assertive" style="display:none; margin:12px 0 0; color:var(--signal); font-size:0.9rem;"></p>
+          <p style="margin:16px 0 0; font-size:0.82rem; opacity:0.65; line-height:1.5;">
+            We review every application before activating an account — usually within one working day.
+            By applying, you agree to our <a href="terms-of-service.html" style="color:var(--signal); text-decoration:underline;">Terms of Service</a>
+            and <a href="privacy-policy.html" style="color:var(--signal); text-decoration:underline;">Privacy Policy</a>.
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="legal-block">
+    <div>
+      <strong>Registered business</strong>
+      Lueri International · Nairobi, Kenya<br>
+      Founded 13 December 2023<br>
+      Registration details available on request for B2B clients
+    </div>
+    <div>
+      <strong>Contact</strong>
+      <a href="tel:+254713261719">+254 713 261 719</a><br>
+      <a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a>
+    </div>
+    <div>
+      <strong>Hours</strong>
+      Mon–Fri, 8:00 AM – 5:00 PM<br>
+      Sat, 8:00 AM – 3:00 PM<br>
+      Closed Sunday
+    </div>
+  </div>
+  <div class="footer-row" style="margin-top:40px;">
+    <div class="brand">
+      <img class="mark-img mark-light" src="assets/logo-mark.png" alt="Lueri International">
+      <img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true">
+      <span>Lueri International</span>
+    </div>
+    <div class="mono" style="opacity:0.6;">© 2026 Nairobi, Kenya · <a href="rewards.html" style="text-decoration:underline;">Rewards</a> · <a href="careers.html" style="text-decoration:underline;">Careers</a> · <a href="terms-of-service.html" style="text-decoration:underline;">Terms</a> · <a href="privacy-policy.html" style="text-decoration:underline;">Privacy</a></div>
+    <div class="social-links">
+      <a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Facebook">Facebook</a>
+      <a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on Instagram">Instagram</a>
+      <a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on X">X</a>
+      <a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on LinkedIn">LinkedIn</a>
+      <a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" aria-label="Lueri International on TikTok">TikTok</a>
+    </div>
+    <div class="foot-stamp">ACCOUNTS DESK</div>
+  </div>
+</footer>
+
 <script>
-(function(){
-'use strict';
-const SUPA='https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1';
-const WA='https://wa.link/qk7m3b';
-const LANGS=['en','sw','fr','es','ar','pt','zh'];
-const T={
- en:{title:'Delivery Checkout',sub:'Complete your Lueri delivery payment using the NCBA Till.',load:'Loading your secure booking payment…',bad:'Invalid or missing booking reference.',fail:'Unable to load payment details.',due:'Amount due',paybill:'NCBA PayBill',account:'Account number',ref:'Booking reference (keep for support)',how:'How to pay',
-  steps:['Open M-Pesa, choose <b>Lipa na M-Pesa</b>, then <b>Pay Bill</b>.','Business Number: <b>{paybill}</b>.','Account Number: <b>{account}</b> (exactly as shown).','Amount: <b>KES {amount}</b> (the exact amount).','Enter your M-Pesa PIN and send.'],
-  from:'Pay from the phone number you booked with ({phone}) so we can match your payment automatically.',paid:'Payment confirmed. Your booking payment has been reconciled.',pending:'Payment pending. Your booking stays pending until Lueri receives and reconciles the NCBA transaction.',check:'Check payment status',back:'Return to Lueri',pin:'Never share your M-Pesa PIN with Lueri or anyone else.',help:'Paid but still pending, or paid from a different number? WhatsApp us your M-Pesa confirmation message and booking reference.',wa:'WhatsApp Lueri',copy:'Copy',copied:'Copied'},
- sw:{title:'Malipo ya Delivery',sub:'Kamilisha malipo ya delivery yako ya Lueri kwa NCBA Till.',load:'Tunapakia malipo yako salama…',bad:'Rejea ya booking si sahihi au haipo.',fail:'Imeshindwa kupakia maelezo ya malipo.',due:'Kiasi cha kulipa',paybill:'NCBA PayBill',account:'Nambari ya akaunti',ref:'Rejea ya booking (ihifadhi kwa msaada)',how:'Jinsi ya kulipa',
-  steps:['Fungua M-Pesa, chagua <b>Lipa na M-Pesa</b>, kisha <b>Pay Bill</b>.','Business Number: <b>{paybill}</b>.','Account Number: <b>{account}</b> (kama inavyoonekana).','Kiasi: <b>KES {amount}</b> (kiasi kamili).','Weka PIN yako ya M-Pesa na utume.'],
-  from:'Lipa kwa namba ya simu uliyotumia kuagiza ({phone}) ili malipo yako yalinganishwe kiotomatiki.',paid:'Malipo yamethibitishwa. Malipo ya booking yako yamelinganishwa.',pending:'Malipo yanasubiriwa. Booking yako itabaki ikisubiri hadi Lueri ipokee na kulinganisha muamala wa NCBA.',check:'Angalia hali ya malipo',back:'Rudi Lueri',pin:'Usimpe mtu yeyote PIN yako ya M-Pesa, wala Lueri.',help:'Umelipa lakini bado inasubiri, au umelipa kwa namba tofauti? Tuma ujumbe wa uthibitisho wa M-Pesa na rejea ya booking kupitia WhatsApp.',wa:'WhatsApp Lueri',copy:'Nakili',copied:'Imenakiliwa'},
- fr:{title:'Paiement de la livraison',sub:'Effectuez le paiement de votre livraison Lueri via le Till NCBA.',load:'Chargement de votre paiement sécurisé…',bad:'Référence de réservation invalide ou manquante.',fail:'Impossible de charger les détails du paiement.',due:'Montant à payer',paybill:'NCBA PayBill',account:'Numéro de compte',ref:'Référence de réservation (à conserver)',how:'Comment payer',
-  steps:['Ouvrez M-Pesa, choisissez <b>Lipa na M-Pesa</b>, puis <b>Pay Bill</b>.','Numéro d’entreprise : <b>{paybill}</b>.','Numéro de compte : <b>{account}</b> (exactement comme affiché).','Montant : <b>KES {amount}</b> (montant exact).','Saisissez votre code PIN M-Pesa et envoyez.'],
-  from:'Payez depuis le numéro de téléphone utilisé pour la réservation ({phone}) afin que nous puissions rapprocher votre paiement automatiquement.',paid:'Paiement confirmé. Le paiement de votre réservation a été rapproché.',pending:'Paiement en attente. Votre réservation reste en attente jusqu’à ce que Lueri reçoive et rapproche la transaction NCBA.',check:'Vérifier le statut du paiement',back:'Retour à Lueri',pin:'Ne partagez jamais votre code PIN M-Pesa avec Lueri ni avec personne.',help:'Payé mais toujours en attente, ou payé depuis un autre numéro ? Envoyez-nous par WhatsApp le message de confirmation M-Pesa et la référence de réservation.',wa:'WhatsApp Lueri',copy:'Copier',copied:'Copié'},
- es:{title:'Pago de la entrega',sub:'Completa el pago de tu entrega Lueri con el Till de NCBA.',load:'Cargando tu pago seguro…',bad:'Referencia de reserva no válida o ausente.',fail:'No se pudieron cargar los datos del pago.',due:'Importe a pagar',paybill:'NCBA PayBill',account:'Número de cuenta',ref:'Referencia de reserva (guárdala)',how:'Cómo pagar',
-  steps:['Abre M-Pesa, elige <b>Lipa na M-Pesa</b> y luego <b>Pay Bill</b>.','Número de negocio: <b>{paybill}</b>.','Número de cuenta: <b>{account}</b> (exactamente como aparece).','Importe: <b>KES {amount}</b> (el importe exacto).','Introduce tu PIN de M-Pesa y envía.'],
-  from:'Paga desde el número de teléfono con el que reservaste ({phone}) para que podamos conciliar tu pago automáticamente.',paid:'Pago confirmado. El pago de tu reserva ha sido conciliado.',pending:'Pago pendiente. Tu reserva sigue pendiente hasta que Lueri reciba y concilie la transacción de NCBA.',check:'Comprobar estado del pago',back:'Volver a Lueri',pin:'Nunca compartas tu PIN de M-Pesa con Lueri ni con nadie.',help:'¿Pagaste y sigue pendiente, o pagaste desde otro número? Envíanos por WhatsApp el mensaje de confirmación de M-Pesa y la referencia de reserva.',wa:'WhatsApp Lueri',copy:'Copiar',copied:'Copiado'},
- ar:{title:'الدفع للتوصيل',sub:'أكمل دفع توصيل Lueri عبر NCBA Till.',load:'جارٍ تحميل الدفع الآمن…',bad:'مرجع الحجز غير صالح أو مفقود.',fail:'تعذر تحميل تفاصيل الدفع.',due:'المبلغ المستحق',paybill:'NCBA PayBill',account:'رقم الحساب',ref:'مرجع الحجز (احتفظ به للدعم)',how:'طريقة الدفع',
-  steps:['افتح M-Pesa واختر <b>Lipa na M-Pesa</b> ثم <b>Pay Bill</b>.','رقم الأعمال: <b>{paybill}</b>.','رقم الحساب: <b>{account}</b> (كما هو معروض تماماً).','المبلغ: <b>KES {amount}</b> (المبلغ الدقيق).','أدخل رمز PIN الخاص بـ M-Pesa وأرسل.'],
-  from:'ادفع من رقم الهاتف الذي حجزت به ({phone}) حتى نتمكن من مطابقة دفعتك تلقائياً.',paid:'تم تأكيد الدفع. تمت مطابقة دفعة حجزك.',pending:'الدفع قيد الانتظار. سيبقى حجزك قيد الانتظار حتى تستلم Lueri معاملة NCBA وتطابقها.',check:'تحقق من حالة الدفع',back:'العودة إلى Lueri',pin:'لا تشارك رمز PIN الخاص بـ M-Pesa مع Lueri أو أي شخص آخر.',help:'دفعت وما زال الدفع قيد الانتظار، أو دفعت من رقم مختلف؟ أرسل لنا رسالة تأكيد M-Pesa ومرجع الحجز عبر واتساب.',wa:'واتساب Lueri',copy:'نسخ',copied:'تم النسخ'},
- pt:{title:'Pagamento da entrega',sub:'Conclua o pagamento da sua entrega Lueri através do Till NCBA.',load:'A carregar o seu pagamento seguro…',bad:'Referência de reserva inválida ou em falta.',fail:'Não foi possível carregar os dados do pagamento.',due:'Valor a pagar',paybill:'NCBA PayBill',account:'Número da conta',ref:'Referência da reserva (guarde-a)',how:'Como pagar',
-  steps:['Abra o M-Pesa, escolha <b>Lipa na M-Pesa</b> e depois <b>Pay Bill</b>.','Número do negócio: <b>{paybill}</b>.','Número da conta: <b>{account}</b> (exatamente como mostrado).','Valor: <b>KES {amount}</b> (o valor exato).','Introduza o seu PIN do M-Pesa e envie.'],
-  from:'Pague a partir do número de telefone com que reservou ({phone}) para que possamos conciliar o pagamento automaticamente.',paid:'Pagamento confirmado. O pagamento da sua reserva foi conciliado.',pending:'Pagamento pendente. A sua reserva fica pendente até a Lueri receber e conciliar a transação NCBA.',check:'Verificar estado do pagamento',back:'Voltar à Lueri',pin:'Nunca partilhe o seu PIN do M-Pesa com a Lueri nem com ninguém.',help:'Pagou e continua pendente, ou pagou de outro número? Envie-nos por WhatsApp a mensagem de confirmação do M-Pesa e a referência da reserva.',wa:'WhatsApp Lueri',copy:'Copiar',copied:'Copiado'},
- zh:{title:'配送付款',sub:'请通过 NCBA Till 完成您的 Lueri 配送付款。',load:'正在加载您的安全付款信息…',bad:'预订参考号无效或缺失。',fail:'无法加载付款详情。',due:'应付金额',paybill:'NCBA PayBill',account:'账号',ref:'预订参考号（请保留以便咨询）',how:'付款方式',
-  steps:['打开 M-Pesa，选择 <b>Lipa na M-Pesa</b>，然后选择 <b>Pay Bill</b>。','Business Number：<b>{paybill}</b>。','Account Number：<b>{account}</b>（与显示完全一致）。','金额：<b>KES {amount}</b>（必须是准确金额）。','输入您的 M-Pesa PIN 并发送。'],
-  from:'请使用预订时填写的手机号（{phone}）付款，以便我们自动匹配您的付款。',paid:'付款已确认。您的预订付款已核对。',pending:'付款待确认。在 Lueri 收到并核对 NCBA 交易之前，您的预订将保持待处理状态。',check:'查询付款状态',back:'返回 Lueri',pin:'切勿将您的 M-Pesa PIN 告诉 Lueri 或任何人。',help:'已付款但仍显示待处理，或使用了其他号码付款？请通过 WhatsApp 发送 M-Pesa 确认短信和预订参考号。',wa:'WhatsApp 联系 Lueri',copy:'复制',copied:'已复制'}
-};
-function lang(){try{const p=new URLSearchParams(location.search).get('lang');const c=[p,localStorage.getItem('lueri_language'),localStorage.getItem('lueri-language'),localStorage.getItem('lueri_lang'),localStorage.getItem('lueri_locale')];return c.find(v=>LANGS.includes(v))||'en';}catch(_){return'en';}}
-const lc=lang(),tr=T[lc]||T.en;
-document.documentElement.lang=lc==='zh'?'zh-CN':lc;document.documentElement.dir=lc==='ar'?'rtl':'ltr';
-document.getElementById('t-title').textContent=tr.title;document.getElementById('t-sub').textContent=tr.sub;document.getElementById('t-load').textContent=tr.load;
-const ref=new URLSearchParams(location.search).get('reference')||'';
-const el=document.getElementById('content');
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function copyRow(label,value){return '<div class="box"><div class="label">'+esc(label)+'</div><div class="row"><div class="value">'+esc(value)+'</div><button type="button" class="copy" data-copy="'+esc(value)+'">'+esc(tr.copy)+'</button></div></div>';}
-async function load(){
- if(!/^LR-DEL-\d{10,}-[A-Za-z0-9]{8}$/.test(ref)){el.innerHTML='<div class="error">'+esc(tr.bad)+'</div>';return;}
- try{
-  const r=await fetch(SUPA+'/ncba-payment-status?reference='+encodeURIComponent(ref),{cache:'no-store'});
-  const d=await r.json();
-  if(!r.ok)throw new Error(d.error||tr.fail);
-  const paybill=d.paybill||'880100',account=d.account||'PAYLUERIINT',amount=Number(d.amount||0).toLocaleString('en-US');
-  const steps=tr.steps.map(s=>'<li>'+s.replace('{paybill}',esc(paybill)).replace('{account}',esc(account)).replace('{amount}',esc(amount))+'</li>').join('');
-  el.innerHTML='<div class="label">'+esc(tr.due)+'</div><div class="amount">KES '+esc(amount)+'</div>'+
-   copyRow(tr.paybill,paybill)+copyRow(tr.account,account)+
-   '<div class="box"><div class="label">'+esc(tr.ref)+'</div><div class="ref">'+esc(d.reference)+'</div></div>'+
-   '<div class="box"><div class="label">'+esc(tr.how)+'</div><ol class="steps">'+steps+'</ol></div>'+
-   (d.payFrom?'<div class="hint">'+esc(tr.from.replace('{phone}',d.payFrom))+'</div>':'')+
-   '<div class="status">'+esc(d.paid?tr.paid:tr.pending)+'</div>'+
-   '<div class="actions"><button id="refresh" type="button">'+esc(tr.check)+'</button><a class="btn" href="/">'+esc(tr.back)+'</a></div>'+
-   '<p class="small">'+esc(tr.pin)+' '+esc(tr.help)+' <a href="'+WA+'" rel="noopener">'+esc(tr.wa)+'</a></p>';
-  document.getElementById('refresh').onclick=load;
-  el.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.getAttribute('data-copy'));b.textContent=tr.copied;setTimeout(()=>{b.textContent=tr.copy;},1500);}catch(_){}});
- }catch(e){el.innerHTML='<div class="error">'+esc(e.message)+'</div><div class="actions"><a class="btn" href="/">'+esc(tr.back)+'</a></div>';}
-}
-load();
-})();
+  const themeToggle = document.getElementById('themeToggle');
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    sunIcon.style.display = theme === 'dark' ? 'block' : 'none';
+    moonIcon.style.display = theme === 'dark' ? 'none' : 'block';
+  }
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    setTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(savedTheme);
+
+  function reveal() {
+    var reveals = document.querySelectorAll(".reveal");
+    for (var i = 0; i < reveals.length; i++) {
+      var windowHeight = window.innerHeight;
+      var elementTop = reveals[i].getBoundingClientRect().top;
+      if (elementTop < windowHeight - 150) reveals[i].classList.add("active");
+    }
+  }
+  window.addEventListener("scroll", reveal);
+  reveal();
+
+  function closeSuccess() {
+    document.getElementById('successOverlay').classList.remove('active');
+    document.getElementById('successFallback').style.display = 'none';
+  }
+
+  const menuTrigger = document.getElementById('menuTrigger');
+  const menuPanel = document.getElementById('menuPanel');
+  const menuTriggerLabel = document.getElementById('menuTriggerLabel');
+  function getMenuWord(word) {
+    const lang = document.documentElement.dataset.lueriLanguage || document.documentElement.lang || 'en';
+    const labels = {
+      en:{menu:'Menu',close:'Close'}, zh:{menu:'菜单',close:'关闭'}, sw:{menu:'Menyu',close:'Funga'},
+      fr:{menu:'Menu',close:'Fermer'}, es:{menu:'Menú',close:'Cerrar'}, ar:{menu:'القائمة',close:'إغلاق'},
+      pt:{menu:'Menu',close:'Fechar'}
+    };
+    return (labels[lang] || labels.en)[word];
+  }
+  function closeMenu() {
+    menuTrigger.classList.remove('open'); menuPanel.classList.remove('open');
+    menuTrigger.setAttribute('aria-expanded', 'false'); menuTriggerLabel.textContent = getMenuWord('menu');
+  }
+  function openMenu() {
+    menuTrigger.classList.add('open'); menuPanel.classList.add('open');
+    menuTrigger.setAttribute('aria-expanded', 'true'); menuTriggerLabel.textContent = getMenuWord('close');
+  }
+  menuTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menuPanel.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  menuPanel.querySelectorAll('[data-close-menu]').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('click', (e) => {
+    if (menuPanel.classList.contains('open') && !menuPanel.contains(e.target) && !menuTrigger.contains(e.target)) closeMenu();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  window.addEventListener('pageshow', () => closeMenu());
 </script>
+<script src="corporate-i18n.js?v=20260919-01"></script>
+<script src="corporate-signup.js?v=20260916-02"></script>
+<script src="lucy-v3.js" defer></script>
+<script src="analytics.js?v=20260921-01" defer></script>
+<script src="assets/header.js?v=20260930-01" defer></script>
 </body>
 </html>
