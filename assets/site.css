@@ -867,3 +867,46 @@ html[lang="ar"] .faq-list > *{
     text-align:center;
   }
 }
+
+
+/* ---------- Canonical Lueri footer brand lockup ----------
+   Footer branding uses the same hierarchy as the header. Decorative rules
+   are intentionally removed from the motto: the motto is brand copy, not a
+   separator treatment. */
+.footer-brand{
+  align-items:flex-start;
+  min-width:0;
+}
+.footer-brand .brand-copy{
+  min-width:0;
+  align-items:flex-start;
+  gap:3px;
+}
+.footer-brand .brand-name{
+  font-size:1.05rem;
+  line-height:1;
+  letter-spacing:.02em;
+}
+.footer-brand .brand-motto{
+  display:block;
+  width:auto;
+  max-width:100%;
+  min-width:0;
+  margin-top:0;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:.58rem;
+  font-weight:600;
+  line-height:1.1;
+  letter-spacing:.04em;
+  color:var(--slate);
+  opacity:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.footer-brand .brand-motto::before,
+.footer-brand .brand-motto::after{ display:none; }
+@media(max-width:600px){
+  .footer-brand .brand-name{ font-size:1rem; }
+  .footer-brand .brand-motto{ font-size:.56rem; }
+}
