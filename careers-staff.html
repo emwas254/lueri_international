@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Careers Console — Lueri International</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<script src="lueri-common.js"></script>
+<style>
+:root{--ink:#1B2620;--paper:#F0EAD8;--route:#B8321F;--slate:#4A5A52;--signal:#E8B93D;--line:rgba(27,38,32,.16);--card:#fffaf0}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;line-height:1.5}.wrap{max-width:1180px;margin:auto;padding:28px}.mono{font-family:'IBM Plex Mono',monospace}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:28px}.brand{font-family:'Oswald',sans-serif;font-size:1.3rem;text-transform:uppercase}.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:24px;margin-bottom:24px}.login{max-width:460px;margin:10vh auto}.h{font-family:'Oswald',sans-serif;text-transform:uppercase}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}.stat{padding:18px;border:1px solid var(--line);border-radius:6px;background:rgba(255,255,255,.35)}.stat strong{display:block;font:700 1.8rem 'Oswald',sans-serif}.stat span{font:.68rem 'IBM Plex Mono',monospace;text-transform:uppercase;color:var(--slate)}.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.btn,.input,.select{font:inherit;padding:10px 13px;border:1px solid var(--line);border-radius:4px;background:transparent;color:inherit}.btn{cursor:pointer;background:var(--ink);color:var(--paper);text-transform:uppercase;font-size:.75rem;font-weight:700;letter-spacing:.05em}.btn.secondary{background:transparent;color:var(--ink)}.btn.danger{background:var(--route)}.input,.select{width:100%;background:rgba(255,255,255,.5)}label{display:block;font:.68rem 'IBM Plex Mono',monospace;text-transform:uppercase;color:var(--slate);margin-bottom:6px}.field{margin-bottom:14px}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{font:.68rem 'IBM Plex Mono',monospace;text-transform:uppercase;color:var(--slate)}.badge{display:inline-block;padding:4px 8px;border:1px solid var(--line);border-radius:12px;font:.65rem 'IBM Plex Mono',monospace;text-transform:uppercase}.actions{display:flex;gap:6px;flex-wrap:wrap}.message{padding:10px 12px;border:1px dashed var(--line);margin:12px 0;display:none}.message.show{display:block}.muted{color:var(--slate)}.role-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}.role-row{grid-template-columns:1fr}.table-wrap{overflow:auto}}@media(max-width:520px){.grid{grid-template-columns:1fr}.wrap{padding:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><div class="brand">Lueri International</div><div class="mono muted">RECRUITMENT CONSOLE</div></div><button id="logout" class="btn secondary" style="display:none">Sign out</button></div>
+
+  <section id="loginPanel" class="panel login">
+    <h1 class="h">Staff sign in</h1>
+    <p class="muted">Recruitment data is private. Use an active Lueri staff/admin Supabase account.</p>
+    <div class="field"><label for="email">Email</label><input class="input" id="email" type="email" autocomplete="username"></div>
+    <div class="field"><label for="password">Password</label><input class="input" id="password" type="password" autocomplete="current-password"></div>
+    <button id="login" class="btn">Sign in</button>
+    <div id="loginMessage" class="message"></div>
+  </section>
+
+  <main id="console" style="display:none">
+    <div class="grid">
+      <div class="stat"><strong id="totalApplications">—</strong><span>Total applications</span></div>
+      <div class="stat"><strong id="newApplications">—</strong><span>New</span></div>
+      <div class="stat"><strong id="shortlistedApplications">—</strong><span>Shortlisted</span></div>
+      <div class="stat"><strong id="openRoles">—</strong><span>Open roles</span></div>
+    </div>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+        <div><h2 class="h" style="margin:0">Applications</h2><p class="muted" style="margin:4px 0">Review candidates and move them through the recruitment pipeline.</p></div>
+        <div class="filters"><select id="statusFilter" class="select" style="width:auto"><option value="">All statuses</option><option>new</option><option>reviewing</option><option>shortlisted</option><option>interview</option><option>rejected</option><option>hired</option><option>withdrawn</option></select><button id="refresh" class="btn secondary">Refresh</button></div>
+      </div>
+      <div id="consoleMessage" class="message"></div>
+      <div class="table-wrap"><table><thead><tr><th>Candidate</th><th>Role</th><th>Contact</th><th>Profile</th><th>Status</th><th>Action</th></tr></thead><tbody id="applicationsBody"></tbody></table></div>
+    </section>
+
+    <section class="panel">
+      <h2 class="h">Role publishing</h2>
+      <p class="muted">Only an admin can change a role from draft to open. This prevents unconfirmed vacancies from appearing publicly.</p>
+      <div id="rolesList"></div>
+    </section>
+  </main>
+</div>
+<script src="careers-staff.js?v=20260930-01" defer></script>
+</body>
+</html>
