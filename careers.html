@@ -282,6 +282,14 @@
   @media (max-width:700px){
     .menu-trigger{ min-width:44px; min-height:44px; justify-content:center; }
   }
+
+  /* Canonical Lueri footer brand lockup */
+  .footer-brand{align-items:flex-start;min-width:0;}
+  .footer-brand .brand-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:3px;}
+  .footer-brand .brand-name{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.05rem;line-height:1;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .footer-brand .brand-motto{display:block;width:auto;max-width:100%;min-width:0;margin:0;font-family:'IBM Plex Sans',sans-serif;font-size:.58rem;font-weight:600;line-height:1.1;letter-spacing:.04em;color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .footer-brand .brand-motto::before,.footer-brand .brand-motto::after{display:none;}
+  @media(max-width:600px){.footer-brand .brand-name{font-size:1rem}.footer-brand .brand-motto{font-size:.56rem}}
 </style>
 <link rel="stylesheet" href="assets/header.css?v=20261001-02">
 </head>
