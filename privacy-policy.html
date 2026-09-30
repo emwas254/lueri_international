@@ -149,6 +149,12 @@
     flex-wrap:wrap; gap:16px; font-size:0.85rem; color:var(--slate);
   }
   .footer-row a{ color:var(--slate); }
+
+  @media (max-width:600px){
+    .navbar{padding:12px 16px}
+    .nav-controls{gap:12px}
+    .back-link{display:none}
+  }
 </style>
 <!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "667d5e64eff84ef38851d1a663a63234"}'></script><!-- End Cloudflare Web Analytics -->
 </head>
@@ -215,7 +221,9 @@
         <tr><td>Joining Lueri Rewards</td><td>Full name, phone number, and (optional) email address</td></tr>
         <tr><td>Applying for a corporate account</td><td>Company name, KRA PIN, business address, contact person's name, role, phone, and email, estimated delivery volume</td></tr>
         <tr><td>Making a payment</td><td>Payment is processed by M-Pesa (and, where enabled, other licensed payment providers). We do not collect or store your M-Pesa PIN, card numbers, or bank account details ourselves.</td></tr>
-        <tr><td>Visiting our website</td><td>A light/dark theme preference stored in your browser (see Section 9) — we do not run visitor tracking or advertising cookies</td></tr>
+        <tr><td>Visiting our website</td><td>Anonymous visit statistics from Cloudflare Web Analytics, and your light/dark theme and language choice stored in your browser (see Section 9). We do not use advertising cookies.</td></tr>
+        <tr><td>Applying for a job or joining the talent pool</td><td>Name, phone, email, location, your experience summary, CV and LinkedIn links, availability, and expected salary if you provide them</td></tr>
+        <tr><td>Chatting with Lucy</td><td>The messages you send, and any parcel photos you upload</td></tr>
       </table>
       <p>We collect this information directly from you, whether through our website forms, WhatsApp, or by phone.</p>
     </section>
@@ -250,7 +258,7 @@
       <div class="sec-num">05</div>
       <h2>Lueri Rewards</h2>
       <p>Your phone number is your Rewards account identifier. When you or our staff look up your Rewards account, we return your name, tier, points balance, lifetime spend, and recent transaction history. We do not display your email address in these lookups.</p>
-      <p>To protect against abuse, lookups by phone number are rate-limited. Your tier is calculated from your total lifetime spend with us and does not reset over time.</p>
+      <p>To protect against abuse, lookups by phone number are rate-limited. Your tier is calculated from your eligible spend over the last 12 months, or from a membership you have purchased.</p>
       <div class="callout">Because a Rewards lookup only requires a phone number, please treat your registered phone number with the same care you would a password for that account — anyone who knows it can view your points and transaction history.</div>
     </section>
 
@@ -262,6 +270,8 @@
         <li><strong>WhatsApp (Meta)</strong> — booking confirmations, dispatch updates, and corporate applications are sent as WhatsApp messages</li>
         <li><strong>M-Pesa / Safaricom and other licensed payment providers</strong> — to process payment for a delivery or Rewards transaction</li>
         <li><strong>Supabase</strong>, our database provider — stores Rewards and account data on our behalf, hosted in the EU (Frankfurt). Supabase does not use this data for its own purposes.</li>
+        <li><strong>Pesapal</strong> — processes card and mobile payments for corporate plans and Rewards memberships</li>
+        <li><strong>OpenAI</strong> — processes the messages and, where applicable, parcel-photo inputs you send to Lucy so she can provide AI-assisted support</li>
         <li>Our own riders and staff, to the extent needed to complete your delivery</li>
       </ul>
       <p>We do not share your information with advertisers or data brokers, and we do not sell it.</p>
@@ -270,7 +280,7 @@
     <section id="storage">
       <div class="sec-num">07</div>
       <h2>Storage & security</h2>
-      <p>Your information is stored in a access-controlled database, protected by row-level security policies that restrict who and what can read or change it. Staff access to the Rewards and Operations consoles requires an individually approved account — there is no shared password. Parcel photographs submitted through Lucy are stored in a private, access-controlled Supabase Storage bucket and are available only to authorised Lueri staff for handling and dispatching the delivery.</p>
+      <p>Your information is stored in an access-controlled database, protected by row-level security policies that restrict who and what can read or change it. Staff access to the Rewards and Operations consoles requires an individually approved account — there is no shared password. Parcel photographs submitted through Lucy are stored in a private, access-controlled Supabase Storage bucket and are available only to authorised Lueri staff for handling and dispatching the delivery.</p>
       <p>No method of transmission or storage is 100% secure. We take reasonable technical and organizational measures to protect your information, and we investigate promptly if we become aware of a potential issue.</p>
     </section>
 
@@ -286,6 +296,7 @@
       <p>Our website does not use advertising or tracking cookies. We use your browser's local storage only for:</p>
       <ul>
         <li>Remembering your light/dark theme preference</li>
+        <li>Remembering your chosen language</li>
         <li>Keeping staff logged in to the Rewards and Operations consoles between visits (an authentication session, not a copy of member or delivery data)</li>
       </ul>
     </section>
