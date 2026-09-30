@@ -3,7 +3,7 @@
    Bump UI_VERSION whenever lucy-ui-v3.js changes so browsers fetch the new file. */
 (function(){
   'use strict';
-  const UI_VERSION='3.1';
+  const UI_VERSION='3.2';
   const LANG=['en','sw','fr','es','ar','pt','zh'];
   const KEY='lueri_language';
 
