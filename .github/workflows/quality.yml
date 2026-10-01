@@ -36,7 +36,7 @@ jobs:
           echo "JavaScript files checked: $count"
 
       - name: HTML validation — all HTML
-        run: npx --yes html-validate@9.48.1 --config .htmlvalidate.json "**/*.html"
+        run: npx --yes html-validate@11.16.1 --config .htmlvalidate.json "**/*.html"
 
       - name: Link check — repository HTML
         uses: lycheeverse/lychee-action@v2
