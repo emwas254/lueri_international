@@ -66,6 +66,15 @@ jobs:
           else
             echo "NO MATCHES: lucy-ui.js in lucy-v3.js"
           fi
+      - name: Supabase browser SDK audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "COMMAND: grep -RIn --include='*.html' '@supabase/supabase-js' ."
+          grep -RIn --include='*.html' '@supabase/supabase-js' . || true
+          echo "COMMAND: resolve floating @2 from jsDelivr"
+          curl -fsSL 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/package.json' | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).version))"
+
       - name: Link check — repository HTML
         uses: lycheeverse/lychee-action@v2
         with:
