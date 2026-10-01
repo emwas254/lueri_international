@@ -1,0 +1,23 @@
+name: Lucy Deno tests
+
+on:
+  pull_request:
+    paths:
+      - "supabase/functions/lucy-chat/**"
+      - ".github/workflows/lucy-deno-test.yml"
+  push:
+    branches:
+      - "baseline/lucy-chat-v50"
+    paths:
+      - "supabase/functions/lucy-chat/**"
+      - ".github/workflows/lucy-deno-test.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno test --no-check supabase/functions/lucy-chat/responses-input.test.ts
