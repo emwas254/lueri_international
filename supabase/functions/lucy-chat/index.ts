@@ -3,6 +3,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getRewardsPlans, rewardsAnswer, rewardsKnowledge } from "./lucy-facts.ts";
+import { buildResponsesInput } from "./responses-input.ts";
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
@@ -317,7 +318,7 @@ async function handle(req: Request): Promise<Response> {
             if (OPENAI_API_KEY && visionAllowed) {
               try {
                 const augmentedSystemPrompt = `${SYSTEM_PROMPT}\n\nLANGUAGE INSTRUCTION:\n${LOCALE_INSTRUCTIONS[validLocale]}\n\nPARCEL PHOTO TASK:\nIdentify only visible logistics details. Never invent weight, dimensions, value, contents that cannot be seen, or hazardous status. Keep the response under 60 words. State that final pricing may require Lueri confirmation.`;
-                const imageInput = [{ role: "user", content: [ { type: "input_text", text: "Briefly describe this parcel for a delivery quote." }, { type: "input_image", image_url: imageData, detail: "low" } ] }];
+                const imageInput = buildResponsesInput([], "Briefly describe this parcel for a delivery quote.", imageData);
                 const visionRes = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` }, body: JSON.stringify({ model: MODEL, instructions: augmentedSystemPrompt, input: imageInput, max_output_tokens: 120 }) });
                 if (visionRes.ok) {
                   const visionData = await visionRes.json();
@@ -369,7 +370,7 @@ async function handle(req: Request): Promise<Response> {
       const history = suppliedHistory.filter((item: unknown) => { if (!item || typeof item !== "object") return false; const x = item as { role?: unknown; content?: unknown }; return (x.role === "user" || x.role === "assistant") && typeof x.content === "string" && x.content.trim() && x.content.length <= MAX_MESSAGE_LEN; }).slice(-MAX_HISTORY_ITEMS).map((item: { role: "user" | "assistant"; content: string }) => ({ role: item.role, content: item.content }));
       if (!OPENAI_API_KEY) return json({ reply: fallback(validLocale, "setup"), delivery_state: state });
       const augmentedSystemPrompt = `${SYSTEM_PROMPT}\n\n${rewardsKnowledge(await getRewardsPlans(supabaseAdmin))}\n\nLANGUAGE INSTRUCTION:\n${LOCALE_INSTRUCTIONS[validLocale]}`;
-      const input = [ ...history.map((item) => ({ role: item.role, content: [{ type: "input_text", text: item.content }] })), { role: "user", content: [{ type: "input_text", text: message }] } ];
+      const input = buildResponsesInput(history, message);
       const res = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENAI_API_KEY}` }, body: JSON.stringify({ model: MODEL, instructions: augmentedSystemPrompt, input, max_output_tokens: 350 }) });
       if (!res.ok) { console.error("OpenAI API error", res.status, await res.text()); return json({ reply: fallback(validLocale, "api"), delivery_state: state }); }
       const data = await res.json();
