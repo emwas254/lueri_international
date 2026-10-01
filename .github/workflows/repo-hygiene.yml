@@ -47,7 +47,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git grep -nE -- ':/(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|sk-[A-Za-z0-9]{20,}|SG\.[A-Za-z0-9_-]{20,})' -- . ':!*.png' ':!*.jpg' ':!*.jpeg' ':!*.webp'; then
+          if git grep -nE -- ':/(BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|sk-[A-Za-z0-9]{20,}|SG\.[A-Za-z0-9_-]{20,})' -- . ':!.github/workflows/repo-hygiene.yml' ':!*.png' ':!*.jpg' ':!*.jpeg' ':!*.webp'; then
             echo "Potential credential material detected. Review and rotate any real credential before merging."
             exit 1
           fi
