@@ -52,8 +52,8 @@ jobs:
         run: |
           set -euo pipefail
           for needle in "lucy-ui.js" "lucy-fix.js" "lucy facts" "lucy schemas"; do
-            echo "COMMAND: git grep -nF -- '$needle' -- ."
-            if git grep -nF -- "$needle" -- .; then
+            echo "COMMAND: git grep -nF -- '$needle' -- . ':!.github/workflows/quality.yml'"
+            if git grep -nF -- "$needle" -- . ':!.github/workflows/quality.yml'; then
               echo "UNEXPECTED MATCH: $needle"
               exit 1
             else
