@@ -38,6 +38,26 @@ jobs:
       - name: HTML validation — all HTML
         run: npx --yes html-validate@11.16.1 --config .htmlvalidate.json "**/*.html"
 
+      - name: Legacy reference audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          for needle in "lucy-ui.js" "lucy-fix.js" "lucy facts" "lucy schemas"; do
+            echo "COMMAND: git grep -nF -- '$needle' -- ."
+            if git grep -nF -- "$needle" -- .; then
+              echo "UNEXPECTED MATCH: $needle"
+              exit 1
+            else
+              echo "NO MATCHES: $needle"
+            fi
+          done
+          echo "COMMAND: git grep -nF -- 'lucy-ui.js' -- lucy-v3.js"
+          if git grep -nF -- 'lucy-ui.js' -- lucy-v3.js; then
+            exit 1
+          else
+            echo "NO MATCHES: lucy-ui.js in lucy-v3.js"
+          fi
+
       - name: Link check — repository HTML
         uses: lycheeverse/lychee-action@v2
         with:
