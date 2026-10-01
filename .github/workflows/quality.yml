@@ -10,18 +10,14 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: JS + HTML + links
+  javascript:
+    name: JavaScript syntax
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Node syntax check — all JavaScript
         shell: bash
         run: |
@@ -35,9 +31,22 @@ jobs:
           done
           echo "JavaScript files checked: $count"
 
+  html:
+    name: HTML validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: HTML validation — all HTML
         run: npx --yes html-validate@11.16.1 --config .htmlvalidate.json "**/*.html"
 
+  links:
+    name: Links + legacy reference audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Legacy reference audit
         shell: bash
         run: |
@@ -57,7 +66,6 @@ jobs:
           else
             echo "NO MATCHES: lucy-ui.js in lucy-v3.js"
           fi
-
       - name: Link check — repository HTML
         uses: lycheeverse/lychee-action@v2
         with:
