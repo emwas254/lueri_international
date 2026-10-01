@@ -55,7 +55,7 @@ jobs:
           echo "Baseline threshold: 94"
           echo "Breakdown of the 94 baseline errors by rule:"
           for rule in no-implicit-button-type no-implicit-input-type tel-non-breaking aria-label-misuse hidden-focusable no-raw-characters prefer-tbody autocomplete-password wcag/h63; do
-            count=$(grep -E "[[:space:]]error[[:space:]].*$rule" html-validation.log | wc -l | tr -d ' ')
+            count=$(grep -F "$rule" html-validation.log | grep -F " error " | wc -l | tr -d ' ')
             echo "  $rule: $count"
           done
           if [ "$errors" -gt 94 ]; then
