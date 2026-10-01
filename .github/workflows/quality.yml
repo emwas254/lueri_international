@@ -1,0 +1,122 @@
+name: Web Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  javascript:
+    name: JavaScript syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Node syntax check — all JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
+          count=0
+          for file in "${files[@]}"; do
+            echo "node --check $file"
+            node --check "$file"
+            count=$((count+1))
+          done
+          echo "JavaScript files checked: $count"
+
+  html:
+    name: HTML validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: HTML validation — all HTML (baseline gate)
+        shell: bash
+        run: |
+          set +e
+          npx --yes html-validate@11.16.1 --config .htmlvalidate.json "**/*.html" > html-validation.log 2>&1
+          validator_status=$?
+          cat html-validation.log
+          errors=$(grep -Eo '✖ [0-9]+ problems \([0-9]+ errors' html-validation.log | tail -1 | sed -E 's/.*✖ ([0-9]+) problems.*/\1/' || true)
+          if [ -z "$errors" ]; then
+            echo "Could not determine HTML error count."
+            exit 1
+          fi
+          echo "HTML validation errors: $errors"
+          echo "Baseline threshold: 94"
+          echo "Breakdown of the 94 baseline errors by rule:"
+          for rule in no-implicit-button-type no-implicit-input-type tel-non-breaking aria-label-misuse hidden-focusable no-raw-characters prefer-tbody autocomplete-password wcag/h63; do
+            count=$(grep -F "$rule" html-validation.log | grep -F " error " | wc -l | tr -d ' ')
+            echo "  $rule: $count"
+          done
+          if [ "$errors" -gt 94 ]; then
+            echo "HTML validation regression: $errors errors exceeds the baseline threshold of 94."
+            exit 1
+          fi
+          if [ "$validator_status" -ne 0 ]; then
+            echo "Validator reported existing baseline errors, but the count did not exceed 94."
+          fi
+
+  links:
+    name: Links + legacy reference audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Legacy reference audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          for needle in "lucy-ui.js" "lucy-fix.js" "lucy facts" "lucy schemas"; do
+            echo "COMMAND: git grep -nF -- '$needle' -- . ':!.github/workflows/quality.yml'"
+            if git grep -nF -- "$needle" -- . ':!.github/workflows/quality.yml'; then
+              echo "UNEXPECTED MATCH: $needle"
+              exit 1
+            else
+              echo "NO MATCHES: $needle"
+            fi
+          done
+          echo "COMMAND: git grep -nF -- 'lucy-ui.js' -- lucy-v3.js"
+          if git grep -nF -- 'lucy-ui.js' -- lucy-v3.js; then
+            exit 1
+          else
+            echo "NO MATCHES: lucy-ui.js in lucy-v3.js"
+          fi
+      - name: Supabase browser SDK audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "COMMAND: grep -RIn --include='*.html' '@supabase/supabase-js' ."
+          grep -RIn --include='*.html' '@supabase/supabase-js' . || true
+          echo "COMMAND: resolve floating @2 from jsDelivr"
+          curl -fsSL 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/package.json' | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).version))"
+
+      - name: Link check — repository HTML
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --no-progress --exclude 'https://x.com/.*' "**/*.html"
+          fail: true
+
+
+  playwright:
+    name: Delivery checkout Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright test runner
+        run: npm install --no-save @playwright/test@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run checkout test
+        run: npx playwright test tests/delivery-checkout.spec.js
