@@ -104,3 +104,19 @@ jobs:
         with:
           args: --verbose --no-progress --exclude 'https://x.com/.*' "**/*.html"
           fail: true
+
+
+  playwright:
+    name: Delivery checkout Playwright
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright test runner
+        run: npm install --no-save @playwright/test@1.56.1
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run checkout test
+        run: npx playwright test tests/delivery-checkout.spec.js
