@@ -980,3 +980,74 @@ footer .footer-brand-motto::after{
     content:none !important;
   }
 }
+
+
+/* FINAL ARABIC MOBILE VIEWPORT GUARANTEE — 2026-10-02 */
+html[lang="ar"],
+html[lang="ar"] body{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:clip!important;
+}
+html[lang="ar"] body{
+  text-size-adjust:100%;
+  -webkit-text-size-adjust:100%;
+}
+html[lang="ar"] .wrap,
+html[lang="ar"] main,
+html[lang="ar"] header,
+html[lang="ar"] section,
+html[lang="ar"] footer,
+html[lang="ar"] .container,
+html[lang="ar"] .grid,
+html[lang="ar"] [class*="grid"],
+html[lang="ar"] [class*="flex"]{
+  min-width:0;
+  max-width:100%;
+}
+html[lang="ar"] .wrap > *,
+html[lang="ar"] .grid > *,
+html[lang="ar"] [class*="grid"] > *,
+html[lang="ar"] [class*="flex"] > *{
+  min-width:0;
+  max-width:100%;
+}
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6,
+html[lang="ar"] p,
+html[lang="ar"] li,
+html[lang="ar"] a,
+html[lang="ar"] label,
+html[lang="ar"] summary,
+html[lang="ar"] button,
+html[lang="ar"] .value{
+  min-width:0;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+html[lang="ar"] input,
+html[lang="ar"] textarea,
+html[lang="ar"] select,
+html[lang="ar"] button{
+  max-width:100%;
+  min-width:0;
+}
+@media(max-width:760px){
+  html[lang="ar"] body,
+  html[lang="ar"] main{
+    overflow-x:clip!important;
+  }
+  html[lang="ar"] .wrap,
+  html[lang="ar"] main > *,
+  html[lang="ar"] section > *,
+  html[lang="ar"] footer > *{
+    max-width:100%;
+    min-width:0;
+  }
+}
