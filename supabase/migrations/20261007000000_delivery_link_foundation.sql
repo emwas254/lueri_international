@@ -31,8 +31,10 @@ alter table public.bookings
   add column if not exists delivered_lat double precision,
   add column if not exists delivered_lng double precision,
   add column if not exists found_first_try boolean,
-  add column if not exists est_cost_kes int,
-  add column if not exists cost_actuals jsonb;          -- rider_payout, fuel, extras, minutes, km
+  add column if not exists est_cost_kes int,            -- actual costs live in public.delivery_costs
+  add column if not exists route_km numeric check (route_km >= 0),       -- routed distance used for the quote
+  add column if not exists route_minutes int check (route_minutes >= 0),
+  add column if not exists off_road_m int check (off_road_m >= 0);       -- pin distance from nearest mapped road; large = human quote
 
 -- 3. Landmark learning on the existing gazetteer.
 alter table public.location_landmarks
