@@ -13,6 +13,8 @@ create table if not exists public.delivery_links (
   booking_id   uuid references public.bookings(id) on delete cascade,
   merchant_id  uuid references public.organizations(id),
   created_by   uuid,
+  pickup_text  text not null,                          -- merchant/staff-supplied pickup; booking is created when the customer submits
+  details      text,
   expires_at   timestamptz not null default now() + interval '7 days',
   used_at      timestamptz,
   created_at   timestamptz not null default now()
