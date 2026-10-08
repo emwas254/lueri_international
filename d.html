@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Where should we deliver? | Lueri International</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#12263f;--mute:#5b6b80;--line:#d9e0ea;--brand:#0b3a6f;--accent:#e8a317;--ok:#1a7f4b;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1622;--card:#16212f;--ink:#e8eef6;--mute:#9fb0c4;--line:#273548;--brand:#5aa2f0;--accent:#e8a317;--ok:#4cc38a;--bad:#ff8a80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:480px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:13px;letter-spacing:.14em;margin:8px 0 2px;color:var(--brand)}h2{font-size:24px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;font-weight:600;margin:12px 0 4px}input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+button,.btn{display:block;width:100%;padding:14px;margin-top:10px;border:0;border-radius:10px;font:inherit;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;background:var(--brand);color:#fff}
+button.alt,.btn.alt{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}button:disabled{opacity:.55;cursor:default}
+.mute{color:var(--mute);font-size:14px}.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:600}.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>LUERI INTERNATIONAL</h1>
+<h2>Where should we deliver?</h2>
+<div id="state" class="card mute">Loading your delivery link…</div>
+
+<div id="app" class="hide">
+  <div class="card"><div class="mute">Pickup</div><div id="pickup" style="font-weight:700"></div><div id="merchant" class="mute"></div><div id="details" class="mute"></div></div>
+
+  <div class="card">
+    <label for="name">Your name</label><input id="name" autocomplete="name" maxlength="120">
+    <label for="phone">Phone number (our rider will call you)</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX" maxlength="20">
+  </div>
+
+  <div class="card" id="choose">
+    <button id="btnGps" type="button">📍 Share my location</button>
+    <button id="btnText" type="button" class="alt">Describe where I am</button>
+    <button id="btnNoPhone" type="button" class="alt">I don't have a smartphone</button>
+  </div>
+
+  <div class="card hide" id="gpsBox">
+    <div id="gpsMsg" class="mute">Getting your location…</div>
+    <a id="gpsMap" class="mute hide" target="_blank" rel="noopener noreferrer">Check the spot on a map</a>
+  </div>
+
+  <div class="card hide" id="detailBox">
+    <div id="addrWrap"><label for="addr">Estate / area and road</label><input id="addr" maxlength="300" placeholder="e.g. Kasarani, Thika Road"></div>
+    <label for="landmark">Nearest landmark or business</label><input id="landmark" maxlength="300" placeholder="e.g. Mwiki Stage, near Quickmart">
+    <label for="gate">Gate, floor or directions</label><textarea id="gate" rows="2" maxlength="250" placeholder="e.g. blue gate, 2nd floor, call on arrival"></textarea>
+    <label for="offroad">How far is your gate from the main tarmac road?</label>
+    <select id="offroad"><option value="">Select…</option><option>On the main road</option><option>Under 500 m</option><option>500 m to 2 km</option><option>More than 2 km</option></select>
+    <button id="btnSend" type="button">Confirm location</button>
+  </div>
+
+  <div class="card hide" id="noPhone">
+    <p style="margin-top:0">No problem. Our team will take your location by call or WhatsApp.</p>
+    <a id="waLink" class="btn" target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a>
+    <a id="callLink" class="btn alt">Call Lueri</a>
+  </div>
+
+  <div class="card hide" id="result"><div id="resMsg" class="ok"></div><p id="resNext" class="mute"></p></div>
+  <div id="err" class="bad"></div>
+</div>
+</main>
+<script>
+(function () {
+  var FN = 'https://ylifvexqamxvwzvhmwex.supabase.co/functions/v1/';
+  var KEY = 'sb_publishable_ozdYp7hE9r5Ncf8PiE8w-A_MTVyF64F';
+  var HELP = '254713261719'; // Lueri WhatsApp/phone; confirm before launch
+  var $ = function (id) { return document.getElementById(id); };
+  var show = function (id, on) { $(id).classList.toggle('hide', !on); };
+  var token = (new URLSearchParams(location.search).get('t') || '').trim();
+  var gps = null; // {lat,lng,accuracy}
+
+  function call(name, body) {
+    return fetch(FN + name, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); });
+  }
+  function fail(msg) { $('err').textContent = msg || ''; }
+
+  if (!/^[A-Za-z0-9]{8,12}$/.test(token)) { $('state').textContent = 'This link is not valid or has expired.'; return; }
+
+  call('link-open', { token: token }).then(function (j) {
+    if (!j.ok) { $('state').textContent = j.error || 'This link is not valid or has expired.'; return; }
+    $('state').classList.add('hide'); show('app', true);
+    $('pickup').textContent = j.pickup_text || '';
+    if (j.merchant) $('merchant').textContent = 'Order from ' + j.merchant;
+    if (j.details) $('details').textContent = j.details;
+    $('waLink').href = 'https://wa.me/' + HELP + '?text=' + encodeURIComponent('Hi Lueri, I need help with my delivery link ' + token);
+    $('callLink').href = 'tel:+' + HELP;
+    if (j.location_already_submitted) { $('resMsg').textContent = 'We already have your location.'; $('resNext').textContent = 'You can send a new one below if it has changed.'; show('result', true); }
+  }).catch(function () { $('state').textContent = 'We could not load this link. Please check your connection and try again.'; });
+
+  function mode(m) {
+    fail(''); show('gpsBox', m === 'gps'); show('detailBox', m === 'gps' || m === 'text'); show('noPhone', m === 'none');
+    show('addrWrap', m === 'text'); show('choose', false);
+  }
+  $('btnText').onclick = function () { mode('text'); };
+  $('btnNoPhone').onclick = function () { mode('none'); };
+  $('btnGps').onclick = function () {
+    mode('gps'); gps = null; $('gpsMsg').textContent = 'Getting your location…'; show('gpsMap', false);
+    if (!navigator.geolocation) { $('gpsMsg').textContent = 'Your phone cannot share location here. Please describe where you are.'; mode('text'); show('choose', true); return; }
+    navigator.geolocation.getCurrentPosition(function (p) {
+      gps = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy };
+      $('gpsMsg').textContent = 'Location found (accurate to about ' + Math.round(gps.acc) + ' m). Is this where we should deliver?';
+      $('gpsMap').href = 'https://www.openstreetmap.org/?mlat=' + gps.lat + '&mlon=' + gps.lng + '#map=18/' + gps.lat + '/' + gps.lng; show('gpsMap', true);
+    }, function () {
+      $('gpsMsg').textContent = 'We could not get your location. Please allow location access, or describe where you are.';
+      mode('text'); show('choose', true);
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  };
+
+  $('btnSend').onclick = function () {
+    fail('');
+    var name = $('name').value.trim(), phone = $('phone').value.trim();
+    var addr = $('addr').value.trim(), lm = $('landmark').value.trim(), gate = $('gate').value.trim(), off = $('offroad').value;
+    if (!name) return fail('Please enter your name.');
+    if (!phone) return fail('Please enter your phone number so our rider can reach you.');
+    var useGps = !$('gpsBox').classList.contains('hide') && gps;
+    if (!useGps && !addr && !lm) return fail('Please tell us the area or a nearby landmark.');
+    var note = [gate, off ? 'Distance from tarmac: ' + off : ''].filter(Boolean).join(' | ');
+    var body = { token: token, customer_name: name, contact_phone: phone, landmark_text: lm, gate_note: note };
+    if (useGps) { body.method = 'gps'; body.lat = gps.lat; body.lng = gps.lng; body.gps_lat = gps.lat; body.gps_lng = gps.lng; body.accuracy_m = gps.acc; }
+    else { body.method = addr ? 'address' : 'landmark'; body.address_text = addr; }
+    $('btnSend').disabled = true;
+    call('location-submit', body).then(function (j) {
+      $('btnSend').disabled = false;
+      if (!j.ok) return fail(j.message || j.error || 'Something went wrong. Please try again.');
+      $('resMsg').textContent = j.message || 'Location received.';
+      $('resNext').textContent = 'Our team will confirm your delivery price and contact you on ' + phone + '.';
+      show('result', true); show('detailBox', false); show('gpsBox', false); show('choose', false);
+    }).catch(function () { $('btnSend').disabled = false; fail('Connection problem. Please try again.'); });
+  };
+})();
+</script>
+</body>
+</html>
