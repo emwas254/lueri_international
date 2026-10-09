@@ -28,7 +28,7 @@
         future:{title:'General / Future Opportunity',department:'Talent Pool',location:'Nairobi, Kenya',type:'Future opportunity',summary:'Submit your CV for future recruitment opportunities at Lueri International.',description:'Use this route when there is no current vacancy that matches your experience but you would like Lueri to consider you for future recruitment.',responsibilities:['Future recruitment matching','Talent pool review'],requirements:['Clear communication','Relevant experience','Willingness to learn']}
       }
     }
-  },
+  };
   T.es={
     meta:{title:'Empleo — Lueri International',description:'Vacantes y oportunidades profesionales actuales en Lueri International en Nairobi: operaciones, atención al cliente, ventas y futuras oportunidades.'},
     nav:{where:'¿Adónde ahora?',services:'Servicios',servicesCaption:'Qué transportamos y con qué rapidez',pricing:'Precios',pricingCaption:'Precios cotizados, sin cargos ocultos',business:'Empresas',businessCaption:'Configura una cuenta corporativa',coverage:'Cobertura',coverageCaption:'Dónde entregamos en Nairobi',why:'Por qué nosotros',whyCaption:'Qué hace diferente a Lueri',faq:'Preguntas frecuentes',faqCaption:'Preguntas comunes, respuestas',rewards:'Recompensas',rewardsCaption:'Gana puntos con cada entrega',careers:'Empleo',careersCaption:'Oportunidades en Lueri',book:'Reservar',bookCaption:'Envía una solicitud de recogida',menu:'Menú',close:'Cerrar',bookPickup:'Reservar recogida',theme:'Cambiar modo oscuro',languageSelect:'Seleccionar idioma'},
