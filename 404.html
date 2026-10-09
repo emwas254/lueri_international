@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+<title>Page not found | Lueri International</title>
+<script>
+// Delivery links look like /d/<token>; this static site has no rewrites, so forward them to d.html.
+(function () {
+  var m = location.pathname.match(/^\/d\/([A-Za-z0-9]{8,12})\/?$/);
+  if (m) location.replace('/d.html?t=' + m[1]);
+})();
+</script></head>
+<body style="font-family:system-ui,sans-serif;text-align:center;padding:48px 16px">
+<h1>Page not found</h1><p><a href="/">Go to Lueri International</a></p>
+</body></html>
