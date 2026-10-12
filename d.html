@@ -59,7 +59,7 @@ button.alt,.btn.alt{background:transparent;color:var(--brand);border:1.5px solid
     <a id="callLink" class="btn alt">Call Lueri</a>
   </div>
 
-  <div class="card hide" id="result"><div id="resMsg" class="ok"></div><p id="resNext" class="mute"></p></div>
+  <div class="card hide" id="result"><div id="resMsg" class="ok"></div><div id="resPrice" style="font-size:22px;font-weight:800;margin:8px 0 0"></div><div id="resBand" class="mute"></div><div id="resLater" class="mute"></div><p id="resNext" class="mute"></p></div>
   <div id="err" class="bad"></div>
 </div>
 </main>
@@ -130,6 +130,18 @@ button.alt,.btn.alt{background:transparent;color:var(--brand);border:1.5px solid
       $('resMsg').textContent = j.message || 'Location received.';
       $('resNext').textContent = 'Our team will confirm your delivery price and contact you on ' + phone + '.';
       show('result', true); show('detailBox', false); show('gpsBox', false); show('choose', false);
+      if (!j.needs_human) {
+        call('quote-generate', { token: token }).then(function (q) {
+          if (q && q.ok && q.price_kes) {
+            $('resPrice').textContent = (q.estimate ? 'Estimated price: KES ' : 'Price: KES ') + q.price_kes + (q.eta_minutes ? ' · about ' + q.eta_minutes + ' min' : '');
+            if (q.scheduled_for) $('resBand').textContent = 'We are closed right now. Your delivery will be handled ' + q.scheduled_for + ' (price shown is for then).';
+            else if (q.band && q.band.pressure === 'peak') $('resBand').textContent = 'Busy-hours price (' + q.band.label.toLowerCase() + ')';
+            else if (q.band && q.band.pressure === 'quiet') $('resBand').textContent = 'Quiet-hours price (' + q.band.label.toLowerCase() + ')';
+            if (q.cheaper_later) $('resLater').textContent = 'Cheaper from ' + q.cheaper_later.after + ': KES ' + q.cheaper_later.price + ' (save KES ' + q.cheaper_later.saves + ')';
+            $('resNext').textContent = 'Our team will confirm this price and contact you on ' + phone + ' before your rider is sent.';
+          } else if (q && q.needs_human) { $('resNext').textContent = q.message; }
+        }).catch(function () {});
+      }
     }).catch(function () { $('btnSend').disabled = false; fail('Connection problem. Please try again.'); });
   };
 })();
