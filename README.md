@@ -5,7 +5,7 @@ Lueri International is a Nairobi-based last-mile delivery and courier platform.
 ## Production stack
 
 - Frontend: HTML, CSS and JavaScript
-- Hosting/deployment: GitHub Pages and custom domain
+- Hosting/deployment: GitHub Pages origin behind Cloudflare, custom domain lueriinternational.com
 - Backend: Supabase
 - Database: PostgreSQL via Supabase
 - Server-side logic: Supabase Edge Functions
