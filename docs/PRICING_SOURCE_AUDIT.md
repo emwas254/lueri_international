@@ -45,6 +45,8 @@ Line numbers refer to the source revision reviewed before this PR; additions may
 - Full translated paragraphs remain static because replacing them with templates is a structural rewrite. Do not mechanically rewrite them before language-by-language regression tests.
 - Backend Edge Functions and database quote RPCs remain unchanged. Browser config must never be treated as an authoritative payment amount.
 
+- **Risky / not changed:** corporate plan cards and selectors remain hardcoded in `corporate.html:497–513,547–549` and `delivery-checkout.html:497–513,547–549`; centralizing those values needs markup/selector changes and regression checks. The KES 5,000 liability cap in those pages is a terms summary, not a tariff. The home-page SEO meta description remains static by design.
+
 ## Not verified
 
 - **UNVERIFIED:** public site render and crawler metadata.
