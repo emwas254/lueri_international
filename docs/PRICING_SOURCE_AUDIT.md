@@ -9,14 +9,17 @@ Line numbers refer to the source revision reviewed before this PR; additions may
 | File | Line(s) | Value | Language / context |
 |---|---:|---|---|
 | `index.html` | 7 | Standard KES 350; Express KES 800 | English SEO meta description |
-| `index.html` | 232–234 | KES 350–800; documents KES 400; errands from KES 600 | English visible pricing |
+| `index.html` | 225, 232–234 | Standard KES 350; Express KES 800; documents KES 400; errands from KES 600 | English service and pricing copy |
+| `index.html` | 257 | Liability cap KES 5,000 unless otherwise agreed | English FAQ; not a delivery tariff |
 | `i18n-copy-patch.js` | 1–2, 20–24 | Standard 350; Express 800; documents 400; errands from 600 | English + Swahili |
 | `i18n-copy-patch.js` | 36–40, 45 | Same 350/400/800/600 | Swahili; non-English fallback range also KES 350–800 |
 | `i18n-completion.js` | 15, 24, 33, 42 | 350/400/800 in localized pricing paragraphs | French, Spanish, Arabic, Portuguese |
+| `i18n-completion.js` | 19, 28, 37, 46, 105, 118 | Liability cap KES 5,000 in localized FAQ copy where present | French, Spanish, Arabic, Portuguese, Chinese and Swahili FAQ blocks; not a delivery tariff |
 | `i18n-completion.js` | 72–78 | KES 350–800; errands from KES 600 where supplied | English, Swahili, Chinese, French, Spanish, Arabic, Portuguese |
 | `supabase/functions/_shared/lucy-facts.ts` | 17, 24–28, 59–65, 98, 123 | Rewards configured direct-purchase values: Silver 5,000; Gold 15,000; Platinum 35,000; VIP 75,000; Bronze free/null | Shared Lucy Rewards facts; also stores earned-spend thresholds, which are conceptually distinct from direct purchase |
 | `supabase/functions/_shared/price-floor.ts` | 1–21 | Assumptions include rider 250/hour, fuel 190/litre, 40 km/litre, overhead 25, fee 2.5%, risk 5%, margin 25% | Cost-model assumptions, not public tariffs |
 | `corporate.html` | 497–513, 547–549 | Gold 25,000/month + 600 overage; Platinum 45,000/month + 550 overage; VIP 75,000/month + 500 overage | English corporate pricing |
+| `corporate.html` | 521 | Liability cap KES 5,000 per item unless otherwise agreed | English terms summary; not a delivery tariff |
 | `delivery-checkout.html` | 497–513, 547–549 | Gold 25,000/month + 600 overage; Platinum 45,000/month + 550 overage; VIP 75,000/month + 500 overage | English checkout copy |
 | `delivery-checkout.html` | 521 | Liability cap KES 5,000 per item unless otherwise agreed | English terms summary; not a delivery tariff |
 | `supabase/functions/lucy-chat/index.ts` | 189–192 | Routes from KES 100; documents from KES 200; corporate 25,000/45,000/75,000 monthly; liability KES 5,000 | Shared system/knowledge prompt, English prices and policy copy |
