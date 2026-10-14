@@ -22,6 +22,10 @@ Recommend **v3.2 as the target implementation**, because it contains the `awaiti
 
 Next step: write a focused parity test for paid route, `awaiting_quote`, retry/double-submit, NCBA Till handoff, HTTPS redirect rejection, image attachment, and all seven locales. Only then port the quote-pending behavior to the shared implementation or approve a controlled migration.
 
+## Additional copy inconsistency
+
+**CODE-VERIFIED:** corporate plan amounts are 25,000 / 45,000 / 75,000 per month in the Lucy response variants, but plan names are inconsistent. The English/Portuguese/French/Spanish/Arabic/Chinese responses use Essential/Professional/Elite in parts of the response table, while the website corporate selector uses Gold/Platinum/VIP; Swahili also has both naming patterns in separate branches. No plan prices or names were changed in this PR. Aligning these labels should be a separate copy-only change after confirming the canonical tier names.
+
 ## Rewards-copy correction
 
 The Lucy chat source previously included copy claiming there were “no paid tier memberships,” contradicting the business rule. The PR replaces that sentence with accurate copy: Bronze is free; paid tiers can be purchased directly and tiers can also be earned through eligible lifetime spend. Public delivery prices are not changed.
