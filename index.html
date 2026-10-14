@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.1/dist/umd/supabase.min.js"></script>
 <script src="lueri-common.js?v=20260929-03"></script>
+<script src="pricing-config.js?v=20261014-01"></script>
 <script>document.addEventListener("DOMContentLoaded", function () { lueri.boot(); });</script>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
@@ -274,6 +275,17 @@ footer .footer-brand .footer-brand-motto > span::after{
 </main>
 <footer class="wrap"><div class="legal-block"><div><strong data-i18n="footer.registered">Registered business</strong><br><span data-i18n="footer.location">Lueri International · Nairobi, Kenya</span><br><span data-i18n="footer.founded">Founded 13 December 2023</span><br><span data-i18n="footer.registration">Registration details available on request for B2B clients</span></div><div><strong data-i18n="footer.contact">Contact</strong><br><a href="tel:+254713261719" class="phone-number" dir="ltr"><bdi dir="ltr">+254713261719</bdi></a><br><a href="mailto:info@lueriinternational.com">info@lueriinternational.com</a></div><div><strong data-i18n="footer.hours">Hours</strong><br><span data-i18n="footer.weekdays">Mon–Fri, 8:00 AM – 7:00 PM</span><br><span data-i18n="footer.saturday">Sat, 8:00 AM – 3:00 PM</span><br><span data-i18n="footer.sunday">Closed Sunday</span></div></div><div class="footer-row" style="margin-top:40px;"><a class="lh-brand" href="index.html" aria-label="Lueri International — home"><img class="mark-img mark-light" src="assets/logo-mark.png" alt=""><img class="mark-img mark-dark-img" src="assets/logo-mark-dark.png" alt="" aria-hidden="true"><span class="lh-brand-copy"><span class="lh-name">Lueri International</span><span class="lh-motto" data-i18n="hero.motto" data-lueri-motto>Moving What Matters</span></span></a><div class="mono" style="opacity:.6;" data-i18n="footer.copyright">© 2026 Nairobi, Kenya</div><div class="social-links"><a href="https://www.facebook.com/LueriInt" target="_blank" rel="noopener noreferrer" data-i18n="footer.facebook">Facebook</a><a href="https://www.instagram.com/lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.instagram">Instagram</a><a href="https://x.com/Lueri_Int" target="_blank" rel="noopener noreferrer" data-i18n="footer.x">X</a><a href="https://www.linkedin.com/company/lueriinternational/" target="_blank" rel="noopener noreferrer" data-i18n="footer.linkedin">LinkedIn</a><a href="https://www.tiktok.com/@lueri_international" target="_blank" rel="noopener noreferrer" data-i18n="footer.tiktok">TikTok</a></div><div class="foot-stamp" data-i18n="footer.ready">DISPATCH READY</div></div></footer>
 
+<!-- Apply centralized published prices to simple English labels before the i18n source snapshot. -->
+<script>
+(function(){
+  var p = window.LUERI_PRICING;
+  if (!p) return;
+  var range = document.querySelector('[data-i18n="pricing.priceFrom"]');
+  var errands = document.querySelector('[data-i18n="pricing.priceQuoted"]');
+  if (range) range.textContent = p.currency + " " + p.delivery.standard + "–" + p.delivery.express;
+  if (errands) errands.textContent = "From " + p.currency + " " + p.delivery.errandsFrom;
+})();
+</script>
 <!-- Capture English HTML as source of truth BEFORE any i18n script rewrites it -->
 <script>
 document.querySelectorAll('[data-i18n]').forEach(function(e){e.setAttribute('data-en',e.innerHTML);});
