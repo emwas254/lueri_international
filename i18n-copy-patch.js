@@ -1,8 +1,8 @@
 /* Copy update 2026-09-23: corrected pricing to cover real per-delivery cost (Standard KES 350,
    Express KES 800, documents KES 400, errands/bulk from KES 600). Loaded after i18n-completion.js
    and before i18n.js, so it overrides the English and Swahili strings. Other languages keep their
-   earlier translations except the first price, which is language-neutral. Edit prices HERE and in
-   index.html when you re-price. */
+   earlier translations except the first price, which is language-neutral. Edit tariff values in
+   pricing-config.js; update index.html's static SEO meta description deliberately when repricing. */
 (function () {
   var T = window.LueriI18n && window.LueriI18n.translations;
   if (!T) return;
